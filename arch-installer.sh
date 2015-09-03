@@ -245,7 +245,7 @@ prepare_drives() {
             	    	input=$(whiptail --passwordbox --nocancel "Please enter a new password for /dev/$DRIVE \n *Note this password is used to unencrypt your drive" 8 78 --title "Arch Linux Anywhere" 3>&1 1>&2 2>&3)
             	    	input_chk=$(whiptail --passwordbox --nocancel "New /dev/$DRIVE password again" 8 78 --title "Arch Linux Anywhere" 3>&1 1>&2 2>&3)
             	        if [ "$input" != "$input_chk" ]; then
-            	        	whiptail --title "Test Message Box" --msgbox "Passwords do not match, please try again." 10 60
+            	        	whiptail --title "Arch Linux Anywhere" --msgbox "Passwords do not match, please try again." 10 60
             	        fi
             	 	done
 				printf "$input" | cryptsetup luksFormat -c aes-xts-plain64 -s 512 /dev/lvm/lvroot -
@@ -405,7 +405,7 @@ install_base() {
 configure_system() {
 	if [ "$INSTALLED" == "true" ]; then
 		if [ "$system_configured" == "true" ]; then
-			whiptail --title "Test Message Box" --msgbox "Error system already configured \n Continuing to menu." 10 60
+			whiptail --title "Arch Linux Anywhere" --msgbox "Error system already configured \n Continuing to menu." 10 60
 			main_menu
 		fi
 		if [ "$crypted" == "true" ]; then
@@ -438,7 +438,7 @@ configure_system() {
 		system_configured=true
 		set_hostname
 	else
-		whiptail --title "Test Message Box" --msgbox "Error no root filesystem installed at $ARCH \n *Continuing to menu." 10 60
+		whiptail --title "Arch Linux Anywhere" --msgbox "Error no root filesystem installed at $ARCH \n *Continuing to menu." 10 60
 		main_menu
 	fi
 }
@@ -455,7 +455,7 @@ set_hostname() {
                        			 input=$(whiptail --passwordbox --nocancel "Please enter a new $user password" 8 78 --title "Arch Linux Anywhere" 3>&1 1>&2 2>&3)
                 		         input_chk=$(whiptail --passwordbox --nocancel "New $user password again" 8 78 --title "Arch Linux Anywhere" 3>&1 1>&2 2>&3)
                        			 if [ "$input" != "$input_chk" ]; then
-                          		      whiptail --title "Test Message Box" --msgbox "Passwords do not match, please try again." 10 60
+                          		      whiptail --title "Arch Linux Anywhere" --msgbox "Passwords do not match, please try again." 10 60
                          		 fi
              		        done
         			echo -e "$input\n$input\n" | passwd "$user" &> /dev/null' > /mnt/root/set.sh
@@ -464,14 +464,14 @@ set_hostname() {
 		rm "$ARCH"/root/set.sh
 		add_user
 	else
-		whiptail --title "Test Message Box" --msgbox "Error no root filesystem installed at $ARCH \n *Continuing to menu." 10 60
+		whiptail --title "Arch Linux Anywhere" --msgbox "Error no root filesystem installed at $ARCH \n *Continuing to menu." 10 60
 		main_menu
 	fi
 }
 
 add_user() {
 	if [ "$user_added" == "true" ]; then
-		whiptail --title "Test Message Box" --msgbox "User already added \n *Continuing to menu." 10 60
+		whiptail --title "Arch Linux Anywhere" --msgbox "User already added \n *Continuing to menu." 10 60
 		main_menu
 	elif [ "$INSTALLED" == "true" ]; then
 		if (whiptail --title "Arch Linux Anywhere" --yesno "Create a new sudo user now?" 10 60) then
@@ -487,7 +487,7 @@ add_user() {
                        					 input=$(whiptail --passwordbox --nocancel "Please enter a new password for $user" 8 78 --title "Arch Linux Anywhere" 3>&1 1>&2 2>&3)
                 				         input_chk=$(whiptail --passwordbox --nocancel "New password for $user again" 8 78 --title "Arch Linux Anywhere" 3>&1 1>&2 2>&3)
                        					 if [ "$input" != "$input_chk" ]; then
-                          				      whiptail --title "Test Message Box" --msgbox "Passwords do not match, please try again." 10 60
+                          				      whiptail --title "Arch Linux Anywhere" --msgbox "Passwords do not match, please try again." 10 60
                          				 fi
              				        done
         					echo -e "$input\n$input\n" | passwd "$user" &> /dev/null' > /mnt/root/set.sh
@@ -500,7 +500,7 @@ add_user() {
 		user_added=true
 		configure_network
 	else
-		whiptail --title "Test Message Box" --msgbox "Error no root filesystem installed at $ARCH \n *Continuing to menu." 10 60
+		whiptail --title "Arch Linux Anywhere" --msgbox "Error no root filesystem installed at $ARCH \n *Continuing to menu." 10 60
 		main_menu
 	fi
 }
@@ -518,7 +518,7 @@ configure_network() {
 			fi
 			graphics
 	else
-		whiptail --title "Test Message Box" --msgbox "Error no root filesystem installed at $ARCH \n *Continuing to menu." 10 60
+		whiptail --title "Arch Linux Anywhere" --msgbox "Error no root filesystem installed at $ARCH \n *Continuing to menu." 10 60
 		main_menu
 	fi
 }
