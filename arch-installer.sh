@@ -15,7 +15,7 @@ check_connection() {
 		down="0.7"
 	else
 		connection=true
-		if (whiptail --title "Arch Linux Anywhere" --defaultno --yesno "Would you like to install from the local repository? \n *This will ensure an extremly fast install, \n but may not contain the most updated packages." 10 60) then
+		if (whiptail --title "Arch Linux Anywhere" --defaultno --yesno "Would you like to install from the local repository? \n *This will ensure an extremly fast install, \n  but may not contain the most updated packages." 10 60) then
 			cp /root/local-pacman.conf /etc/pacman.conf
 			down="1"
 		else
@@ -389,13 +389,13 @@ install_base() {
 		fi
 	else
 		if [ "$INSTALLED" == "true" ]; then
-				whiptail --title "Test Message Box" --msgbox "Error root filesystem already installed at $ARCH \n Continuing to menu." 10 60
+				whiptail --title "Arch Linux Anywhere" --msgbox "Error root filesystem already installed at $ARCH \n Continuing to menu." 10 60
 				main_menu
 		else
 			if (whiptail --title "Arch Linux Anywhere" --yesno "Error no filesystem mounted \n Return to drive partitioning?" 10 60) then
 				prepare_drives
 			else
-				whiptail --title "Test Message Box" --msgbox "Error no filesystem mounted \n Continuing to menu." 10 60
+				whiptail --title "Arch Linux Anywhere" --msgbox "Error no filesystem mounted \n Continuing to menu." 10 60
 				main_menu
 			fi
 		fi
@@ -576,7 +576,7 @@ graphics() {
 						if (whiptail --title "Arch Linux Anywhere" --yesno "Would you like to install LightDM display manager?" 10 60) then
 							pacstrap "$ARCH" lightdm lightdm-gtk-greeter &> /dev/null &
 							pid=$! pri="$down" msg="Please wait while installing LightDM..." load
-							arch-chroot "$ARCH" systemctl enable lightdm.service
+							arch-chroot "$ARCH" systemctl enable lightdm.service &> /dev/null
 						fi
 					fi
 					case "$DE" in
