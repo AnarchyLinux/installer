@@ -15,7 +15,7 @@ check_connection() {
 		down="0.7"
 	else
 		connection=true
-		if (whiptail --title "Arch Linux Anywhere" --defaultno --yesno "Would you like to install from the local repository? \n *This will ensure an extremly fast install, \n  but may not contain the most updated packages." 10 60) then
+		if (whiptail --title "Arch Linux Anywhere" --defaultno --yesno "Would you like to install from the local repository? \n\n *This will ensure an extremly fast install, \n  but may not contain the most updated packages." 10 60) then
 			cp /root/local-pacman.conf /etc/pacman.conf
 			down="1"
 		else
@@ -48,7 +48,7 @@ check_connection() {
 }
 
 set_locale() {
-	LOCALE=$(whiptail --nocancel --title "Arch Linux Anywhere" --menu "Please select your locale" 15 60 6 \
+	LOCALE=$(whiptail --nocancel --title "Arch Linux Anywhere" --menu "Please select your desired locale:" 15 60 6 \
 	"en_US.UTF-8" "-" \
 	"en_AU.UTF-8" "-" \
 	"en_CA.UTF-8" "-" \
@@ -57,7 +57,7 @@ set_locale() {
 	"Other"       "-"		 3>&1 1>&2 2>&3)
 	if [ "$LOCALE" = "Other" ]; then
 		localelist=$(</etc/locale.gen  awk '{print substr ($1,2) " " ($2);}' | grep -F ".UTF-8" | sed "1d" | sed 's/$/  -/g;s/ UTF-8//g')
-		LOCALE=$(whiptail --title "Arch Linux Anywhere" --menu "Please enter your desired locale:" 15 60 6  $localelist 3>&1 1>&2 2>&3)
+		LOCALE=$(whiptail --title "Arch Linux Anywhere" --menu "Please select your desired locale:" 15 60 6  $localelist 3>&1 1>&2 2>&3)
 		if [ "$?" -gt "0" ]; then
 			set_locale
 		fi
@@ -68,7 +68,7 @@ set_locale() {
 
 set_zone() {
 	zonelist=$(find /usr/share/zoneinfo -maxdepth 1 | sed -n -e 's!^.*/!!p' | grep -v "posix\|right\|zoneinfo\|zone.tab\|zone1970.tab\|W-SU\|WET\|posixrules\|MST7MDT\|iso3166.tab\|CST6CDT" | sort | sed 's/$/ -/g')
-	ZONE=$(whiptail --nocancel --title "Arch Linux Anywhere" --menu "Please enter your time-zone:" 15 60 6 $zonelist 3>&1 1>&2 2>&3)
+	ZONE=$(whiptail --nocancel --title "Arch Linux Anywhere" --menu "Please enter your Time Zone:" 15 60 6 $zonelist 3>&1 1>&2 2>&3)
 		check_dir=$(find /usr/share/zoneinfo -maxdepth 1 -type d | sed -n -e 's!^.*/!!p' | grep "$ZONE")
 		if [ -n "$check_dir" ]; then
 			sublist=$(find /usr/share/zoneinfo/"$ZONE" -maxdepth 1 | sed -n -e 's!^.*/!!p' | sort | sed 's/$/ -/g')
@@ -90,7 +90,7 @@ set_zone() {
 }
 
 set_keys() {
-	keyboard=$(whiptail --nocancel --inputbox "Set key-map: \n If unsure leave default" 10 35 "us" 3>&1 1>&2 2>&3)
+	keyboard=$(whiptail --nocancel --inputbox "Set key-map: \n *If unsure leave default" 10 35 "us" 3>&1 1>&2 2>&3)
 	keys_set=true
 	prepare_drives
 }
@@ -98,7 +98,7 @@ set_keys() {
 prepare_drives() {
 	drive=$(lsblk | grep "disk" | grep -v "rom" | awk '{print $1   " "   $4}')
 	DRIVE=$(whiptail --nocancel --title "Arch Linux Anywhere" --menu "Select the drive you would like to install arch onto:" 15 60 5 $drive 3>&1 1>&2 2>&3)
-	PART=$(whiptail --title "Arch Linux Anywhere" --menu "Select your desired method of partitioning:\nNOTE Auto Partition will format the selected drive" 15 60 5 \
+	PART=$(whiptail --title "Arch Linux Anywhere" --menu "Select your desired method of partitioning: \n *NOTE Auto Partitioning will format the selected drive" 15 60 5 \
 	"Auto Partition Drive"           "-" \
 	"Auto partition encrypted LVM"   "-" \
 	"Manual Partition Drive"         "-" \
@@ -109,7 +109,7 @@ prepare_drives() {
 	elif [ "$PART" == "Return To Menu" ]; then
 		main_menu
 	elif [ "$PART" == "Auto partition encrypted LVM" ] || [ "$PART" == "Auto Partition Drive" ]; then
-		if (whiptail --title "Arch Linux Anywhere" --defaultno --yesno "WARNING! Will erase all data on /dev/$DRIVE! \n Would you like to contunue?" 10 60) then
+		if (whiptail --title "Arch Linux Anywhere" --defaultno --yesno "WARNING! Will erase all data on drive /dev/$DRIVE! \n *Would you like to contunue?" 10 60) then
 			sgdisk --zap-all "$DRIVE" &> /dev/null
 		else
 			prepare_drives
@@ -121,7 +121,7 @@ prepare_drives() {
 			swapped=false
 			while [ "$swapped" != "true" ]
 				do
-					SWAPSPACE=$(whiptail --inputbox "Specify desired swap size \n (Align to M or G):" 10 35 "512M" 3>&1 1>&2 2>&3)
+					SWAPSPACE=$(whiptail --inputbox "Specify your desired swap size: \n *(Align to M or G):" 10 35 "512M" 3>&1 1>&2 2>&3)
 					if [ "$?" -gt "0" ]; then
 						swapped=true
 					fi
@@ -161,14 +161,13 @@ prepare_drives() {
 #		fi
 	else
 		part_tool=$(whiptail --title "Arch Linux Anywhere" --menu "Please select your desired partitioning tool:" 15 60 5 \
-					"cfdisk"  "Curses Interface" \
+					"cfdisk"  "Best For Beginners" \
 					"fdisk"   "CLI Partitioning" \
 					"gdisk"   "GPT Partitioning" \
 					"parted"  "GNU Parted CLI" 3>&1 1>&2 2>&3)
 		if [ "$?" -gt "0" ]; then
 			prepare_drives
 		fi
-
 	fi
 	case "$PART" in
 		"Auto Partition Drive")
@@ -211,7 +210,7 @@ prepare_drives() {
 				wipefs -a -q /dev/"$ROOT" &> /dev/null
 				mkfs.ext4 -q /dev/"$BOOT" &> /dev/null
 				mkfs.ext4 -q /dev/"$ROOT" &> /dev/null &
-				pid=$! pri=1 msg="Please wait while creating filesystem" load
+				pid=$! pri=1 msg="Please wait while creating filesystem..." load
 		        mount /dev/"$ROOT" "$ARCH"
 				if [ "$?" -eq "0" ]; then
 					mounted=true
@@ -248,11 +247,12 @@ prepare_drives() {
             	        	whiptail --title "Arch Linux Anywhere" --msgbox "Passwords do not match, please try again." 10 60
             	        fi
             	 	done
-				printf "$input" | cryptsetup luksFormat -c aes-xts-plain64 -s 512 /dev/lvm/lvroot -
+				printf "$input" | cryptsetup luksFormat -c aes-xts-plain64 -s 512 /dev/lvm/lvroot - &
+				pid=$! pri=0.2 msg="Encrypting drive..." load
 				printf "$input" | cryptsetup open --type luks /dev/lvm/lvroot root -
 				input=""
 				mkfs -q -t ext4 /dev/mapper/root &> /dev/null &
-				pid=$! pri=1 msg="Please wait while creating encrypted filesystem" load
+				pid=$! pri=1 msg="Please wait while creating filesystem..." load
 				mount -t ext4 /dev/mapper/root "$ARCH"
 				if [ "$?" -eq "0" ]; then
 					mounted=true
@@ -270,21 +270,21 @@ prepare_drives() {
 			$part_tool /dev/"$DRIVE"
 			lsblk | egrep "$DRIVE[0-9]"
 			if [ "$?" -gt "0" ]; then
-				whiptail --title "Arch Linux Anywhere" --msgbox "An error was detected during partitioning \n Returing partitioning menu" 10 60
+				whiptail --title "Arch Linux Anywhere" --msgbox "An error was detected during partitioning \n *Returing partitioning menu" 10 60
 				prepare_drives
 			fi
 			clear
 			partition=$(lsblk | grep "$DRIVE" | grep -v "/\|1K" | sed "1d" | cut -c7- | awk '{print $1" "$4}')
 			ROOT=$(whiptail --nocancel --title "Arch Linux Anywhere" --menu "Please select your desired root partition first:" 15 60 5 $partition 3>&1 1>&2 2>&3)
-			if (whiptail --title "Arch Linux Anywhere" --yesno "This will create a new filesystem on the partition. \nAre you sure you want to do this?" 10 60) then
+			if (whiptail --title "Arch Linux Anywhere" --yesno "This will create a new filesystem on the partition. \n *Are you sure you want to do this?" 10 60) then
 				wipefs -a -q /dev/"$ROOT" &> /dev/null
 				mkfs.ext4 -q /dev/"$ROOT" &> /dev/null &
-				pid=$! pri=1 msg="Please wait while creating filesystem" load
+				pid=$! pri=1 msg="Please wait while creating filesystem..." load
 				mount /dev/"$ROOT" "$ARCH"
 				if [ "$?" -eq "0" ]; then
 					mounted=true
 				else
-					whiptail --title "Arch Linux Anywhere" --msgbox "An error was detected during partitioning \n Returing partitioning menu" 10 60
+					whiptail --title "Arch Linux Anywhere" --msgbox "An error was detected during partitioning \n *Returing partitioning menu" 10 60
 					prepare_drives
 				fi
 			else
@@ -300,16 +300,16 @@ prepare_drives() {
 						if [ "$?" -gt "0" ]; then
 							:
 						elif [ "$MNT" == "SWAP" ]; then
-							if (whiptail --title "Arch Linux Anywhere" --yesno "Will create swap space on /dev/$new_mnt \n Continue?" 10 60) then
+							if (whiptail --title "Arch Linux Anywhere" --yesno "Will create a swap space on /dev/$new_mnt \n *Continue?" 10 60) then
 								wipefs -a -q /dev/"$new_mnt"
 								mkswap /dev/"$new_mnt" &> /dev/null
 								swapon /dev/"$new_mnt" &> /dev/null
 							fi
 						else
-							if (whiptail --title "Arch Linux Anywhere" --yesno "Will create mount point $MNT with /dev/$new_mnt \n Continue?" 10 60) then
+							if (whiptail --title "Arch Linux Anywhere" --yesno "Will create mount point $MNT with /dev/$new_mnt \n *Continue?" 10 60) then
 								wipefs -a -q /dev/"$new_mnt"
 								mkfs.ext4 -q /dev/"$new_mnt" &> /dev/null &
-								pid=$! pri=1 msg="Please wait while creating filesystem" load
+								pid=$! pri=1 msg="Please wait while creating filesystem..." load
 								mkdir "$ARCH"/"$MNT"
 								mount /dev/"$new_mnt" "$ARCH"/"$MNT"
 								points=$(echo  "$points" | grep -v "$MNT")
@@ -320,7 +320,7 @@ prepare_drives() {
 		;;
 	esac
 	if [ "$mounted" != "true" ]; then
-		whiptail --title "Arch Linux Anywhere" --msgbox "An error was detected during partitioning \n Returing to drive partitioning" 10 60
+		whiptail --title "Arch Linux Anywhere" --msgbox "An error was detected during partitioning \n *Returing to drive partitioning" 10 60
 		prepare_drives
 	fi
 	update_mirrors
@@ -330,9 +330,9 @@ update_mirrors() {
 	if [ "$connection" == "true" ]; then
 		countries=$(echo -e "AT Austria\n AU  Australia\n BE Belgium\n BG Bulgaria\n BR Brazil\n BY Belarus\n CA Canada\n CL Chile \n CN China\n CO Columbia\n CZ Czech-Republic\n DK Denmark\n EE Estonia\n ES Spain\n FI Finland\n FR France\n GB United-Kingdom\n HU Hungary\n IE Ireland\n IL Isreal\n IN India\n IT Italy\n JP Japan\n KR Korea\n KZ Kazakhstan\n LK Sri-Lanka\n LU Luxembourg\n LV Lativia\n MK Macedonia\n NC New-Caledonia\n NL Netherlands\n NO Norway\n NZ New-Zealand\n PL Poland\n PT Portugal\n RO Romania\n RS Serbia\n RU Russia\n SE Sweden\n SG Singapore\n SK Slovakia\n TR Turkey\n TW Taiwan\n UA Ukraine\n US United-States\n UZ Uzbekistan\n VN Viet-Nam\n ZA South-Africa")
 		if (whiptail --title "Arch Linux Anywhere" --yesno "Would you like to update your mirrorlist now?" 10 60) then
-			code=$(whiptail --nocancel --title "Arch Linux Anywhere" --menu "Select your country code:" 15 60 6 $countries 3>&1 1>&2 2>&3)
+			code=$(whiptail --nocancel --title "Arch Linux Anywhere" --menu "Please select your country code:" 15 60 6 $countries 3>&1 1>&2 2>&3)
 			wget --append-output=/dev/null "https://www.archlinux.org/mirrorlist/?country=$code&protocol=http" -O /etc/pacman.d/mirrorlist.bak &
-			pid=$! pri=0.5 msg="Retreiving new mirrorlist..." load
+			pid=$! pri=0.2 msg="Retreiving new mirrorlist..." load
 			sed -i 's/#//' /etc/pacman.d/mirrorlist.bak
 			rankmirrors -n 6 /etc/pacman.d/mirrorlist.bak > /etc/pacman.d/mirrorlist &
   			pid=$! pri=0.5 msg="Please wait while ranking mirrors" load
@@ -381,7 +381,7 @@ install_base() {
 			pid=$! pri=0.5 msg="Configuring grub..." load
 			configure_system
 		else
-			if (whiptail --title "Arch Linux Anywhere" --yesno "Ready to install system to $ARCH \n Are you sure you want to exit to menu?" 10 60) then
+			if (whiptail --title "Arch Linux Anywhere" --yesno "Ready to install system to $ARCH \n *Are you sure you want to exit to menu?" 10 60) then
 				main_menu
 			else
 				install_base
@@ -389,13 +389,13 @@ install_base() {
 		fi
 	else
 		if [ "$INSTALLED" == "true" ]; then
-				whiptail --title "Arch Linux Anywhere" --msgbox "Error root filesystem already installed at $ARCH \n Continuing to menu." 10 60
+				whiptail --title "Arch Linux Anywhere" --msgbox "Error root filesystem already installed at $ARCH \n *Continuing to menu." 10 60
 				main_menu
 		else
-			if (whiptail --title "Arch Linux Anywhere" --yesno "Error no filesystem mounted \n Return to drive partitioning?" 10 60) then
+			if (whiptail --title "Arch Linux Anywhere" --yesno "Error no filesystem mounted \n *Return to drive partitioning?" 10 60) then
 				prepare_drives
 			else
-				whiptail --title "Arch Linux Anywhere" --msgbox "Error no filesystem mounted \n Continuing to menu." 10 60
+				whiptail --title "Arch Linux Anywhere" --msgbox "Error no filesystem mounted \n *Continuing to menu." 10 60
 				main_menu
 			fi
 		fi
@@ -405,7 +405,7 @@ install_base() {
 configure_system() {
 	if [ "$INSTALLED" == "true" ]; then
 		if [ "$system_configured" == "true" ]; then
-			whiptail --title "Arch Linux Anywhere" --msgbox "Error system already configured \n Continuing to menu." 10 60
+			whiptail --title "Arch Linux Anywhere" --msgbox "Error system already configured \n *Continuing to menu." 10 60
 			main_menu
 		fi
 		if [ "$crypted" == "true" ]; then
@@ -426,14 +426,11 @@ configure_system() {
 		fi
 		arch=$(uname -a | grep -o "x86_64\|i386\|i686")
 		if [ "$arch" == "x86_64" ]; then
-			if (whiptail --title "Arch Linux Anywhere" --yesno "*64 bit architecture detected\nAdd multilib repos to pacman.conf?" 10 60) then
+			if (whiptail --title "Arch Linux Anywhere" --yesno "64 bit architecture detected.\n *Add multilib repos to pacman.conf?" 10 60) then
 				sed -i '/\[multilib]$/ {
 				N
 				/Include/s/#//g}' /mnt/etc/pacman.conf
 			fi
-		fi
-		if (whiptail --title "Arch Linux Anywhere" --yesno "Would you like to add archlinuxfr to your pacman.conf?" 10 60) then
-			echo -e "[archlinuxfr]\nServer = http://repo.archlinux.fr/\$arch\nSigLevel = Never" >> /mnt/etc/pacman.conf
 		fi
 		system_configured=true
 		set_hostname
@@ -445,7 +442,7 @@ configure_system() {
 
 set_hostname() {
 	if [ "$INSTALLED" == "true" ]; then
-		hostname=$(whiptail --nocancel --inputbox "Set hostname:" 10 40 "arch" 3>&1 1>&2 2>&3)
+		hostname=$(whiptail --nocancel --inputbox "Set your system hostname:" 10 40 "arch" 3>&1 1>&2 2>&3)
 		echo "$hostname" > "$ARCH"/etc/hostname
 		user=root
 		echo -e 'user='$user'
@@ -474,7 +471,7 @@ add_user() {
 		whiptail --title "Arch Linux Anywhere" --msgbox "User already added \n *Continuing to menu." 10 60
 		main_menu
 	elif [ "$INSTALLED" == "true" ]; then
-		if (whiptail --title "Arch Linux Anywhere" --yesno "Create a new sudo user now?" 10 60) then
+		if (whiptail --title "Arch Linux Anywhere" --yesno "Create a new user account now?" 10 60) then
 			user=$(whiptail --nocancel --inputbox "Set username:" 10 40 "" 3>&1 1>&2 2>&3)
 		else
 			configure_network
@@ -494,7 +491,7 @@ add_user() {
 		chmod +x "$ARCH"/root/set.sh
 		arch-chroot "$ARCH" ./root/set.sh
 		rm "$ARCH"/root/set.sh
-		if (whiptail --title "Arch Linux Anywhere" --yesno "Enable sudo privelege for members of wheel?" 10 60) then
+		if (whiptail --title "Arch Linux Anywhere" --yesno "Enable sudo privelege for $user? \n *Enables administrative privelege with sudo." 10 60) then
 			sed -i '/%wheel ALL=(ALL) ALL/s/^#//' $ARCH/etc/sudoers
 		fi
 		user_added=true
@@ -508,11 +505,11 @@ add_user() {
 configure_network() {
 	if [ "$INSTALLED" == "true" ]; then
 		#Enable DHCP
-			if (whiptail --title "Arch Linux Anywhere" --yesno "Enable DHCP at boot?" 10 60) then
+			if (whiptail --title "Arch Linux Anywhere" --yesno "Enable DHCP at boot? \n *Automatic IP configuration." 10 60) then
 				arch-chroot "$ARCH" systemctl enable dhcpcd.service &> /dev/null
 			fi
 		#Wireless tools
-			if (whiptail --title "Arch Linux Anywhere" --yesno "Install wireless tools and WPA supplicant? \n *Necessary for wifi*" 10 60) then
+			if (whiptail --title "Arch Linux Anywhere" --yesno "Install wireless tools and WPA supplicant? \n *Necessary if using wifi" 10 60) then
 				pacstrap "$ARCH" wireless_tools wpa_supplicant &> /dev/null &
 				pid=$! pri=0.5 msg="Installing wireless tools and WPA supplicant..." load
 			fi
