@@ -5,7 +5,7 @@ INSTALLED=false
 
 check_connection() {
 	clear
-	if ! (whiptail --title "Arch Linux Anywhere" --yesno "Welcome to the Arch Linux Anywhere installer! \n Would you like to begin the install process?" 10 60) then
+	if ! (whiptail --title "Arch Linux Anywhere" --yesno "Welcome to the Arch Linux Anywhere installer! \n\n Would you like to begin the install process?" 10 60) then
 		exit
 	fi
 	ping -w 2 google.com &> /dev/null
@@ -34,7 +34,7 @@ check_connection() {
 				5[0-9]) down="7" ;;
 				6[0-9]) down="8" ;;
 				[0-9][0-9][0-9]) 
-					if (whiptail --title "Arch Linux Anywhere" --yesno "Your connection is very slow, this might take a long time...\n *Continue?" 10 60) then
+					if (whiptail --title "Arch Linux Anywhere" --yesno "Your connection is very slow, this might take a long time...\n\n *Continue with install?" 10 60) then
 						down="15"
 					else
 						exit
@@ -90,7 +90,7 @@ set_zone() {
 }
 
 set_keys() {
-	keyboard=$(whiptail --nocancel --inputbox "Set key-map: \n *If unsure leave default" 10 35 "us" 3>&1 1>&2 2>&3)
+	keyboard=$(whiptail --nocancel --inputbox "Set key-map: \n\n *If unsure leave default" 10 35 "us" 3>&1 1>&2 2>&3)
 	keys_set=true
 	prepare_drives
 }
@@ -98,7 +98,7 @@ set_keys() {
 prepare_drives() {
 	drive=$(lsblk | grep "disk" | grep -v "rom" | awk '{print $1   " "   $4}')
 	DRIVE=$(whiptail --nocancel --title "Arch Linux Anywhere" --menu "Select the drive you would like to install arch onto:" 15 60 5 $drive 3>&1 1>&2 2>&3)
-	PART=$(whiptail --title "Arch Linux Anywhere" --menu "Select your desired method of partitioning: \n *NOTE Auto Partitioning will format the selected drive" 15 60 5 \
+	PART=$(whiptail --title "Arch Linux Anywhere" --menu "Select your desired method of partitioning: \n\n *NOTE Auto Partitioning will format the selected drive" 15 60 5 \
 	"Auto Partition Drive"           "-" \
 	"Auto partition encrypted LVM"   "-" \
 	"Manual Partition Drive"         "-" \
@@ -109,7 +109,7 @@ prepare_drives() {
 	elif [ "$PART" == "Return To Menu" ]; then
 		main_menu
 	elif [ "$PART" == "Auto partition encrypted LVM" ] || [ "$PART" == "Auto Partition Drive" ]; then
-		if (whiptail --title "Arch Linux Anywhere" --defaultno --yesno "WARNING! Will erase all data on drive /dev/$DRIVE! \n *Would you like to contunue?" 10 60) then
+		if (whiptail --title "Arch Linux Anywhere" --defaultno --yesno "WARNING! Will erase all data on drive /dev/$DRIVE! \n\n *Would you like to contunue?" 10 60) then
 			sgdisk --zap-all "$DRIVE" &> /dev/null
 		else
 			prepare_drives
@@ -230,7 +230,8 @@ prepare_drives() {
 				ROOT="$(lsblk | grep "$DRIVE" |  awk '{ if (NR==3) print substr ($1,3) }')"
 				
 			fi
-			if (whiptail --title "Arch Linux Anywhere" --defaultno --yesno "Warning this will encrypt /dev/$DRIVE \n *Continue?" 10 60) then
+			if (whiptail --title "Arch Linux Anywhere" --defaultno --yesno "Warning this will encrypt /dev/$DRIVE \n\n *Continue?" 10 60) then
+				wipefs -a /dev/"$ROOT" &> /dev/null
 				lvm pvcreate /dev/"$ROOT" &> /dev/null
 				lvm vgcreate lvm /dev/"$ROOT" &> /dev/null
 				if "$SWAP" ; then
@@ -241,7 +242,7 @@ prepare_drives() {
     			input=default
 				while [ "$input" != "$input_chk" ]
             		do
-            	    	input=$(whiptail --passwordbox --nocancel "Please enter a new password for /dev/$DRIVE \n *Note this password is used to unencrypt your drive" 8 78 --title "Arch Linux Anywhere" 3>&1 1>&2 2>&3)
+            	    	input=$(whiptail --passwordbox --nocancel "Please enter a new password for /dev/$DRIVE \n\n *Note this password is used to unencrypt your drive at boot" 8 78 --title "Arch Linux Anywhere" 3>&1 1>&2 2>&3)
             	    	input_chk=$(whiptail --passwordbox --nocancel "New /dev/$DRIVE password again" 8 78 --title "Arch Linux Anywhere" 3>&1 1>&2 2>&3)
             	        if [ "$input" != "$input_chk" ]; then
             	        	whiptail --title "Arch Linux Anywhere" --msgbox "Passwords do not match, please try again." 10 60
@@ -270,13 +271,13 @@ prepare_drives() {
 			$part_tool /dev/"$DRIVE"
 			lsblk | egrep "$DRIVE[0-9]"
 			if [ "$?" -gt "0" ]; then
-				whiptail --title "Arch Linux Anywhere" --msgbox "An error was detected during partitioning \n *Returing partitioning menu" 10 60
+				whiptail --title "Arch Linux Anywhere" --msgbox "An error was detected during partitioning \n\n *Returing partitioning menu" 10 60
 				prepare_drives
 			fi
 			clear
 			partition=$(lsblk | grep "$DRIVE" | grep -v "/\|1K" | sed "1d" | cut -c7- | awk '{print $1" "$4}')
 			ROOT=$(whiptail --nocancel --title "Arch Linux Anywhere" --menu "Please select your desired root partition first:" 15 60 5 $partition 3>&1 1>&2 2>&3)
-			if (whiptail --title "Arch Linux Anywhere" --yesno "This will create a new filesystem on the partition. \n *Are you sure you want to do this?" 10 60) then
+			if (whiptail --title "Arch Linux Anywhere" --yesno "This will create a new filesystem on the partition. \n\n *Are you sure you want to do this?" 10 60) then
 				wipefs -a -q /dev/"$ROOT" &> /dev/null
 				mkfs.ext4 -q /dev/"$ROOT" &> /dev/null &
 				pid=$! pri=1 msg="Please wait while creating filesystem..." load
@@ -284,7 +285,7 @@ prepare_drives() {
 				if [ "$?" -eq "0" ]; then
 					mounted=true
 				else
-					whiptail --title "Arch Linux Anywhere" --msgbox "An error was detected during partitioning \n *Returing partitioning menu" 10 60
+					whiptail --title "Arch Linux Anywhere" --msgbox "An error was detected during partitioning \n\n *Returing partitioning menu" 10 60
 					prepare_drives
 				fi
 			else
@@ -294,19 +295,19 @@ prepare_drives() {
 			until [ "$new_mnt" == "Done" ] 
 				do
 					partition=$(lsblk | grep "$DRIVE" | grep -v "/\|[SWAP]\|1K" | sed "1d" | cut -c7- | awk '{print $1"     "$4}')
-					new_mnt=$(whiptail --title "Arch Linux Anywhere" --nocancel --menu "Select a partition to create a mount point: \n *Select done when finished*" 15 60 5 $partition "Done" "Continue" 3>&1 1>&2 2>&3)
+					new_mnt=$(whiptail --title "Arch Linux Anywhere" --nocancel --menu "Select a partition to create a mount point: \n\n *Select done when finished*" 15 60 5 $partition "Done" "Continue" 3>&1 1>&2 2>&3)
 					if [ "$new_mnt" != "Done" ]; then
 						MNT=$(whiptail --title "Arch Linux Anywhere" --menu "Select a mount point for /dev/$new_mnt" 15 60 5 $points 3>&1 1>&2 2>&3)				
 						if [ "$?" -gt "0" ]; then
 							:
 						elif [ "$MNT" == "SWAP" ]; then
-							if (whiptail --title "Arch Linux Anywhere" --yesno "Will create a swap space on /dev/$new_mnt \n *Continue?" 10 60) then
+							if (whiptail --title "Arch Linux Anywhere" --yesno "Will create a swap space on /dev/$new_mnt \n\n *Continue?" 10 60) then
 								wipefs -a -q /dev/"$new_mnt"
 								mkswap /dev/"$new_mnt" &> /dev/null
 								swapon /dev/"$new_mnt" &> /dev/null
 							fi
 						else
-							if (whiptail --title "Arch Linux Anywhere" --yesno "Will create mount point $MNT with /dev/$new_mnt \n *Continue?" 10 60) then
+							if (whiptail --title "Arch Linux Anywhere" --yesno "Will create mount point $MNT with /dev/$new_mnt \n\n *Continue?" 10 60) then
 								wipefs -a -q /dev/"$new_mnt"
 								mkfs.ext4 -q /dev/"$new_mnt" &> /dev/null &
 								pid=$! pri=1 msg="Please wait while creating filesystem..." load
@@ -320,7 +321,7 @@ prepare_drives() {
 		;;
 	esac
 	if [ "$mounted" != "true" ]; then
-		whiptail --title "Arch Linux Anywhere" --msgbox "An error was detected during partitioning \n *Returing to drive partitioning" 10 60
+		whiptail --title "Arch Linux Anywhere" --msgbox "An error was detected during partitioning \n\n *Returing to drive partitioning" 10 60
 		prepare_drives
 	fi
 	update_mirrors
@@ -345,8 +346,8 @@ update_mirrors() {
 install_base() {
 	if [[ -n "$ROOT" && "$INSTALLED" == "false"  && "$mounted" == "true" ]]; then	
 		if (whiptail --title "Arch Linux Anywhere" --yesno "Begin installing Arch Linux base onto /dev/$DRIVE?" 10 60) then
-			pacstrap "$ARCH" base base-devel grub libnewt &> /dev/null &
-			pid=$! pri="$down" msg="Please wait while we install Arch Linux... \n *This may take awhile" load
+			pacstrap "$ARCH" base base-devel libnewt &> /dev/null &
+			pid=$! pri="$down" msg="Please wait while we install Arch Linux... \n\n *This may take awhile" load
 			if [ "$?" -eq "0" ]; then
 				INSTALLED=true
 			else
@@ -359,29 +360,33 @@ install_base() {
 			if [ -n "$intel" ]; then
 				pacstrap $ARCH intel-ucode
 			fi
-			if (whiptail --title "Arch Linux Anywhere" --yesno "Install os-prober? \n *Required for dualboot" 10 60) then
-				pacstrap "$ARCH" os-prober &> /dev/null &
-				pid=$! pri=0.5 msg="Installing os-prober..." load
-			fi
-			if [ "$crypted" == "true" ]; then
-				sed -i 's!quiet!cryptdevice=/dev/lvm/lvroot:root root=/dev/mapper/root!' "$ARCH"/etc/default/grub
-				echo "/dev/$BOOT                    /boot           ext4           defaults        0       2" > "$ARCH"/etc/fstab
-				echo "/dev/mapper/root        /                      ext4            defaults       0       1" >> "$ARCH"/etc/fstab
-				echo "/dev/mapper/tmp       /tmp             tmpfs        defaults        0       0" >> "$ARCH"/etc/fstab
-				echo "tmp	       /dev/lvm/tmp	       /dev/urandom	tmp,cipher=aes-xts-plain64,size=256" >> "$ARCH"/etc/crypttab
-				if "$SWAP" ; then
-					echo "/dev/mapper/swap     none            swap          sw                    0       0" >> "$ARCH"/etc/fstab
-					echo "swap	/dev/lvm/swap	/dev/urandom	swap,cipher=aes-xts-plain64,size=256" >> "$ARCH"/etc/crypttab
-				fi
-			fi
-			arch-chroot "$ARCH" grub-install --recheck /dev/"$DRIVE" &> /dev/null &
-			pid=$! pri=0.5 msg="Installing grub..." load
-			loader_installed=true
-			arch-chroot "$ARCH" grub-mkconfig -o /boot/grub/grub.cfg &> /dev/null &
-			pid=$! pri=0.5 msg="Configuring grub..." load
+			while [ ! -n "$bootloader" ]
+				do
+					if (whiptail --title "Arch Linux Anywhere" --yesno "Install GRUB bootloader? \n\n *Required to make system bootable" 10 60) then
+						if (whiptail --title "Arch Linux Anywhere" --yesno "Install os-prober first? \n\n *Required for multiboot" 10 60) then
+							pacstrap "$ARCH" os-prober &> /dev/null &
+							pid=$! pri=0.5 msg="Installing os-prober..." load
+						fi
+						pacstrap "$ARCH" grub &> /dev/null &
+						pid=$! pri=0.5 msg="Installing grub..." load
+						if [ "$crypted" == "true" ]; then
+							sed -i 's!quiet!cryptdevice=/dev/lvm/lvroot:root root=/dev/mapper/root!' "$ARCH"/etc/default/grub
+						fi
+						arch-chroot "$ARCH" grub-install --recheck /dev/"$DRIVE" &> /dev/null &
+						pid=$! pri=0.5 msg="Installing grub to drive..." load
+						arch-chroot "$ARCH" grub-mkconfig -o /boot/grub/grub.cfg &> /dev/null &
+						pid=$! pri=0.5 msg="Configuring grub..." load
+						bootloader=true
+					else
+						if (whiptail --title "Arch Linux Anywhere" --defaultno --yesno "Warning! System will not be bootable! \n\n *You will need to configure a bootloader yourself \n *Continue without a bootloader?" 10 60) then
+							whiptail --title "Arch Linux Anywhere" --msgbox "After install is complete choose not to reboot, you may choose to keep the system mounted at $ARCH allowing you to arch-chroot into it and configure your own bootloader." 10 60
+							bootloader=true
+						fi
+					fi
+				done
 			configure_system
 		else
-			if (whiptail --title "Arch Linux Anywhere" --yesno "Ready to install system to $ARCH \n *Are you sure you want to exit to menu?" 10 60) then
+			if (whiptail --title "Arch Linux Anywhere" --yesno "Ready to install system to $ARCH \n\n *Are you sure you want to exit to menu?" 10 60) then
 				main_menu
 			else
 				install_base
@@ -389,13 +394,13 @@ install_base() {
 		fi
 	else
 		if [ "$INSTALLED" == "true" ]; then
-				whiptail --title "Arch Linux Anywhere" --msgbox "Error root filesystem already installed at $ARCH \n *Continuing to menu." 10 60
+				whiptail --title "Arch Linux Anywhere" --msgbox "Error root filesystem already installed at $ARCH \n\n *Continuing to menu." 10 60
 				main_menu
 		else
-			if (whiptail --title "Arch Linux Anywhere" --yesno "Error no filesystem mounted \n *Return to drive partitioning?" 10 60) then
+			if (whiptail --title "Arch Linux Anywhere" --yesno "Error no filesystem mounted \n\n *Return to drive partitioning?" 10 60) then
 				prepare_drives
 			else
-				whiptail --title "Arch Linux Anywhere" --msgbox "Error no filesystem mounted \n *Continuing to menu." 10 60
+				whiptail --title "Arch Linux Anywhere" --msgbox "Error no filesystem mounted \n\n *Continuing to menu." 10 60
 				main_menu
 			fi
 		fi
@@ -404,14 +409,18 @@ install_base() {
 
 configure_system() {
 	if [ "$INSTALLED" == "true" ]; then
-		if [ "$system_configured" == "true" ]; then
-			whiptail --title "Arch Linux Anywhere" --msgbox "Error system already configured \n *Continuing to menu." 10 60
-			main_menu
-		fi
 		if [ "$crypted" == "true" ]; then
+			echo "/dev/$BOOT              /boot           ext4         defaults        0       2" > "$ARCH"/etc/fstab
+			echo "/dev/mapper/root        /               ext4         defaults        0       1" >> "$ARCH"/etc/fstab
+			echo "/dev/mapper/tmp         /tmp            tmpfs        defaults        0       0" >> "$ARCH"/etc/fstab
+			echo "tmp	       /dev/lvm/tmp	       /dev/urandom	tmp,cipher=aes-xts-plain64,size=256" >> "$ARCH"/etc/crypttab
+			if "$SWAP" ; then
+				echo "/dev/mapper/swap     none            swap          sw                    0       0" >> "$ARCH"/etc/fstab
+				echo "swap	/dev/lvm/swap	/dev/urandom	swap,cipher=aes-xts-plain64,size=256" >> "$ARCH"/etc/crypttab
+			fi
 			sed -i 's/k filesystems k/k lvm2 encrypt filesystems k/' "$ARCH"/etc/mkinitcpio.conf
 			arch-chroot "$ARCH" mkinitcpio -p linux &> /dev/null &
-			pid=$! pri=1 msg="Please wait while configuring kernel for encryption" load
+			pid=$! pri=1 msg="Please wait while configuring kernel for encryption..." load
 		fi
 		sed -i -e "s/#$LOCALE/$LOCALE/" "$ARCH"/etc/locale.gen
 		echo LANG="$LOCALE" > "$ARCH"/etc/locale.conf
@@ -426,16 +435,15 @@ configure_system() {
 		fi
 		arch=$(uname -a | grep -o "x86_64\|i386\|i686")
 		if [ "$arch" == "x86_64" ]; then
-			if (whiptail --title "Arch Linux Anywhere" --yesno "64 bit architecture detected.\n *Add multilib repos to pacman.conf?" 10 60) then
+			if (whiptail --title "Arch Linux Anywhere" --yesno "64 bit architecture detected.\n\n *Add multilib repos to pacman.conf?" 10 60) then
 				sed -i '/\[multilib]$/ {
 				N
 				/Include/s/#//g}' /mnt/etc/pacman.conf
 			fi
 		fi
-		system_configured=true
 		set_hostname
 	else
-		whiptail --title "Arch Linux Anywhere" --msgbox "Error no root filesystem installed at $ARCH \n *Continuing to menu." 10 60
+		whiptail --title "Arch Linux Anywhere" --msgbox "Error no root filesystem installed at $ARCH \n\n *Continuing to menu." 10 60
 		main_menu
 	fi
 }
@@ -461,14 +469,14 @@ set_hostname() {
 		rm "$ARCH"/root/set.sh
 		add_user
 	else
-		whiptail --title "Arch Linux Anywhere" --msgbox "Error no root filesystem installed at $ARCH \n *Continuing to menu." 10 60
+		whiptail --title "Arch Linux Anywhere" --msgbox "Error no root filesystem installed at $ARCH \n\n *Continuing to menu." 10 60
 		main_menu
 	fi
 }
 
 add_user() {
 	if [ "$user_added" == "true" ]; then
-		whiptail --title "Arch Linux Anywhere" --msgbox "User already added \n *Continuing to menu." 10 60
+		whiptail --title "Arch Linux Anywhere" --msgbox "User already added \n\n *Continuing to menu." 10 60
 		main_menu
 	elif [ "$INSTALLED" == "true" ]; then
 		if (whiptail --title "Arch Linux Anywhere" --yesno "Create a new user account now?" 10 60) then
@@ -491,13 +499,13 @@ add_user() {
 		chmod +x "$ARCH"/root/set.sh
 		arch-chroot "$ARCH" ./root/set.sh
 		rm "$ARCH"/root/set.sh
-		if (whiptail --title "Arch Linux Anywhere" --yesno "Enable sudo privelege for $user? \n *Enables administrative privelege with sudo." 10 60) then
+		if (whiptail --title "Arch Linux Anywhere" --yesno "Enable sudo privelege for $user? \n\n *Enables administrative privelege with sudo." 10 60) then
 			sed -i '/%wheel ALL=(ALL) ALL/s/^#//' $ARCH/etc/sudoers
 		fi
 		user_added=true
 		configure_network
 	else
-		whiptail --title "Arch Linux Anywhere" --msgbox "Error no root filesystem installed at $ARCH \n *Continuing to menu." 10 60
+		whiptail --title "Arch Linux Anywhere" --msgbox "Error no root filesystem installed at $ARCH \n\n *Continuing to menu." 10 60
 		main_menu
 	fi
 }
@@ -505,26 +513,26 @@ add_user() {
 configure_network() {
 	if [ "$INSTALLED" == "true" ]; then
 		#Enable DHCP
-			if (whiptail --title "Arch Linux Anywhere" --yesno "Enable DHCP at boot? \n *Automatic IP configuration." 10 60) then
+			if (whiptail --title "Arch Linux Anywhere" --yesno "Enable DHCP at boot? \n\n *Automatic IP configuration." 10 60) then
 				arch-chroot "$ARCH" systemctl enable dhcpcd.service &> /dev/null
 			fi
 		#Wireless tools
-			if (whiptail --title "Arch Linux Anywhere" --yesno "Install wireless tools and WPA supplicant? \n *Necessary if using wifi" 10 60) then
+			if (whiptail --title "Arch Linux Anywhere" --yesno "Install wireless tools and WPA supplicant? \n\n *Necessary if using wifi" 10 60) then
 				pacstrap "$ARCH" wireless_tools wpa_supplicant &> /dev/null &
 				pid=$! pri=0.5 msg="Installing wireless tools and WPA supplicant..." load
 			fi
 			graphics
 	else
-		whiptail --title "Arch Linux Anywhere" --msgbox "Error no root filesystem installed at $ARCH \n *Continuing to menu." 10 60
+		whiptail --title "Arch Linux Anywhere" --msgbox "Error no root filesystem installed at $ARCH \n\n *Continuing to menu." 10 60
 		main_menu
 	fi
 }
 
 graphics() {
-	if (whiptail --title "Arch Linux Anywhere" --yesno "Would you like to install xorg-server now? \n *Select yes for a graphical interface" 10 60) then
+	if (whiptail --title "Arch Linux Anywhere" --yesno "Would you like to install xorg-server now? \n\n *Select yes for a graphical interface" 10 60) then
 		pacstrap "$ARCH" xorg-server xorg-server-utils xorg-xinit xterm &> /dev/null &
 		pid=$! pri="$down" msg="Please wait while installing xorg-server..." load
-		if (whiptail --title "Arch Linux Anywhere" --yesno "Would you like to install graphics drivers now? \n *If no default drivers will be used." 10 60) then
+		if (whiptail --title "Arch Linux Anywhere" --yesno "Would you like to install graphics drivers now? \n\n *If no default drivers will be used." 10 60) then
 			until [ "$GPU" == "set" ]
 				do
 					i=false
@@ -534,14 +542,14 @@ graphics() {
 					"Nvidia"  			     "NVIDIA Graphics" \
 					"virtualbox-guest-utils" "VirtualBox Graphics" 3>&1 1>&2 2>&3)
 					if [ "$?" -gt "0" ]; then
-						if (whiptail --title "Arch Linux Anywhere" --yesno "Continue without installing graphics drivers? \n *Default drivers will be used." 10 60) then
+						if (whiptail --title "Arch Linux Anywhere" --yesno "Continue without installing graphics drivers? \n\n *Default drivers will be used." 10 60) then
 							GPU=set
 						fi
 					else
 						i=true
 					fi
 					if [ "$GPU" == "Nvidia" ]; then
-						GPU=$(whiptail --title "Arch Linux Anywhere" --menu "Select your desired Nvidia driver: \n *Cancel if none" 15 60 4 \
+						GPU=$(whiptail --title "Arch Linux Anywhere" --menu "Select your desired Nvidia driver: \n\n *Cancel if none" 15 60 4 \
 						"nvidia"       "Latest stable nvidia" \
 						"nvidia-340xx" "Legacy 340xx branch" \
 						"nvidia-304xx" "Legaxy 304xx branch" 3>&1 1>&2 2>&3)
@@ -570,7 +578,7 @@ graphics() {
 						DE=set
 					else
 						i=true
-						if (whiptail --title "Arch Linux Anywhere" --yesno "Would you like to install LightDM display manager?" 10 60) then
+						if (whiptail --title "Arch Linux Anywhere" --yesno "Would you like to install LightDM display manager? \n\n *Graphical login manager" 10 60) then
 							pacstrap "$ARCH" lightdm lightdm-gtk-greeter &> /dev/null &
 							pid=$! pri="$down" msg="Please wait while installing LightDM..." load
 							arch-chroot "$ARCH" systemctl enable lightdm.service &> /dev/null
@@ -601,7 +609,7 @@ graphics() {
 
 install_software() {
 	if (whiptail --title "Arch Linux Anywhere" --yesno "Would you like to install some common software?" 10 60) then
-		software=$(whiptail --title "Arch Linux Anywhere" --checklist "Choose your desired software: \n *Use spacebar to check/uncheck \n *press enter when finished" 20 60 10 \
+		software=$(whiptail --title "Arch Linux Anywhere" --checklist "Choose your desired software: \n\n *Use spacebar to check/uncheck software \n *Press enter when finished" 20 60 10 \
 					"cmus"        "CLI music player" OFF \
 					"conky"       "Light system monitor for X " OFF \
 					"htop"        "CLI process Info" OFF \
@@ -621,11 +629,11 @@ install_software() {
 
 reboot_system() {
 	if [ "$INSTALLED" == "true" ]; then	
-		if (whiptail --title "Arch Linux Anywhere" --yesno "Install process complete! Reboot now?" 10 60) then
+		if (whiptail --title "Arch Linux Anywhere" --yesno "Install process complete! Reboot now? \n\n *Select yes to reboot now \n *No to return to command line" 10 60) then
 			umount -R $ARCH
 			reboot
 		else
-			if (whiptail --title "Arch Linux Anywhere" --yesno "System fully installed \n *Would you like to unmount?" 10 60) then
+			if (whiptail --title "Arch Linux Anywhere" --yesno "System fully installed \n\n *Would you like to unmount?" 10 60) then
 				clear
 				umount -R "$ARCH"
 				exit
@@ -712,10 +720,10 @@ main_menu() {
 		"Reboot System") reboot_system ;;
 		"Exit Installer") 
 			if "$INSTALLED" ; then
-				whiptail --title "Arch Linux Anywhere" --msgbox "System fully installed \n Exiting arch installer" 10 60
+				whiptail --title "Arch Linux Anywhere" --msgbox "System fully installed \n\n Exiting arch installer" 10 60
 				exit
 			else
-				if (whiptail --title "Arch Linux Anywhere" --yesno "System not installed yet \n Are you sure you want to exit?" 10 60) then
+				if (whiptail --title "Arch Linux Anywhere" --yesno "System not installed yet \n\n Are you sure you want to exit?" 10 60) then
 					exit
 				else
 					main_menu
