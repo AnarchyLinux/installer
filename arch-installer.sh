@@ -102,9 +102,8 @@ prepare_drives() {
 	"Auto Partition Drive"           "-" \
 	"Auto partition encrypted LVM"   "-" \
 	"Manual Partition Drive"         "-" \
-	"Return To Menu"                 "-" \
-	"Back"                 "-" 3>&1 1>&2 2>&3)
-	if [ "$PART" == "Back" ]; then
+	"Return To Menu"                 "-" 3>&1 1>&2 2>&3)
+	if [ "$?" -gt "0" ]; then
 		prepare_drives
 	elif [ "$PART" == "Return To Menu" ]; then
 		main_menu
@@ -114,6 +113,12 @@ prepare_drives() {
 		else
 			prepare_drives
 		fi
+		FS=$(whiptail --title "Arch Linux Anywhere" --nocancel --menu "Select your desired filesystem type: \n *Default is ext4" 15 60 5 \
+		"ext4"      "-" \
+		"ext3"      "-" \
+		"btrfs"     "-" \
+		"jfs"       "-" \
+		"reiserfs"  "-" 3>&1 1>&2 2>&3)
 		SWAP=false
 		if (whiptail --title "Arch Linux Anywhere" --yesno "Create SWAP space?" 10 60) then
 			d_bytes=$(fdisk -l | grep -w "$DRIVE" | awk '{print $5}')
@@ -121,7 +126,7 @@ prepare_drives() {
 			swapped=false
 			while [ "$swapped" != "true" ]
 				do
-					SWAPSPACE=$(whiptail --inputbox "Specify your desired swap size: \n *(Align to M or G):" 10 35 "512M" 3>&1 1>&2 2>&3)
+					SWAPSPACE=$(whiptail --inputbox --nocancel "Specify your desired swap size: \n *(Align to M or G):" 10 35 "512M" 3>&1 1>&2 2>&3)
 					if [ "$?" -gt "0" ]; then
 						swapped=true
 					fi
@@ -181,19 +186,8 @@ prepare_drives() {
 				else
 					echo -e "o\ny\nn\n1\n\n+100M\n\nn\n2\n\n+1M\nEF02\nn\n3\n\n\n\nw\ny" | gdisk /dev/"$DRIVE" &> /dev/null
 				fi
-					BOOT="$(lsblk | grep "$DRIVE" |  awk '{ if (NR==2) print substr ($1,3) }')"	
-					ROOT="$(lsblk | grep "$DRIVE" |  awk '{ if (NR==4) print substr ($1,3) }')"
-					wipefs -a -q /dev/"$BOOT" &> /dev/null
-					wipefs -a -q /dev/"$ROOT" &> /dev/null
-					mkfs.ext4 -q /dev/"$BOOT" &> /dev/null
-					mkfs.ext4 -q /dev/"$ROOT" &> /dev/null &
-					pid=$! pri=1 msg="Please wait while creating filesystem" load
-					mount /dev/"$ROOT" "$ARCH"
-					if [ "$?" -eq "0" ]; then
-						mounted=true
-					fi
-					mkdir $ARCH/boot
-					mount /dev/"$BOOT" "$ARCH"/boot
+				BOOT="$(lsblk | grep "$DRIVE" |  awk '{ if (NR==2) print substr ($1,3) }')"	
+				ROOT="$(lsblk | grep "$DRIVE" |  awk '{ if (NR==4) print substr ($1,3) }')"
 			else
 				if "$SWAP" ; then
 					echo -e "o\nn\np\n1\n\n+100M\nn\np\n3\n\n+$SWAPSPACE\nt\n\n82\nn\np\n2\n\n\nw" | fdisk /dev/"$DRIVE" &> /dev/null
@@ -203,21 +197,27 @@ prepare_drives() {
 					swapon /dev/"$SWAP" &> /dev/null
 				else
 					echo -e "o\nn\np\n1\n\n+100M\nn\np\n2\n\n\nw" | fdisk /dev/"$DRIVE" &> /dev/null
-				fi
+				fi				
 				BOOT="$(lsblk | grep "$DRIVE" |  awk '{ if (NR==2) print substr ($1,3) }')"
 				ROOT="$(lsblk | grep "$DRIVE" |  awk '{ if (NR==3) print substr ($1,3) }')"
-				wipefs -a -q /dev/"$BOOT" &> /dev/null
-				wipefs -a -q /dev/"$ROOT" &> /dev/null
-				mkfs.ext4 -q /dev/"$BOOT" &> /dev/null
-				mkfs.ext4 -q /dev/"$ROOT" &> /dev/null &
-				pid=$! pri=1 msg="Please wait while creating filesystem..." load
-		        mount /dev/"$ROOT" "$ARCH"
-				if [ "$?" -eq "0" ]; then
-					mounted=true
-				fi
-				mkdir "$ARCH"/boot		
-				mount /dev/"$BOOT" "$ARCH"/boot
 			fi
+			wipefs -a -q /dev/"$BOOT" &> /dev/null
+			wipefs -a -q /dev/"$ROOT" &> /dev/null
+			if [ "$FS" == "jfs" ] || [ "$FS" == "reiserfs" ]; then
+				echo -e "y" | mkfs -t "$FS" /dev/"$BOOT" &> /dev/null
+				echo -e "y" | mkfs -t "$FS" /dev/"$ROOT" &> /dev/null &
+				pid=$! pri=1 msg="Please wait while creating $FS filesystem" load
+			else
+				mkfs -t "$FS" /dev/"$BOOT" &> /dev/null
+				mkfs -t "$FS" /dev/"$ROOT" &> /dev/null &
+				pid=$! pri=1 msg="Please wait while creating $FS filesystem" load
+			fi
+			mount /dev/"$ROOT" "$ARCH"
+			if [ "$?" -eq "0" ]; then
+				mounted=true
+			fi
+			mkdir $ARCH/boot
+			mount /dev/"$BOOT" "$ARCH"/boot
 		;;
 		"Auto partition encrypted LVM")
 			if "$GPT" ; then
@@ -252,15 +252,20 @@ prepare_drives() {
 				pid=$! pri=0.2 msg="Encrypting drive..." load
 				printf "$input" | cryptsetup open --type luks /dev/lvm/lvroot root -
 				input=""
-				mkfs -q -t ext4 /dev/mapper/root &> /dev/null &
-				pid=$! pri=1 msg="Please wait while creating filesystem..." load
+				if [ "$FS" == "jfs" ] || [ "$FS" == "reiserfs" ]; then
+					echo -e "y" | mkfs -t "$FS" /dev/mapper/root &> /dev/null &
+					pid=$! pri=1 msg="Please wait while creating $FS filesystem" load
+				else
+					mkfs -t "$FS" /dev/mapper/root &> /dev/null &
+					pid=$! pri=1 msg="Please wait while creating $FS filesystem..." load
+				fi
 				mount -t ext4 /dev/mapper/root "$ARCH"
 				if [ "$?" -eq "0" ]; then
 					mounted=true
 					crypted=true
 				fi
 				wipefs -a /dev/"$BOOT" &> /dev/null
-				mkfs -q -t ext4 /dev/"$BOOT" &> /dev/null
+				mkfs -t "$FS" /dev/"$BOOT" &> /dev/null
 				mkdir "$ARCH"/boot
 				mount -t ext4 /dev/"$BOOT" "$ARCH"/boot
 			else
@@ -278,9 +283,20 @@ prepare_drives() {
 			partition=$(lsblk | grep "$DRIVE" | grep -v "/\|1K" | sed "1d" | cut -c7- | awk '{print $1" "$4}')
 			ROOT=$(whiptail --nocancel --title "Arch Linux Anywhere" --menu "Please select your desired root partition first:" 15 60 5 $partition 3>&1 1>&2 2>&3)
 			if (whiptail --title "Arch Linux Anywhere" --yesno "This will create a new filesystem on the partition. \n\n *Are you sure you want to do this?" 10 60) then
+				FS=$(whiptail --title "Arch Linux Anywhere" --nocancel --menu "Select your desired filesystem type: \n\n *Default is ext4" 15 60 5 \
+				"ext4"      "-" \
+				"ext3"      "-" \
+				"btrfs"     "-" \
+				"jfs"       "-" \
+				"reiserfs"  "-" 3>&1 1>&2 2>&3)			
 				wipefs -a -q /dev/"$ROOT" &> /dev/null
-				mkfs.ext4 -q /dev/"$ROOT" &> /dev/null &
-				pid=$! pri=1 msg="Please wait while creating filesystem..." load
+				if [ "$FS" == "jfs" ] || [ "$FS" == "reiserfs" ]; then
+					echo -e "y" | mkfs -t "$FS" /dev/"$ROOT" &> /dev/null &
+					pid=$! pri=1 msg="Please wait while creating $FS filesystem..." load
+				else
+					mkfs -t "$FS" /dev/"$ROOT" &> /dev/null &
+					pid=$! pri=1 msg="Please wait while creating $FS filesystem..." load
+				fi
 				mount /dev/"$ROOT" "$ARCH"
 				if [ "$?" -eq "0" ]; then
 					mounted=true
@@ -308,9 +324,20 @@ prepare_drives() {
 							fi
 						else
 							if (whiptail --title "Arch Linux Anywhere" --yesno "Will create mount point $MNT with /dev/$new_mnt \n\n *Continue?" 10 60) then
+								FS=$(whiptail --title "Arch Linux Anywhere" --nocancel --menu "Select your desired filesystem type for $MNT: \n\n *Default is ext4" 15 60 5 \
+								"ext4"      "-" \
+								"ext3"      "-" \
+								"btrfs"     "-" \
+								"jfs"       "-" \
+								"reiserfs"  "-" 3>&1 1>&2 2>&3)
 								wipefs -a -q /dev/"$new_mnt"
-								mkfs.ext4 -q /dev/"$new_mnt" &> /dev/null &
-								pid=$! pri=1 msg="Please wait while creating filesystem..." load
+								if [ "$FS" == "jfs" ] || [ "$FS" == "reiserfs" ]; then
+									echo -e "y" | mkfs -t "$FS" /dev/"$new_mnt" &> /dev/null &
+									pid=$! pri=1 msg="Please wait while creating $FS filesystem..." load
+								else
+									mkfs -t "$FS" /dev/"$new_mnt" &> /dev/null &
+									pid=$! pri=1 msg="Please wait while creating $FS filesystem..." load
+								fi
 								mkdir "$ARCH"/"$MNT"
 								mount /dev/"$new_mnt" "$ARCH"/"$MNT"
 								points=$(echo  "$points" | grep -v "$MNT")
@@ -410,8 +437,8 @@ install_base() {
 configure_system() {
 	if [ "$INSTALLED" == "true" ]; then
 		if [ "$crypted" == "true" ]; then
-			echo "/dev/$BOOT              /boot           ext4         defaults        0       2" > "$ARCH"/etc/fstab
-			echo "/dev/mapper/root        /               ext4         defaults        0       1" >> "$ARCH"/etc/fstab
+			echo "/dev/$BOOT              /boot           $FS         defaults        0       2" > "$ARCH"/etc/fstab
+			echo "/dev/mapper/root        /               $FS         defaults        0       1" >> "$ARCH"/etc/fstab
 			echo "/dev/mapper/tmp         /tmp            tmpfs        defaults        0       0" >> "$ARCH"/etc/fstab
 			echo "tmp	       /dev/lvm/tmp	       /dev/urandom	tmp,cipher=aes-xts-plain64,size=256" >> "$ARCH"/etc/crypttab
 			if "$SWAP" ; then
