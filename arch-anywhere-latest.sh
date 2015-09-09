@@ -450,7 +450,6 @@ update_mirrors() {
 		sed -i 's/#//' /etc/pacman.d/mirrorlist.bak
 		rankmirrors -n 6 /etc/pacman.d/mirrorlist.bak > /etc/pacman.d/mirrorlist &
  		pid=$! pri=0.5 msg="Please wait while ranking mirrors" load
- 		mirrors_updated=true
 	fi
 	install_base
 }
