@@ -2,6 +2,7 @@
 
 ARCH=/mnt
 INSTALLED=false
+arch=$(uname -a | grep -o "x86_64\|i386\|i686")
 
 check_connection() {
 	clear
@@ -491,11 +492,21 @@ install_base() {
 							pacstrap "$ARCH" efibootmgr &> /dev/null &
 							pid=$! pri=0.5 msg="Installing efibootmgr..." load
 							if "$VBOX" ; then
-								arch-chroot "$ARCH" grub-install --efi-directory=/boot --target=x86_64-efi --bootloader-id=grub_uefi --recheck &> /dev/null &
-								pid=$! pri=0.5 msg="Installing grub to drive..." load
+								if [ "$arch" == "x86_64" ]; then
+									arch-chroot "$ARCH" grub-install --efi-directory=/boot --target=x86_64-efi --bootloader-id=grub_uefi --recheck &> /dev/null &
+									pid=$! pri=0.5 msg="Installing grub to drive..." load
+								else
+									arch-chroot "$ARCH" grub-install --efi-directory=/boot --target=i686-efi --bootloader-id=grub_uefi --recheck &> /dev/null &
+									pid=$! pri=0.5 msg="Installing grub to drive..." load
+								fi
 							else
-								arch-chroot "$ARCH" grub-install --efi-directory=/boot/efi --target=x86_64-efi --bootloader-id=grub_uefi --recheck &> /dev/null &
-								pid=$! pri=0.5 msg="Installing grub to drive..." load
+								if [ "$arch" == "x86_64" ]; then
+									arch-chroot "$ARCH" grub-install --efi-directory=/boot/efi --target=x86_64-efi --bootloader-id=grub_uefi --recheck &> /dev/null &
+									pid=$! pri=0.5 msg="Installing grub to drive..." load
+								else
+									arch-chroot "$ARCH" grub-install --efi-directory=/boot/efi --target=i686-efi --bootloader-id=grub_uefi --recheck &> /dev/null &
+									pid=$! pri=0.5 msg="Installing grub to drive..." load
+								fi
 							fi
 						else
 							arch-chroot "$ARCH" grub-install --recheck /dev/"$DRIVE" &> /dev/null &
@@ -566,7 +577,6 @@ configure_system() {
 		elif [ -n "$ZONE" ]; then
 			arch-chroot "$ARCH" ln -s /usr/share/zoneinfo/"$ZONE" /etc/localtime
 		fi
-		arch=$(uname -a | grep -o "x86_64\|i386\|i686")
 		if [ "$arch" == "x86_64" ]; then
 			if (whiptail --title "Arch Linux Anywhere" --yesno "64 bit architecture detected.\n\n *Add multilib repos to pacman.conf?" 10 60) then
 				sed -i '/\[multilib]$/ {
