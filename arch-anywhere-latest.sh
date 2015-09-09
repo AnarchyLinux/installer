@@ -723,7 +723,10 @@ graphics() {
 						fi
 					fi
 					case "$DE" in
-						"xfce4") start_term="exec startxfce4" ;;
+						"xfce4") start_term="exec startxfce4" 
+							if (whiptail --title "Arch Linux Installer" --yesno "Install xfce4 goodies?" 10 60) then
+								DE="xfce4 xfce4-goodies"
+							fi ;;
 						"gnome") start_term="exec gnome-session"
 							if (whiptail --title "Arch Linux Installer" --yesno "Install gnome extras?" 10 60) then
 								DE="gnome gnome-extra"
