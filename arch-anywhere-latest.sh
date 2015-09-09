@@ -154,14 +154,17 @@ prepare_drives() {
 				done
 		fi
 		UEFI=false
-		if (whiptail --title "Arch Linux Anywhere" --defaultno --yesno "Would you like to enable UEFI bios? \n\n *May not work on some systems \n *Enable with caution" 10 60) then
-			VBOX=false
-			if (whiptail --title "Arch Linux Anywhere" --defaultno --yesno "Is this a Virtualbox EFI guest install? \n\n *Are you installing Arch in Virtualbox? \n *Must have EFI setting on in virtualbox!" 10 60) then
-				VBOX=true
+		if [ "$arch" == "x86_64" ]; then
+			if (whiptail --title "Arch Linux Anywhere" --defaultno --yesno "Would you like to enable UEFI bios? \n\n *May not work on some systems \n *Enable with caution" 10 60) then
+				VBOX=false
+				if (whiptail --title "Arch Linux Anywhere" --defaultno --yesno "Is this a Virtualbox EFI guest install? \n\n *Are you installing Arch in Virtualbox? \n *Must have EFI setting on in virtualbox!" 10 60) then
+					VBOX=true
+				fi
+				GPT=true			
+				UEFI=true
 			fi
-			GPT=true			
-			UEFI=true
-		else
+		fi
+		if [ "$UEFI" == "false" ]; then
 			GPT=false			
 			if (whiptail --title "Arch Linux Anywhere" --defaultno --yesno "Would you like to use GPT partitioning?" 10 60) then
 				GPT=true
@@ -169,12 +172,14 @@ prepare_drives() {
 		fi
 	else
 		UEFI=false
-		if (whiptail --title "Arch Linux Anywhere" --defaultno --yesno "Would you like to enable UEFI bios? \n\n *May not work on some systems \n *Enable with caution" 10 60) then
-			VBOX=false
-			if (whiptail --title "Arch Linux Anywhere" --defaultno --yesno "Is this a Virtualbox EFI guest install? \n\n *Are you installing Arch in Virtualbox? \n *Must have EFI setting on in virtualbox!" 10 60) then
-				VBOX=true
+		if [ "$arch" == "x86_64" ]; then
+			if (whiptail --title "Arch Linux Anywhere" --defaultno --yesno "Would you like to enable UEFI bios? \n\n *May not work on some systems \n *Enable with caution" 10 60) then
+				VBOX=false
+				if (whiptail --title "Arch Linux Anywhere" --defaultno --yesno "Is this a Virtualbox EFI guest install? \n\n *Are you installing Arch in Virtualbox? \n *Must have EFI setting on in virtualbox!" 10 60) then
+					VBOX=true
+				fi
+				UEFI=true
 			fi
-			UEFI=true
 		fi
 		part_tool=$(whiptail --title "Arch Linux Anywhere" --menu "Please select your desired partitioning tool:" 15 60 5 \
 					"cfdisk"  "Best For Beginners" \
@@ -468,7 +473,6 @@ install_base() {
 			pacstrap "$ARCH" base base-devel libnewt &> /dev/null &
 			pid=$! pri="$down" msg="Please wait while we install Arch Linux... \n\n *This may take awhile" load
 			if [ "$?" -eq "0" ]; then
-				clear
 				INSTALLED=true
 			else
 				INSTALLED=false
@@ -492,21 +496,12 @@ install_base() {
 							pacstrap "$ARCH" efibootmgr &> /dev/null &
 							pid=$! pri=0.5 msg="Installing efibootmgr..." load
 							if "$VBOX" ; then
-								if [ "$arch" == "x86_64" ]; then
-									arch-chroot "$ARCH" grub-install --efi-directory=/boot --target=x86_64-efi --bootloader-id=grub_uefi --recheck &> /dev/null &
-									pid=$! pri=0.5 msg="Installing grub to drive..." load
-								else
-									arch-chroot "$ARCH" grub-install --efi-directory=/boot --target=i686-efi --bootloader-id=grub_uefi --recheck &> /dev/null &
-									pid=$! pri=0.5 msg="Installing grub to drive..." load
-								fi
+								arch-chroot "$ARCH" grub-install --efi-directory=/boot --target=x86_64-efi --bootloader-id=boot --recheck &> /dev/null &
+								pid=$! pri=0.5 msg="Installing grub to drive..." load
+								mv "$ARCH"/boot/EFI/boot/grubx64.efi "$ARCH"/boot/EFI/boot/bootx64.efi
 							else
-								if [ "$arch" == "x86_64" ]; then
-									arch-chroot "$ARCH" grub-install --efi-directory=/boot/efi --target=x86_64-efi --bootloader-id=grub_uefi --recheck &> /dev/null &
-									pid=$! pri=0.5 msg="Installing grub to drive..." load
-								else
-									arch-chroot "$ARCH" grub-install --efi-directory=/boot/efi --target=i686-efi --bootloader-id=grub_uefi --recheck &> /dev/null &
-									pid=$! pri=0.5 msg="Installing grub to drive..." load
-								fi
+								arch-chroot "$ARCH" grub-install --efi-directory=/boot/efi --target=x86_64-efi --bootloader-id=grub_uefi --recheck &> /dev/null &
+								pid=$! pri=0.5 msg="Installing grub to drive..." load
 							fi
 						else
 							arch-chroot "$ARCH" grub-install --recheck /dev/"$DRIVE" &> /dev/null &
