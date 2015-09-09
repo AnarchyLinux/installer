@@ -6,49 +6,38 @@ INSTALLED=false
 check_connection() {
 	clear
 	if ! (whiptail --title "Arch Linux Anywhere" --yesno "Welcome to the Arch Linux Anywhere installer! \n\n *Would you like to begin the install process?" 10 60) then
+		clear
 		exit
 	fi
 	ping -w 2 google.com &> /dev/null
 	if [ "$?" -gt "0" ]; then
-		connection=false		
-		cp /root/local-pacman.conf /etc/pacman.conf
-		down="0.7"
+		clear
+		echo "ERROR! No connection found!"
+		exit 1
 	else
-		connection=true
-		if (whiptail --title "Arch Linux Anywhere" --yesno "Connection detected. Would you like to install from the official repository? \n\n *Yes will ensure the latest packages, \n *No will ensure a fast install." 10 60) then
-			start=$(date +%s)
-			wget http://cachefly.cachefly.net/10mb.test &> /dev/null &
-			pid=$! pri=1 msg="Please wait while we test your connection..." load
-			end=$(date +%s)
-			diff=$((end-start))
-			case "$diff" in
-				[1-4]) down="1" ;;
-				[5-9]) down="2" ;;
-				1[0-9]) down="3" ;;
-				2[0-9]) down="4" ;;
-				3[0-9]) down="5" ;;
-				4[0-9]) down="6" ;;
-				5[0-9]) down="7" ;;
-				6[0-9]) down="8" ;;
-				[0-9][0-9][0-9]) 
-					if (whiptail --title "Arch Linux Anywhere" --yesno "Your connection is very slow, this might take a long time...\n\n *Continue with install?" 10 60) then
-						down="15"
-					else
-						exit
-					fi
-				;;
-				*) down="10" ;;
-			esac
-			if (whiptail --title "Arch Linux Anywhere" --yesno "Would you like to use the latest install script?\n\n *Contains extra packages and features only available with online install." 10 60) then
-				wget -O arch-anywhere-latest.sh 
-				sed -i -e '6,52d;s/check_connection/set_locale/' arch-anywhere-latest.sh
-				source arch-anywhere-latest.sh
-				exit
-			fi
-		else
-			cp /root/local-pacman.conf /etc/pacman.conf
-			down="1"
-		fi
+		start=$(date +%s)
+		wget http://cachefly.cachefly.net/10mb.test &> /dev/null &
+		pid=$! pri=1 msg="Please wait while we test your connection..." load
+		end=$(date +%s)
+		diff=$((end-start))
+		case "$diff" in
+			[1-4]) down="1" ;;
+			[5-9]) down="2" ;;
+			1[0-9]) down="3" ;;
+			2[0-9]) down="4" ;;
+			3[0-9]) down="5" ;;
+			4[0-9]) down="6" ;;
+			5[0-9]) down="7" ;;
+			6[0-9]) down="8" ;;
+			[0-9][0-9][0-9]) 
+				if (whiptail --title "Arch Linux Anywhere" --yesno "Your connection is very slow, this might take a long time...\n\n *Continue with install?" 10 60) then
+					down="15"
+				else
+					exit
+				fi
+			;;
+			*) down="10" ;;
+		esac
 	fi
 	set_locale
 }
@@ -453,17 +442,15 @@ prepare_drives() {
 }
 
 update_mirrors() {
-	if [ "$connection" == "true" ]; then
-		countries=$(echo -e "AT Austria\n AU  Australia\n BE Belgium\n BG Bulgaria\n BR Brazil\n BY Belarus\n CA Canada\n CL Chile \n CN China\n CO Columbia\n CZ Czech-Republic\n DK Denmark\n EE Estonia\n ES Spain\n FI Finland\n FR France\n GB United-Kingdom\n HU Hungary\n IE Ireland\n IL Isreal\n IN India\n IT Italy\n JP Japan\n KR Korea\n KZ Kazakhstan\n LK Sri-Lanka\n LU Luxembourg\n LV Lativia\n MK Macedonia\n NC New-Caledonia\n NL Netherlands\n NO Norway\n NZ New-Zealand\n PL Poland\n PT Portugal\n RO Romania\n RS Serbia\n RU Russia\n SE Sweden\n SG Singapore\n SK Slovakia\n TR Turkey\n TW Taiwan\n UA Ukraine\n US United-States\n UZ Uzbekistan\n VN Viet-Nam\n ZA South-Africa")
-		if (whiptail --title "Arch Linux Anywhere" --yesno "Would you like to update your mirrorlist now?" 10 60) then
-			code=$(whiptail --nocancel --title "Arch Linux Anywhere" --menu "Please select your country code:" 15 60 6 $countries 3>&1 1>&2 2>&3)
-			wget --append-output=/dev/null "https://www.archlinux.org/mirrorlist/?country=$code&protocol=http" -O /etc/pacman.d/mirrorlist.bak &
-			pid=$! pri=0.2 msg="Retreiving new mirrorlist..." load
-			sed -i 's/#//' /etc/pacman.d/mirrorlist.bak
-			rankmirrors -n 6 /etc/pacman.d/mirrorlist.bak > /etc/pacman.d/mirrorlist &
-  			pid=$! pri=0.5 msg="Please wait while ranking mirrors" load
-  			mirrors_updated=true
-		fi
+	countries=$(echo -e "AT Austria\n AU  Australia\n BE Belgium\n BG Bulgaria\n BR Brazil\n BY Belarus\n CA Canada\n CL Chile \n CN China\n CO Columbia\n CZ Czech-Republic\n DK Denmark\n EE Estonia\n ES Spain\n FI Finland\n FR France\n GB United-Kingdom\n HU Hungary\n IE Ireland\n IL Isreal\n IN India\n IT Italy\n JP Japan\n KR Korea\n KZ Kazakhstan\n LK Sri-Lanka\n LU Luxembourg\n LV Lativia\n MK Macedonia\n NC New-Caledonia\n NL Netherlands\n NO Norway\n NZ New-Zealand\n PL Poland\n PT Portugal\n RO Romania\n RS Serbia\n RU Russia\n SE Sweden\n SG Singapore\n SK Slovakia\n TR Turkey\n TW Taiwan\n UA Ukraine\n US United-States\n UZ Uzbekistan\n VN Viet-Nam\n ZA South-Africa")
+	if (whiptail --title "Arch Linux Anywhere" --yesno "Would you like to update your mirrorlist now?" 10 60) then
+		code=$(whiptail --nocancel --title "Arch Linux Anywhere" --menu "Please select your country code:" 15 60 6 $countries 3>&1 1>&2 2>&3)
+		wget --append-output=/dev/null "https://www.archlinux.org/mirrorlist/?country=$code&protocol=http" -O /etc/pacman.d/mirrorlist.bak &
+		pid=$! pri=0.2 msg="Retreiving new mirrorlist..." load
+		sed -i 's/#//' /etc/pacman.d/mirrorlist.bak
+		rankmirrors -n 6 /etc/pacman.d/mirrorlist.bak > /etc/pacman.d/mirrorlist &
+ 		pid=$! pri=0.5 msg="Please wait while ranking mirrors" load
+ 		mirrors_updated=true
 	fi
 	install_base
 }
