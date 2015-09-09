@@ -741,14 +741,14 @@ graphics() {
 							if (whiptail --title "Arch Linux Installer" --yesno "Install gnome extras?" 10 60) then
 								DE="gnome gnome-extra"
 								down=$((down+4))
-							fi
-						"cinnamon") start_term="exec cinnamon-session"						
-						"mate") start_term="exec mate-session" 
+							fi ;;
+						"cinnamon") start_term="exec cinnamon-session" ;;
+						"mate") start_term="exec mate-session"
 							if (whiptail --title "Arch Linux Installer" --yesno "Install mate extras?" 10 60) then
 								DE="mate mate-extra"
-							fi
-						"lxde" start_term="exec startlxde"
-						"fluxbox") start_term="exec startfluxbox"
+							fi ;;
+						"lxde") start_term="exec startlxde" ;;
+						"fluxbox") start_term="exec startfluxbox" ;;
 						"openbox") start_term="exec openbox-session" ;;
 						"awesome") start_term="exec awesome" ;;
 						"dwm") start_term="exec dwm" ;;
