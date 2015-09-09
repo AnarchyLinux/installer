@@ -122,12 +122,14 @@ prepare_drives() {
 		else
 			prepare_drives
 		fi
-		FS=$(whiptail --title "Arch Linux Anywhere" --nocancel --menu "Select your desired filesystem type: \n *Default is ext4" 15 60 5 \
-		"ext4"      "-" \
-		"ext3"      "-" \
-		"btrfs"     "-" \
-		"jfs"       "-" \
-		"reiserfs"  "-" 3>&1 1>&2 2>&3)
+		FS=$(whiptail --title "Arch Linux Anywhere" --nocancel --menu "Select your desired filesystem type: \n *Default is ext4" 15 60 6 \
+		"ext4"      "4th extended file system" \
+		"ext3"      "3rd extended file system" \
+		"ext2"      "2nd extended file system" \
+		"btrfs"     "B-Tree File System" \
+		"jfs"       "Journaled File System" \
+		"f2fs"      "Flash-Friendly File System" \
+		"reiserfs"  "Reiser File System" 3>&1 1>&2 2>&3)
 		SWAP=false
 		if (whiptail --title "Arch Linux Anywhere" --yesno "Create SWAP space?" 10 60) then
 			d_bytes=$(fdisk -l | grep -w "$DRIVE" | awk '{print $5}')
@@ -373,12 +375,14 @@ prepare_drives() {
 			fi
 			ROOT=$(whiptail --nocancel --title "Arch Linux Anywhere" --menu "Please select your desired root partition: \n\n *This is the main partition all others will be under" 15 60 5 $partition 3>&1 1>&2 2>&3)
 			if (whiptail --title "Arch Linux Anywhere" --yesno "This will create a new filesystem on the partition. \n\n *Are you sure you want to do this?" 10 60) then
-				FS=$(whiptail --title "Arch Linux Anywhere" --nocancel --menu "Select your desired filesystem type: \n\n *Default is ext4" 15 60 5 \
-				"ext4"      "-" \
-				"ext3"      "-" \
-				"btrfs"     "-" \
-				"jfs"       "-" \
-				"reiserfs"  "-" 3>&1 1>&2 2>&3)			
+				FS=$(whiptail --title "Arch Linux Anywhere" --nocancel --menu "Select your desired filesystem type: \n\n *Default is ext4" 15 60 6 \
+				"ext4"      "4th extended file system" \
+				"ext3"      "3rd extended file system" \
+				"ext2"      "2nd extended file system" \
+				"btrfs"     "B-Tree File System" \
+				"jfs"       "Journaled File System" \
+				"f2fs"      "Flash-Friendly File System" \
+				"reiserfs"  "Reiser File System" 3>&1 1>&2 2>&3)
 				wipefs -a -q /dev/"$ROOT" &> /dev/null
 				if [ "$FS" == "jfs" ] || [ "$FS" == "reiserfs" ]; then
 					echo -e "y" | mkfs -t "$FS" /dev/"$ROOT" &> /dev/null &
@@ -412,9 +416,9 @@ prepare_drives() {
 			until [ "$new_mnt" == "Done" ] 
 				do
 					partition=$(lsblk | grep "$DRIVE" | grep -v "/\|[SWAP]\|1K" | sed "1d" | cut -c7- | awk '{print $1"     "$4}')
-					new_mnt=$(whiptail --title "Arch Linux Anywhere" --nocancel --menu "Select a partition to create a mount point: \n\n *Select done when finished*" 15 60 5 $partition "Done" "Continue" 3>&1 1>&2 2>&3)
+					new_mnt=$(whiptail --title "Arch Linux Anywhere" --nocancel --menu "Select a partition to create a mount point: \n\n *Select done when finished*" 15 60 6 $partition "Done" "Continue" 3>&1 1>&2 2>&3)
 					if [ "$new_mnt" != "Done" ]; then
-						MNT=$(whiptail --title "Arch Linux Anywhere" --menu "Select a mount point for /dev/$new_mnt" 15 60 5 $points 3>&1 1>&2 2>&3)				
+						MNT=$(whiptail --title "Arch Linux Anywhere" --menu "Select a mount point for /dev/$new_mnt" 15 60 6 $points 3>&1 1>&2 2>&3)
 						if [ "$?" -gt "0" ]; then
 							:
 						elif [ "$MNT" == "SWAP" ]; then
@@ -425,12 +429,14 @@ prepare_drives() {
 							fi
 						else
 							if (whiptail --title "Arch Linux Anywhere" --yesno "Will create mount point $MNT with /dev/$new_mnt \n\n *Continue?" 10 60) then
-								FS=$(whiptail --title "Arch Linux Anywhere" --nocancel --menu "Select your desired filesystem type for $MNT: \n\n *Default is ext4" 15 60 5 \
-								"ext4"      "-" \
-								"ext3"      "-" \
-								"btrfs"     "-" \
-								"jfs"       "-" \
-								"reiserfs"  "-" 3>&1 1>&2 2>&3)
+								FS=$(whiptail --title "Arch Linux Anywhere" --nocancel --menu "Select your desired filesystem type for $MNT: \n\n *Default is ext4" 15 60 6 \
+								"ext4"      "4th extended file system" \
+								"ext3"      "3rd extended file system" \
+								"ext2"      "2nd extended file system" \
+								"btrfs"     "B-Tree File System" \
+								"jfs"       "Journaled File System" \
+								"f2fs"      "Flash-Friendly File System" \
+								"reiserfs"  "Reiser File System" 3>&1 1>&2 2>&3)
 								wipefs -a -q /dev/"$new_mnt"
 								if [ "$FS" == "jfs" ] || [ "$FS" == "reiserfs" ]; then
 									echo -e "y" | mkfs -t "$FS" /dev/"$new_mnt" &> /dev/null &

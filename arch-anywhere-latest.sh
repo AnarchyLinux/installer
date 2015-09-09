@@ -109,12 +109,14 @@ prepare_drives() {
 		else
 			prepare_drives
 		fi
-		FS=$(whiptail --title "Arch Linux Anywhere" --nocancel --menu "Select your desired filesystem type: \n *Default is ext4" 15 60 5 \
-		"ext4"      "-" \
-		"ext3"      "-" \
-		"btrfs"     "-" \
-		"jfs"       "-" \
-		"reiserfs"  "-" 3>&1 1>&2 2>&3)
+		FS=$(whiptail --title "Arch Linux Anywhere" --nocancel --menu "Select your desired filesystem type: \n *Default is ext4" 15 60 6 \
+		"ext4"      "4th extended file system" \
+		"ext3"      "3rd extended file system" \
+		"ext2"      "2nd extended file system" \
+		"btrfs"     "B-Tree File System" \
+		"jfs"       "Journaled File System" \
+		"f2fs"      "Flash-Friendly File System" \
+		"reiserfs"  "Reiser File System" 3>&1 1>&2 2>&3)
 		SWAP=false
 		if (whiptail --title "Arch Linux Anywhere" --yesno "Create SWAP space?" 10 60) then
 			d_bytes=$(fdisk -l | grep -w "$DRIVE" | awk '{print $5}')
@@ -360,12 +362,14 @@ prepare_drives() {
 			fi
 			ROOT=$(whiptail --nocancel --title "Arch Linux Anywhere" --menu "Please select your desired root partition: \n\n *This is the main partition all others will be under" 15 60 5 $partition 3>&1 1>&2 2>&3)
 			if (whiptail --title "Arch Linux Anywhere" --yesno "This will create a new filesystem on the partition. \n\n *Are you sure you want to do this?" 10 60) then
-				FS=$(whiptail --title "Arch Linux Anywhere" --nocancel --menu "Select your desired filesystem type: \n\n *Default is ext4" 15 60 5 \
-				"ext4"      "-" \
-				"ext3"      "-" \
-				"btrfs"     "-" \
-				"jfs"       "-" \
-				"reiserfs"  "-" 3>&1 1>&2 2>&3)			
+				FS=$(whiptail --title "Arch Linux Anywhere" --nocancel --menu "Select your desired filesystem type: \n\n *Default is ext4" 15 60 6 \
+				"ext4"      "4th extended file system" \
+				"ext3"      "3rd extended file system" \
+				"ext2"      "2nd extended file system" \
+				"btrfs"     "B-Tree File System" \
+				"jfs"       "Journaled File System" \
+				"f2fs"      "Flash-Friendly File System" \
+				"reiserfs"  "Reiser File System" 3>&1 1>&2 2>&3)
 				wipefs -a -q /dev/"$ROOT" &> /dev/null
 				if [ "$FS" == "jfs" ] || [ "$FS" == "reiserfs" ]; then
 					echo -e "y" | mkfs -t "$FS" /dev/"$ROOT" &> /dev/null &
@@ -399,9 +403,9 @@ prepare_drives() {
 			until [ "$new_mnt" == "Done" ] 
 				do
 					partition=$(lsblk | grep "$DRIVE" | grep -v "/\|[SWAP]\|1K" | sed "1d" | cut -c7- | awk '{print $1"     "$4}')
-					new_mnt=$(whiptail --title "Arch Linux Anywhere" --nocancel --menu "Select a partition to create a mount point: \n\n *Select done when finished*" 15 60 5 $partition "Done" "Continue" 3>&1 1>&2 2>&3)
+					new_mnt=$(whiptail --title "Arch Linux Anywhere" --nocancel --menu "Select a partition to create a mount point: \n\n *Select done when finished*" 15 60 6 $partition "Done" "Continue" 3>&1 1>&2 2>&3)
 					if [ "$new_mnt" != "Done" ]; then
-						MNT=$(whiptail --title "Arch Linux Anywhere" --menu "Select a mount point for /dev/$new_mnt" 15 60 5 $points 3>&1 1>&2 2>&3)				
+						MNT=$(whiptail --title "Arch Linux Anywhere" --menu "Select a mount point for /dev/$new_mnt" 15 60 6 $points 3>&1 1>&2 2>&3)				
 						if [ "$?" -gt "0" ]; then
 							:
 						elif [ "$MNT" == "SWAP" ]; then
@@ -412,12 +416,14 @@ prepare_drives() {
 							fi
 						else
 							if (whiptail --title "Arch Linux Anywhere" --yesno "Will create mount point $MNT with /dev/$new_mnt \n\n *Continue?" 10 60) then
-								FS=$(whiptail --title "Arch Linux Anywhere" --nocancel --menu "Select your desired filesystem type for $MNT: \n\n *Default is ext4" 15 60 5 \
-								"ext4"      "-" \
-								"ext3"      "-" \
-								"btrfs"     "-" \
-								"jfs"       "-" \
-								"reiserfs"  "-" 3>&1 1>&2 2>&3)
+								FS=$(whiptail --title "Arch Linux Anywhere" --nocancel --menu "Select your desired filesystem type for $MNT: \n\n *Default is ext4" 15 60 6 \
+								"ext4"      "4th extended file system" \
+								"ext3"      "3rd extended file system" \
+								"ext2"      "2nd extended file system" \
+								"btrfs"     "B-Tree File System" \
+								"jfs"       "Journaled File System" \
+								"f2fs"      "Flash-Friendly File System" \
+								"reiserfs"  "Reiser File System" 3>&1 1>&2 2>&3)
 								wipefs -a -q /dev/"$new_mnt"
 								if [ "$FS" == "jfs" ] || [ "$FS" == "reiserfs" ]; then
 									echo -e "y" | mkfs -t "$FS" /dev/"$new_mnt" &> /dev/null &
@@ -701,16 +707,19 @@ graphics() {
 				do
 					i=false
 					DE=$(whiptail --title "Arch Linux Installer" --menu "Select your desired enviornment:" 15 60 6 \
-					"xfce4"    "Light DE" \
-					"mate"     "Light DE" \
-					"lxde"     "Light DE" \
-					"gnome"    "Modern DE" \
-					"cinnamon" "Eligant DE" \
-					"openbox"  "Stacking WM" \
-					"awesome"  "Awesome WM" \
-					"i3"       "Tiling WM" \
-					"fluxbox"  "Light WM" \
-					"dwm"      "Dynamic WM" 3>&1 1>&2 2>&3)
+					"xfce4"         "Light DE" \
+					"mate"          "Light DE" \
+					"lxde"          "Light DE" \
+					"lxqt"          "Light DE" \
+					"gnome"         "Modern DE" \
+					"cinnamon"      "Eligant DE" \
+					"KDE plasma"    "Rich DE" \
+					"enlightenment" "Light WM/DE" \
+					"openbox"       "Stacking WM" \
+					"awesome"       "Awesome WM" \
+					"i3"            "Tiling WM" \
+					"fluxbox"       "Light WM" \
+					"dwm"           "Dynamic WM" 3>&1 1>&2 2>&3)
 					if [ "$?" -gt "0" ]; then
 						DE=set
 					else
@@ -736,7 +745,15 @@ graphics() {
 							if (whiptail --title "Arch Linux Installer" --yesno "Install mate extras?" 10 60) then
 								DE="mate mate-extra"
 							fi ;;
+						"KDE plasma") start_term="exec startkde"
+							if (whiptail --title "Arch Linux Installer" --defaultno --yesno "Install minimal plasma desktop?" 10 60) then
+								DE="kde-applications plasma-desktop"
+							else
+								DE="kde-applications plasma"
+							fi ;;
 						"lxde") start_term="exec startlxde" ;;
+						"lxqt") start_term="exec startlxqt" DE="lxqt oxygen-icons" ;;
+						"enlightenment") start_term="exec enlightenment_start" DE="enlightenment terminology" ;;
 						"fluxbox") start_term="exec startfluxbox" ;;
 						"openbox") start_term="exec openbox-session" ;;
 						"awesome") start_term="exec awesome" ;;
@@ -762,29 +779,38 @@ graphics() {
 install_software() {
 	if (whiptail --title "Arch Linux Anywhere" --yesno "Would you like to install some common software?" 10 60) then
 		software=$(whiptail --title "Arch Linux Anywhere" --checklist "Choose your desired software: \n\n *Use spacebar to check/uncheck software \n *Press enter when finished" 20 60 10 \
-					"openssh" "Secure Shell Deamon" ON \
-					"vim" 	  	  "Popular Text Editor" ON \
-					"zsh"     	  "The Z shell" ON \
-					"pulseaudio"  "Popular sound server" ON \
-					"wget"        "CLI web downloader" ON \
-					"tmux"    	  "Terminal multiplxer" OFF \
-					"screen"  	  "GNU Screen" OFF \
-					"netctl"	  "CLI Wireless Controls " OFF \
-					"htop"        "CLI process Info" OFF \
-					"mplayer"     "Media Player" OFF \
-					"screenfetch" "Display System Info" OFF \
-					"gparted"     "GNU Parted GUI" OFF \
-					"gimp"        "GNU Image Manipulation " OFF \
-					"firefox"     "Graphical Web Browser" OFF \
-					"chromium"    "Graphical Web Browser" OFF \
-					"libreoffice" "Open source word processing " OFF \
-					"vlc"         "GUI media player" OFF \
-					"virtualbox"  "Desktop virtuialization" OFF \
-					"lynx"        "Terminal Web Browser" OFF \
-					"ufw"         "Uncomplicated Firewall" OFF \
-					"apache"  	  "Web Server" OFF
-					"cmus"        "CLI music player" OFF \
-					"conky"       "Light system monitor for X " OFF  3>&1 1>&2 2>&3)
+					"openssh"     	       "Secure Shell Deamon" ON \
+					"pulseaudio"  	       "Popular sound server" ON \
+					"vim"         	       "Popular Text Editor" ON \
+					"wget"        	       "CLI web downloader" ON \
+					"zsh"         	       "The Z shell" ON \
+					"apache"  	  	       "Web Server" OFF \
+					"chromium"    	       "Graphical Web Browser" OFF \
+					"cmus"        	       "CLI music player" OFF \
+					"conky"       	       "Light system monitor for X" OFF \
+					"dropbox"              "Cloud file sharing" OFF \
+					"firefox"     	       "Graphical Web Browser" OFF \
+					"gimp"        	       "GNU Image Manipulation " OFF \
+					"git"                  "Source control managment" OFF \
+					"gparted"     	       "GNU Parted GUI" OFF \
+					"htop"        	       "CLI process Info" OFF \
+					"libreoffice" 	       "Open source word processing " OFF \
+					"lynx"        	       "Terminal Web Browser" OFF \
+					"mpd"         	       "Music Player Daemon" OFF \
+					"mplayer"     	       "Media Player" OFF \
+					"ncmpcpp"     	       "GUI client for MPD" OFF \
+					"nmap"                 "CLI network analyzer" OFF \
+					"pitivi"               "Video editing software" OFF \
+					"projectm"             "Music visuliaztions" OFF \
+					"screen"  	  	       "GNU Screen" OFF \
+					"screenfetch" 	       "Display System Info" OFF \
+					"simplescreenrecorder" "Screen capture software" OFF \
+					"tmux"    	  	   	   "Terminal multiplxer" OFF \
+					"transmission-cli" 	   "CLI torrent client" OFF \
+					"transmission-gtk"     "Graphical torrent client" OFF \
+					"virtualbox"  	       "Desktop virtuialization" OFF \
+					"vlc"         	   "GUI media player" OFF \
+					"ufw"         	   "Uncomplicated Firewall" OFF 3>&1 1>&2 2>&3)
 		download=$(echo "$software" | sed 's/\"//g')
     	pacstrap "$ARCH" ${download} &> /dev/null &
     	pid=$! pri=1 msg="Please wait while installing software..." load
