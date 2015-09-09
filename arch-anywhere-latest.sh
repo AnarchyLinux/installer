@@ -709,7 +709,7 @@ graphics() {
 					"openbox"  "Stacking WM" \
 					"awesome"  "Awesome WM" \
 					"i3"       "Tiling WM" \
-					"fluxbox"  "Light WM" \					
+					"fluxbox"  "Light WM" \
 					"dwm"      "Dynamic WM" 3>&1 1>&2 2>&3)
 					if [ "$?" -gt "0" ]; then
 						DE=set
@@ -784,7 +784,7 @@ install_software() {
 					"ufw"         "Uncomplicated Firewall" OFF \
 					"apache"  	  "Web Server" OFF
 					"cmus"        "CLI music player" OFF \
-					"conky"       "Light system monitor for X " OFF \ 3>&1 1>&2 2>&3)
+					"conky"       "Light system monitor for X " OFF  3>&1 1>&2 2>&3)
 		download=$(echo "$software" | sed 's/\"//g')
     	pacstrap "$ARCH" ${download} &> /dev/null &
     	pid=$! pri=1 msg="Please wait while installing software..." load
