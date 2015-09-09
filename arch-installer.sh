@@ -5,7 +5,7 @@ INSTALLED=false
 
 check_connection() {
 	clear
-	if ! (whiptail --title "Arch Linux Anywhere" --yesno "Welcome to the Arch Linux Anywhere installer! \n\n Would you like to begin the install process?" 10 60) then
+	if ! (whiptail --title "Arch Linux Anywhere" --yesno "Welcome to the Arch Linux Anywhere installer! \n\n *Would you like to begin the install process?" 10 60) then
 		exit
 	fi
 	ping -w 2 google.com &> /dev/null
@@ -15,10 +15,7 @@ check_connection() {
 		down="0.7"
 	else
 		connection=true
-		if (whiptail --title "Arch Linux Anywhere" --defaultno --yesno "Would you like to install from the local repository? \n\n *This will ensure an extremly fast install, \n  but may not contain the most updated packages." 10 60) then
-			cp /root/local-pacman.conf /etc/pacman.conf
-			down="1"
-		else
+		if (whiptail --title "Arch Linux Anywhere" --yesno "Connection detected. Would you like to install from the official repository? \n\n *Yes will ensure the latest packages, \n *No will ensure a fast install." 10 60) then
 			start=$(date +%s)
 			wget http://cachefly.cachefly.net/10mb.test &> /dev/null &
 			pid=$! pri=1 msg="Please wait while we test your connection..." load
@@ -42,6 +39,15 @@ check_connection() {
 				;;
 				*) down="10" ;;
 			esac
+			if (whiptail --title "Arch Linux Anywhere" --yesno "Would you like to use the latest install script?\n\n *Contains extra packages and features only available with online install." 10 60) then
+				wget -O arch-anywhere-latest.sh https://raw.githubusercontent.com/deadhead420/arch-linux-anywhere/master/arch-anywhere-latest.sh
+				sed -i -e '6,54d;s/check_connection/set_locale/' arch-anywhere-latest.sh
+				source arch-anywhere-latest.sh
+				exit
+			fi
+		else
+			cp /root/local-pacman.conf /etc/pacman.conf
+			down="1"
 		fi
 	fi
 	set_locale
@@ -154,17 +160,29 @@ prepare_drives() {
 					fi
 				done
 		fi
-#		UEFI=false
-#		if (whiptail --title "Arch Linux Anywhere" --defaultno --yesno "Would you like to enable UEFI bios?" 10 60) then
-#			GPT=true			
-#			UEFI=true
-#		else
-			GPT=false
+		UEFI=false
+		if (whiptail --title "Arch Linux Anywhere" --defaultno --yesno "Would you like to enable UEFI bios? \n\n *May not work on some systems \n *Enable with caution" 10 60) then
+			VBOX=false
+			if (whiptail --title "Arch Linux Anywhere" --defaultno --yesno "Is this a Virtualbox EFI guest install? \n\n *Are you installing in Virtualbox? \n *Must have EFI setting on in virtualbox!" 10 60) then
+				VBOX=true
+			fi
+			GPT=true			
+			UEFI=true
+		else
+			GPT=false			
 			if (whiptail --title "Arch Linux Anywhere" --defaultno --yesno "Would you like to use GPT partitioning?" 10 60) then
 				GPT=true
 			fi
-#		fi
+		fi
 	else
+		UEFI=false
+		if (whiptail --title "Arch Linux Anywhere" --defaultno --yesno "Would you like to enable UEFI bios? \n\n *May not work on some systems \n *Enable with caution" 10 60) then
+			VBOX=false
+			if (whiptail --title "Arch Linux Anywhere" --defaultno --yesno "Is this a Virtualbox EFI guest install? \n\n *Are you installing in Virtualbox? \n *Must have EFI setting on in virtualbox!" 10 60) then
+				VBOX=true
+			fi
+			UEFI=true
+		fi
 		part_tool=$(whiptail --title "Arch Linux Anywhere" --menu "Please select your desired partitioning tool:" 15 60 5 \
 					"cfdisk"  "Best For Beginners" \
 					"fdisk"   "CLI Partitioning" \
@@ -177,38 +195,70 @@ prepare_drives() {
 	case "$PART" in
 		"Auto Partition Drive")
 			if "$GPT" ; then
-				if "$SWAP" ; then
-					echo -e "o\ny\nn\n1\n\n+100M\n\nn\n2\n\n+1M\nEF02\nn\n4\n\n+$SWAPSPACE\n8200\nn\n3\n\n\n\nw\ny" | gdisk /dev/"$DRIVE" &> /dev/null
-					SWAP="$(lsblk | grep "$DRIVE" |  awk '{ if (NR==5) print substr ($1,3) }')"
-					wipefs -a -q /dev/"$SWAP"
-					mkswap /dev/"$SWAP" &> /dev/null
-					swapon /dev/"$SWAP" &> /dev/null
+				if "$UEFI" ; then
+					if "$SWAP" ; then
+						echo -e "n\n\n\n512M\nef00\nn\n3\n\n+512M\n8200\nn\n\n\n\n\nw\ny" | gdisk /dev/"$DRIVE" &> /dev/null &
+						pid=$! pri=0.3 msg="Partitioning /dev/$DRIVE..." load
+						SWAP="$(lsblk | grep "$DRIVE" |  awk '{ if (NR==4) print substr ($1,3) }')"
+						wipefs -a /dev/"$SWAP" &> /dev/null
+						mkswap /dev/"$SWAP" &> /dev/null
+						swapon /dev/"$SWAP" &> /dev/null
+					else
+						echo -e "n\n\n\n512M\nef00\nn\n\n\n\n\nw\ny" | gdisk /dev/"$DRIVE" &> /dev/null &
+						pid=$! pri=0.3 msg="Partitioning /dev/$DRIVE..." load
+					fi
+					BOOT="$(lsblk | grep "$DRIVE" |  awk '{ if (NR==2) print substr ($1,3) }')"
+					ROOT="$(lsblk | grep "$DRIVE" |  awk '{ if (NR==3) print substr ($1,3) }')"
 				else
-					echo -e "o\ny\nn\n1\n\n+100M\n\nn\n2\n\n+1M\nEF02\nn\n3\n\n\n\nw\ny" | gdisk /dev/"$DRIVE" &> /dev/null
+					if "$SWAP" ; then
+						echo -e "o\ny\nn\n1\n\n+100M\n\nn\n2\n\n+1M\nEF02\nn\n4\n\n+$SWAPSPACE\n8200\nn\n3\n\n\n\nw\ny" | gdisk /dev/"$DRIVE" &> /dev/null &
+						pid=$! pri=0.3 msg="Partitioning /dev/$DRIVE..." load
+						SWAP="$(lsblk | grep "$DRIVE" |  awk '{ if (NR==5) print substr ($1,3) }')"
+						wipefs -a /dev/"$SWAP" &> /dev/null
+						mkswap /dev/"$SWAP" &> /dev/null
+						swapon /dev/"$SWAP" &> /dev/null
+					else
+						echo -e "o\ny\nn\n1\n\n+100M\n\nn\n2\n\n+1M\nEF02\nn\n3\n\n\n\nw\ny" | gdisk /dev/"$DRIVE" &> /dev/null &
+						pid=$! pri=0.3 msg="Partitioning /dev/$DRIVE..." load
+					fi
+					BOOT="$(lsblk | grep "$DRIVE" |  awk '{ if (NR==2) print substr ($1,3) }')"	
+					ROOT="$(lsblk | grep "$DRIVE" |  awk '{ if (NR==4) print substr ($1,3) }')"
 				fi
-				BOOT="$(lsblk | grep "$DRIVE" |  awk '{ if (NR==2) print substr ($1,3) }')"	
-				ROOT="$(lsblk | grep "$DRIVE" |  awk '{ if (NR==4) print substr ($1,3) }')"
 			else
 				if "$SWAP" ; then
-					echo -e "o\nn\np\n1\n\n+100M\nn\np\n3\n\n+$SWAPSPACE\nt\n\n82\nn\np\n2\n\n\nw" | fdisk /dev/"$DRIVE" &> /dev/null
+					echo -e "o\nn\np\n1\n\n+100M\nn\np\n3\n\n+$SWAPSPACE\nt\n\n82\nn\np\n2\n\n\nw" | fdisk /dev/"$DRIVE" &> /dev/null &
+					pid=$! pri=0.3 msg="Partitioning /dev/$DRIVE..." load
 					SWAP="$(lsblk | grep "$DRIVE" |  awk '{ if (NR==4) print substr ($1,3) }')"					
-					wipefs -a -q /dev/"$SWAP"
+					wipefs -a /dev/"$SWAP" &> /dev/null
 					mkswap /dev/"$SWAP" &> /dev/null
 					swapon /dev/"$SWAP" &> /dev/null
 				else
-					echo -e "o\nn\np\n1\n\n+100M\nn\np\n2\n\n\nw" | fdisk /dev/"$DRIVE" &> /dev/null
+					echo -e "o\nn\np\n1\n\n+100M\nn\np\n2\n\n\nw" | fdisk /dev/"$DRIVE" &> /dev/null &
+					pid=$! pri=0.3 msg="Partitioning /dev/$DRIVE..." load
 				fi				
 				BOOT="$(lsblk | grep "$DRIVE" |  awk '{ if (NR==2) print substr ($1,3) }')"
 				ROOT="$(lsblk | grep "$DRIVE" |  awk '{ if (NR==3) print substr ($1,3) }')"
 			fi
-			wipefs -a -q /dev/"$BOOT" &> /dev/null
-			wipefs -a -q /dev/"$ROOT" &> /dev/null
+			wipefs -a /dev/"$BOOT" &> /dev/null
+			wipefs -a /dev/"$ROOT" &> /dev/null
 			if [ "$FS" == "jfs" ] || [ "$FS" == "reiserfs" ]; then
-				echo -e "y" | mkfs -t "$FS" /dev/"$BOOT" &> /dev/null
+				if "$UEFI" ; then
+					mkfs.vfat -F32 /dev/"$BOOT" &> /dev/null &
+					pid=$! pri=0.2 msg="Creating efi boot partition..." load
+				else
+					echo -e "y" | mkfs -t "$FS" /dev/"$BOOT" &> /dev/null &
+					pid=$! pri=0.2 msg="Creating boot partition..." load
+				fi
 				echo -e "y" | mkfs -t "$FS" /dev/"$ROOT" &> /dev/null &
 				pid=$! pri=1 msg="Please wait while creating $FS filesystem" load
 			else
-				mkfs -t "$FS" /dev/"$BOOT" &> /dev/null
+				if "$UEFI" ; then
+					mkfs.vfat -F32 /dev/"$BOOT" &> /dev/null &
+					pid=$! pri=0.2 msg="Creating efi boot partition..." load
+				else
+					mkfs -t "$FS" /dev/"$BOOT" &> /dev/null &
+					pid=$! pri=0.2 msg="Creating boot partition..." load
+				fi
 				mkfs -t "$FS" /dev/"$ROOT" &> /dev/null &
 				pid=$! pri=1 msg="Please wait while creating $FS filesystem" load
 			fi
@@ -216,16 +266,30 @@ prepare_drives() {
 			if [ "$?" -eq "0" ]; then
 				mounted=true
 			fi
-			mkdir $ARCH/boot
-			mount /dev/"$BOOT" "$ARCH"/boot
+			if [[ "$UEFI" == "true" && "$VBOX" == "false" ]] ; then
+				mkdir -p $ARCH/boot/efi
+				mount /dev/"$BOOT" "$ARCH"/boot/efi
+			else
+				mkdir $ARCH/boot
+				mount /dev/"$BOOT" "$ARCH"/boot
+			fi
 		;;
 		"Auto partition encrypted LVM")
 			if "$GPT" ; then
-				echo -e "o\ny\nn\n1\n\n+100M\n\nn\n2\n\n+1M\nEF02\nn\n3\n\n\n\nw\ny" | gdisk /dev/"$DRIVE" &> /dev/null
-				ROOT="$(lsblk | grep "$DRIVE" |  awk '{ if (NR==4) print substr ($1,3) }')"
-				BOOT="$(lsblk | grep "$DRIVE" |  awk '{ if (NR==2) print substr ($1,3) }')"
+				if "$UEFI" ; then
+					echo -e "n\n\n\n512M\nef00\nn\n\n\n\n\nw\ny" | gdisk /dev/"$DRIVE" &> /dev/null &
+					pid=$! pri=0.3 msg="Partitioning /dev/$DRIVE..." load
+					BOOT="$(lsblk | grep "$DRIVE" |  awk '{ if (NR==2) print substr ($1,3) }')"
+					ROOT="$(lsblk | grep "$DRIVE" |  awk '{ if (NR==3) print substr ($1,3) }')"
+				else
+					echo -e "o\ny\nn\n1\n\n+100M\n\nn\n2\n\n+1M\nEF02\nn\n3\n\n\n\nw\ny" | gdisk /dev/"$DRIVE" &> /dev/null &
+					pid=$! pri=0.3 msg="Partitioning /dev/$DRIVE..." load
+					ROOT="$(lsblk | grep "$DRIVE" |  awk '{ if (NR==4) print substr ($1,3) }')"
+					BOOT="$(lsblk | grep "$DRIVE" |  awk '{ if (NR==2) print substr ($1,3) }')"
+				fi
 			else
-				echo -e "o\nn\np\n1\n\n+100M\nn\np\n2\n\n\nw" | fdisk /dev/"$DRIVE" &> /dev/null
+				echo -e "o\nn\np\n1\n\n+100M\nn\np\n2\n\n\nw" | fdisk /dev/"$DRIVE" &> /dev/null &
+				pid=$! pri=0.3 msg="Partitioning /dev/$DRIVE..." load
 				BOOT="$(lsblk | grep "$DRIVE" |  awk '{ if (NR==2) print substr ($1,3) }')"
 				ROOT="$(lsblk | grep "$DRIVE" |  awk '{ if (NR==3) print substr ($1,3) }')"
 				
@@ -259,15 +323,26 @@ prepare_drives() {
 					mkfs -t "$FS" /dev/mapper/root &> /dev/null &
 					pid=$! pri=1 msg="Please wait while creating $FS filesystem..." load
 				fi
-				mount -t ext4 /dev/mapper/root "$ARCH"
+				mount /dev/mapper/root "$ARCH"
 				if [ "$?" -eq "0" ]; then
 					mounted=true
 					crypted=true
 				fi
 				wipefs -a /dev/"$BOOT" &> /dev/null
-				mkfs -t "$FS" /dev/"$BOOT" &> /dev/null
-				mkdir "$ARCH"/boot
-				mount -t ext4 /dev/"$BOOT" "$ARCH"/boot
+				if "$UEFI" ; then
+					mkfs.vfat -F32 /dev/"$BOOT" &> /dev/null &
+					pid=$! pri=0.2 msg="Creating efi boot partition..." load
+				else
+					mkfs -t "$FS" /dev/"$BOOT" &> /dev/null &
+					pid=$! pri=0.2 msg="Creating boot partition..." load
+				fi
+				if [[ "$UEFI" == "true" && "$VBOX" == "false" ]] ; then
+					mkdir -p $ARCH/boot/efi
+					mount /dev/"$BOOT" "$ARCH"/boot/efi
+				else
+					mkdir $ARCH/boot
+					mount /dev/"$BOOT" "$ARCH"/boot
+				fi
 			else
 				prepare_drives
 			fi
@@ -281,7 +356,19 @@ prepare_drives() {
 			fi
 			clear
 			partition=$(lsblk | grep "$DRIVE" | grep -v "/\|1K" | sed "1d" | cut -c7- | awk '{print $1" "$4}')
-			ROOT=$(whiptail --nocancel --title "Arch Linux Anywhere" --menu "Please select your desired root partition first:" 15 60 5 $partition 3>&1 1>&2 2>&3)
+			if "$UEFI" ; then
+				BOOT=$(whiptail --nocancel --title "Arch Linux Anywhere" --nocancel --menu "Please select your EFI boot partition: \n\n *Generally the first partition size of 512M-1024M" 15 60 5 $partition 3>&1 1>&2 2>&3)
+				i=$(<<<$BOOT cut -c4-)
+				if (whiptail --title "Arch Linux Anywhere" --yesno "This will create a fat32 formatted EFI partition. \n\n *Are you sure you want to do this?" 10 60) then
+					echo -e "t\n${i}\nEF00\nw\ny" | gdisk /dev/"$DRIVE" &> /dev/null
+					mkfs.vfat -F32 /dev/"$BOOT" &> /dev/null &
+					pid=$! pri=0.2 msg="Creating efi boot partition..." load
+				else
+					prepare_drives
+				fi
+				partition=$(lsblk | grep "$DRIVE" | grep -v "/\|1K\|$BOOT" | sed "1d" | cut -c7- | awk '{print $1" "$4}')
+			fi
+			ROOT=$(whiptail --nocancel --title "Arch Linux Anywhere" --menu "Please select your desired root partition: \n\n *This is the main partition all others will be under" 15 60 5 $partition 3>&1 1>&2 2>&3)
 			if (whiptail --title "Arch Linux Anywhere" --yesno "This will create a new filesystem on the partition. \n\n *Are you sure you want to do this?" 10 60) then
 				FS=$(whiptail --title "Arch Linux Anywhere" --nocancel --menu "Select your desired filesystem type: \n\n *Default is ext4" 15 60 5 \
 				"ext4"      "-" \
@@ -307,7 +394,18 @@ prepare_drives() {
 			else
 				prepare_drives
 			fi
-			points=$(echo -e "/boot   >\n/home   >\n/srv    >\n/usr    >\n/var    >\nSWAP   >")
+			if "$UEFI" ; then
+				points=$(echo -e "/home   >\n/srv    >\n/usr    >\n/var    >\nSWAP   >")
+				if ! "$VBOX" ; then
+					mkdir -p $ARCH/boot/efi
+					mount /dev/"$BOOT" "$ARCH"/boot/efi
+				else
+					mkdir $ARCH/boot
+					mount /dev/"$BOOT" "$ARCH"/boot
+				fi			
+			else
+				points=$(echo -e "/boot   >\n/home   >\n/srv    >\n/usr    >\n/var    >\nSWAP   >")
+			fi
 			until [ "$new_mnt" == "Done" ] 
 				do
 					partition=$(lsblk | grep "$DRIVE" | grep -v "/\|[SWAP]\|1K" | sed "1d" | cut -c7- | awk '{print $1"     "$4}')
@@ -383,10 +481,6 @@ install_base() {
 				main_menu
 			fi
 			genfstab -U -p "$ARCH" >> "$ARCH"/etc/fstab
-			intel=$(< /proc/cpuinfo grep vendor_id | grep -iq intel)
-			if [ -n "$intel" ]; then
-				pacstrap $ARCH intel-ucode
-			fi
 			while [ ! -n "$bootloader" ]
 				do
 					if (whiptail --title "Arch Linux Anywhere" --yesno "Install GRUB bootloader? \n\n *Required to make system bootable" 10 60) then
@@ -399,10 +493,28 @@ install_base() {
 						if [ "$crypted" == "true" ]; then
 							sed -i 's!quiet!cryptdevice=/dev/lvm/lvroot:root root=/dev/mapper/root!' "$ARCH"/etc/default/grub
 						fi
-						arch-chroot "$ARCH" grub-install --recheck /dev/"$DRIVE" &> /dev/null &
-						pid=$! pri=0.5 msg="Installing grub to drive..." load
+						if "$UEFI" ; then
+							pacstrap "$ARCH" efibootmgr &> /dev/null &
+							pid=$! pri=0.5 msg="Installing efibootmgr..." load
+							if "$VBOX" ; then
+								arch-chroot "$ARCH" grub-install --efi-directory=/boot --target=x86_64-efi --bootloader-id=grub_uefi --recheck &> /dev/null &
+								pid=$! pri=0.5 msg="Installing grub to drive..." load
+							else
+								arch-chroot "$ARCH" grub-install --efi-directory=/boot/efi --target=x86_64-efi --bootloader-id=grub_uefi --recheck &> /dev/null &
+								pid=$! pri=0.5 msg="Installing grub to drive..." load
+							fi
+						else
+							arch-chroot "$ARCH" grub-install --recheck /dev/"$DRIVE" &> /dev/null &
+							pid=$! pri=0.5 msg="Installing grub to drive..." load
+						fi
 						arch-chroot "$ARCH" grub-mkconfig -o /boot/grub/grub.cfg &> /dev/null &
 						pid=$! pri=0.5 msg="Configuring grub..." load
+						if "$UEFI" ; then
+							if ! "$crypted" ; then
+								arch-chroot "$ARCH" mkinitcpio -p linux &> /dev/null &
+								pid=$! pri=1 msg="Please wait while configuring kernel for uEFI..." load
+							fi
+						fi
 						bootloader=true
 					else
 						if (whiptail --title "Arch Linux Anywhere" --defaultno --yesno "Warning! System will not be bootable! \n\n *You will need to configure a bootloader yourself \n *Continue without a bootloader?" 10 60) then
@@ -451,8 +563,10 @@ configure_system() {
 		fi
 		sed -i -e "s/#$LOCALE/$LOCALE/" "$ARCH"/etc/locale.gen
 		echo LANG="$LOCALE" > "$ARCH"/etc/locale.conf
-		arch-chroot "$ARCH" locale-gen &> /dev/null
-		arch-chroot "$ARCH" loadkeys "$keyboard" &> /dev/null
+		arch-chroot "$ARCH" locale-gen &> /dev/null &
+		pid=$! pri=0.2 msg="Generating $LOCALE locale..." load
+		arch-chroot "$ARCH" loadkeys "$keyboard" &> /dev/null &
+		pid=$! pri=0.2 msg="Loading $keyboard keymap..." load
 		if [ -n "$SUB_SUBZONE" ]; then
 			arch-chroot "$ARCH" ln -s /usr/share/zoneinfo/"$ZONE"/"$SUBZONE"/"$SUB_SUBZONE" /etc/localtime
 		elif [ -n "$SUBZONE" ]; then
@@ -559,37 +673,42 @@ graphics() {
 	if (whiptail --title "Arch Linux Anywhere" --yesno "Would you like to install xorg-server now? \n\n *Select yes for a graphical interface" 10 60) then
 		pacstrap "$ARCH" xorg-server xorg-server-utils xorg-xinit xterm &> /dev/null &
 		pid=$! pri="$down" msg="Please wait while installing xorg-server..." load
-		if (whiptail --title "Arch Linux Anywhere" --yesno "Would you like to install graphics drivers now? \n\n *If no default drivers will be used." 10 60) then
-			until [ "$GPU" == "set" ]
-				do
-					i=false
-					GPU=$(whiptail --title "Arch Linux Anywhere" --menu "Select your desired drivers:" 15 60 5 \
-					"xf86-video-ati"         "AMD/ATI Graphics" \
-					"xf86-video-intel"       "Intel Graphics" \
-					"Nvidia"  			     "NVIDIA Graphics" \
-					"virtualbox-guest-utils" "VirtualBox Graphics" 3>&1 1>&2 2>&3)
-					if [ "$?" -gt "0" ]; then
-						if (whiptail --title "Arch Linux Anywhere" --yesno "Continue without installing graphics drivers? \n\n *Default drivers will be used." 10 60) then
+		if "$VBOX" ; then
+			pacstrap "$ARCH" virtualbox-guest-utils &> /dev/null &
+			pid=$! pri=1 msg="Please wait while installing virtualbox guest utils..." load
+		else
+			if (whiptail --title "Arch Linux Anywhere" --yesno "Would you like to install graphics drivers now? \n\n *If no default drivers will be used." 10 60) then
+				until [ "$GPU" == "set" ]
+					do
+						i=false
+						GPU=$(whiptail --title "Arch Linux Anywhere" --menu "Select your desired drivers:" 15 60 5 \
+						"xf86-video-ati"         "AMD/ATI Graphics" \
+						"xf86-video-intel"       "Intel Graphics" \
+						"Nvidia"  			     "NVIDIA Graphics" \
+						"virtualbox-guest-utils" "VirtualBox Graphics" 3>&1 1>&2 2>&3)
+						if [ "$?" -gt "0" ]; then
+							if (whiptail --title "Arch Linux Anywhere" --yesno "Continue without installing graphics drivers? \n\n *Default drivers will be used." 10 60) then
+								GPU=set
+							fi
+						else
+							i=true
+						fi
+						if [ "$GPU" == "Nvidia" ]; then
+							GPU=$(whiptail --title "Arch Linux Anywhere" --menu "Select your desired Nvidia driver: \n\n *Cancel if none" 15 60 4 \
+							"nvidia"       "Latest stable nvidia" \
+							"nvidia-340xx" "Legacy 340xx branch" \
+							"nvidia-304xx" "Legaxy 304xx branch" 3>&1 1>&2 2>&3)
+							if [ "$?" -gt "0" ]; then
+								i=false
+							fi
+						fi
+						if "$i" ; then
+							pacstrap "$ARCH" ${GPU} &> /dev/null &
+							pid=$! pri=1 msg="Please wait while installing graphics drivers..." load
 							GPU=set
 						fi
-					else
-						i=true
-					fi
-					if [ "$GPU" == "Nvidia" ]; then
-						GPU=$(whiptail --title "Arch Linux Anywhere" --menu "Select your desired Nvidia driver: \n\n *Cancel if none" 15 60 4 \
-						"nvidia"       "Latest stable nvidia" \
-						"nvidia-340xx" "Legacy 340xx branch" \
-						"nvidia-304xx" "Legaxy 304xx branch" 3>&1 1>&2 2>&3)
-						if [ "$?" -gt "0" ]; then
-							i=false
-						fi
-					fi
-					if "$i" ; then
-						pacstrap "$ARCH" ${GPU} &> /dev/null &
-						pid=$! pri=1 msg="Please wait while installing graphics drivers..." load
-						GPU=set
-					fi
-				done
+					done
+			fi
 		fi
 		if (whiptail --title "Arch Linux Anywhere" --yesno "Would you like to install a desktop or window manager?" 10 60) then
 			until [ "$DE" == "set" ]
@@ -680,18 +799,18 @@ reboot_system() {
 }
 
 load() {
-	{       int="1"
-                while (true)
-    	            do
-    	                proc=$(ps | grep "$pid")
-    	                if [ "$?" -gt "0" ]; then break; fi
-    	                sleep $pri
-    	                echo $int
-    	                int=$((int+1))
-    	            done
-                echo 100
-                sleep 1
-                } | whiptail --title "Arch Linux Anywhere" --gauge "$msg" 8 78 0
+	{	int="1"
+        	while (true)
+    	    	do
+    	            proc=$(ps | grep "$pid")
+    	            if [ "$?" -gt "0" ]; then break; fi
+    	            sleep $pri
+    	            echo $int
+    	            int=$((int+1))
+    	        done
+            echo 100
+            sleep 1
+	} | whiptail --title "Arch Linux Anywhere" --gauge "$msg" 8 78 0
 }
 
 main_menu() {
