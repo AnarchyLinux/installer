@@ -716,15 +716,20 @@ graphics() {
 					i=false
 					DE=$(whiptail --title  "Arch Linux Installer" --menu "Select your desired enviornment:" 15 60 6 \
 					"xfce4"    "Light DE" \
+					"mate"     "Light DE" \
+					"lxde"     "Light DE" \
+					"gnome"    "Modern DE" \
+					"cinnamon" "Eligant DE" \
 					"openbox"  "Stacking WM" \
 					"awesome"  "Awesome WM" \
 					"i3"       "Tiling WM" \
+					"fluxbox"  "Light WM" \					
 					"dwm"      "Dynamic WM" 3>&1 1>&2 2>&3)
 					if [ "$?" -gt "0" ]; then
 						DE=set
 					else
 						i=true
-						if (whiptail --title "Arch Linux Anywhere" --yesno "Would you like to install LightDM display manager? \n\n *Graphical login manager" 10 60) then
+						if (whiptail --title "Arch Linux Anywhere" --yesno "Would you like to install LightDM display manager? \n\n *If no use the command 'startx' to access desktop" 10 60) then
 							pacstrap "$ARCH" lightdm lightdm-gtk-greeter &> /dev/null &
 							pid=$! pri="$down" msg="Please wait while installing LightDM..." load
 							arch-chroot "$ARCH" systemctl enable lightdm.service &> /dev/null
@@ -732,6 +737,18 @@ graphics() {
 					fi
 					case "$DE" in
 						"xfce4") start_term="exec startxfce4" ;;
+						"gnome") start_term="exec gnome-session"
+							if (whiptail --title "Arch Linux Installer" --yesno "Install gnome extras?" 10 60) then
+								DE="gnome gnome-extra"
+								down=$((down+4))
+							fi
+						"cinnamon") start_term="exec cinnamon-session"						
+						"mate") start_term="exec mate-session" 
+							if (whiptail --title "Arch Linux Installer" --yesno "Install mate extras?" 10 60) then
+								DE="mate mate-extra"
+							fi
+						"lxde" start_term="exec startlxde"
+						"fluxbox") start_term="exec startfluxbox"
 						"openbox") start_term="exec openbox-session" ;;
 						"awesome") start_term="exec awesome" ;;
 						"dwm") start_term="exec dwm" ;;
@@ -756,16 +773,29 @@ graphics() {
 install_software() {
 	if (whiptail --title "Arch Linux Anywhere" --yesno "Would you like to install some common software?" 10 60) then
 		software=$(whiptail --title "Arch Linux Anywhere" --checklist "Choose your desired software: \n\n *Use spacebar to check/uncheck software \n *Press enter when finished" 20 60 10 \
-					"cmus"        "CLI music player" OFF \
-					"conky"       "Light system monitor for X " OFF \
-					"htop"        "CLI process Info" OFF \
-					"lynx"        "CLI web browser" OFF \
-					"midori"	  "Light web browser" OFF \
-					"netctl"      "Network controls" OFF \
-					"openssh"     "Secure Shell Deamon" OFF \
+					"openssh" "Secure Shell Deamon" ON \
+					"vim" 	  	  "Popular Text Editor" ON \
+					"zsh"     	  "The Z shell" ON \
 					"pulseaudio"  "Popular sound server" ON \
-					"screenfetch" "Display System Info" ON \
-					"zsh"         "The Z Shell" OFF 3>&1 1>&2 2>&3)
+					"wget"        "CLI web downloader" ON \
+					"tmux"    	  "Terminal multiplxer" OFF \
+					"screen"  	  "GNU Screen" OFF \
+					"netctl"	  "CLI Wireless Controls " OFF \
+					"htop"        "CLI process Info" OFF \
+					"mplayer"     "Media Player" OFF \
+					"screenfetch" "Display System Info" OFF \
+					"gparted"     "GNU Parted GUI" OFF \
+					"gimp"        "GNU Image Manipulation " OFF \
+					"firefox"     "Graphical Web Browser" OFF \
+					"chromium"    "Graphical Web Browser" OFF \
+					"libreoffice" "Open source word processing " OFF \
+					"vlc"         "GUI media player" OFF \
+					"virtualbox"  "Desktop virtuialization" OFF \
+					"lynx"        "Terminal Web Browser" OFF \
+					"ufw"         "Uncomplicated Firewall" OFF \
+					"apache"  	  "Web Server" OFF
+					"cmus"        "CLI music player" OFF \
+					"conky"       "Light system monitor for X " OFF \ 3>&1 1>&2 2>&3)
 		download=$(echo "$software" | sed 's/\"//g')
     	pacstrap "$ARCH" ${download} &> /dev/null &
     	pid=$! pri=1 msg="Please wait while installing software..." load
