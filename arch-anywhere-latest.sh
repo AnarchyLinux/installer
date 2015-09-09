@@ -460,6 +460,7 @@ install_base() {
 			pacstrap "$ARCH" base base-devel libnewt &> /dev/null &
 			pid=$! pri="$down" msg="Please wait while we install Arch Linux... \n\n *This may take awhile" load
 			if [ "$?" -eq "0" ]; then
+				clear
 				INSTALLED=true
 			else
 				INSTALLED=false
@@ -700,7 +701,7 @@ graphics() {
 			until [ "$DE" == "set" ]
 				do
 					i=false
-					DE=$(whiptail --title  "Arch Linux Installer" --menu "Select your desired enviornment:" 15 60 6 \
+					DE=$(whiptail --title "Arch Linux Installer" --menu "Select your desired enviornment:" 15 60 6 \
 					"xfce4"    "Light DE" \
 					"mate"     "Light DE" \
 					"lxde"     "Light DE" \
