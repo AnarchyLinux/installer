@@ -103,6 +103,7 @@ prepare_drives() {
 	elif [ "$PART" == "Return To Menu" ]; then
 		main_menu
 	elif [ "$PART" == "Auto partition encrypted LVM" ] || [ "$PART" == "Auto Partition Drive" ]; then
+		crypted=false
 		if (whiptail --title "Arch Linux Anywhere" --defaultno --yesno "WARNING! Will erase all data on drive /dev/$DRIVE! \n\n *Would you like to contunue?" 10 60) then
 			sgdisk --zap-all "$DRIVE" &> /dev/null
 		else
@@ -152,7 +153,7 @@ prepare_drives() {
 		UEFI=false
 		if (whiptail --title "Arch Linux Anywhere" --defaultno --yesno "Would you like to enable UEFI bios? \n\n *May not work on some systems \n *Enable with caution" 10 60) then
 			VBOX=false
-			if (whiptail --title "Arch Linux Anywhere" --defaultno --yesno "Is this a Virtualbox EFI guest install? \n\n *Are you installing in Virtualbox? \n *Must have EFI setting on in virtualbox!" 10 60) then
+			if (whiptail --title "Arch Linux Anywhere" --defaultno --yesno "Is this a Virtualbox EFI guest install? \n\n *Are you installing Arch in Virtualbox? \n *Must have EFI setting on in virtualbox!" 10 60) then
 				VBOX=true
 			fi
 			GPT=true			
@@ -167,7 +168,7 @@ prepare_drives() {
 		UEFI=false
 		if (whiptail --title "Arch Linux Anywhere" --defaultno --yesno "Would you like to enable UEFI bios? \n\n *May not work on some systems \n *Enable with caution" 10 60) then
 			VBOX=false
-			if (whiptail --title "Arch Linux Anywhere" --defaultno --yesno "Is this a Virtualbox EFI guest install? \n\n *Are you installing in Virtualbox? \n *Must have EFI setting on in virtualbox!" 10 60) then
+			if (whiptail --title "Arch Linux Anywhere" --defaultno --yesno "Is this a Virtualbox EFI guest install? \n\n *Are you installing Arch in Virtualbox? \n *Must have EFI setting on in virtualbox!" 10 60) then
 				VBOX=true
 			fi
 			UEFI=true
@@ -496,11 +497,9 @@ install_base() {
 						fi
 						arch-chroot "$ARCH" grub-mkconfig -o /boot/grub/grub.cfg &> /dev/null &
 						pid=$! pri=0.5 msg="Configuring grub..." load
-						if "$UEFI" ; then
-							if ! "$crypted" ; then
-								arch-chroot "$ARCH" mkinitcpio -p linux &> /dev/null &
-								pid=$! pri=1 msg="Please wait while configuring kernel for uEFI..." load
-							fi
+						if [[ "$UEFI" == "true" && "$crypted" == "false" ]] ; then
+							arch-chroot "$ARCH" mkinitcpio -p linux &> /dev/null &
+							pid=$! pri=1 msg="Please wait while configuring kernel for uEFI..." load
 						fi
 						bootloader=true
 					else

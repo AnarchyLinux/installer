@@ -17,32 +17,34 @@ check_connection() {
 		connection=true
 		if (whiptail --title "Arch Linux Anywhere" --yesno "Connection detected. Would you like to install from the official repository? \n\n *Yes will ensure the latest packages, \n *No will ensure a fast install." 10 60) then
 			start=$(date +%s)
-			wget http://cachefly.cachefly.net/10mb.test &> /dev/null &
+			wget -O /dev/null http://cachefly.cachefly.net/10mb.test &> /dev/null &
 			pid=$! pri=1 msg="Please wait while we test your connection..." load
 			end=$(date +%s)
 			diff=$((end-start))
 			case "$diff" in
-				[1-4]) down="1" ;;
-				[5-9]) down="2" ;;
-				1[0-9]) down="3" ;;
-				2[0-9]) down="4" ;;
-				3[0-9]) down="5" ;;
-				4[0-9]) down="6" ;;
-				5[0-9]) down="7" ;;
-				6[0-9]) down="8" ;;
+				[1-4]) export down="1" ;;
+				[5-9]) export down="2" ;;
+				1[0-9]) export down="3" ;;
+				2[0-9]) export down="4" ;;
+				3[0-9]) export down="5" ;;
+				4[0-9]) export down="6" ;;
+				5[0-9]) export down="7" ;;
+				6[0-9]) export down="8" ;;
 				[0-9][0-9][0-9]) 
 					if (whiptail --title "Arch Linux Anywhere" --yesno "Your connection is very slow, this might take a long time...\n\n *Continue with install?" 10 60) then
-						down="15"
+						export down="15"
 					else
 						exit
 					fi
 				;;
-				*) down="10" ;;
+				*) export down="10" ;;
 			esac
-			if (whiptail --title "Arch Linux Anywhere" --yesno "Would you like to use the latest install script?\n\n *Contains extra packages and features only available with online install." 10 60) then
-				wget -O arch-anywhere-latest.sh https://raw.githubusercontent.com/deadhead420/arch-linux-anywhere/master/arch-anywhere-latest.sh
-				sed -i -e '6,54d;s/check_connection/set_locale/' arch-anywhere-latest.sh
-				source arch-anywhere-latest.sh
+			if (whiptail --title "Arch Linux Anywhere" --yesno "Would you like to use the latest install script?\n\n *Contains extra packages and features only available \n  with online install." 10 60) then
+				wget -O arch-anywhere-latest.sh https://raw.githubusercontent.com/deadhead420/arch-linux-anywhere/master/arch-anywhere-latest.sh &> /dev/null &
+				pid=$! pri=1 msg="Fetching latest script..." load
+				sed -i -e '6,43d;s/check_connection/set_locale/' arch-anywhere-latest.sh
+				chmod +x arch-anywhere-latest.sh
+				./arch-anywhere-latest.sh
 				exit
 			fi
 		else
@@ -114,6 +116,7 @@ prepare_drives() {
 	elif [ "$PART" == "Return To Menu" ]; then
 		main_menu
 	elif [ "$PART" == "Auto partition encrypted LVM" ] || [ "$PART" == "Auto Partition Drive" ]; then
+		crypted=false
 		if (whiptail --title "Arch Linux Anywhere" --defaultno --yesno "WARNING! Will erase all data on drive /dev/$DRIVE! \n\n *Would you like to contunue?" 10 60) then
 			sgdisk --zap-all "$DRIVE" &> /dev/null
 		else
@@ -163,7 +166,7 @@ prepare_drives() {
 		UEFI=false
 		if (whiptail --title "Arch Linux Anywhere" --defaultno --yesno "Would you like to enable UEFI bios? \n\n *May not work on some systems \n *Enable with caution" 10 60) then
 			VBOX=false
-			if (whiptail --title "Arch Linux Anywhere" --defaultno --yesno "Is this a Virtualbox EFI guest install? \n\n *Are you installing in Virtualbox? \n *Must have EFI setting on in virtualbox!" 10 60) then
+			if (whiptail --title "Arch Linux Anywhere" --defaultno --yesno "Is this a Virtualbox EFI guest install? \n\n *Are you installing Arch in Virtualbox? \n *Must have EFI setting on in virtualbox!" 10 60) then
 				VBOX=true
 			fi
 			GPT=true			
@@ -178,7 +181,7 @@ prepare_drives() {
 		UEFI=false
 		if (whiptail --title "Arch Linux Anywhere" --defaultno --yesno "Would you like to enable UEFI bios? \n\n *May not work on some systems \n *Enable with caution" 10 60) then
 			VBOX=false
-			if (whiptail --title "Arch Linux Anywhere" --defaultno --yesno "Is this a Virtualbox EFI guest install? \n\n *Are you installing in Virtualbox? \n *Must have EFI setting on in virtualbox!" 10 60) then
+			if (whiptail --title "Arch Linux Anywhere" --defaultno --yesno "Is this a Virtualbox EFI guest install? \n\n *Are you installing Arch in Virtualbox? \n *Must have EFI setting on in virtualbox!" 10 60) then
 				VBOX=true
 			fi
 			UEFI=true
@@ -509,11 +512,9 @@ install_base() {
 						fi
 						arch-chroot "$ARCH" grub-mkconfig -o /boot/grub/grub.cfg &> /dev/null &
 						pid=$! pri=0.5 msg="Configuring grub..." load
-						if "$UEFI" ; then
-							if ! "$crypted" ; then
-								arch-chroot "$ARCH" mkinitcpio -p linux &> /dev/null &
-								pid=$! pri=1 msg="Please wait while configuring kernel for uEFI..." load
-							fi
+						if [[ "$UEFI" == "true" && "$crypted" == "false" ]] ; then
+							arch-chroot "$ARCH" mkinitcpio -p linux &> /dev/null &
+							pid=$! pri=1 msg="Please wait while configuring kernel for uEFI..." load
 						fi
 						bootloader=true
 					else
@@ -658,8 +659,8 @@ configure_network() {
 				arch-chroot "$ARCH" systemctl enable dhcpcd.service &> /dev/null
 			fi
 		#Wireless tools
-			if (whiptail --title "Arch Linux Anywhere" --yesno "Install wireless tools and WPA supplicant? \n\n *Necessary if using wifi" 10 60) then
-				pacstrap "$ARCH" wireless_tools wpa_supplicant &> /dev/null &
+			if (whiptail --title "Arch Linux Anywhere" --yesno "Install wireless tools, netctl, and WPA supplicant? \n\n *Necessary if using wifi \n *Provides wifi-menu" 10 60) then
+				pacstrap "$ARCH" wireless_tools wpa_supplicant netclt dialog wpa_actiond &> /dev/null &
 				pid=$! pri=0.5 msg="Installing wireless tools and WPA supplicant..." load
 			fi
 			graphics
@@ -714,7 +715,7 @@ graphics() {
 			until [ "$DE" == "set" ]
 				do
 					i=false
-					DE=$(whiptail --title  "Arch Linux Installer" --menu "Select your desired enviornment:" 15 60 6 \
+					DE=$(whiptail --title "Arch Linux Installer" --menu "Select your desired enviornment:" 15 60 6 \
 					"xfce4"    "Light DE" \
 					"openbox"  "Stacking WM" \
 					"awesome"  "Awesome WM" \
@@ -761,7 +762,7 @@ install_software() {
 					"htop"        "CLI process Info" OFF \
 					"lynx"        "CLI web browser" OFF \
 					"midori"	  "Light web browser" OFF \
-					"netctl"      "Network controls" OFF \
+					"vim"         "Popular CLI text editor" OFF \
 					"openssh"     "Secure Shell Deamon" OFF \
 					"pulseaudio"  "Popular sound server" ON \
 					"screenfetch" "Display System Info" ON \
