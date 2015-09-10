@@ -49,7 +49,7 @@ check_connection() {
 			if (whiptail --title "Arch Linux Anywhere" --yesno "Would you like to use the latest install script?\n\n *Contains extra packages and features only available \n  with online install." 10 60) then
 				wget -O arch-anywhere-latest.sh https://raw.githubusercontent.com/deadhead420/arch-linux-anywhere/master/arch-anywhere-latest.sh &> /dev/null &
 				pid=$! pri=1 msg="Fetching latest script..." load
-				sed -i -e '12,48d;s/check_connection/set_locale/' arch-anywhere-latest.sh
+				sed -i -e '13,49d;s/check_connection/set_locale/' arch-anywhere-latest.sh
 				chmod +x arch-anywhere-latest.sh
 				./arch-anywhere-latest.sh
 				exit
