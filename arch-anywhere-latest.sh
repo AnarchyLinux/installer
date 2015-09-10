@@ -263,7 +263,7 @@ prepare_drives() {
 				while [ "$input" != "$input_chk" ]
             		do
             	    	input=$(whiptail --passwordbox --nocancel "Please enter a new password for /dev/$DRIVE \n\n *Note this password is used to unencrypt your drive at boot" 8 78 --title "Arch Linux Anywhere" 3>&1 1>&2 2>&3)
-            	    	input_chk=$(whiptail --passwordbox --nocancel "New /dev/$DRIVE password again" 8 78 --title "Arch Linux Anywhere" 3>&1 1>&2 2>&3)
+            	    	input_chk=$(whiptail --passwordbox --nocancel "Enter your new password for /dev/$DRIVE again..." 8 78 --title "Arch Linux Anywhere" 3>&1 1>&2 2>&3)
             	        if [ "$input" != "$input_chk" ]; then
             	        	whiptail --title "Arch Linux Anywhere" --msgbox "Passwords do not match, please try again." 10 60
             	        fi
@@ -543,18 +543,16 @@ configure_system() {
 set_hostname() {
 	hostname=$(whiptail --nocancel --inputbox "Set your system hostname:" 10 40 "arch" 3>&1 1>&2 2>&3)
 	echo "$hostname" > "$ARCH"/etc/hostname
-	user=root
-	echo -e 'user='$user'
-		input=default
+	echo -e 'input=default
 		while [ "$input" != "$input_chk" ]
             		do
-                   			 input=$(whiptail --passwordbox --nocancel "Please enter a new $user password" 8 78 --title "Arch Linux Anywhere" 3>&1 1>&2 2>&3)
-            		         input_chk=$(whiptail --passwordbox --nocancel "New $user password again" 8 78 --title "Arch Linux Anywhere" 3>&1 1>&2 2>&3)
-                   			 if [ "$input" != "$input_chk" ]; then
-                      		      whiptail --title "Arch Linux Anywhere" --msgbox "Passwords do not match, please try again." 10 60
-                     		 fi
-         		        done
-    			echo -e "$input\n$input\n" | passwd "$user" &> /dev/null' > /mnt/root/set.sh
+                   		input=$(whiptail --passwordbox --nocancel "Please enter a new root password \n\n *Set a strong password here" 8 78 --title "Arch Linux Anywhere" 3>&1 1>&2 2>&3)
+            			input_chk=$(whiptail --passwordbox --nocancel "New root password again" 8 78 --title "Arch Linux Anywhere" 3>&1 1>&2 2>&3)
+                   		 if [ "$input" != "$input_chk" ]; then
+                      	      whiptail --title "Arch Linux Anywhere" --msgbox "Passwords do not match, please try again." 10 60
+                     	 fi
+         		    done
+    			echo -e "$input\n$input\n" | passwd &> /dev/null' > /mnt/root/set.sh
 	chmod +x "$ARCH"/root/set.sh
 	arch-chroot "$ARCH" ./root/set.sh
 	rm "$ARCH"/root/set.sh
@@ -569,7 +567,7 @@ add_user() {
 		main_menu
 	fi
 	if (whiptail --title "Arch Linux Anywhere" --yesno "Create a new user account now?" 10 60) then
-		user=$(whiptail --nocancel --inputbox "Set username: \n\n *No spaces or special characters! \n *letters, numbers 0-9" 10 60 "" 3>&1 1>&2 2>&3)
+		user=$(whiptail --nocancel --inputbox "Set username: \n\n *Letters and numbers only \n *No spaces or special characters!" 10 60 "" 3>&1 1>&2 2>&3)
 	else
 		graphics
 	fi
@@ -596,7 +594,7 @@ add_user() {
 	
 graphics() {
 	if (whiptail --title "Arch Linux Anywhere" --yesno "Would you like to install xorg-server now? \n\n *Select yes for a graphical interface" 10 60) then
-		GPU=$(whiptail --title "Arch Linux Anywhere" --menu "Select your desired graphics driver: \n\n *If unsure use mesa-libgl or default \n *If installing in VirtualBox select guest-utils" 15 60 6 \
+		GPU=$(whiptail --title "Arch Linux Anywhere" --menu "Select your desired graphics driver: \n\n *If unsure use mesa-libgl or default \n *If installing in VirtualBox select guest-utils" 17 60 6 \
 		"Default"				 "Auto detect" \
 		"mesa-libgl"             "Mesa OpenSource" \
 		"Nvidia"                 "NVIDIA Graphics" \
@@ -692,7 +690,7 @@ graphics() {
 				esac
 				if "$i" ; then
 					pacstrap "$ARCH" $(echo "$DE") &> /dev/null &
-					pid=$! pri="$down" msg="Please wait while installing desktop..." load
+					pid=$! pri="$down" msg="Please wait while installing desktop... \n\n *This may take awhile" load
 					if [ "$user_added" == "true" ]; then
 						echo "$start_term" > "$ARCH"/home/"$user"/.xinitrc
 					else
@@ -706,7 +704,7 @@ graphics() {
 }
 
 install_software() {
-	if (whiptail --title "Arch Linux Anywhere" --yesno "Would you like to install some common software?" 10 60) then
+	if (whiptail --title "Arch Linux Anywhere" --yesno "Would you like to install some common software? \n\n *Select yes for a list of additional software" 10 60) then
 		software=$(whiptail --title "Arch Linux Anywhere" --checklist "Choose your desired software: \n\n *Use spacebar to check/uncheck software \n *Press enter when finished" 20 60 10 \
 					"openssh"     	       "Secure Shell Deamon" ON \
 					"pulseaudio"  	       "Popular sound server" ON \

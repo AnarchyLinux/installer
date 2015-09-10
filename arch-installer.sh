@@ -20,7 +20,7 @@ check_connection() {
 	if [ "$?" -gt "0" ]; then
 		connection=false		
 		cp /root/local-pacman.conf /etc/pacman.conf
-		down="0.7"
+		down="1"
 	else
 		connection=true
 		if (whiptail --title "Arch Linux Anywhere" --yesno "Connection detected. Would you like to install from the official repository? \n\n *Yes will ensure the latest packages \n *No will ensure a fast install." 11 60) then
@@ -47,14 +47,12 @@ check_connection() {
 				;;
 				*) export down="10" ;;
 			esac
-			if (whiptail --title "Arch Linux Anywhere" --yesno "Would you like to use the latest install script?\n\n *Contains extra packages and features only available \n  with the online install." 10 60) then
-				wget -O arch-anywhere-latest.sh https://raw.githubusercontent.com/deadhead420/arch-linux-anywhere/master/arch-anywhere-latest.sh &> /dev/null &
-				pid=$! pri=1 msg="Fetching latest script..." load
-				sed -i -e '14,50d;s/check_connection/set_locale/' arch-anywhere-latest.sh
-				chmod +x arch-anywhere-latest.sh
-				./arch-anywhere-latest.sh
-				exit
-			fi
+			wget -O arch-anywhere-latest.sh https://raw.githubusercontent.com/deadhead420/arch-linux-anywhere/master/arch-anywhere-latest.sh &> /dev/null &
+			pid=$! pri=1 msg="Fetching latest installer..." load
+			sed -i -e '14,50d;s/check_connection/set_locale/' arch-anywhere-latest.sh
+			chmod +x arch-anywhere-latest.sh
+			./arch-anywhere-latest.sh
+			exit
 		else
 			cp /root/local-pacman.conf /etc/pacman.conf
 			down="1"
@@ -510,7 +508,7 @@ configure_system() {
 	fi
 	if "$crypted" ; then
 		if "$UEFI" ; then 
-			echo "/dev/$BOOT              /boot           vfat         defaults        0       2" > "$ARCH"/etc/fstab
+			echo "/dev/$BOOT              /boot           vfat         rw,relatime,fmask=0022,dmask=0022,codepage=437,iocharset=iso8859-1,shortname=mixed,errors=remount-ro        0       2" > "$ARCH"/etc/fstab
 		else 
 			echo "/dev/$BOOT              /boot           $FS         defaults        0       2" > "$ARCH"/etc/fstab
 		fi
@@ -559,18 +557,17 @@ configure_system() {
 set_hostname() {
 	hostname=$(whiptail --nocancel --inputbox "Set your system hostname:" 10 40 "arch" 3>&1 1>&2 2>&3)
 	echo "$hostname" > "$ARCH"/etc/hostname
-	user=root
 	echo -e 'user='$user'
 		input=default
 		while [ "$input" != "$input_chk" ]
             		do
-                   			 input=$(whiptail --passwordbox --nocancel "Please enter a new $user password" 8 78 --title "Arch Linux Anywhere" 3>&1 1>&2 2>&3)
-            		         input_chk=$(whiptail --passwordbox --nocancel "New $user password again" 8 78 --title "Arch Linux Anywhere" 3>&1 1>&2 2>&3)
+                   			 input=$(whiptail --passwordbox --nocancel "Please enter a new root password \n\n *Set a strong password here" 9 78 --title "Arch Linux Anywhere" 3>&1 1>&2 2>&3)
+            		         input_chk=$(whiptail --passwordbox --nocancel "Enter new root password again" 8 78 --title "Arch Linux Anywhere" 3>&1 1>&2 2>&3)
                    			 if [ "$input" != "$input_chk" ]; then
                       		      whiptail --title "Arch Linux Anywhere" --msgbox "Passwords do not match, please try again." 10 60
                      		 fi
          		        done
-    			echo -e "$input\n$input\n" | passwd "$user" &> /dev/null' > /mnt/root/set.sh
+    			echo -e "$input\n$input\n" | passwd &> /dev/null' > /mnt/root/set.sh
 	chmod +x "$ARCH"/root/set.sh
 	arch-chroot "$ARCH" ./root/set.sh
 	rm "$ARCH"/root/set.sh
@@ -585,7 +582,7 @@ add_user() {
 		main_menu
 	fi
 	if (whiptail --title "Arch Linux Anywhere" --yesno "Create a new user account now?" 10 60) then
-		user=$(whiptail --nocancel --inputbox "Set username:" 10 40 "" 3>&1 1>&2 2>&3)
+		user=$(whiptail --nocancel --inputbox "Set username: \n\n *Letters and numbers only \n *No spaces or special characters!" 10 60 "" 3>&1 1>&2 2>&3)
 	else
 		graphics
 	fi
@@ -595,7 +592,7 @@ add_user() {
 			           while [ "$input" != "$input_chk" ]
             				do
                    					 input=$(whiptail --passwordbox --nocancel "Please enter a new password for $user" 8 78 --title "Arch Linux Anywhere" 3>&1 1>&2 2>&3)
-            				         input_chk=$(whiptail --passwordbox --nocancel "New password for $user again" 8 78 --title "Arch Linux Anywhere" 3>&1 1>&2 2>&3)
+            				         input_chk=$(whiptail --passwordbox --nocancel "Enter new password for $user again" 8 78 --title "Arch Linux Anywhere" 3>&1 1>&2 2>&3)
                    					 if [ "$input" != "$input_chk" ]; then
                       				      whiptail --title "Arch Linux Anywhere" --msgbox "Passwords do not match, please try again." 10 60
                      				 fi
@@ -612,7 +609,7 @@ add_user() {
 	
 graphics() {
 	if (whiptail --title "Arch Linux Anywhere" --yesno "Would you like to install xorg-server now? \n\n *Select yes for a graphical interface" 10 60) then
-		GPU=$(whiptail --title "Arch Linux Anywhere" --menu "Select your desired graphics driver: \n\n *If unsure use mesa-libgl or default \n *If installing in VirtualBox select guest-utils" 15 60 6 \
+		GPU=$(whiptail --title "Arch Linux Anywhere" --menu "Select your desired graphics driver: \n\n *If unsure use mesa-libgl or default \n *If installing in VirtualBox select guest-utils" 17 60 6 \
 		"Default"				 "Auto detect" \
 		"mesa-libgl"             "Mesa OpenSource" \
 		"Nvidia"                 "NVIDIA Graphics" \
@@ -676,7 +673,7 @@ graphics() {
 				esac
 				if "$i" ; then
 					pacstrap "$ARCH" "$DE" &> /dev/null &
-					pid=$! pri="$down" msg="Please wait while installing desktop..." load
+					pid=$! pri="$down" msg="Please wait while installing desktop... \n\n *This may take awhile" load
 					if [ "$user_added" == "true" ]; then
 						echo "$start_term" > "$ARCH"/home/"$user"/.xinitrc
 					else
@@ -690,7 +687,7 @@ graphics() {
 }
 
 install_software() {
-	if (whiptail --title "Arch Linux Anywhere" --yesno "Would you like to install some common software?" 10 60) then
+	if (whiptail --title "Arch Linux Anywhere" --yesno "Would you like to install some common software? \n\n *Select yes for a list of additional software" 10 60) then
 		software=$(whiptail --title "Arch Linux Anywhere" --checklist "Choose your desired software: \n\n *Use spacebar to check/uncheck software \n *Press enter when finished" 20 60 10 \
 					"cmus"        "CLI music player" OFF \
 					"conky"       "Light system monitor for X " OFF \
