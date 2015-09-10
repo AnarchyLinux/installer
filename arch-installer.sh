@@ -571,13 +571,13 @@ configure_system() {
 	arch-chroot "$ARCH" loadkeys "$keyboard" &> /dev/null &
 	pid=$! pri=0.2 msg="Loading $keyboard keymap..." load
 	if [ -n "$SUB_SUBZONE" ]; then
-		arch-chroot "$ARCH" ln -s /usr/share/zoneinfo/"$ZONE"/"$SUBZONE"/"$SUB_SUBZONE" /etc/localtime
+		arch-chroot "$ARCH" ln -s /usr/share/zoneinfo/"$ZONE"/"$SUBZONE"/"$SUB_SUBZONE" /etc/localtime &
 		pid=$! pri=0.2 msg="Setting timezone $ZONE $SUBZONE $SUB_SUBZONE..." load
 	elif [ -n "$SUBZONE" ]; then
-		arch-chroot "$ARCH" ln -s /usr/share/zoneinfo/"$ZONE"/"$SUBZONE" /etc/localtime
+		arch-chroot "$ARCH" ln -s /usr/share/zoneinfo/"$ZONE"/"$SUBZONE" /etc/localtime &
 		pid=$! pri=0.2 msg="Setting timezone $ZONE $SUBZONE..." load
 	elif [ -n "$ZONE" ]; then
-		arch-chroot "$ARCH" ln -s /usr/share/zoneinfo/"$ZONE" /etc/localtime
+		arch-chroot "$ARCH" ln -s /usr/share/zoneinfo/"$ZONE" /etc/localtime &
 		pid=$! pri=0.2 msg="Setting timezone $ZONE..." load
 	fi
 	if [ "$arch" == "x86_64" ]; then
