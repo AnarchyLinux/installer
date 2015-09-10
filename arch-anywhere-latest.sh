@@ -628,10 +628,10 @@ configure_network() {
 
 graphics() {
 	if (whiptail --title "Arch Linux Anywhere" --yesno "Would you like to install xorg-server now? \n\n *Select yes for a graphical interface" 10 60) then
-		pacstrap "$ARCH" xorg-server xorg-server-utils xorg-xinit xterm &> /dev/null &
+		pacstrap "$ARCH" xorg-server xorg-server-utils xorg-xinit xterm mesa-libgl &> /dev/null &
 		pid=$! pri="$down" msg="Please wait while installing xorg-server..." load
 		if "$VBOX" ; then
-			pacstrap "$ARCH" virtualbox-guest-utils mesa-libgl &> /dev/null &
+			pacstrap "$ARCH" virtualbox-guest-utils &> /dev/null &
 			pid=$! pri=1 msg="Please wait while installing virtualbox guest utils..." load
 			echo -e "vboxguest\nvboxsf\nvboxvideo" > "$ARCH"/etc/modules-load.d/virtualbox.conf
 		else
@@ -660,7 +660,6 @@ graphics() {
 								i=false
 							fi
 						elif [ "$GPU" == "virtualbox-guest-utils" ]; then
-							GPU="virtualbox-guest-utils mesa-libgl"
 							echo -e "vboxguest\nvboxsf\nvboxvideo" > "$ARCH"/etc/modules-load.d/virtualbox.conf
 						fi
 						if "$i" ; then
