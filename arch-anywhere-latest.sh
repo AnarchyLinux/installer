@@ -704,23 +704,25 @@ graphics() {
 					case "$DE" in
 						"xfce4") start_term="exec startxfce4" 
 							if (whiptail --title "Arch Linux Installer" --yesno "Install xfce4 goodies?" 10 60) then
-								DE="xfce4 xfce4-goodies"
+								DE_EXTRA="xfce4-goodies"
 							fi ;;
 						"gnome") start_term="exec gnome-session"
 							if (whiptail --title "Arch Linux Installer" --yesno "Install gnome extras?" 10 60) then
-								DE="gnome gnome-extra"
+								DE_EXTRA="gnome-extra"
 								down=$((down+4))
 							fi ;;
 						"cinnamon") start_term="exec cinnamon-session" ;;
 						"mate") start_term="exec mate-session"
 							if (whiptail --title "Arch Linux Installer" --yesno "Install mate extras?" 10 60) then
-								DE="mate mate-extra"
+								DE_EXTRA="mate-extra"
 							fi ;;
-						"KDE plasma") start_term="exec startkde"
+						"KDE plasma") start_term="exec startkde" DE="kde-applications"
 							if (whiptail --title "Arch Linux Installer" --defaultno --yesno "Install minimal plasma desktop?" 10 60) then
-								DE="kde-applications plasma-desktop"
+								DE_EXTRA="plasma-desktop"
+								down=$((down+3))
 							else
-								DE="kde-applications plasma"
+								DE_EXTRA="plasma"
+								down=$((down+4))
 							fi ;;
 						"lxde") start_term="exec startlxde" ;;
 						"lxqt") start_term="exec startlxqt" DE="lxqt oxygen-icons" ;;
@@ -732,8 +734,13 @@ graphics() {
 						"i3") start_term="exec i3" ;;
 					esac
 					if "$i" ; then
-						pacstrap "$ARCH" $(<<<"$DE") &> /dev/null &
-						pid=$! pri="$down" msg="Please wait while installing desktop..." load
+						if [ -n "$DE_EXTRA" ]; then
+							pacstrap "$ARCH" "$DE" "$DE_EXTRA" &> /dev/null &
+							pid=$! pri="$down" msg="Please wait while installing desktop... \n\n *This may take awhile..." load
+						else
+							pacstrap "$ARCH" "$DE" &> /dev/null &
+							pid=$! pri="$down" msg="Please wait while installing desktop..." load
+						fi
 						if [ "$user_added" == "true" ]; then
 							echo "$start_term" > "$ARCH"/home/"$user"/.xinitrc
 						else
