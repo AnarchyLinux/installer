@@ -7,6 +7,7 @@ bootloader=false
 system_configured=false
 hostname_set=false
 user_added=false
+network_configured=false
 arch=$(uname -a | grep -o "x86_64\|i386\|i686")
 
 check_connection() {
@@ -644,12 +645,12 @@ configure_network() {
 
 graphics() {
 	if (whiptail --title "Arch Linux Anywhere" --yesno "Would you like to install xorg-server now? \n\n *Select yes for a graphical interface" 10 60) then
-		pacstrap "$ARCH" xorg-server xorg-server-utils xorg-xinit xterm &> /dev/null &
+		pacstrap "$ARCH" xorg-server xorg-server-utils xorg-xinit xterm mesa-libgl &> /dev/null &
 		pid=$! pri="$down" msg="Please wait while installing xorg-server..." load
 		if "$VBOX" ; then
-			pacstrap "$ARCH" virtualbox-guest-utils mesa-libgl &> /dev/null &
+			pacstrap "$ARCH" virtualbox-guest-utils &> /dev/null &
 			pid=$! pri=1 msg="Please wait while installing virtualbox guest utils..." load
-			echo "vboxguest\nvboxsf\nvboxvideo" > "$ARCH"/etc/modules-load.d/virtualbox.conf
+			echo -e "vboxguest\nvboxsf\nvboxvideo" > "$ARCH"/etc/modules-load.d/virtualbox.conf
 		else
 			if (whiptail --title "Arch Linux Anywhere" --yesno "Would you like to install graphics drivers now? \n\n *If no default drivers will be used. \n *Virtualbox guests select yes" 10 60) then
 				until [ "$GPU" == "set" ]
@@ -676,11 +677,10 @@ graphics() {
 								i=false
 							fi
 						elif [ "$GPU" == "virtualbox-guest-utils" ]; then
-							GPU="virtualbox-guest-utils mesa-libgl"
-							echo "vboxguest\nvboxsf\nvboxvideo" > "$ARCH"/etc/modules-load.d/virtualbox.conf
+							echo -e "vboxguest\nvboxsf\nvboxvideo" > "$ARCH"/etc/modules-load.d/virtualbox.conf
 						fi
 						if "$i" ; then
-							pacstrap "$ARCH" ${GPU} &> /dev/null &
+							pacstrap "$ARCH" "$GPU" &> /dev/null &
 							pid=$! pri=1 msg="Please wait while installing graphics drivers..." load
 							GPU=set
 						fi
@@ -715,7 +715,7 @@ graphics() {
 						"i3") start_term="exec i3" ;;
 					esac
 					if "$i" ; then
-						pacstrap "$ARCH" ${DE} &> /dev/null &
+						pacstrap "$ARCH" $(<<<"$DE") &> /dev/null &
 						pid=$! pri="$down" msg="Please wait while installing desktop..." load
 						if [ "$user_added" == "true" ]; then
 							echo "$start_term" > "$ARCH"/home/"$user"/.xinitrc

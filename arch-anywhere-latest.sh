@@ -7,6 +7,7 @@ bootloader=false
 system_configured=false
 hostname_set=false
 user_added=false
+network_configured=false
 arch=$(uname -a | grep -o "x86_64\|i386\|i686")
 
 check_connection() {
@@ -731,7 +732,7 @@ graphics() {
 						"i3") start_term="exec i3" ;;
 					esac
 					if "$i" ; then
-						pacstrap "$ARCH" "$DE" &> /dev/null &
+						pacstrap "$ARCH" $(<<<"$DE") &> /dev/null &
 						pid=$! pri="$down" msg="Please wait while installing desktop..." load
 						if [ "$user_added" == "true" ]; then
 							echo "$start_term" > "$ARCH"/home/"$user"/.xinitrc
