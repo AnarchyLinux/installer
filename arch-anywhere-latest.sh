@@ -428,13 +428,7 @@ install_base() {
 				pid=$! pri="$down" msg="Please wait while we install Arch Linux... \n\n *This may take awhile" load
 			fi	
 			genfstab -U -p "$ARCH" >> "$ARCH"/etc/fstab
-			if [ "$?" -eq "0" ]; then
-				INSTALLED=true
-			else
-				INSTALLED=false
-				whiptail --title "Arch Linux Anywhere" --msgbox "An error occured returning to menu... \n\n *Fstab was not generated!" 10 60
-				main_menu
-			fi		
+			INSTALLED=true
 			while [ ! -n "$loader" ]
 				do
 					if (whiptail --title "Arch Linux Anywhere" --yesno "Install GRUB bootloader? \n\n *Required to make system bootable" 10 60) then
@@ -500,7 +494,7 @@ configure_system() {
 	fi
 	if "$crypted" ; then
 		if "$UEFI" ; then
-			echo "/dev/$BOOT              /boot           vfat         defaults        0       2" > "$ARCH"/etc/fstab
+			echo "/dev/$BOOT              /boot           vfat         rw,relatime,fmask=0022,dmask=0022,codepage=437,iocharset=iso8859-1,shortname=mixed,errors=remount-ro        0       2" > "$ARCH"/etc/fstab
 		else
 			echo "/dev/$BOOT              /boot           $FS         defaults        0       2" > "$ARCH"/etc/fstab
 		fi
@@ -603,10 +597,10 @@ add_user() {
 graphics() {
 	if (whiptail --title "Arch Linux Anywhere" --yesno "Would you like to install xorg-server now? \n\n *Select yes for a graphical interface" 10 60) then
 		GPU=$(whiptail --title "Arch Linux Anywhere" --menu "Select your desired graphics driver: \n\n *If unsure use mesa-libgl or default \n *If installing in VirtualBox select guest-utils" 15 60 6 \
-		"default"				 "Auto detect" \
+		"Default"				 "Auto detect" \
 		"mesa-libgl"             "Mesa OpenSource" \
 		"Nvidia"                 "NVIDIA Graphics" \
-		"virtualbox-guest-utils" "VirtualBox Graphics" \
+		"Virtualbox Guest Utils" "VirtualBox Graphics" \
 		"xf86-video-ati"         "AMD/ATI Graphics" \
 		"xf86-video-intel"       "Intel Graphics" 3>&1 1>&2 2>&3)
 		if [ "$?" -gt "0" ]; then
@@ -616,28 +610,26 @@ graphics() {
 				graphics
 			fi
 		fi
-	fi
-	if [ "$GPU" == "Nvidia" ]; then
-		GPU=$(whiptail --title "Arch Linux Anywhere" --menu "Select your desired Nvidia driver: \n\n *Cancel if none" 15 60 4 \
-		"nvidia"       "Latest stable nvidia" \
-		"nvidia-340xx" "Legacy 340xx branch" \
-		"nvidia-304xx" "Legaxy 304xx branch" 3>&1 1>&2 2>&3)
-		if [ "$?" -gt "0" ]; then
-			graphics
-		fi
-		pacstrap "$ARCH" xorg-server xorg-server-utils xorg-xinit xterm "$GPU" &> /dev/null &
-		pid=$! pri="$down" msg="Please wait while installing xorg-server..." load
-	elif [ "$GPU" == "virtualbox-guest-utils" ]; then
-		echo -e "vboxguest\nvboxsf\nvboxvideo" > "$ARCH"/etc/modules-load.d/virtualbox.conf
-		pacstrap "$ARCH" xorg-server xorg-server-utils xorg-xinit xterm virtualbox-guest-utils mesa-libgl &> /dev/null &
-		pid=$! pri="$down" msg="Please wait while installing xorg-server..." load
-	elif [ "$GPU" == "default" ]; then
-		pacstrap "$ARCH" xorg-server xorg-server-utils xorg-xinit xterm &> /dev/null &
-		pid=$! pri="$down" msg="Please wait while installing xorg-server..." load
 	else
-		pacstrap "$ARCH" xorg-server xorg-server-utils xorg-xinit xterm "$GPU" &> /dev/null &
-		pid=$! pri="$down" msg="Please wait while installing xorg-server..." load
+		if (whiptail --title "Arch Linux Anywhere" --yesno "Are you sure you dont want xorg-server? \n\n *You will be booted into command line only." 10 60) then
+			install_software
+		fi
 	fi
+	case "$GPU" in
+		"Nvidia")
+			GPU=$(whiptail --title "Arch Linux Anywhere" --menu "Select your desired Nvidia driver: \n\n *Cancel if none" 15 60 4 \
+			"nvidia"       "Latest stable nvidia" \
+			"nvidia-340xx" "Legacy 340xx branch" \
+			"nvidia-304xx" "Legaxy 304xx branch" 3>&1 1>&2 2>&3)
+			if [ "$?" -gt "0" ]; then
+				graphics
+			fi GPU="$GPU ${GPU}-libgl" ;;
+		"Virtualbox Guest Utils") GPU="virtualbox-guest-utils mesa-libgl"
+			echo -e "vboxguest\nvboxsf\nvboxvideo" > "$ARCH"/etc/modules-load.d/virtualbox.conf ;;
+		"Default") GPU="" ;;
+	esac
+	pacstrap "$ARCH" xorg-server xorg-server-utils xorg-xinit xterm $(echo "$GPU") &> /dev/null &
+	pid=$! pri="$down" msg="Please wait while installing xorg-server..." load
 	if (whiptail --title "Arch Linux Anywhere" --yesno "Would you like to install a desktop or window manager?" 10 60) then
 		until [ "$DE" == "set" ]
 			do
@@ -698,13 +690,8 @@ graphics() {
 					"i3") start_term="exec i3" ;;
 				esac
 				if "$i" ; then
-					if [ -n "$DE_EXTRA" ]; then
-						pacstrap "$ARCH" "$DE" "$DE_EXTRA" &> /dev/null &
-						pid=$! pri="$down" msg="Please wait while installing desktop... \n\n *This may take awhile..." load
-					else
-						pacstrap "$ARCH" "$DE" &> /dev/null &
-						pid=$! pri="$down" msg="Please wait while installing desktop..." load
-					fi
+					pacstrap "$ARCH" $(echo "$DE") &> /dev/null &
+					pid=$! pri="$down" msg="Please wait while installing desktop..." load
 					if [ "$user_added" == "true" ]; then
 						echo "$start_term" > "$ARCH"/home/"$user"/.xinitrc
 					else
@@ -722,6 +709,7 @@ install_software() {
 		software=$(whiptail --title "Arch Linux Anywhere" --checklist "Choose your desired software: \n\n *Use spacebar to check/uncheck software \n *Press enter when finished" 20 60 10 \
 					"openssh"     	       "Secure Shell Deamon" ON \
 					"pulseaudio"  	       "Popular sound server" ON \
+					"screenfetch"          "Display System Info" ON \
 					"vim"         	       "Popular Text Editor" ON \
 					"wget"        	       "CLI web downloader" ON \
 					"zsh"         	       "The Z shell" ON \
@@ -744,14 +732,13 @@ install_software() {
 					"pitivi"               "Video editing software" OFF \
 					"projectm"             "Music visuliaztions" OFF \
 					"screen"  	  	       "GNU Screen" OFF \
-					"screenfetch" 	       "Display System Info" OFF \
 					"simplescreenrecorder" "Screen capture software" OFF \
 					"tmux"    	  	   	   "Terminal multiplxer" OFF \
 					"transmission-cli" 	   "CLI torrent client" OFF \
 					"transmission-gtk"     "Graphical torrent client" OFF \
 					"virtualbox"  	       "Desktop virtuialization" OFF \
-					"vlc"         	   "GUI media player" OFF \
-					"ufw"         	   "Uncomplicated Firewall" OFF 3>&1 1>&2 2>&3)
+					"vlc"         	   	   "GUI media player" OFF \
+					"ufw"         	       "Uncomplicated Firewall" OFF 3>&1 1>&2 2>&3)
 		download=$(echo "$software" | sed 's/\"//g')
     	pacstrap "$ARCH" ${download} &> /dev/null &
     	pid=$! pri=1 msg="Please wait while installing software..." load
