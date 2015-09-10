@@ -135,18 +135,24 @@ prepare_drives() {
 		UEFI=false
 		if [ "$arch" == "x86_64" ]; then
 			if (whiptail --title "Arch Linux Anywhere" --defaultno --yesno "Would you like to enable UEFI bios? \n\n *May not work on some systems \n *Enable with caution" 10 60) then
-				if (whiptail --title "Arch Linux Anywhere" --defaultno --yesno "Is this a Virtualbox EFI guest install? \n\n *Are you installing Arch in Virtualbox? \n *Must have EFI setting on in virtualbox!" 10 60) then VBOX=true ; fi
+				if (whiptail --title "Arch Linux Anywhere" --defaultno --yesno "Is this a Virtualbox EFI guest install? \n\n *Are you installing Arch in Virtualbox? \n *Must have EFI setting on in virtualbox!" 10 60) then 
+					VBOX=true
+				fi
 				GPT=true UEFI=true
 			fi
 		fi
 		if [ "$UEFI" == "false" ]; then GPT=false
-			if (whiptail --title "Arch Linux Anywhere" --defaultno --yesno "Would you like to use GPT partitioning?" 10 60) then GPT=true ; fi
+			if (whiptail --title "Arch Linux Anywhere" --defaultno --yesno "Would you like to use GPT partitioning?" 10 60) then 
+				GPT=true
+			fi
 		fi
 	else
 		UEFI=false
 		if [ "$arch" == "x86_64" ]; then
 			if (whiptail --title "Arch Linux Anywhere" --defaultno --yesno "Would you like to enable UEFI bios? \n\n *May not work on some systems \n *Enable with caution" 10 60) then
-				if (whiptail --title "Arch Linux Anywhere" --defaultno --yesno "Is this a Virtualbox EFI guest install? \n\n *Are you installing Arch in Virtualbox? \n *Must have EFI setting on in virtualbox!" 10 60) then VBOX=true ; fi
+				if (whiptail --title "Arch Linux Anywhere" --defaultno --yesno "Is this a Virtualbox EFI guest install? \n\n *Are you installing Arch in Virtualbox? \n *Must have EFI setting on in virtualbox!" 10 60) then 
+					VBOX=true
+				fi
 				whiptail --title "Arch Linux Anywhere" --msgbox "Note you must create a UEFI bios partition! \n\n *Size of 512M-1024M type of EF00 \n *Partition scheme must be GPT!" 10 60
 				if (whiptail --title "Arch Linux Anywhere" --defaultno --yesno "System will not boot if you don't setup UEFI partition properly! \n\n *Are you sure you want to continue? \n *Only proceed if you know what you're doing." 10 60) then
 					UEFI=true
