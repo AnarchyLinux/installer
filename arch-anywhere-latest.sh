@@ -3,6 +3,7 @@
 ARCH=/mnt
 mounted=false
 INSTALLED=false
+VBOX=false
 bootloader=false
 system_configured=false
 hostname_set=false
@@ -90,11 +91,11 @@ set_keys() {
 prepare_drives() {
 	drive=$(lsblk | grep "disk" | grep -v "rom" | awk '{print $1   " "   $4}')
 	DRIVE=$(whiptail --nocancel --title "Arch Linux Anywhere" --menu "Select the drive you would like to install arch onto:" 15 60 5 $drive 3>&1 1>&2 2>&3)
-	PART=$(whiptail --title "Arch Linux Anywhere" --menu "Select your desired method of partitioning: \n\n *NOTE Auto Partitioning will format the selected drive" 15 60 5 \
-	"Auto Partition Drive"           "-" \
-	"Auto partition encrypted LVM"   "-" \
-	"Manual Partition Drive"         "-" \
-	"Return To Menu"                 "-" 3>&1 1>&2 2>&3)
+	PART=$(whiptail --title "Arch Linux Anywhere" --menu "Select your desired method of partitioning: \n\n *NOTE Auto Partitioning will format the selected drive \n *Press cancel to return to drive selection" 15 60 5 \
+	"Auto Partition Drive"           "Formats drive and installs Arch" \
+	"Auto partition encrypted LVM"   "Encrypts drive and installs Arch" \
+	"Manual Partition Drive"         "Manual partition select mount points" \
+	"Return To Menu"                 "Return to main menu" 3>&1 1>&2 2>&3)
 	if [ "$?" -gt "0" ]; then
 		prepare_drives
 	elif [ "$PART" == "Return To Menu" ]; then
@@ -133,7 +134,7 @@ prepare_drives() {
 		fi
 		UEFI=false
 		if [ "$arch" == "x86_64" ]; then
-			if (whiptail --title "Arch Linux Anywhere" --defaultno --yesno "Would you like to enable UEFI bios? \n\n *May not work on some systems \n *Enable with caution" 10 60) then VBOX=false
+			if (whiptail --title "Arch Linux Anywhere" --defaultno --yesno "Would you like to enable UEFI bios? \n\n *May not work on some systems \n *Enable with caution" 10 60) then
 				if (whiptail --title "Arch Linux Anywhere" --defaultno --yesno "Is this a Virtualbox EFI guest install? \n\n *Are you installing Arch in Virtualbox? \n *Must have EFI setting on in virtualbox!" 10 60) then VBOX=true ; fi
 				GPT=true UEFI=true
 			fi
@@ -144,7 +145,7 @@ prepare_drives() {
 	else
 		UEFI=false
 		if [ "$arch" == "x86_64" ]; then
-			if (whiptail --title "Arch Linux Anywhere" --defaultno --yesno "Would you like to enable UEFI bios? \n\n *May not work on some systems \n *Enable with caution" 10 60) then VBOX=false
+			if (whiptail --title "Arch Linux Anywhere" --defaultno --yesno "Would you like to enable UEFI bios? \n\n *May not work on some systems \n *Enable with caution" 10 60) then
 				if (whiptail --title "Arch Linux Anywhere" --defaultno --yesno "Is this a Virtualbox EFI guest install? \n\n *Are you installing Arch in Virtualbox? \n *Must have EFI setting on in virtualbox!" 10 60) then VBOX=true ; fi
 				whiptail --title "Arch Linux Anywhere" --msgbox "Note you must create a UEFI bios partition! \n\n *Size of 512M-1024M type of EF00 \n *Partition scheme must be GPT!" 10 60
 				if (whiptail --title "Arch Linux Anywhere" --defaultno --yesno "System will not boot if you don't setup UEFI partition properly! \n\n *Are you sure you want to continue? \n *Only proceed if you know what you're doing." 10 60) then
@@ -317,6 +318,7 @@ prepare_drives() {
 			fi
 		;;
 		"Manual Partition Drive")
+			clear
 			$part_tool /dev/"$DRIVE"
 			lsblk | egrep "$DRIVE[0-9]"
 			if [ "$?" -gt "0" ]; then
@@ -629,127 +631,120 @@ configure_network() {
 
 graphics() {
 	if (whiptail --title "Arch Linux Anywhere" --yesno "Would you like to install xorg-server now? \n\n *Select yes for a graphical interface" 10 60) then
-		pacstrap "$ARCH" xorg-server xorg-server-utils xorg-xinit xterm mesa-libgl &> /dev/null &
-		pid=$! pri="$down" msg="Please wait while installing xorg-server..." load
-		if "$VBOX" ; then
-			pacstrap "$ARCH" virtualbox-guest-utils &> /dev/null &
-			pid=$! pri=1 msg="Please wait while installing virtualbox guest utils..." load
-			echo -e "vboxguest\nvboxsf\nvboxvideo" > "$ARCH"/etc/modules-load.d/virtualbox.conf
+		if "$VBOX" ; then 
+			GPU="virtualbox-guest-utils"
 		else
-			if (whiptail --title "Arch Linux Anywhere" --yesno "Would you like to install graphics drivers now? \n\n *If no default drivers will be used. \n *Virtualbox guests select yes" 10 60) then
-				until [ "$GPU" == "set" ]
-					do
-						i=false
-						GPU=$(whiptail --title "Arch Linux Anywhere" --menu "Select your desired drivers:" 15 60 5 \
-						"xf86-video-ati"         "AMD/ATI Graphics" \
-						"xf86-video-intel"       "Intel Graphics" \
-						"Nvidia"  			     "NVIDIA Graphics" \
-						"virtualbox-guest-utils" "VirtualBox Graphics" 3>&1 1>&2 2>&3)
-						if [ "$?" -gt "0" ]; then
-							if (whiptail --title "Arch Linux Anywhere" --yesno "Continue without installing graphics drivers? \n\n *Default drivers will be used." 10 60) then
-								GPU=set
-							fi
-						else
-							i=true
-						fi
-						if [ "$GPU" == "Nvidia" ]; then
-							GPU=$(whiptail --title "Arch Linux Anywhere" --menu "Select your desired Nvidia driver: \n\n *Cancel if none" 15 60 4 \
-							"nvidia"       "Latest stable nvidia" \
-							"nvidia-340xx" "Legacy 340xx branch" \
-							"nvidia-304xx" "Legaxy 304xx branch" 3>&1 1>&2 2>&3)
-							if [ "$?" -gt "0" ]; then
-								i=false
-							fi
-						elif [ "$GPU" == "virtualbox-guest-utils" ]; then
-							echo -e "vboxguest\nvboxsf\nvboxvideo" > "$ARCH"/etc/modules-load.d/virtualbox.conf
-						fi
-						if "$i" ; then
-							pacstrap "$ARCH" "$GPU" &> /dev/null &
-							pid=$! pri=1 msg="Please wait while installing graphics drivers..." load
-							GPU=set
-						fi
-					done
+			GPU=$(whiptail --title "Arch Linux Anywhere" --menu "Select your desired graphics driver: \n\n *If unsure use mesa-libgl or default \n *If installing in VirtualBox select guest-utils" 15 60 6 \
+			"default"				 "Auto detect" \
+			"mesa-libgl"             "Mesa OpenSource" \
+			"Nvidia"                 "NVIDIA Graphics" \
+			"virtualbox-guest-utils" "VirtualBox Graphics" \
+			"xf86-video-ati"         "AMD/ATI Graphics" \
+			"xf86-video-intel"       "Intel Graphics" 3>&1 1>&2 2>&3)
+			if [ "$?" -gt "0" ]; then
+				if (whiptail --title "Arch Linux Anywhere" --yesno "Continue without selecting graphics drivers? \n\n *Default drivers will be used." 10 60) then 
+					GPU="default"
+				else
+					graphics
+				fi
 			fi
 		fi
-		if (whiptail --title "Arch Linux Anywhere" --yesno "Would you like to install a desktop or window manager?" 10 60) then
-			until [ "$DE" == "set" ]
-				do
-					i=false
-					DE=$(whiptail --title "Arch Linux Installer" --menu "Select your desired enviornment:" 15 60 6 \
-					"xfce4"         "Light DE" \
-					"mate"          "Light DE" \
-					"lxde"          "Light DE" \
-					"lxqt"          "Light DE" \
-					"gnome"         "Modern DE" \
-					"cinnamon"      "Eligant DE" \
-					"KDE plasma"    "Rich DE" \
-					"enlightenment" "Light WM/DE" \
-					"openbox"       "Stacking WM" \
-					"awesome"       "Awesome WM" \
-					"i3"            "Tiling WM" \
-					"fluxbox"       "Light WM" \
-					"dwm"           "Dynamic WM" 3>&1 1>&2 2>&3)
-					if [ "$?" -gt "0" ]; then
-						DE=set
-					else
-						i=true
-						if (whiptail --title "Arch Linux Anywhere" --yesno "Would you like to install LightDM display manager?" 10 60) then
-							pacstrap "$ARCH" lightdm lightdm-gtk-greeter &> /dev/null &
-							pid=$! pri="$down" msg="Please wait while installing LightDM..." load
-							arch-chroot "$ARCH" systemctl enable lightdm.service &> /dev/null
-						else
-							whiptail --title "Arch Linux Anywhere" --msgbox "After login use the command 'startx' to access your desktop." 10 60
-						fi
-					fi
-					case "$DE" in
-						"xfce4") start_term="exec startxfce4" 
-							if (whiptail --title "Arch Linux Installer" --yesno "Install xfce4 goodies?" 10 60) then
-								DE_EXTRA="xfce4-goodies"
-							fi ;;
-						"gnome") start_term="exec gnome-session"
-							if (whiptail --title "Arch Linux Installer" --yesno "Install gnome extras?" 10 60) then
-								DE_EXTRA="gnome-extra"
-								down=$((down+4))
-							fi ;;
-						"cinnamon") start_term="exec cinnamon-session" ;;
-						"mate") start_term="exec mate-session"
-							if (whiptail --title "Arch Linux Installer" --yesno "Install mate extras?" 10 60) then
-								DE_EXTRA="mate-extra"
-							fi ;;
-						"KDE plasma") start_term="exec startkde" DE="kde-applications"
-							if (whiptail --title "Arch Linux Installer" --defaultno --yesno "Install minimal plasma desktop?" 10 60) then
-								DE_EXTRA="plasma-desktop"
-								down=$((down+3))
-							else
-								DE_EXTRA="plasma"
-								down=$((down+4))
-							fi ;;
-						"lxde") start_term="exec startlxde" ;;
-						"lxqt") start_term="exec startlxqt" DE="lxqt oxygen-icons" ;;
-						"enlightenment") start_term="exec enlightenment_start" DE="enlightenment terminology" ;;
-						"fluxbox") start_term="exec startfluxbox" ;;
-						"openbox") start_term="exec openbox-session" ;;
-						"awesome") start_term="exec awesome" ;;
-						"dwm") start_term="exec dwm" ;;
-						"i3") start_term="exec i3" ;;
-					esac
-					if "$i" ; then
-						if [ -n "$DE_EXTRA" ]; then
-							pacstrap "$ARCH" "$DE" "$DE_EXTRA" &> /dev/null &
-							pid=$! pri="$down" msg="Please wait while installing desktop... \n\n *This may take awhile..." load
-						else
-							pacstrap "$ARCH" "$DE" &> /dev/null &
-							pid=$! pri="$down" msg="Please wait while installing desktop..." load
-						fi
-						if [ "$user_added" == "true" ]; then
-							echo "$start_term" > "$ARCH"/home/"$user"/.xinitrc
-						else
-							echo "$start_term" > "$ARCH"/root/.xinitrc
-						fi
-						DE=set
-					fi
-				done
+		if [ "$GPU" == "Nvidia" ]; then
+			GPU=$(whiptail --title "Arch Linux Anywhere" --menu "Select your desired Nvidia driver: \n\n *Cancel if none" 15 60 4 \
+			"nvidia"       "Latest stable nvidia" \
+			"nvidia-340xx" "Legacy 340xx branch" \
+			"nvidia-304xx" "Legaxy 304xx branch" 3>&1 1>&2 2>&3)
+			if [ "$?" -gt "0" ]; then
+				graphics
+			fi
+		elif [ "$GPU" == "virtualbox-guest-utils" ]; then
+			echo -e "vboxguest\nvboxsf\nvboxvideo" > "$ARCH"/etc/modules-load.d/virtualbox.conf
+			pacstrap "$ARCH" xorg-server xorg-server-utils xorg-xinit xterm virtualbox-guest-utils mesa-libgl &> /dev/null &
+			pid=$! pri="$down" msg="Please wait while installing xorg-server..." load
+		elif [ "$GPU" == "default" ]; then
+			pacstrap "$ARCH" xorg-server xorg-server-utils xorg-xinit xterm &> /dev/null &
+			pid=$! pri="$down" msg="Please wait while installing xorg-server..." load
+		else
+			pacstrap "$ARCH" xorg-server xorg-server-utils xorg-xinit xterm "$GPU" &> /dev/null &
+			pid=$! pri="$down" msg="Please wait while installing xorg-server..." load
 		fi
+	
+	fi
+	if (whiptail --title "Arch Linux Anywhere" --yesno "Would you like to install a desktop or window manager?" 10 60) then
+		until [ "$DE" == "set" ]
+			do
+				i=false
+				DE=$(whiptail --title "Arch Linux Installer" --menu "Select your desired enviornment:" 15 60 6 \
+				"xfce4"         "Light DE" \
+				"mate"          "Light DE" \
+				"lxde"          "Light DE" \
+				"lxqt"          "Light DE" \
+				"gnome"         "Modern DE" \
+				"cinnamon"      "Eligant DE" \
+				"KDE plasma"    "Rich DE" \
+				"enlightenment" "Light WM/DE" \
+				"openbox"       "Stacking WM" \
+				"awesome"       "Awesome WM" \
+				"i3"            "Tiling WM" \
+				"fluxbox"       "Light WM" \
+				"dwm"           "Dynamic WM" 3>&1 1>&2 2>&3)
+				if [ "$?" -gt "0" ]; then
+					DE=set
+				else
+					i=true
+					if (whiptail --title "Arch Linux Anywhere" --yesno "Would you like to install LightDM display manager?" 10 60) then
+						pacstrap "$ARCH" lightdm lightdm-gtk-greeter &> /dev/null &
+						pid=$! pri="$down" msg="Please wait while installing LightDM..." load
+						arch-chroot "$ARCH" systemctl enable lightdm.service &> /dev/null
+					else
+						whiptail --title "Arch Linux Anywhere" --msgbox "After login use the command 'startx' to access your desktop." 10 60
+					fi
+				fi
+				case "$DE" in
+					"xfce4") start_term="exec startxfce4" 
+						if (whiptail --title "Arch Linux Installer" --yesno "Install xfce4 goodies?" 10 60) then
+							DE_EXTRA="xfce4-goodies"
+						fi ;;
+					"gnome") start_term="exec gnome-session"
+						if (whiptail --title "Arch Linux Installer" --yesno "Install gnome extras?" 10 60) then
+							DE_EXTRA="gnome-extra" down=$((down+5))
+						fi ;;
+					"mate") start_term="exec mate-session"
+						if (whiptail --title "Arch Linux Installer" --yesno "Install mate extras?" 10 60) then
+							DE_EXTRA="mate-extra" down=$((down+2))
+						fi ;;
+					"KDE plasma") start_term="exec startkde" DE="kde-applications"
+						if (whiptail --title "Arch Linux Installer" --defaultno --yesno "Install minimal plasma desktop?" 10 60) then
+							DE_EXTRA="plasma-desktop" down=$((down+4))
+						else
+							DE_EXTRA="plasma" down=$((down+5))
+						fi ;;
+					"cinnamon") start_term="exec cinnamon-session" ;;
+					"lxde") start_term="exec startlxde" ;;
+					"lxqt") start_term="exec startlxqt" DE="lxqt oxygen-icons" ;;
+					"enlightenment") start_term="exec enlightenment_start" DE="enlightenment terminology" ;;
+					"fluxbox") start_term="exec startfluxbox" ;;
+					"openbox") start_term="exec openbox-session" ;;
+					"awesome") start_term="exec awesome" ;;
+					"dwm") start_term="exec dwm" ;;
+					"i3") start_term="exec i3" ;;
+				esac
+				if "$i" ; then
+					if [ -n "$DE_EXTRA" ]; then
+						pacstrap "$ARCH" "$DE" "$DE_EXTRA" &> /dev/null &
+						pid=$! pri="$down" msg="Please wait while installing desktop... \n\n *This may take awhile..." load
+					else
+						pacstrap "$ARCH" "$DE" &> /dev/null &
+						pid=$! pri="$down" msg="Please wait while installing desktop..." load
+					fi
+					if [ "$user_added" == "true" ]; then
+						echo "$start_term" > "$ARCH"/home/"$user"/.xinitrc
+					else
+						echo "$start_term" > "$ARCH"/root/.xinitrc
+					fi
+					DE=set
+				fi
+			done
 	fi
 	install_software
 }
@@ -793,6 +788,8 @@ install_software() {
     	pacstrap "$ARCH" ${download} &> /dev/null &
     	pid=$! pri=1 msg="Please wait while installing software..." load
 	fi
+	arch-chroot "$ARCH" pacman -Syy &> /dev/null &
+	pid=$! pri=1 msg="Updating pacman databases..." load
 	reboot_system
 }
 
@@ -881,12 +878,10 @@ main_menu() {
 		"Exit Installer") 
 			if "$INSTALLED" ; then
 				whiptail --title "Arch Linux Anywhere" --msgbox "System installed \n\n Exiting arch installer..." 10 60
-				clear
-				exit
+				clear ; exit
 			else
 				if (whiptail --title "Arch Linux Anywhere" --yesno "System not installed yet... \n\n Are you sure you want to exit?" 10 60) then
-					clear
-					exit
+					clear ; exit
 				else
 					main_menu
 				fi
