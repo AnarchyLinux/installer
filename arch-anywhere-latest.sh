@@ -1,10 +1,10 @@
 #!/bin/bash
 
+#ARCH-ANYWHERE
 ARCH=/mnt
 UEFI=false
 mounted=false
 INSTALLED=false
-VBOX=false
 bootloader=false
 system_configured=false
 hostname_set=false
@@ -91,11 +91,11 @@ set_keys() {
 prepare_drives() {
 	drive=$(lsblk | grep "disk" | grep -v "rom" | awk '{print $1   " "   $4}')
 	DRIVE=$(whiptail --nocancel --title "Arch Linux Anywhere" --menu "Select the drive you would like to install arch onto:" 15 60 5 $drive 3>&1 1>&2 2>&3)
-	PART=$(whiptail --title "Arch Linux Anywhere" --menu "Select your desired method of partitioning: \n\n *NOTE Auto Partitioning will format the selected drive \n *Press cancel to return to drive selection" 15 60 5 \
-	"Auto Partition Drive"           "Formats drive and installs Arch" \
-	"Auto partition encrypted LVM"   "Encrypts drive and installs Arch" \
-	"Manual Partition Drive"         "Manual partition select mount points" \
-	"Return To Menu"                 "Return to main menu" 3>&1 1>&2 2>&3)
+	PART=$(whiptail --title "Arch Linux Anywhere" --menu "Select your desired method of partitioning: \n\n *NOTE Auto Partitioning will format the selected drive \n *Press cancel to return to drive selection" 15 60 4 \
+	"Auto Partition Drive"           "-" \
+	"Auto partition encrypted LVM"   "-" \
+	"Manual Partition Drive"         "-" \
+	"Return To Menu"                 "-" 3>&1 1>&2 2>&3)
 	if [ "$?" -gt "0" ]; then
 		prepare_drives
 	elif [ "$PART" == "Return To Menu" ]; then
@@ -134,9 +134,6 @@ prepare_drives() {
 		fi
 		if [ "$arch" == "x86_64" ]; then
 			if (whiptail --title "Arch Linux Anywhere" --defaultno --yesno "Would you like to enable UEFI bios? \n\n *May not work on some systems \n *Enable with caution" 10 60) then
-				if (whiptail --title "Arch Linux Anywhere" --defaultno --yesno "Is this a Virtualbox EFI guest install? \n\n *Are you installing Arch in Virtualbox? \n *Must have EFI setting on in virtualbox!" 10 60) then 
-					VBOX=true
-				fi
 				GPT=true UEFI=true
 			fi
 		fi
@@ -148,9 +145,6 @@ prepare_drives() {
 	else
 		if [ "$arch" == "x86_64" ]; then
 			if (whiptail --title "Arch Linux Anywhere" --defaultno --yesno "Would you like to enable UEFI bios? \n\n *May not work on some systems \n *Enable with caution" 10 60) then
-				if (whiptail --title "Arch Linux Anywhere" --defaultno --yesno "Is this a Virtualbox EFI guest install? \n\n *Are you installing Arch in Virtualbox? \n *Must have EFI setting on in virtualbox!" 10 60) then 
-					VBOX=true
-				fi
 				whiptail --title "Arch Linux Anywhere" --msgbox "Note you must create a UEFI bios partition! \n\n *Size of 512M-1024M type of EF00 \n *Partition scheme must be GPT!" 10 60
 				if (whiptail --title "Arch Linux Anywhere" --defaultno --yesno "System will not boot if you don't setup UEFI partition properly! \n\n *Are you sure you want to continue? \n *Only proceed if you know what you're doing." 10 60) then
 					UEFI=true
@@ -215,24 +209,17 @@ prepare_drives() {
 			fi
 			wipefs -a /dev/"$BOOT" &> /dev/null
 			wipefs -a /dev/"$ROOT" &> /dev/null
+			if "$UEFI" ; then
+				mkfs.vfat -F32 /dev/"$BOOT" &> /dev/null &
+				pid=$! pri=0.2 msg="Creating efi boot partition..." load
+			else
+				mkfs -t ext4 /dev/"$BOOT" &> /dev/null &
+				pid=$! pri=0.2 msg="Creating boot partition..." load
+			fi
 			if [ "$FS" == "jfs" ] || [ "$FS" == "reiserfs" ]; then
-				if "$UEFI" ; then
-					mkfs.vfat -F32 /dev/"$BOOT" &> /dev/null &
-					pid=$! pri=0.2 msg="Creating efi boot partition..." load
-				else
-					echo -e "y" | mkfs -t "$FS" /dev/"$BOOT" &> /dev/null &
-					pid=$! pri=0.2 msg="Creating boot partition..." load
-				fi
 				echo -e "y" | mkfs -t "$FS" /dev/"$ROOT" &> /dev/null &
 				pid=$! pri=1 msg="Please wait while creating $FS filesystem" load
 			else
-				if "$UEFI" ; then
-					mkfs.vfat -F32 /dev/"$BOOT" &> /dev/null &
-					pid=$! pri=0.2 msg="Creating efi boot partition..." load
-				else
-					mkfs -t "$FS" /dev/"$BOOT" &> /dev/null &
-					pid=$! pri=0.2 msg="Creating boot partition..." load
-				fi
 				mkfs -t "$FS" /dev/"$ROOT" &> /dev/null &
 				pid=$! pri=1 msg="Please wait while creating $FS filesystem" load
 			fi
@@ -240,13 +227,8 @@ prepare_drives() {
 			if [ "$?" -eq "0" ]; then
 				mounted=true
 			fi
-			if [[ "$UEFI" == "true" && "$VBOX" == "false" ]] ; then
-				mkdir -p $ARCH/boot/efi
-				mount /dev/"$BOOT" "$ARCH"/boot/efi
-			else
-				mkdir $ARCH/boot
-				mount /dev/"$BOOT" "$ARCH"/boot
-			fi
+			mkdir $ARCH/boot
+			mount /dev/"$BOOT" "$ARCH"/boot
 		;;
 		"Auto partition encrypted LVM")
 			if "$GPT" ; then
@@ -307,16 +289,11 @@ prepare_drives() {
 					mkfs.vfat -F32 /dev/"$BOOT" &> /dev/null &
 					pid=$! pri=0.2 msg="Creating efi boot partition..." load
 				else
-					mkfs -t "$FS" /dev/"$BOOT" &> /dev/null &
+					mkfs -t ext4 /dev/"$BOOT" &> /dev/null &
 					pid=$! pri=0.2 msg="Creating boot partition..." load
 				fi
-				if [[ "$UEFI" == "true" && "$VBOX" == "false" ]] ; then
-					mkdir -p $ARCH/boot/efi
-					mount /dev/"$BOOT" "$ARCH"/boot/efi
-				else
-					mkdir $ARCH/boot
-					mount /dev/"$BOOT" "$ARCH"/boot
-				fi
+				mkdir $ARCH/boot
+				mount /dev/"$BOOT" "$ARCH"/boot
 			else
 				prepare_drives
 			fi
@@ -373,13 +350,8 @@ prepare_drives() {
 			fi
 			if "$UEFI" ; then
 				points=$(echo -e "/home   >\n/srv    >\n/usr    >\n/var    >\nSWAP   >")
-				if ! "$VBOX" ; then
-					mkdir -p $ARCH/boot/efi
-					mount /dev/"$BOOT" "$ARCH"/boot/efi
-				else
-					mkdir $ARCH/boot
-					mount /dev/"$BOOT" "$ARCH"/boot
-				fi			
+				mkdir $ARCH/boot
+				mount /dev/"$BOOT" "$ARCH"/boot
 			else
 				points=$(echo -e "/boot   >\n/home   >\n/srv    >\n/usr    >\n/var    >\nSWAP   >")
 			fi
@@ -448,14 +420,14 @@ update_mirrors() {
 install_base() {
 	if ! "$INSTALLED" && "$mounted" ; then	
 		if (whiptail --title "Arch Linux Anywhere" --yesno "Begin installing Arch Linux base onto /dev/$DRIVE?" 10 60) then
-			if (whiptail --title "Arch Linux Anywhere" --yesno "Install wireless tools, netctl, and WPA supplicant? \n\n *Necessary for connecting to wifi \n *Provides wifi-menu command" 10 60) then
+			if (whiptail --title "Arch Linux Anywhere" --defaultno --yesno "Install wireless tools, netctl, and WPA supplicant? Provides wifi-menu command. \n\n *Necessary for connecting to wifi \n *Select yes if using wifi" 11 60) then
 				pacstrap "$ARCH" base base-devel libnewt wireless_tools wpa_supplicant wpa_actiond netctl dialog &> /dev/null &
 				pid=$! pri="$down" msg="Please wait while we install Arch Linux... \n\n *This may take awhile" load
 			else
 				pacstrap "$ARCH" base base-devel libnewt &> /dev/null &
 				pid=$! pri="$down" msg="Please wait while we install Arch Linux... \n\n *This may take awhile" load
 			fi	
-			genfstab -U -p "$ARCH" >> "$ARCH"/etc/fstab &> /dev/null &
+			genfstab -U -p "$ARCH" >> "$ARCH"/etc/fstab
 			if [ "$?" -eq "0" ]; then
 				INSTALLED=true
 			else
@@ -466,7 +438,7 @@ install_base() {
 			while [ ! -n "$loader" ]
 				do
 					if (whiptail --title "Arch Linux Anywhere" --yesno "Install GRUB bootloader? \n\n *Required to make system bootable" 10 60) then
-						if (whiptail --title "Arch Linux Anywhere" --yesno "Install os-prober first? \n\n *Required for multiboot" 10 60) then
+						if (whiptail --title "Arch Linux Anywhere" --defaultno --yesno "Install os-prober first? \n\n *Required for multiboot \n *If dualbooting select yes" 10 60) then
 							pacstrap "$ARCH" os-prober &> /dev/null &
 							pid=$! pri=0.5 msg="Installing os-prober..." load
 						fi
@@ -478,14 +450,9 @@ install_base() {
 						if "$UEFI" ; then
 							pacstrap "$ARCH" efibootmgr &> /dev/null &
 							pid=$! pri=0.5 msg="Installing efibootmgr..." load
-							if "$VBOX" ; then
-								arch-chroot "$ARCH" grub-install --efi-directory=/boot --target=x86_64-efi --bootloader-id=boot --recheck &> /dev/null &
-								pid=$! pri=0.5 msg="Installing grub to drive..." load
-								mv "$ARCH"/boot/EFI/boot/grubx64.efi "$ARCH"/boot/EFI/boot/bootx64.efi
-							else
-								arch-chroot "$ARCH" grub-install --efi-directory=/boot/efi --target=x86_64-efi --bootloader-id=grub_uefi --recheck &> /dev/null &
-								pid=$! pri=0.5 msg="Installing grub to drive..." load
-							fi
+							arch-chroot "$ARCH" grub-install --efi-directory=/boot --target=x86_64-efi --bootloader-id=boot --recheck &> /dev/null &
+							pid=$! pri=0.5 msg="Installing grub to drive..." load
+							mv "$ARCH"/boot/EFI/boot/grubx64.efi "$ARCH"/boot/EFI/boot/bootx64.efi
 						else
 							arch-chroot "$ARCH" grub-install --recheck /dev/"$DRIVE" &> /dev/null &
 							pid=$! pri=0.5 msg="Installing grub to drive..." load
@@ -572,7 +539,8 @@ configure_system() {
 		fi
 	fi
 	if (whiptail --title "Arch Linux Anywhere" --yesno "Enable DHCP at boot? \n\n *Automatic IP configuration." 10 60) then
-		arch-chroot "$ARCH" systemctl enable dhcpcd.service &> /dev/null
+		arch-chroot "$ARCH" systemctl enable dhcpcd.service &> /dev/null &
+		pid=$! pri=0.2 msg="Enabling DHCP..." load
 	fi
 	system_configured=true
 	set_hostname
@@ -607,11 +575,11 @@ add_user() {
 		main_menu
 	fi
 	if (whiptail --title "Arch Linux Anywhere" --yesno "Create a new user account now?" 10 60) then
-		user=$(whiptail --nocancel --inputbox "Set username:" 10 40 "" 3>&1 1>&2 2>&3)
+		user=$(whiptail --nocancel --inputbox "Set username: \n\n *No spaces or special characters! \n *letters, numbers 0-9" 10 60 "" 3>&1 1>&2 2>&3)
 	else
 		graphics
 	fi
-i	arch-chroot "$ARCH" useradd -m -g users -G wheel,audio,network,power,storage,optical -s /bin/bash "$user"
+	arch-chroot "$ARCH" useradd -m -g users -G wheel,audio,network,power,storage,optical -s /bin/bash "$user"
 	echo -e 'user='$user'
 			   input=default
 			           while [ "$input" != "$input_chk" ]
@@ -626,7 +594,7 @@ i	arch-chroot "$ARCH" useradd -m -g users -G wheel,audio,network,power,storage,o
 	chmod +x "$ARCH"/root/set.sh
 	arch-chroot "$ARCH" ./root/set.sh
 	rm "$ARCH"/root/set.sh
-	if (whiptail --title "Arch Linux Anywhere" --yesno "Enable sudo privelege for $user? \n\n *Enables administrative privelege with sudo." 10 60) then
+	if (whiptail --title "Arch Linux Anywhere" --yesno "Enable sudo privelege for $user? \n\n *Enables administrative privelege for $user." 10 60) then
 		sed -i '/%wheel ALL=(ALL) ALL/s/^#//' $ARCH/etc/sudoers
 	fi
 	user_added=true graphics
@@ -634,44 +602,41 @@ i	arch-chroot "$ARCH" useradd -m -g users -G wheel,audio,network,power,storage,o
 	
 graphics() {
 	if (whiptail --title "Arch Linux Anywhere" --yesno "Would you like to install xorg-server now? \n\n *Select yes for a graphical interface" 10 60) then
-		if "$VBOX" ; then 
-			GPU="virtualbox-guest-utils"
-		else
-			GPU=$(whiptail --title "Arch Linux Anywhere" --menu "Select your desired graphics driver: \n\n *If unsure use mesa-libgl or default \n *If installing in VirtualBox select guest-utils" 15 60 6 \
-			"default"				 "Auto detect" \
-			"mesa-libgl"             "Mesa OpenSource" \
-			"Nvidia"                 "NVIDIA Graphics" \
-			"virtualbox-guest-utils" "VirtualBox Graphics" \
-			"xf86-video-ati"         "AMD/ATI Graphics" \
-			"xf86-video-intel"       "Intel Graphics" 3>&1 1>&2 2>&3)
-			if [ "$?" -gt "0" ]; then
-				if (whiptail --title "Arch Linux Anywhere" --yesno "Continue without selecting graphics drivers? \n\n *Default drivers will be used." 10 60) then 
-					GPU="default"
-				else
-					graphics
-				fi
-			fi
-		fi
-		if [ "$GPU" == "Nvidia" ]; then
-			GPU=$(whiptail --title "Arch Linux Anywhere" --menu "Select your desired Nvidia driver: \n\n *Cancel if none" 15 60 4 \
-			"nvidia"       "Latest stable nvidia" \
-			"nvidia-340xx" "Legacy 340xx branch" \
-			"nvidia-304xx" "Legaxy 304xx branch" 3>&1 1>&2 2>&3)
-			if [ "$?" -gt "0" ]; then
+		GPU=$(whiptail --title "Arch Linux Anywhere" --menu "Select your desired graphics driver: \n\n *If unsure use mesa-libgl or default \n *If installing in VirtualBox select guest-utils" 15 60 6 \
+		"default"				 "Auto detect" \
+		"mesa-libgl"             "Mesa OpenSource" \
+		"Nvidia"                 "NVIDIA Graphics" \
+		"virtualbox-guest-utils" "VirtualBox Graphics" \
+		"xf86-video-ati"         "AMD/ATI Graphics" \
+		"xf86-video-intel"       "Intel Graphics" 3>&1 1>&2 2>&3)
+		if [ "$?" -gt "0" ]; then
+			if (whiptail --title "Arch Linux Anywhere" --yesno "Continue without selecting graphics drivers? \n\n *Default drivers will be used." 10 60) then 
+				GPU="default"
+			else
 				graphics
 			fi
-		elif [ "$GPU" == "virtualbox-guest-utils" ]; then
-			echo -e "vboxguest\nvboxsf\nvboxvideo" > "$ARCH"/etc/modules-load.d/virtualbox.conf
-			pacstrap "$ARCH" xorg-server xorg-server-utils xorg-xinit xterm virtualbox-guest-utils mesa-libgl &> /dev/null &
-			pid=$! pri="$down" msg="Please wait while installing xorg-server..." load
-		elif [ "$GPU" == "default" ]; then
-			pacstrap "$ARCH" xorg-server xorg-server-utils xorg-xinit xterm &> /dev/null &
-			pid=$! pri="$down" msg="Please wait while installing xorg-server..." load
-		else
-			pacstrap "$ARCH" xorg-server xorg-server-utils xorg-xinit xterm "$GPU" &> /dev/null &
-			pid=$! pri="$down" msg="Please wait while installing xorg-server..." load
 		fi
-	
+	fi
+	if [ "$GPU" == "Nvidia" ]; then
+		GPU=$(whiptail --title "Arch Linux Anywhere" --menu "Select your desired Nvidia driver: \n\n *Cancel if none" 15 60 4 \
+		"nvidia"       "Latest stable nvidia" \
+		"nvidia-340xx" "Legacy 340xx branch" \
+		"nvidia-304xx" "Legaxy 304xx branch" 3>&1 1>&2 2>&3)
+		if [ "$?" -gt "0" ]; then
+			graphics
+		fi
+		pacstrap "$ARCH" xorg-server xorg-server-utils xorg-xinit xterm "$GPU" &> /dev/null &
+		pid=$! pri="$down" msg="Please wait while installing xorg-server..." load
+	elif [ "$GPU" == "virtualbox-guest-utils" ]; then
+		echo -e "vboxguest\nvboxsf\nvboxvideo" > "$ARCH"/etc/modules-load.d/virtualbox.conf
+		pacstrap "$ARCH" xorg-server xorg-server-utils xorg-xinit xterm virtualbox-guest-utils mesa-libgl &> /dev/null &
+		pid=$! pri="$down" msg="Please wait while installing xorg-server..." load
+	elif [ "$GPU" == "default" ]; then
+		pacstrap "$ARCH" xorg-server xorg-server-utils xorg-xinit xterm &> /dev/null &
+		pid=$! pri="$down" msg="Please wait while installing xorg-server..." load
+	else
+		pacstrap "$ARCH" xorg-server xorg-server-utils xorg-xinit xterm "$GPU" &> /dev/null &
+		pid=$! pri="$down" msg="Please wait while installing xorg-server..." load
 	fi
 	if (whiptail --title "Arch Linux Anywhere" --yesno "Would you like to install a desktop or window manager?" 10 60) then
 		until [ "$DE" == "set" ]
