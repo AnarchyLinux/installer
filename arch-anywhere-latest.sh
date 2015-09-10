@@ -1,6 +1,7 @@
 #!/bin/bash
 
 ARCH=/mnt
+UEFI=false
 mounted=false
 INSTALLED=false
 VBOX=false
@@ -8,7 +9,6 @@ bootloader=false
 system_configured=false
 hostname_set=false
 user_added=false
-network_configured=false
 arch=$(uname -a | grep -o "x86_64\|i386\|i686")
 
 check_connection() {
@@ -132,7 +132,6 @@ prepare_drives() {
 					else whiptail --title "Arch Linux Anywhere" --msgbox "Error setting swap! Be sure it is a number ending in 'M' or 'G'" 10 60 ; fi
 				done
 		fi
-		UEFI=false
 		if [ "$arch" == "x86_64" ]; then
 			if (whiptail --title "Arch Linux Anywhere" --defaultno --yesno "Would you like to enable UEFI bios? \n\n *May not work on some systems \n *Enable with caution" 10 60) then
 				if (whiptail --title "Arch Linux Anywhere" --defaultno --yesno "Is this a Virtualbox EFI guest install? \n\n *Are you installing Arch in Virtualbox? \n *Must have EFI setting on in virtualbox!" 10 60) then 
@@ -141,13 +140,12 @@ prepare_drives() {
 				GPT=true UEFI=true
 			fi
 		fi
-		if [ "$UEFI" == "false" ]; then GPT=false
+		if ! "$UEFI" ; then GPT=false
 			if (whiptail --title "Arch Linux Anywhere" --defaultno --yesno "Would you like to use GPT partitioning?" 10 60) then 
 				GPT=true
 			fi
 		fi
 	else
-		UEFI=false
 		if [ "$arch" == "x86_64" ]; then
 			if (whiptail --title "Arch Linux Anywhere" --defaultno --yesno "Would you like to enable UEFI bios? \n\n *May not work on some systems \n *Enable with caution" 10 60) then
 				if (whiptail --title "Arch Linux Anywhere" --defaultno --yesno "Is this a Virtualbox EFI guest install? \n\n *Are you installing Arch in Virtualbox? \n *Must have EFI setting on in virtualbox!" 10 60) then 
@@ -450,8 +448,13 @@ update_mirrors() {
 install_base() {
 	if ! "$INSTALLED" && "$mounted" ; then	
 		if (whiptail --title "Arch Linux Anywhere" --yesno "Begin installing Arch Linux base onto /dev/$DRIVE?" 10 60) then
-			pacstrap "$ARCH" base base-devel libnewt &> /dev/null &
-			pid=$! pri="$down" msg="Please wait while we install Arch Linux... \n\n *This may take awhile" load
+			if (whiptail --title "Arch Linux Anywhere" --yesno "Install wireless tools, netctl, and WPA supplicant? \n\n *Necessary for connecting to wifi \n *Provides wifi-menu command" 10 60) then
+				pacstrap "$ARCH" base base-devel libnewt wireless_tools wpa_supplicant wpa_actiond netctl dialog &> /dev/null &
+				pid=$! pri="$down" msg="Please wait while we install Arch Linux... \n\n *This may take awhile" load
+			else
+				pacstrap "$ARCH" base base-devel libnewt &> /dev/null &
+				pid=$! pri="$down" msg="Please wait while we install Arch Linux... \n\n *This may take awhile" load
+			fi	
 			genfstab -U -p "$ARCH" >> "$ARCH"/etc/fstab &> /dev/null &
 			if [ "$?" -eq "0" ]; then
 				INSTALLED=true
@@ -553,10 +556,13 @@ configure_system() {
 	pid=$! pri=0.2 msg="Loading $keyboard keymap..." load
 	if [ -n "$SUB_SUBZONE" ]; then
 		arch-chroot "$ARCH" ln -s /usr/share/zoneinfo/"$ZONE"/"$SUBZONE"/"$SUB_SUBZONE" /etc/localtime
+		pid=$! pri=0.2 msg="Setting timezone $ZONE $SUBZONE $SUB_SUBZONE..." load
 	elif [ -n "$SUBZONE" ]; then
 		arch-chroot "$ARCH" ln -s /usr/share/zoneinfo/"$ZONE"/"$SUBZONE" /etc/localtime
+		pid=$! pri=0.2 msg="Setting timezone $ZONE $SUBZONE..." load
 	elif [ -n "$ZONE" ]; then
 		arch-chroot "$ARCH" ln -s /usr/share/zoneinfo/"$ZONE" /etc/localtime
+		pid=$! pri=0.2 msg="Setting timezone $ZONE..." load
 	fi
 	if [ "$arch" == "x86_64" ]; then
 		if (whiptail --title "Arch Linux Anywhere" --yesno "64 bit architecture detected.\n\n *Add multilib repos to pacman.conf?" 10 60) then
@@ -564,6 +570,9 @@ configure_system() {
 			N
 			/Include/s/#//g}' /mnt/etc/pacman.conf
 		fi
+	fi
+	if (whiptail --title "Arch Linux Anywhere" --yesno "Enable DHCP at boot? \n\n *Automatic IP configuration." 10 60) then
+		arch-chroot "$ARCH" systemctl enable dhcpcd.service &> /dev/null
 	fi
 	system_configured=true
 	set_hostname
@@ -600,9 +609,9 @@ add_user() {
 	if (whiptail --title "Arch Linux Anywhere" --yesno "Create a new user account now?" 10 60) then
 		user=$(whiptail --nocancel --inputbox "Set username:" 10 40 "" 3>&1 1>&2 2>&3)
 	else
-		configure_network
+		graphics
 	fi
-	arch-chroot "$ARCH" useradd -m -g users -G wheel,audio,network,power,storage,optical -s /bin/bash "$user"
+i	arch-chroot "$ARCH" useradd -m -g users -G wheel,audio,network,power,storage,optical -s /bin/bash "$user"
 	echo -e 'user='$user'
 			   input=default
 			           while [ "$input" != "$input_chk" ]
@@ -620,21 +629,9 @@ add_user() {
 	if (whiptail --title "Arch Linux Anywhere" --yesno "Enable sudo privelege for $user? \n\n *Enables administrative privelege with sudo." 10 60) then
 		sed -i '/%wheel ALL=(ALL) ALL/s/^#//' $ARCH/etc/sudoers
 	fi
-	user_added=true configure_network
+	user_added=true graphics
 }
-
-configure_network() {
-	if (whiptail --title "Arch Linux Anywhere" --yesno "Enable DHCP at boot? \n\n *Automatic IP configuration." 10 60) then
-		arch-chroot "$ARCH" systemctl enable dhcpcd.service &> /dev/null
-	fi
-	if (whiptail --title "Arch Linux Anywhere" --yesno "Install wireless tools, netctl, and WPA supplicant? \n\n *Necessary if using wifi \n *Provides wifi-menu" 10 60) then
-		pacstrap "$ARCH" wireless_tools wpa_supplicant netclt dialog wpa_actiond &> /dev/null &
-		pid=$! pri=0.5 msg="Installing wireless tools and WPA supplicant..." load
-	fi
-	if "$network_configured" ; then main_menu ; fi
-	network_configured=true graphics
-}
-
+	
 graphics() {
 	if (whiptail --title "Arch Linux Anywhere" --yesno "Would you like to install xorg-server now? \n\n *Select yes for a graphical interface" 10 60) then
 		if "$VBOX" ; then 
@@ -854,7 +851,6 @@ main_menu() {
 		"Configure System"      "-" \
 		"Set Hostname"          "-" \
 		"Add User"              "-" \
-		"Configure Network"     "-" \
 		"Install Graphics"      "-" \
 		"Install Software"      "-" \
 		"Reboot System"         "-" \
@@ -877,7 +873,6 @@ main_menu() {
 		"Configure System") if "$INSTALLED" ; then configure_system ; fi ;;
 		"Set Hostname") if "$INSTALLED" ; then set_hostname ; fi ;;
 		"Add User") if "$INSTALLED" ; then add_user ; fi ;;
-		"Configure Network") if "$INSTALLED" ; then configure_network ; fi ;;
 		"Install Graphics") if "$INSTALLED" ; then graphics ; fi ;;
 		"Install Software") if "$INSTALLED" ; then install_software ; fi ;;
 		"Reboot System") reboot_system ;;
