@@ -639,7 +639,8 @@ graphics() {
 			"nvidia-304xx" "Legaxy 304xx branch" 3>&1 1>&2 2>&3)
 			if [ "$?" -gt "0" ]; then
 				graphics
-			fi GPU="$GPU ${GPU}-libgl" ;;
+			fi 
+			GPU="$GPU ${GPU}-libgl" ;;
 		"Virtualbox Guest Utils") GPU="virtualbox-guest-utils mesa-libgl"
 			echo -e "vboxguest\nvboxsf\nvboxvideo" > "$ARCH"/etc/modules-load.d/virtualbox.conf ;;
 		"Default") GPU="" ;;
