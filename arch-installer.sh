@@ -691,9 +691,9 @@ install_software() {
 		software=$(whiptail --title "Arch Linux Anywhere" --checklist "Choose your desired software: \n\n *Use spacebar to check/uncheck software \n *Press enter when finished" 20 60 10 \
 					"cmus"        "CLI music player" OFF \
 					"conky"       "Light system monitor for X " OFF \
+					"firefox"     "Graphical Web Browser" OFF \
 					"htop"        "CLI process Info" OFF \
 					"lynx"        "CLI web browser" OFF \
-					"midori"	  "Light web browser" OFF \
 					"openssh"     "Secure Shell Deamon" OFF \
 					"pulseaudio"  "Popular sound server" ON \
 					"screenfetch" "Display System Info" ON \
