@@ -24,11 +24,11 @@ check_connection() {
 				wifi_menu
 				if [ "$?" -gt "0" ]; then
 					if ! (whiptail --title "Arch Linux Anywhere" --yesno "Unable to connect to wifi, continue install offline?" 10 60) then
-						clear
-						exit 1
+						clear ; exit 1
 					fi
 				else
-					connection=true wifi=true
+					connection=true 
+					wifi=true
 				fi
 			fi
 		fi

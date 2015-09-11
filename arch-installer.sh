@@ -2,6 +2,7 @@
 
 ARCH=/mnt
 connection=false
+wifi=false
 UEFI=false
 mounted=false
 INSTALLED=false
@@ -24,11 +25,11 @@ check_connection() {
 				wifi_menu
 				if [ "$?" -gt "0" ]; then
 					if ! (whiptail --title "Arch Linux Anywhere" --yesno "Unable to connect to wifi, continue install offline?" 10 60) then
-						clear
-						exit 1
+						clear ; exit 1
 					fi
 				else
 					connection=true
+					wifi=true
 				fi
 			fi
 		fi
@@ -62,7 +63,7 @@ check_connection() {
 			esac
 			wget -O arch-anywhere-latest.sh https://raw.githubusercontent.com/deadhead420/arch-linux-anywhere/master/arch-anywhere-latest.sh &> /dev/null &
 			pid=$! pri=1 msg="Fetching latest installer..." load
-			sed -i -e '14,50d;s/check_connection/set_locale/' arch-anywhere-latest.sh
+			sed -i -e '15,69d;s/check_connection/set_locale/' arch-anywhere-latest.sh
 			chmod +x arch-anywhere-latest.sh
 			./arch-anywhere-latest.sh
 			exit
@@ -450,12 +451,17 @@ update_mirrors() {
 install_base() {
 	if ! "$INSTALLED" && "$mounted" ; then	
 		if (whiptail --title "Arch Linux Anywhere" --yesno "Begin installing Arch Linux base onto /dev/$DRIVE?" 10 60) then
-			if (whiptail --title "Arch Linux Anywhere" --defaultno --yesno "Install wireless tools, netctl, and WPA supplicant? Provides wifi-menu command. \n\n *Necessary for connecting to wifi \n *Select yes if using wifi" 11 60) then
+			if "$wifi" ; then
 				pacstrap "$ARCH" base base-devel libnewt wireless_tools wpa_supplicant wpa_actiond netctl dialog &> /dev/null &
 				pid=$! pri="$down" msg="Please wait while we install Arch Linux... \n\n *This may take awhile" load
 			else
-				pacstrap "$ARCH" base base-devel libnewt &> /dev/null &
-				pid=$! pri="$down" msg="Please wait while we install Arch Linux... \n\n *This may take awhile" load
+				if (whiptail --title "Arch Linux Anywhere" --defaultno --yesno "Install wireless tools, netctl, and WPA supplicant? Provides wifi-menu command. \n\n *Necessary for connecting to wifi \n *Select yes if using wifi" 11 60) then
+					pacstrap "$ARCH" base base-devel libnewt wireless_tools wpa_supplicant wpa_actiond netctl dialog &> /dev/null &
+					pid=$! pri="$down" msg="Please wait while we install Arch Linux... \n\n *This may take awhile" load
+				else
+					pacstrap "$ARCH" base base-devel libnewt &> /dev/null &
+					pid=$! pri="$down" msg="Please wait while we install Arch Linux... \n\n *This may take awhile" load
+				fi
 			fi
 			genfstab -U -p "$ARCH" >> "$ARCH"/etc/fstab
 			INSTALLED=true
