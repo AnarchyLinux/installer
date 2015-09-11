@@ -151,9 +151,12 @@ prepare_drives() {
 					else whiptail --title "Arch Linux Anywhere" --msgbox "Error setting swap! Be sure it is a number ending in 'M' or 'G'" 10 60 ; fi
 				done
 		fi
-		if [ "$arch" == "x86_64" ]; then
-			if (whiptail --title "Arch Linux Anywhere" --defaultno --yesno "Would you like to enable UEFI bios? \n\n *May not work on some systems \n *Enable with caution" 10 60) then
-				GPT=true UEFI=true
+		efivar -l
+		if [ "$?" -eq "0" ]; then
+			if [ "$arch" == "x86_64" ]; then
+				if (whiptail --title "Arch Linux Anywhere" --yesno "Would you like to enable UEFI bios? \n\n *May not work on some systems \n *Enable with caution" 10 60) then
+					GPT=true UEFI=true
+				fi
 			fi
 		fi
 		if ! "$UEFI" ; then GPT=false
@@ -162,14 +165,17 @@ prepare_drives() {
 			fi
 		fi
 	else
-		if [ "$arch" == "x86_64" ]; then
-			if (whiptail --title "Arch Linux Anywhere" --defaultno --yesno "Would you like to enable UEFI bios? \n\n *May not work on some systems \n *Enable with caution" 10 60) then
-				whiptail --title "Arch Linux Anywhere" --msgbox "Note you must create a UEFI bios partition! \n\n *Size of 512M-1024M type of EF00 \n *Partition scheme must be GPT!" 10 60
-				if (whiptail --title "Arch Linux Anywhere" --defaultno --yesno "System will not boot if you don't setup UEFI partition properly! \n\n *Are you sure you want to continue? \n *Only proceed if you know what you're doing." 10 60) then
-					UEFI=true
-				else
-					prepare_drives
-				fi	
+		efivar -l
+		if [ "$?" -eq "0" ]; then
+			if [ "$arch" == "x86_64" ]; then
+				if (whiptail --title "Arch Linux Anywhere" --yesno "Would you like to enable UEFI bios? \n\n *May not work on some systems \n *Enable with caution" 10 60) then
+					whiptail --title "Arch Linux Anywhere" --msgbox "Note you must create a UEFI bios partition! \n\n *Size of 512M-1024M type of EF00 \n *Partition scheme must be GPT!" 10 60
+					if (whiptail --title "Arch Linux Anywhere" --defaultno --yesno "System will not boot if you don't setup UEFI partition properly! \n\n *Are you sure you want to continue? \n *Only proceed if you know what you're doing." 10 60) then
+						UEFI=true
+					else
+						prepare_drives
+					fi	
+				fi
 			fi
 		fi
 		part_tool=$(whiptail --title "Arch Linux Anywhere" --menu "Please select your desired partitioning tool:" 15 60 5 \
@@ -281,8 +287,8 @@ prepare_drives() {
     			input=default
 				while [ "$input" != "$input_chk" ]
             		do
-            	    	input=$(whiptail --passwordbox --nocancel "Please enter a new password for /dev/$DRIVE \n\n *Note this password is used to unencrypt your drive at boot" 8 78 --title "Arch Linux Anywhere" 3>&1 1>&2 2>&3)
-            	    	input_chk=$(whiptail --passwordbox --nocancel "Enter your new password for /dev/$DRIVE again..." 8 78 --title "Arch Linux Anywhere" 3>&1 1>&2 2>&3)
+            	    	input=$(whiptail --passwordbox --nocancel "Please enter a new password for /dev/$DRIVE \n\n *Note this password is used to unencrypt your drive at boot" 10 78 --title "Arch Linux Anywhere" 3>&1 1>&2 2>&3)
+            	    	input_chk=$(whiptail --passwordbox --nocancel "Enter your new password for /dev/$DRIVE again..." 9 78 --title "Arch Linux Anywhere" 3>&1 1>&2 2>&3)
             	        if [ "$input" != "$input_chk" ]; then
             	        	whiptail --title "Arch Linux Anywhere" --msgbox "Passwords do not match, please try again." 10 60
             	        fi
@@ -571,7 +577,7 @@ set_hostname() {
 		while [ "$input" != "$input_chk" ]
             		do
                    		input=$(whiptail --passwordbox --nocancel "Please enter a new root password \n\n *Set a strong password here" 10 78 --title "Arch Linux Anywhere" 3>&1 1>&2 2>&3)
-            			input_chk=$(whiptail --passwordbox --nocancel "New root password again" 10 78 --title "Arch Linux Anywhere" 3>&1 1>&2 2>&3)
+            			input_chk=$(whiptail --passwordbox --nocancel "New root password again" 9 78 --title "Arch Linux Anywhere" 3>&1 1>&2 2>&3)
                    		 if [ "$input" != "$input_chk" ]; then
                       	      whiptail --title "Arch Linux Anywhere" --msgbox "Passwords do not match, please try again." 10 60
                      	 fi
@@ -605,8 +611,8 @@ add_user() {
 			   input=default
 			           while [ "$input" != "$input_chk" ]
             				do
-                   					 input=$(whiptail --passwordbox --nocancel "Please enter a new password for $user" 10 78 --title "Arch Linux Anywhere" 3>&1 1>&2 2>&3)
-            				         input_chk=$(whiptail --passwordbox --nocancel "New password for $user again" 10 78 --title "Arch Linux Anywhere" 3>&1 1>&2 2>&3)
+                   					 input=$(whiptail --passwordbox --nocancel "Please enter a new password for $user" 9 78 --title "Arch Linux Anywhere" 3>&1 1>&2 2>&3)
+            				         input_chk=$(whiptail --passwordbox --nocancel "New password for $user again" 9 78 --title "Arch Linux Anywhere" 3>&1 1>&2 2>&3)
                    					 if [ "$input" != "$input_chk" ]; then
                       				      whiptail --title "Arch Linux Anywhere" --msgbox "Passwords do not match, please try again." 10 60
                      				 fi
