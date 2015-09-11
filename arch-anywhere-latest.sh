@@ -629,20 +629,13 @@ add_user() {
 	
 graphics() {
 	if (whiptail --title "Arch Linux Anywhere" --yesno "Would you like to install xorg-server now? \n\n *Select yes for a graphical interface" 10 60) then
-		GPU=$(whiptail --title "Arch Linux Anywhere" --menu "Select your desired graphics driver: \n\n *If unsure use mesa-libgl or default \n *If installing in VirtualBox select guest-utils" 17 60 6 \
+		GPU=$(whiptail --title "Arch Linux Anywhere" --nocancel --menu "Select your desired graphics driver: \n\n *If unsure use mesa-libgl or default \n *If installing in VirtualBox select guest-utils" 17 60 6 \
 		"Default"				 "Auto detect" \
 		"mesa-libgl"             "Mesa OpenSource" \
 		"Nvidia"                 "NVIDIA Graphics" \
 		"Vbox-Guest-Utils"       "VirtualBox Graphics" \
 		"xf86-video-ati"         "AMD/ATI Graphics" \
 		"xf86-video-intel"       "Intel Graphics" 3>&1 1>&2 2>&3)
-		if [ "$?" -gt "0" ]; then
-			if (whiptail --title "Arch Linux Anywhere" --yesno "Continue without selecting graphics drivers? \n\n *Default drivers will be used." 10 60) then 
-				GPU="default"
-			else
-				graphics
-			fi
-		fi
 	else
 		if (whiptail --title "Arch Linux Anywhere" --yesno "Are you sure you dont want xorg-server? \n\n *You will be booted into command line only." 10 60) then
 			install_software
