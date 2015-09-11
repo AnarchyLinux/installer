@@ -642,7 +642,7 @@ add_user() {
 	
 graphics() {
 	if (whiptail --title "Arch Linux Anywhere" --yesno "Would you like to install xorg-server now? \n\n *Select yes for a graphical interface" 10 60) then
-		GPU=$(whiptail --title "Arch Linux Anywhere" --menu "Select your desired graphics driver: \n\n *If unsure use mesa-libgl or default \n *If installing in VirtualBox select guest-utils" 17 60 6 \
+		GPU=$(whiptail --title "Arch Linux Anywhere" --nocancel --menu "Select your desired graphics driver: \n\n *If unsure use mesa-libgl or default \n *If installing in VirtualBox select guest-utils" 17 60 6 \
 		"Default"			"Auto detect" \
 		"mesa-libgl"        "Mesa OpenSource" \
 		"Nvidia"            "NVIDIA Graphics" \
@@ -729,6 +729,10 @@ install_software() {
 		download=$(echo "$software" | sed 's/\"//g')
     	pacstrap "$ARCH" ${download} &> /dev/null &
     	pid=$! pri=1 msg="Please wait while installing software..." load
+	fi
+	if "$connection" ; then
+		arch-chroot "$ARCH" pacman -Syy &> /dev/null &
+		pid=$! pri=1 msg="Updating pacman databases..." load
 	fi
 	reboot_system
 }
