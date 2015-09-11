@@ -1,7 +1,8 @@
 #!/bin/bash
 
-#ARCH-ANYWHERE
 ARCH=/mnt
+connection=false
+wifi=false
 UEFI=false
 mounted=false
 INSTALLED=false
@@ -12,16 +13,29 @@ user_added=false
 arch=$(uname -a | grep -o "x86_64\|i386\|i686")
 
 check_connection() {
-	clear
 	if ! (whiptail --title "Arch Linux Anywhere" --yesno "Welcome to the Arch Linux Anywhere installer! \n\n *Would you like to begin the install process?" 10 60) then
 		exit
 	fi
 	ping -w 2 google.com &> /dev/null
 	if [ "$?" -gt "0" ]; then
-		whiptail --title "Arch Linux Anywhere" --msgbox "Error. No connection found, exiting." 10 60
-		clear
-		exit 1
-	else		
+		wifi_network=$(ip addr | grep "wlp" | awk '{print $2}' sed 's/://')
+		if [ -n "$wifi_network" ]; then
+			if (whiptail --title "Arch Linux Anywhere" --yesno "Wifi interface detected, would you like to connect?" 10 60) then
+				wifi_menu
+				if [ "$?" -gt "0" ]; then
+					if ! (whiptail --title "Arch Linux Anywhere" --yesno "Unable to connect to wifi, continue install offline?" 10 60) then
+						clear
+						exit 1
+					fi
+				else
+					connection=true wifi=true
+				fi
+			fi
+		fi
+	else
+		connection=true
+	fi	
+	if "$connection" ; then
 		start=$(date +%s)
 		wget -O /dev/null http://cachefly.cachefly.net/10mb.test &> /dev/null &
 		pid=$! pri=1 msg="Please wait while we test your connection..." load
@@ -45,6 +59,11 @@ check_connection() {
 			;;
 			*) export down="10" ;;
 		esac
+	else
+		whiptail --title "Arch Linux Anywhere" --msgbox "Error. No connection found, exiting. \n\n *Try installing Arch-Anywhere offline" 10 60
+		clear
+		exit 1
+
 	fi
 	set_locale
 }
@@ -420,13 +439,18 @@ update_mirrors() {
 install_base() {
 	if ! "$INSTALLED" && "$mounted" ; then	
 		if (whiptail --title "Arch Linux Anywhere" --yesno "Begin installing Arch Linux base onto /dev/$DRIVE?" 10 60) then
-			if (whiptail --title "Arch Linux Anywhere" --defaultno --yesno "Install wireless tools, netctl, and WPA supplicant? Provides wifi-menu command. \n\n *Necessary for connecting to wifi \n *Select yes if using wifi" 11 60) then
+			if "$wifi" ; then
 				pacstrap "$ARCH" base base-devel libnewt wireless_tools wpa_supplicant wpa_actiond netctl dialog &> /dev/null &
 				pid=$! pri="$down" msg="Please wait while we install Arch Linux... \n\n *This may take awhile" load
 			else
-				pacstrap "$ARCH" base base-devel libnewt &> /dev/null &
-				pid=$! pri="$down" msg="Please wait while we install Arch Linux... \n\n *This may take awhile" load
-			fi	
+				if (whiptail --title "Arch Linux Anywhere" --defaultno --yesno "Install wireless tools, netctl, and WPA supplicant? Provides wifi-menu command. \n\n *Necessary for connecting to wifi \n *Select yes if using wifi" 11 60) then
+					pacstrap "$ARCH" base base-devel libnewt wireless_tools wpa_supplicant wpa_actiond netctl dialog &> /dev/null &
+					pid=$! pri="$down" msg="Please wait while we install Arch Linux... \n\n *This may take awhile" load
+				else
+					pacstrap "$ARCH" base base-devel libnewt &> /dev/null &
+					pid=$! pri="$down" msg="Please wait while we install Arch Linux... \n\n *This may take awhile" load
+				fi
+			fi
 			genfstab -U -p "$ARCH" >> "$ARCH"/etc/fstab
 			INSTALLED=true
 			while [ ! -n "$loader" ]
@@ -546,8 +570,8 @@ set_hostname() {
 	echo -e 'input=default
 		while [ "$input" != "$input_chk" ]
             		do
-                   		input=$(whiptail --passwordbox --nocancel "Please enter a new root password \n\n *Set a strong password here" 8 78 --title "Arch Linux Anywhere" 3>&1 1>&2 2>&3)
-            			input_chk=$(whiptail --passwordbox --nocancel "New root password again" 8 78 --title "Arch Linux Anywhere" 3>&1 1>&2 2>&3)
+                   		input=$(whiptail --passwordbox --nocancel "Please enter a new root password \n\n *Set a strong password here" 10 78 --title "Arch Linux Anywhere" 3>&1 1>&2 2>&3)
+            			input_chk=$(whiptail --passwordbox --nocancel "New root password again" 10 78 --title "Arch Linux Anywhere" 3>&1 1>&2 2>&3)
                    		 if [ "$input" != "$input_chk" ]; then
                       	      whiptail --title "Arch Linux Anywhere" --msgbox "Passwords do not match, please try again." 10 60
                      	 fi
@@ -568,6 +592,11 @@ add_user() {
 	fi
 	if (whiptail --title "Arch Linux Anywhere" --yesno "Create a new user account now?" 10 60) then
 		user=$(whiptail --nocancel --inputbox "Set username: \n\n *Letters and numbers only \n *No spaces or special characters!" 10 60 "" 3>&1 1>&2 2>&3)
+		user_check=$(<<<$user grep '[!@#$%^&*(),./;{}:"?><~`=+_[]\|]\|-')
+		if [ -n "$user_check" ]; then
+			whiptail --title "Arch Linux Anywhere" --msgbox "Error username can't contain special characters, please try again." 10 60
+			add_user
+		fi
 	else
 		graphics
 	fi
@@ -576,8 +605,8 @@ add_user() {
 			   input=default
 			           while [ "$input" != "$input_chk" ]
             				do
-                   					 input=$(whiptail --passwordbox --nocancel "Please enter a new password for $user" 8 78 --title "Arch Linux Anywhere" 3>&1 1>&2 2>&3)
-            				         input_chk=$(whiptail --passwordbox --nocancel "New password for $user again" 8 78 --title "Arch Linux Anywhere" 3>&1 1>&2 2>&3)
+                   					 input=$(whiptail --passwordbox --nocancel "Please enter a new password for $user" 10 78 --title "Arch Linux Anywhere" 3>&1 1>&2 2>&3)
+            				         input_chk=$(whiptail --passwordbox --nocancel "New password for $user again" 10 78 --title "Arch Linux Anywhere" 3>&1 1>&2 2>&3)
                    					 if [ "$input" != "$input_chk" ]; then
                       				      whiptail --title "Arch Linux Anywhere" --msgbox "Passwords do not match, please try again." 10 60
                      				 fi
@@ -598,7 +627,7 @@ graphics() {
 		"Default"				 "Auto detect" \
 		"mesa-libgl"             "Mesa OpenSource" \
 		"Nvidia"                 "NVIDIA Graphics" \
-		"Virtualbox Guest Utils" "VirtualBox Graphics" \
+		"Vbox-Guest-Utils"       "VirtualBox Graphics" \
 		"xf86-video-ati"         "AMD/ATI Graphics" \
 		"xf86-video-intel"       "Intel Graphics" 3>&1 1>&2 2>&3)
 		if [ "$?" -gt "0" ]; then
@@ -622,10 +651,15 @@ graphics() {
 			if [ "$?" -gt "0" ]; then
 				graphics
 			fi 
-			GPU="$GPU ${GPU}-libgl" ;;
-		"Virtualbox Guest Utils") GPU="virtualbox-guest-utils mesa-libgl"
-			echo -e "vboxguest\nvboxsf\nvboxvideo" > "$ARCH"/etc/modules-load.d/virtualbox.conf ;;
-		"Default") GPU="" ;;
+			GPU="$GPU ${GPU}-libgl" 
+		;;
+		"Vbox-Guest-Utils") 
+			GPU="virtualbox-guest-utils mesa-libgl"
+			echo -e "vboxguest\nvboxsf\nvboxvideo" > "$ARCH"/etc/modules-load.d/virtualbox.conf 
+		;;
+		"Default") 
+			GPU="" 
+		;;
 	esac
 	pacstrap "$ARCH" xorg-server xorg-server-utils xorg-xinit xterm $(echo "$GPU") &> /dev/null &
 	pid=$! pri="$down" msg="Please wait while installing xorg-server..." load
@@ -651,7 +685,7 @@ graphics() {
 					DE=set
 				else
 					i=true
-					if (whiptail --title "Arch Linux Anywhere" --yesno "Would you like to install LightDM display manager?" 10 60) then
+					if (whiptail --title "Arch Linux Anywhere" --yesno "Would you like to install LightDM display manager? \n\n *Graphical login manager." 10 60) then
 						pacstrap "$ARCH" lightdm lightdm-gtk-greeter &> /dev/null &
 						pid=$! pri="$down" msg="Please wait while installing LightDM..." load
 						arch-chroot "$ARCH" systemctl enable lightdm.service &> /dev/null
