@@ -648,8 +648,7 @@ graphics() {
 			install_software
 		fi
 	fi
-	case "$GPU" in
-		"Nvidia")
+	if [ "$GPU" == "Nvidia" ]; then
 			GPU=$(whiptail --title "Arch Linux Anywhere" --menu "Select your desired Nvidia driver: \n\n *Cancel if none" 15 60 4 \
 			"nvidia"       "Latest stable nvidia" \
 			"nvidia-340xx" "Legacy 340xx branch" \
@@ -658,15 +657,12 @@ graphics() {
 				graphics
 			fi 
 			GPU="$GPU ${GPU}-libgl" 
-		;;
-		"Vbox-Guest-Utils") 
+	elif [ "$GPU" == "Vbox-Guest-Utils" ]; then
 			GPU="virtualbox-guest-utils mesa-libgl"
 			echo -e "vboxguest\nvboxsf\nvboxvideo" > "$ARCH"/etc/modules-load.d/virtualbox.conf 
-		;;
-		"Default") 
+	elif [ "$GPU" == "Default" ]; then
 			GPU="" 
-		;;
-	esac
+	fi
 	pacstrap "$ARCH" xorg-server xorg-server-utils xorg-xinit xterm $(echo "$GPU") &> /dev/null &
 	pid=$! pri="$down" msg="Please wait while installing xorg-server..." load
 	if (whiptail --title "Arch Linux Anywhere" --yesno "Would you like to install a desktop or window manager?" 10 60) then

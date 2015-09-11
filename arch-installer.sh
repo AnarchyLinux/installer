@@ -177,14 +177,15 @@ prepare_drives() {
 	else
 		efivar -l
 		if [ "$?" -eq "0" ]; then
-		if [ "$arch" == "x86_64" ]; then
-			if (whiptail --title "Arch Linux Anywhere" --yesno "Would you like to enable UEFI bios? \n\n *May not work on some systems \n *Enable with caution" 10 60) then
-				whiptail --title "Arch Linux Anywhere" --msgbox "Note you must create a UEFI bios partition! \n\n *Size of 512M-1024M type of EF00 \n *Partition scheme must be GPT!" 10 60
-				if (whiptail --title "Arch Linux Anywhere" --defaultno --yesno "System will not boot if you don't setup UEFI partition properly! \n\n *Are you sure you want to continue? \n *Only proceed if you know what you're doing." 10 60) then
-					UEFI=true
-				else
-					prepare_drives
-				fi	
+			if [ "$arch" == "x86_64" ]; then
+				if (whiptail --title "Arch Linux Anywhere" --yesno "Would you like to enable UEFI bios? \n\n *May not work on some systems \n *Enable with caution" 10 60) then
+					whiptail --title "Arch Linux Anywhere" --msgbox "Note you must create a UEFI bios partition! \n\n *Size of 512M-1024M type of EF00 \n *Partition scheme must be GPT!" 10 60
+					if (whiptail --title "Arch Linux Anywhere" --defaultno --yesno "System will not boot if you don't setup UEFI partition properly! \n\n *Are you sure you want to continue? \n *Only proceed if you know what you're doing." 10 60) then
+						UEFI=true
+					else
+						prepare_drives
+					fi	
+				fi
 			fi
 		fi
 		part_tool=$(whiptail --title "Arch Linux Anywhere" --menu "Please select your desired partitioning tool:" 15 60 5 \
@@ -642,12 +643,12 @@ add_user() {
 graphics() {
 	if (whiptail --title "Arch Linux Anywhere" --yesno "Would you like to install xorg-server now? \n\n *Select yes for a graphical interface" 10 60) then
 		GPU=$(whiptail --title "Arch Linux Anywhere" --menu "Select your desired graphics driver: \n\n *If unsure use mesa-libgl or default \n *If installing in VirtualBox select guest-utils" 17 60 6 \
-		"Default"				 "Auto detect" \
-		"mesa-libgl"             "Mesa OpenSource" \
-		"Nvidia"                 "NVIDIA Graphics" \
-		"Vbox-Guest-Utils" "VirtualBox Graphics" \
-		"xf86-video-ati"         "AMD/ATI Graphics" \
-		"xf86-video-intel"       "Intel Graphics" 3>&1 1>&2 2>&3)
+		"Default"			"Auto detect" \
+		"mesa-libgl"        "Mesa OpenSource" \
+		"Nvidia"            "NVIDIA Graphics" \
+		"Vbox-Guest-Utils"  "VirtualBox Graphics" \
+		"xf86-video-ati"    "AMD/ATI Graphics" \
+		"xf86-video-intel"  "Intel Graphics" 3>&1 1>&2 2>&3)
 		if [ "$?" -gt "0" ]; then
 			if (whiptail --title "Arch Linux Anywhere" --yesno "Continue without selecting graphics drivers? \n\n *Default drivers will be used." 10 60) then 
 				GPU="default"
@@ -660,8 +661,7 @@ graphics() {
 			install_software
 		fi
 	fi
-	case "$GPU" in
-		"Nvidia")
+	if [ "$GPU" == "Nvidia" ]; then
 			GPU=$(whiptail --title "Arch Linux Anywhere" --menu "Select your desired Nvidia driver: \n\n *Cancel if none" 15 60 4 \
 			"nvidia"       "Latest stable nvidia" \
 			"nvidia-340xx" "Legacy 340xx branch" \
@@ -670,15 +670,12 @@ graphics() {
 				graphics
 			fi 
 			GPU="$GPU ${GPU}-libgl"
-		;;
-		"Vbox-Guest-Utils") 
+	elif [ "$GPU" == "Vbox-Guest-Utils" ]; then
 			GPU="virtualbox-guest-utils mesa-libgl"
 			echo -e "vboxguest\nvboxsf\nvboxvideo" > "$ARCH"/etc/modules-load.d/virtualbox.conf
-		;;
-		"Default") 
+	elif [ "$GPU" == "Default" ]; then
 			GPU=""
-		;;
-	esac
+	fi
 	pacstrap "$ARCH" xorg-server xorg-server-utils xorg-xinit xterm $(echo "$GPU") &> /dev/null &
 	pid=$! pri="$down" msg="Please wait while installing xorg-server..." load
 	if (whiptail --title "Arch Linux Anywhere" --yesno "Would you like to install a desktop or window manager?" 10 60) then
