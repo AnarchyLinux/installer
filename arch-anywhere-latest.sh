@@ -14,7 +14,7 @@ arch=$(uname -a | grep -o "x86_64\|i386\|i686")
 
 check_connection() {
 	if ! (whiptail --title "Arch Linux Anywhere" --yesno "Welcome to the Arch Linux Anywhere installer! \n\n *Would you like to begin the install process?" 10 60) then
-		exit
+		clear ; exit
 	fi
 	ping -w 2 google.com &> /dev/null
 	if [ "$?" -gt "0" ]; then
@@ -155,7 +155,7 @@ prepare_drives() {
 		if [ "$?" -eq "0" ]; then
 			if [ "$arch" == "x86_64" ]; then
 				if (whiptail --title "Arch Linux Anywhere" --yesno "Would you like to enable UEFI bios? \n\n *May not work on some systems \n *Enable with caution" 10 60) then
-					GPT=true UEFI=true
+					GPT=true UEFI=true down=$((down+1))
 				fi
 			fi
 		fi
@@ -171,7 +171,7 @@ prepare_drives() {
 				if (whiptail --title "Arch Linux Anywhere" --yesno "Would you like to enable UEFI bios? \n\n *May not work on some systems \n *Enable with caution" 10 60) then
 					whiptail --title "Arch Linux Anywhere" --msgbox "Note you must create a UEFI bios partition! \n\n *Size of 512M-1024M type of EF00 \n *Partition scheme must be GPT!" 10 60
 					if (whiptail --title "Arch Linux Anywhere" --defaultno --yesno "System will not boot if you don't setup UEFI partition properly! \n\n *Are you sure you want to continue? \n *Only proceed if you know what you're doing." 10 60) then
-						UEFI=true
+						UEFI=true down=$((down+1))
 					else
 						prepare_drives
 					fi	
@@ -598,9 +598,10 @@ add_user() {
 	fi
 	if (whiptail --title "Arch Linux Anywhere" --yesno "Create a new user account now?" 10 60) then
 		user=$(whiptail --nocancel --inputbox "Set username: \n\n *Letters and numbers only \n *No spaces or special characters!" 10 60 "" 3>&1 1>&2 2>&3)
-		user_check=$(<<<$user grep '[!@#$%^&*(),./;{}:"?><~`=+_[]\|]\|-')
-		if [ -n "$user_check" ]; then
-			whiptail --title "Arch Linux Anywhere" --msgbox "Error username can't contain special characters, please try again." 10 60
+		user=$(<<<$user sed 's/ //g')
+		<<<$user grep "^[0-9]\|[\[\$\!\'\"\`\\|%&#@()_-+=<>~;:/?.,^{}]\|]"
+		if [ "$?" -gt "0" ]; then
+			whiptail --title "Arch Linux Anywhere" --msgbox "Error username must begin with letter and cannot contain special characters. \n\n *Please try again." 10 60
 			add_user
 		fi
 	else
