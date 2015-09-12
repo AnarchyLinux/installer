@@ -421,6 +421,7 @@ prepare_drives() {
 				done
 		;;
 	esac
+	clear
 	if ! "$mounted" ; then
 		whiptail --title "Arch Linux Anywhere" --msgbox "An error was detected during partitioning \n\n *Returing to drive partitioning" 10 60
 		prepare_drives
@@ -599,8 +600,8 @@ add_user() {
 	if (whiptail --title "Arch Linux Anywhere" --yesno "Create a new user account now?" 10 60) then
 		user=$(whiptail --nocancel --inputbox "Set username: \n\n *Letters and numbers only \n *No spaces or special characters!" 10 60 "" 3>&1 1>&2 2>&3)
 		user=$(<<<$user sed 's/ //g')
-		<<<$user grep "^[0-9]\|[\[\$\!\'\"\`\\|%&#@()_-+=<>~;:/?.,^{}]\|]"
-		if [ "$?" -gt "0" ]; then
+		user_check=$(<<<$user grep "^[0-9]\|[\[\$\!\'\"\`\\|%&#@()_-+=<>~;:/?.,^{}]\|]")
+		if [ -n "$user_check" ]; then
 			whiptail --title "Arch Linux Anywhere" --msgbox "Error username must begin with letter and cannot contain special characters. \n\n *Please try again." 10 60
 			add_user
 		fi
@@ -640,6 +641,8 @@ graphics() {
 	else
 		if (whiptail --title "Arch Linux Anywhere" --yesno "Are you sure you dont want xorg-server? \n\n *You will be booted into command line only." 10 60) then
 			install_software
+		else
+			graphics
 		fi
 	fi
 	if [ "$GPU" == "Nvidia" ]; then
@@ -768,6 +771,9 @@ install_software() {
 					"virtualbox"  	       "Desktop virtuialization" OFF \
 					"vlc"         	   	   "GUI media player" OFF \
 					"ufw"         	       "Uncomplicated Firewall" OFF 3>&1 1>&2 2>&3)
+		if [ "$?" -gt "0" ]
+			reboot_system
+		fi
 		download=$(echo "$software" | sed 's/\"//g')
     	pacstrap "$ARCH" ${download} &> /dev/null &
     	pid=$! pri=1 msg="Please wait while installing software..." load
