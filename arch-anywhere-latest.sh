@@ -836,7 +836,7 @@ load() {
 }
 
 main_menu() {
-	return=(whiptail --title "Arch Linux Anywhere" --msgbox "Sistemul nu este încă instalat \n *revenire la meniu" 10 60)
+	return=(whiptail --title "Arch Linux Anywhere" --msgbox "Sistemul nu este instalat încă \n *revenire la meniu" 10 60)
 	menu_item=$(whiptail --nocancel --title "Arch Linux Anywhere" --menu "Iteme Meniu:" 15 60 6 \
 		"Setare localizare"			"-" \
 		"Setare fus orar"       	"-" \
@@ -850,19 +850,19 @@ main_menu() {
 		"Install drivere video"    	"-" \
 		"Instalare programe"      	"-" \
 		"Restartare Sistem"        	"-" \
-		"Ieşire Instalator"        	"-" 3>&1 1>&2 2>&3)
+		"Ieşire Instalare"        	"-" 3>&1 1>&2 2>&3)
 	case "$menu_item" in
 		"Setare localizare" ) 
-			if "$locale_set" ; then whiptail --title "Arch Linux Anywhere" --msgbox "Locale already set, revenire la meniu" 10 60 ; main_menu ; fi
+			if "$locale_set" ; then whiptail --title "Arch Linux Anywhere" --msgbox "Localizarea este setată deja, revenire la meniu" 10 60 ; main_menu ; fi
 			set_locale ;;
 		"Setare fus orar")
-			if "$zone_set" ; then whiptail --title "Arch Linux Anywhere" --msgbox "Fusul orar este deja setat set, revenire la meniu" 10 60 ; main_menu ; fi
+			if "$zone_set" ; then whiptail --title "Arch Linux Anywhere" --msgbox "Fusul orar este setat deja, revenire la meniu" 10 60 ; main_menu ; fi
 			set_zone ;;
 		"Setare tastatură")
-			if "$keys_set" ; then whiptail --title "Arch Linux Anywhere" --msgbox "Keymap already set, revenire la meniu" 10 60 ; main_menu ; fi
+			if "$keys_set" ; then whiptail --title "Arch Linux Anywhere" --msgbox "Tastatura este setată deja, revenire la meniu" 10 60 ; main_menu ; fi
 			set_keys ;;
 		"Partiţionare hard")
-			if "$mounted" ; then whiptail --title "Arch Linux Anywhere" --msgbox "Drive already mounted, try install base system \n revenire la meniu" 10 60 ; main_menu ; fi
+			if "$mounted" ; then whiptail --title "Arch Linux Anywhere" --msgbox "Unitatea este montată deja, încercaţi instalarea sistemului de bază \n revenire la meniu" 10 60 ; main_menu ; fi
  			prepare_drives ;;
 		"Actualizare Mirror-uri") update_mirrors ;;
 		"Instalare sistem de bază") install_base ;;
@@ -872,12 +872,12 @@ main_menu() {
 		"Instalare drivere video") if "$INSTALLED" ; then graphics ; fi ;;
 		"Instalare programe") if "$INSTALLED" ; then install_software ; fi ;;
 		"Restartare Sistem") reboot_system ;;
-		"Ieşire Instalator") 
+		"Ieşire Instalare") 
 			if "$INSTALLED" ; then
-				whiptail --title "Arch Linux Anywhere" --msgbox "Sistemul este instalat \n\n Ieşire instalator arch..." 10 60
+				whiptail --title "Arch Linux Anywhere" --msgbox "Sistemul este instalat \n\n Ieşire instalare arch..." 10 60
 				clear ; exit
 			else
-				if (whiptail --title "Arch Linux Anywhere" --yesno "Sistemul nu este încă instalat... \n\n Sigur doriţi să ieşiţi?" 10 60) then
+				if (whiptail --title "Arch Linux Anywhere" --yesno "Sistemul nu este instalat încă... \n\n Sigur doriţi să ieşiţi?" 10 60) then
 					clear ; exit
 				else
 					main_menu
