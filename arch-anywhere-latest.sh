@@ -132,7 +132,6 @@ prepare_drives() {
 		"ext2"      "2nd extended file system" \
 		"btrfs"     "B-Tree File System" \
 		"jfs"       "Journaled File System" \
-		"f2fs"      "Flash-Friendly File System" \
 		"reiserfs"  "Reiser File System" 3>&1 1>&2 2>&3)
 		SWAP=false
 		if (whiptail --title "Arch Linux Anywhere" --yesno "Create SWAP space?" 10 60) then
@@ -353,7 +352,6 @@ prepare_drives() {
 				"ext2"      "2nd extended file system" \
 				"btrfs"     "B-Tree File System" \
 				"jfs"       "Journaled File System" \
-				"f2fs"      "Flash-Friendly File System" \
 				"reiserfs"  "Reiser File System" 3>&1 1>&2 2>&3)
 				wipefs -a -q /dev/"$ROOT" &> /dev/null
 				if [ "$FS" == "jfs" ] || [ "$FS" == "reiserfs" ]; then
@@ -402,7 +400,6 @@ prepare_drives() {
 								"ext2"      "2nd extended file system" \
 								"btrfs"     "B-Tree File System" \
 								"jfs"       "Journaled File System" \
-								"f2fs"      "Flash-Friendly File System" \
 								"reiserfs"  "Reiser File System" 3>&1 1>&2 2>&3)
 								wipefs -a -q /dev/"$new_mnt"
 								if [ "$FS" == "jfs" ] || [ "$FS" == "reiserfs" ]; then
