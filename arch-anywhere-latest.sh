@@ -95,7 +95,7 @@ set_zone() {
 			chk_dir=$(find /usr/share/zoneinfo/"$ZONE" -maxdepth 1 -type  d | sed -n -e 's!^.*/!!p' | grep "$SUBZONE")
 			if [ -n "$chk_dir" ]; then
 				sublist=$(find /usr/share/zoneinfo/"$ZONE"/"$SUBZONE" -maxdepth 1 | sed -n -e 's!^.*/!!p' | sort | sed 's/$/ -/g')
-				SUB_SUBZONE=$(whiptail --title "Arch Linux Anywhere" --menu "Please enter your sub-zone:" 15 60 6 $sublist 3>&1 1>&2 2>&3)
+				SUB_SUBZONE=$(whiptail --title "Arch Linux Anywhere" --menu "Tastaţi sub-zona dvs. :" 15 60 6 $sublist 3>&1 1>&2 2>&3)
 				if [ "$?" -gt "0" ]; then set_zone ; fi
 			fi
 		fi
@@ -109,7 +109,7 @@ set_keys() {
 
 prepare_drives() {
 	drive=$(lsblk | grep "disk" | grep -v "rom" | awk '{print $1   " "   $4}')
-	DRIVE=$(whiptail --nocancel --title "Arch Linux Anywhere" --menu "Selectatţi discul unde doriţi să instalaţi arch linux:" 15 60 5 $drive 3>&1 1>&2 2>&3)
+	DRIVE=$(whiptail --nocancel --title "Arch Linux Anywhere" --menu "Selectaţi discul unde doriţi să instalaţi arch linux:" 15 60 5 $drive 3>&1 1>&2 2>&3)
 	PART=$(whiptail --title "Arch Linux Anywhere" --menu "Selectaţi metoda dorită de partiţionare: \n\n *NOTĂ: Partiţionarea automată va formata unitatea selectată \n *Apăsaţi Cancel pentru a reveni la selectare disc" 15 60 4 \
 	"Pariţionare automată"           "-" \
 	"Partiţionare automată-criptare LVM"   "-" \
@@ -226,7 +226,7 @@ prepare_drives() {
 					swapon /dev/"$SWAP" &> /dev/null
 				else
 					echo -e "o\nn\np\n1\n\n+100M\nn\np\n2\n\n\nw" | fdisk /dev/"$DRIVE" &> /dev/null &
-					pid=$! pri=0.3 msg="Pariţionare /dev/$DRIVE..." load
+					pid=$! pri=0.3 msg="Partiţionare /dev/$DRIVE..." load
 				fi				
 				BOOT="$(lsblk | grep "$DRIVE" |  awk '{ if (NR==2) print substr ($1,3) }')"
 				ROOT="$(lsblk | grep "$DRIVE" |  awk '{ if (NR==3) print substr ($1,3) }')"
@@ -287,7 +287,7 @@ prepare_drives() {
 				while [ "$input" != "$input_chk" ]
             		do
             	    	input=$(whiptail --passwordbox --nocancel "Tastaţi o parolă nouă pentru /dev/$DRIVE \n\n *Notă: Această parolă este folosită pentru decriptarea disc-ului la boot-are" 10 78 --title "Arch Linux Anywhere" 3>&1 1>&2 2>&3)
-            	    	input_chk=$(whiptail --passwordbox --nocancel "Taastaţi din nou parola pentru /dev/$DRIVE again..." 9 78 --title "Arch Linux Anywhere" 3>&1 1>&2 2>&3)
+            	    	input_chk=$(whiptail --passwordbox --nocancel "Taastaţi din nou parola pentru /dev/$DRIVE ..." 9 78 --title "Arch Linux Anywhere" 3>&1 1>&2 2>&3)
             	        if [ "$input" != "$input_chk" ]; then
             	        	whiptail --title "Arch Linux Anywhere" --msgbox "Parolele nu se potrivesc, încercaţi din nou." 10 60
             	        fi
@@ -335,7 +335,7 @@ prepare_drives() {
 			if "$UEFI" ; then
 				BOOT=$(whiptail --nocancel --title "Arch Linux Anywhere" --nocancel --menu "Selectaţi partiţia de boot EFI: \n\n *Generally the first partition size of 512M-1024M" 15 60 5 $partition 3>&1 1>&2 2>&3)
 				i=$(<<<$BOOT cut -c4-)
-				if (whiptail --title "Arch Linux Anywhere" --yesno "This will create a fat32 formatted EFI partition. \n\n *Are you sure you want to do this?" 10 60) then
+				if (whiptail --title "Arch Linux Anywhere" --yesno "Acest lucru va crea o partiţie EFI formatată FAT32. \n\n *Sigur doriţi acest lucru?" 10 60) then
 					echo -e "t\n${i}\nEF00\nw\ny" | gdisk /dev/"$DRIVE" &> /dev/null
 					mkfs.vfat -F32 /dev/"$BOOT" &> /dev/null &
 					pid=$! pri=0.2 msg="Se crează partiţia de boot efi..." load
