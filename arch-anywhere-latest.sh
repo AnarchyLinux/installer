@@ -799,11 +799,11 @@ reboot_system() {
 				clear ; exit
 			fi
 		fi
-		if (whiptail --title "Arch Linux Anywhere" --yesno "Instalare completă! Restartez acum? \n\n *Selectaţi yes pentru a restarta acum \n *No pentru a reveni în linie de comandă" 10 60) then
+		if (whiptail --title "Arch Linux Anywhere" --yesno "Instalare completă! Restartez acum? \n\n *Selectaţi yes pentru a restarta acum \n *No pentru a reveni în linia de comandă" 10 60) then
 			umount -R $ARCH
 		    clear ; reboot ; exit
 		else
-			if (whiptail --title "Arch Linux Anywhere" --yesno "System fully installed \n\n *Would you like to unmount?" 10 60) then
+			if (whiptail --title "Arch Linux Anywhere" --yesno "Sistem instalat complet \n\n *Would you like to unmount?" 10 60) then
 				umount -R "$ARCH"
 				clear ; exit
 			else
@@ -844,13 +844,13 @@ main_menu() {
 		"Partiţionare hard"     	"-" \
 		"Actualizare Mirror"       	"-" \
 		"Instalare sistem de bază"  "-" \
-		"Configure System"      	"-" \
+		"Configurare Sistem"      	"-" \
 		"Setare Hostname"          	"-" \
 		"Adăugare Utilizator"   	"-" \
 		"Install drivere video"    	"-" \
 		"Instalare programe"      	"-" \
-		"Reboot System"         	"-" \
-		"Exit Installer"        	"-" 3>&1 1>&2 2>&3)
+		"Restartare Sistem"        	"-" \
+		"Ieşire Instalator"        	"-" 3>&1 1>&2 2>&3)
 	case "$menu_item" in
 		"Setare localizare" ) 
 			if "$locale_set" ; then whiptail --title "Arch Linux Anywhere" --msgbox "Locale already set, returning to menu" 10 60 ; main_menu ; fi
