@@ -395,12 +395,12 @@ prepare_drives() {
 						else
 							if (whiptail --title "Arch Linux Anywhere" --yesno "Va crea un punct de montare pentru $MNT cu /dev/$new_mnt \n\n *Continuaţi?" 10 60) then
 								FS=$(whiptail --title "Arch Linux Anywhere" --nocancel --menu "Selectaţi tipul de sistem de fişiere pentru $MNT: \n\n *Implicit este ext4" 15 60 6 \
-								"ext4"      "4th extended file system" \
-								"ext3"      "3rd extended file system" \
-								"ext2"      "2nd extended file system" \
-								"btrfs"     "B-Tree File System" \
-								"jfs"       "Journaled File System" \
-								"reiserfs"  "Reiser File System" 3>&1 1>&2 2>&3)
+								"ext4"      "Sistem de fişiere ext4" \
+								"ext3"      "Sistem de fişiere ext3" \
+								"ext2"      "Sistem de fişiere ext2" \
+								"btrfs"     "Sistem de fişiere btrfs" \
+								"jfs"       "Sistem de fişiere JFS cu jurnalizare" \
+								"reiserfs"  "Sistem de fişiere ReiserFS" 3>&1 1>&2 2>&3)
 								wipefs -a -q /dev/"$new_mnt"
 								if [ "$FS" == "jfs" ] || [ "$FS" == "reiserfs" ]; then
 									echo -e "y" | mkfs -t "$FS" /dev/"$new_mnt" &> /dev/null &
@@ -428,8 +428,8 @@ prepare_drives() {
 
 update_mirrors() {
 	countries=$(echo -e "AT Austria\n AU  Australia\n BE Belgium\n BG Bulgaria\n BR Brazil\n BY Belarus\n CA Canada\n CL Chile \n CN China\n CO Columbia\n CZ Czech-Republic\n DK Denmark\n EE Estonia\n ES Spain\n FI Finland\n FR France\n GB United-Kingdom\n HU Hungary\n IE Ireland\n IL Isreal\n IN India\n IT Italy\n JP Japan\n KR Korea\n KZ Kazakhstan\n LK Sri-Lanka\n LU Luxembourg\n LV Lativia\n MK Macedonia\n NC New-Caledonia\n NL Netherlands\n NO Norway\n NZ New-Zealand\n PL Poland\n PT Portugal\n RO Romania\n RS Serbia\n RU Russia\n SE Sweden\n SG Singapore\n SK Slovakia\n TR Turkey\n TW Taiwan\n UA Ukraine\n US United-States\n UZ Uzbekistan\n VN Viet-Nam\n ZA South-Africa")
-	if (whiptail --title "Arch Linux Anywhere" --yesno "Would you like to update your mirrorlist now?" 10 60) then
-		code=$(whiptail --nocancel --title "Arch Linux Anywhere" --menu "Please select your country code:" 15 60 6 $countries 3>&1 1>&2 2>&3)
+	if (whiptail --title "Arch Linux Anywhere" --yesno "Doriţi să actualizaţi acum lista mirror?" 10 60) then
+		code=$(whiptail --nocancel --title "Arch Linux Anywhere" --menu "Vă rugăm selectaţi codul ţării:" 15 60 6 $countries 3>&1 1>&2 2>&3)
 		wget --append-output=/dev/null "https://www.archlinux.org/mirrorlist/?country=$code&protocol=http" -O /etc/pacman.d/mirrorlist.bak &
 		pid=$! pri=0.2 msg="Retreiving new mirrorlist..." load
 		sed -i 's/#//' /etc/pacman.d/mirrorlist.bak
