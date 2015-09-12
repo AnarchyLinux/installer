@@ -442,7 +442,7 @@ update_mirrors() {
 
 install_base() {
 	if ! "$INSTALLED" && "$mounted" ; then	
-		if (whiptail --title "Arch Linux Anywhere" --yesno "Begin installing Arch Linux base onto /dev/$DRIVE?" 10 60) then
+		if (whiptail --title "Arch Linux Anywhere" --yesno "Începeţi instalare de bază Arch Linux pe /dev/$DRIVE?" 10 60) then
 			if "$wifi" ; then
 				pacstrap "$ARCH" base base-devel libnewt wireless_tools wpa_supplicant wpa_actiond netctl dialog &> /dev/null &
 				pid=$! pri="$down" msg="Vă rugăm aşteptaţi până se instalează Arch Linux... \n\n *Acest lucru poate să dureze" load
@@ -460,7 +460,7 @@ install_base() {
 			while [ ! -n "$loader" ]
 				do
 					if (whiptail --title "Arch Linux Anywhere" --yesno "Instalaţi bootloader-ul GRUB? \n\n *Necesar pentru a face sistemul bootabil" 10 60) then
-						if (whiptail --title "Arch Linux Anywhere" --defaultno --yesno "Instalaţi întâi os-prober? \n\n *Necesar pentru multiboot \n *Dacă aveţi dual boot selectaţi yes" 10 60) then
+						if (whiptail --title "Arch Linux Anywhere" --defaultno --yesno "Instalaţi os-prober întâi? \n\n *Necesar pentru multiboot \n *Dacă aveţi dual boot selectaţi yes" 10 60) then
 							pacstrap "$ARCH" os-prober &> /dev/null &
 							pid=$! pri=0.5 msg="Instalare os-prober..." load
 						fi
