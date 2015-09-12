@@ -739,23 +739,26 @@ graphics() {
 install_software() {
 	if (whiptail --title "Arch Linux Anywhere" --yesno "Would you like to install some common software? \n\n *Select yes for a list of additional software" 10 60) then
 		software=$(whiptail --title "Arch Linux Anywhere" --checklist "Choose your desired software: \n\n *Use spacebar to check/uncheck software \n *Press enter when finished" 20 60 10 \
+					"arch-wiki"            "Arch wiki from the CLI" ON \
 					"openssh"     	       "Secure Shell Deamon" ON \
 					"pulseaudio"  	       "Popular sound server" ON \
 					"screenfetch"          "Display System Info" ON \
 					"vim"         	       "Popular Text Editor" ON \
 					"wget"        	       "CLI web downloader" ON \
-					"zsh"         	       "The Z shell" ON \
 					"apache"  	  	       "Web Server" OFF \
+					"audacity"             "Audio editing program" OFF \
 					"chromium"    	       "Graphical Web Browser" OFF \
 					"cmus"        	       "CLI music player" OFF \
 					"conky"       	       "Light system monitor for X" OFF \
 					"dropbox"              "Cloud file sharing" OFF \
+					"emacs"                "OS in a text editor" OFF \
 					"firefox"     	       "Graphical Web Browser" OFF \
 					"gimp"        	       "GNU Image Manipulation " OFF \
 					"git"                  "Source control managment" OFF \
 					"gparted"     	       "GNU Parted GUI" OFF \
 					"htop"        	       "CLI process Info" OFF \
 					"libreoffice" 	       "Open source word processing " OFF \
+					"lmms"                 "Linux MultiMedia Studio" OFF \
 					"lynx"        	       "Terminal Web Browser" OFF \
 					"mpd"         	       "Music Player Daemon" OFF \
 					"mplayer"     	       "Media Player" OFF \
@@ -765,18 +768,27 @@ install_software() {
 					"projectm"             "Music visuliaztions" OFF \
 					"screen"  	  	       "GNU Screen" OFF \
 					"simplescreenrecorder" "Screen capture software" OFF \
+					"steam"                "Multi-platform gaming" OFF \
 					"tmux"    	  	   	   "Terminal multiplxer" OFF \
 					"transmission-cli" 	   "CLI torrent client" OFF \
 					"transmission-gtk"     "Graphical torrent client" OFF \
 					"virtualbox"  	       "Desktop virtuialization" OFF \
 					"vlc"         	   	   "GUI media player" OFF \
-					"ufw"         	       "Uncomplicated Firewall" OFF 3>&1 1>&2 2>&3)
-		if [ "$?" -gt "0" ]
+					"ufw"         	       "Uncomplicated Firewall" OFF \
+					"zsh"                  "The Z-Shell" OFF 3>&1 1>&2 2>&3)
+		if [ "$?" -gt "0" ]; then
 			reboot_system
 		fi
 		download=$(echo "$software" | sed 's/\"//g')
+		wiki=$(<<<$download grep "arch-wiki")
+		if [ -n "$wiki" ]; then
+			wget -O "$ARCH"/usr/bin/arch-wiki https://raw.githubusercontent.com/deadhead420/archlinux/master/wiki/wiki.sh &> /dev/null &
+			pid=$! pri=1 msg="Installing arch-wiki..." load
+			chmod +x "$ARCH"/usr/bin/arch-wiki
+			download=$(<<<$download sed 's/arch-wiki/lynx/')
+		fi
     	pacstrap "$ARCH" ${download} &> /dev/null &
-    	pid=$! pri=1 msg="Please wait while installing software..." load
+    	pid=$! pri=1 msg="Please wait while installing software... \n\n *This can take awhile depending on the software you selected" load
 	fi
 	arch-chroot "$ARCH" pacman -Syy &> /dev/null &
 	pid=$! pri=1 msg="Updating pacman databases..." load

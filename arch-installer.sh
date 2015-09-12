@@ -718,6 +718,7 @@ graphics() {
 install_software() {
 	if (whiptail --title "Arch Linux Anywhere" --yesno "Would you like to install some common software? \n\n *Select yes for a list of additional software" 10 60) then
 		software=$(whiptail --title "Arch Linux Anywhere" --checklist "Choose your desired software: \n\n *Use spacebar to check/uncheck software \n *Press enter when finished" 20 60 10 \
+					"arch-wiki"   "Arch wiki CLI" OFF \
 					"cmus"        "CLI music player" OFF \
 					"conky"       "Light system monitor for X " OFF \
 					"firefox"     "Graphical Web Browser" OFF \
@@ -732,6 +733,11 @@ install_software() {
 			reboot_system
 		fi
 		download=$(echo "$software" | sed 's/\"//g')
+    	wiki=$(<<<$download grep "arch-wiki")
+		if [ -n "$wiki" ]; then
+			cp /usr/bin/arch-wiki "$ARCH"/usr/bin
+			download=$(<<<$download sed 's/arch-wiki/lynx/')
+		fi
     	pacstrap "$ARCH" ${download} &> /dev/null &
     	pid=$! pri=1 msg="Please wait while installing software..." load
 	fi
