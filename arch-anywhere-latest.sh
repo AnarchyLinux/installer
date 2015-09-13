@@ -68,6 +68,20 @@ check_connection() {
 	set_locale
 }
 
+set_lang() {
+	lang=$(whiptail --nocancel --title "Arch Linux Anywhere" --menu "Please select your desired language:" 15 60 2 \
+	"English"  "-" \
+	"Romanian" "-" 3>&1 1>&2 2>&3)
+	if [ "$lang" == "Romanian" ]; then
+		wget -O ro-arch-installer.sh https://raw.githubusercontent.com/deadhead420/arch-linux-anywhere/master/ro-arch-anywhere-latest.sh &> /dev/null &
+		pid=$! pri=1 msg="Fetching $lang installer..." load
+		sed -i -e '15,69d;s/check_connection/set_locale/' ro-arch-installer.sh
+		chmod +x ro-arch-installer.sh
+		./ro-arch-installer.sh
+		exit
+	fi
+}
+
 set_locale() {
 	LOCALE=$(whiptail --nocancel --title "Arch Linux Anywhere" --menu "Please select your desired locale:" 15 60 6 \
 	"en_US.UTF-8" "-" \
@@ -887,4 +901,4 @@ main_menu() {
 	esac
 	$return ; main_menu
 }
-check_connection
+set_lang
