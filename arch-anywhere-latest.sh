@@ -13,17 +13,17 @@ user_added=false
 arch=$(uname -a | grep -o "x86_64\|i386\|i686")
 
 check_connection() {
-	if ! (whiptail --title "Arch Linux Anywhere" --yesno "Welcome to the Arch Linux Anywhere installer! \n\n *Would you like to begin the install process?" 10 60) then
+	if ! (whiptail --title "Arch Linux Anywhere" --yesno "Bine aţi venit la Arch Linux Anywhere! \n\n *Doriţi să începeţi procesul de instalare?" 10 60) then
 		clear ; exit
 	fi
 	ping -w 2 google.com &> /dev/null
 	if [ "$?" -gt "0" ]; then
 		wifi_network=$(ip addr | grep "wlp" | awk '{print $2}' sed 's/://')
 		if [ -n "$wifi_network" ]; then
-			if (whiptail --title "Arch Linux Anywhere" --yesno "Wifi interface detected, would you like to connect?" 10 60) then
+			if (whiptail --title "Arch Linux Anywhere" --yesno "Reţea Wifi detectată, doriţi să vă conectaţi?" 10 60) then
 				wifi_menu
 				if [ "$?" -gt "0" ]; then
-					if ! (whiptail --title "Arch Linux Anywhere" --yesno "Unable to connect to wifi, continue install offline?" 10 60) then
+					if ! (whiptail --title "Arch Linux Anywhere" --yesno "Imposibil de conectat la reţeaua Wifi, continuaţi instalarea offline?" 10 60) then
 						clear ; exit 1
 					fi
 				else
@@ -38,7 +38,7 @@ check_connection() {
 	if "$connection" ; then
 		start=$(date +%s)
 		wget -O /dev/null http://cachefly.cachefly.net/10mb.test &> /dev/null &
-		pid=$! pri=1 msg="Please wait while we test your connection..." load
+		pid=$! pri=1 msg="Vă rugăm aşteptaţi, se verifică conexiunea..." load
 		end=$(date +%s)
 		diff=$((end-start))
 		case "$diff" in
@@ -51,7 +51,7 @@ check_connection() {
 			5[0-9]) export down="7" ;;
 			6[0-9]) export down="8" ;;
 			[0-9][0-9][0-9]) 
-				if (whiptail --title "Arch Linux Anywhere" --yesno "Your connection is very slow, this might take a long time...\n\n *Continue with install?" 10 60) then
+				if (whiptail --title "Arch Linux Anywhere" --yesno "Conexiunea dvs este foarte lentă, ar putea să dureze ceva timp...\n\n *Continuaţi instalarea?" 10 60) then
 					export down="15"
 				else
 					exit
@@ -60,7 +60,7 @@ check_connection() {
 			*) export down="10" ;;
 		esac
 	else
-		whiptail --title "Arch Linux Anywhere" --msgbox "Error. No connection found, exiting. \n\n *Try installing Arch-Anywhere offline" 10 60
+		whiptail --title "Arch Linux Anywhere" --msgbox "Eroare. Conexiune indisponibilă, ieşire. \n\n *Încercaţi instalarea Arch-Anywhere offline" 10 60
 		clear
 		exit 1
 
@@ -69,7 +69,7 @@ check_connection() {
 }
 
 set_locale() {
-	LOCALE=$(whiptail --nocancel --title "Arch Linux Anywhere" --menu "Please select your desired locale:" 15 60 6 \
+	LOCALE=$(whiptail --nocancel --title "Arch Linux Anywhere" --menu "Selectaţi limba de sistem dorită:" 15 60 6 \
 	"en_US.UTF-8" "-" \
 	"en_AU.UTF-8" "-" \
 	"en_CA.UTF-8" "-" \
@@ -78,7 +78,7 @@ set_locale() {
 	"Other"       "-"		 3>&1 1>&2 2>&3)
 	if [ "$LOCALE" = "Other" ]; then
 		localelist=$(</etc/locale.gen  awk '{print substr ($1,2) " " ($2);}' | grep -F ".UTF-8" | sed "1d" | sed 's/$/  -/g;s/ UTF-8//g')
-		LOCALE=$(whiptail --title "Arch Linux Anywhere" --menu "Please select your desired locale:" 15 60 6  $localelist 3>&1 1>&2 2>&3)
+		LOCALE=$(whiptail --title "Arch Linux Anywhere" --menu "Selectaţi limba de sistem dorită:" 15 60 6  $localelist 3>&1 1>&2 2>&3)
 		if [ "$?" -gt "0" ]; then set_locale ; fi
 	fi
 	locale_set=true set_zone
@@ -86,16 +86,16 @@ set_locale() {
 
 set_zone() {
 	zonelist=$(find /usr/share/zoneinfo -maxdepth 1 | sed -n -e 's!^.*/!!p' | grep -v "posix\|right\|zoneinfo\|zone.tab\|zone1970.tab\|W-SU\|WET\|posixrules\|MST7MDT\|iso3166.tab\|CST6CDT" | sort | sed 's/$/ -/g')
-	ZONE=$(whiptail --nocancel --title "Arch Linux Anywhere" --menu "Please enter your Time Zone:" 15 60 6 $zonelist 3>&1 1>&2 2>&3)
+	ZONE=$(whiptail --nocancel --title "Arch Linux Anywhere" --menu "Introduceţi fusul orar:" 15 60 6 $zonelist 3>&1 1>&2 2>&3)
 		check_dir=$(find /usr/share/zoneinfo -maxdepth 1 -type d | sed -n -e 's!^.*/!!p' | grep "$ZONE")
 		if [ -n "$check_dir" ]; then
 			sublist=$(find /usr/share/zoneinfo/"$ZONE" -maxdepth 1 | sed -n -e 's!^.*/!!p' | sort | sed 's/$/ -/g')
-			SUBZONE=$(whiptail --title "Arch Linux Anywhere" --menu "Please enter your sub-zone:" 15 60 6 $sublist 3>&1 1>&2 2>&3)
+			SUBZONE=$(whiptail --title "Arch Linux Anywhere" --menu "Tastaţi o sub-zonă:" 15 60 6 $sublist 3>&1 1>&2 2>&3)
 			if [ "$?" -gt "0" ]; then set_zone ; fi
 			chk_dir=$(find /usr/share/zoneinfo/"$ZONE" -maxdepth 1 -type  d | sed -n -e 's!^.*/!!p' | grep "$SUBZONE")
 			if [ -n "$chk_dir" ]; then
 				sublist=$(find /usr/share/zoneinfo/"$ZONE"/"$SUBZONE" -maxdepth 1 | sed -n -e 's!^.*/!!p' | sort | sed 's/$/ -/g')
-				SUB_SUBZONE=$(whiptail --title "Arch Linux Anywhere" --menu "Please enter your sub-zone:" 15 60 6 $sublist 3>&1 1>&2 2>&3)
+				SUB_SUBZONE=$(whiptail --title "Arch Linux Anywhere" --menu "Tastaţi sub-zona dvs. :" 15 60 6 $sublist 3>&1 1>&2 2>&3)
 				if [ "$?" -gt "0" ]; then set_zone ; fi
 			fi
 		fi
@@ -103,63 +103,63 @@ set_zone() {
 }
 
 set_keys() {
-	keyboard=$(whiptail --nocancel --inputbox "Set key-map: \n\n *If unsure leave default" 10 35 "us" 3>&1 1>&2 2>&3)
+	keyboard=$(whiptail --nocancel --inputbox "Setare aranjament tastatură: \n\n *Dacă nu sunteţi sigur lăsaţi implicit" 10 35 "us" 3>&1 1>&2 2>&3)
 	keys_set=true prepare_drives
 }
 
 prepare_drives() {
 	drive=$(lsblk | grep "disk" | grep -v "rom" | awk '{print $1   " "   $4}')
-	DRIVE=$(whiptail --nocancel --title "Arch Linux Anywhere" --menu "Select the drive you would like to install arch onto:" 15 60 5 $drive 3>&1 1>&2 2>&3)
-	PART=$(whiptail --title "Arch Linux Anywhere" --menu "Select your desired method of partitioning: \n\n *NOTE Auto Partitioning will format the selected drive \n *Press cancel to return to drive selection" 15 60 4 \
-	"Auto Partition Drive"           "-" \
-	"Auto partition encrypted LVM"   "-" \
-	"Manual Partition Drive"         "-" \
-	"Return To Menu"                 "-" 3>&1 1>&2 2>&3)
+	DRIVE=$(whiptail --nocancel --title "Arch Linux Anywhere" --menu "Selectaţi discul unde doriţi să instalaţi arch linux:" 15 60 5 $drive 3>&1 1>&2 2>&3)
+	PART=$(whiptail --title "Arch Linux Anywhere" --menu "Selectaţi metoda dorită de partiţionare: \n\n *NOTĂ: Partiţionarea automată va formata unitatea selectată \n *Apăsaţi Cancel pentru a reveni la selectare disc" 15 60 4 \
+	"Pariţionare automată"           "-" \
+	"Partiţionare automată-criptare LVM"   "-" \
+	"Partiţionare manuală"         "-" \
+	"Înapoi la Meniu"                 "-" 3>&1 1>&2 2>&3)
 	if [ "$?" -gt "0" ]; then
 		prepare_drives
-	elif [ "$PART" == "Return To Menu" ]; then
+	elif [ "$PART" == "Înapoi la Meniu" ]; then
 		main_menu
-	elif [ "$PART" == "Auto partition encrypted LVM" ] || [ "$PART" == "Auto Partition Drive" ]; then
+	elif [ "$PART" == "Partiţionare automată-criptare LVM" ] || [ "$PART" == "Partiţionare automată" ]; then
 		crypted=false
-		if (whiptail --title "Arch Linux Anywhere" --defaultno --yesno "WARNING! Will erase all data on drive /dev/$DRIVE! \n\n *Would you like to contunue?" 10 60) then
+		if (whiptail --title "Arch Linux Anywhere" --defaultno --yesno "AVERTISMENT! Va şterge toate datele de pe /dev/$DRIVE! \n\n *Doriţi să continuaţi?" 10 60) then
 			sgdisk --zap-all "$DRIVE" &> /dev/null
 		else
 			prepare_drives
 		fi
-		FS=$(whiptail --title "Arch Linux Anywhere" --nocancel --menu "Select your desired filesystem type: \n *Default is ext4" 15 60 6 \
-		"ext4"      "4th extended file system" \
-		"ext3"      "3rd extended file system" \
-		"ext2"      "2nd extended file system" \
-		"btrfs"     "B-Tree File System" \
-		"jfs"       "Journaled File System" \
-		"reiserfs"  "Reiser File System" 3>&1 1>&2 2>&3)
+		FS=$(whiptail --title "Arch Linux Anywhere" --nocancel --menu "Selectaţi sistemul de fişiere dorit: \n *Implicit este ext4" 15 60 6 \
+		"ext4"      "Sistem de fişiere ext4" \
+		"ext3"      "Sistem de fişiere ext3" \
+		"ext2"      "Sistem de fişiere ext2" \
+		"btrfs"     "Sistem de fişiere btrfs" \
+		"jfs"       "Sistem de fişiere JFS cu jurnalizare" \
+		"reiserfs"  "Sistem de fişiere ReiserFS" 3>&1 1>&2 2>&3)
 		SWAP=false
-		if (whiptail --title "Arch Linux Anywhere" --yesno "Create SWAP space?" 10 60) then
+		if (whiptail --title "Arch Linux Anywhere" --yesno "Creaţi zonă de SWAP?" 10 60) then
 			d_bytes=$(fdisk -l | grep -w "$DRIVE" | awk '{print $5}') t_bytes=$((d_bytes-2000000000))
 			swapped=false
 			while [ "$swapped" != "true" ]
 				do
-					SWAPSPACE=$(whiptail --inputbox --nocancel "Specify your desired swap size: \n *(Align to M or G):" 10 35 "512M" 3>&1 1>&2 2>&3)
+					SWAPSPACE=$(whiptail --inputbox --nocancel "Specificaţi dimensiunea pentru zona de swap: \n *(Align to M or G):" 10 35 "512M" 3>&1 1>&2 2>&3)
 					unit=$(grep -o ".$" <<< "$SWAPSPACE")
 					if [ "$unit" == "M" ]; then unit_size=$(grep -o '[0-9]*' <<< "$SWAPSPACE") p_bytes=$((unit_size*1000*1000))
 						if [ "$p_bytes" -lt "$t_bytes" ]; then SWAP=true swapped=true
-						else whiptail --title "Arch Linux Anywhere" --msgbox "Error not enough space on drive!" 10 60 ; fi
+						else whiptail --title "Arch Linux Anywhere" --msgbox "Eroare: Spaţiu insuficient pe disc!" 10 60 ; fi
 					elif [ "$unit" == "G" ]; then unit_size=$(grep -o '[0-9]*' <<< "$SWAPSPACE") p_bytes=$((unit_size*1000*1000*1000))
 						if [ "$p_bytes" -lt "$t_bytes" ]; then SWAP=true swapped=true
-						else whiptail --title "Arch Linux Anywhere" --msgbox "Error not enough space on drive!" 10 60 ; fi
-					else whiptail --title "Arch Linux Anywhere" --msgbox "Error setting swap! Be sure it is a number ending in 'M' or 'G'" 10 60 ; fi
+						else whiptail --title "Arch Linux Anywhere" --msgbox "Eroare: Spaţiu insuficient pe disc!" 10 60 ; fi
+					else whiptail --title "Arch Linux Anywhere" --msgbox "Eroare setare zonă de swap! Asiguraţi-vă că este un număr terminat în 'M' sau 'G'" 10 60 ; fi
 				done
 		fi
 		efivar -l
 		if [ "$?" -eq "0" ]; then
 			if [ "$arch" == "x86_64" ]; then
-				if (whiptail --title "Arch Linux Anywhere" --yesno "Would you like to enable UEFI bios? \n\n *May not work on some systems \n *Enable with caution" 10 60) then
+				if (whiptail --title "Arch Linux Anywhere" --yesno "Doriţi să activaţi UEFI bios? \n\n *Poate să nu funţioneze pe unele sisteme \n *Activaţi cu prudenţă" 10 60) then
 					GPT=true UEFI=true down=$((down+1))
 				fi
 			fi
 		fi
 		if ! "$UEFI" ; then GPT=false
-			if (whiptail --title "Arch Linux Anywhere" --defaultno --yesno "Would you like to use GPT partitioning?" 10 60) then 
+			if (whiptail --title "Arch Linux Anywhere" --defaultno --yesno "Doriţi să folosiţi partiţionare GPT?" 10 60) then 
 				GPT=true
 			fi
 		fi
@@ -167,9 +167,9 @@ prepare_drives() {
 		efivar -l
 		if [ "$?" -eq "0" ]; then
 			if [ "$arch" == "x86_64" ]; then
-				if (whiptail --title "Arch Linux Anywhere" --yesno "Would you like to enable UEFI bios? \n\n *May not work on some systems \n *Enable with caution" 10 60) then
-					whiptail --title "Arch Linux Anywhere" --msgbox "Note you must create a UEFI bios partition! \n\n *Size of 512M-1024M type of EF00 \n *Partition scheme must be GPT!" 10 60
-					if (whiptail --title "Arch Linux Anywhere" --defaultno --yesno "System will not boot if you don't setup UEFI partition properly! \n\n *Are you sure you want to continue? \n *Only proceed if you know what you're doing." 10 60) then
+				if (whiptail --title "Arch Linux Anywhere" --yesno "Doriţi să activaţi UEFI? \n\n *Poate să nu funţioneze pe unele sisteme \n *Activaţi cu prudenţă" 10 60) then
+					whiptail --title "Arch Linux Anywhere" --msgbox "Notă: Trebuie să creaţi o partiţie UEFI! \n\n *Dimensiune 512M-1024M tip EF00 \n *Sistemul de partiţie trebuie să fie GPT!" 10 60
+					if (whiptail --title "Arch Linux Anywhere" --defaultno --yesno "Sistemul nu va boota dacă nu setaţi corect o partiţie UEFI! \n\n *Sigur doriţi să continuaţi? \n *Continuaţi numai dacă ştiţi ce faceţi." 10 60) then
 						UEFI=true down=$((down+1))
 					else
 						prepare_drives
@@ -177,41 +177,41 @@ prepare_drives() {
 				fi
 			fi
 		fi
-		part_tool=$(whiptail --title "Arch Linux Anywhere" --menu "Please select your desired partitioning tool:" 15 60 5 \
-					"cfdisk"  "Best For Beginners" \
-					"fdisk"   "CLI Partitioning" \
-					"gdisk"   "GPT Partitioning" \
-					"parted"  "GNU Parted CLI" 3>&1 1>&2 2>&3)
+		part_tool=$(whiptail --title "Arch Linux Anywhere" --menu "Selectaţi utilitarul dorit pentru partiţionare:" 15 60 5 \
+					"cfdisk"  "Bun pentru începători" \
+					"fdisk"   "Partiţionare CLI" \
+					"gdisk"   "Partiţionare GPT" \
+					"parted"  "Partiţionare GNU CLI" 3>&1 1>&2 2>&3)
 		if [ "$?" -gt "0" ]; then prepare_drives ; fi
 	fi
 	case "$PART" in
-		"Auto Partition Drive")
+		"Partiţionare automată")
 			if "$GPT" ; then
 				if "$UEFI" ; then
 					if "$SWAP" ; then
 						echo -e "n\n\n\n512M\nef00\nn\n3\n\n+512M\n8200\nn\n\n\n\n\nw\ny" | gdisk /dev/"$DRIVE" &> /dev/null &
-						pid=$! pri=0.3 msg="Partitioning /dev/$DRIVE..." load
+						pid=$! pri=0.3 msg="Partiţionare /dev/$DRIVE..." load
 						SWAP="$(lsblk | grep "$DRIVE" |  awk '{ if (NR==4) print substr ($1,3) }')"
 						wipefs -a /dev/"$SWAP" &> /dev/null
 						mkswap /dev/"$SWAP" &> /dev/null
 						swapon /dev/"$SWAP" &> /dev/null
 					else
 						echo -e "n\n\n\n512M\nef00\nn\n\n\n\n\nw\ny" | gdisk /dev/"$DRIVE" &> /dev/null &
-						pid=$! pri=0.3 msg="Partitioning /dev/$DRIVE..." load
+						pid=$! pri=0.3 msg="Partiţionare /dev/$DRIVE..." load
 					fi
 					BOOT="$(lsblk | grep "$DRIVE" |  awk '{ if (NR==2) print substr ($1,3) }')"
 					ROOT="$(lsblk | grep "$DRIVE" |  awk '{ if (NR==3) print substr ($1,3) }')"
 				else
 					if "$SWAP" ; then
 						echo -e "o\ny\nn\n1\n\n+100M\n\nn\n2\n\n+1M\nEF02\nn\n4\n\n+$SWAPSPACE\n8200\nn\n3\n\n\n\nw\ny" | gdisk /dev/"$DRIVE" &> /dev/null &
-						pid=$! pri=0.3 msg="Partitioning /dev/$DRIVE..." load
+						pid=$! pri=0.3 msg="Partiţionare /dev/$DRIVE..." load
 						SWAP="$(lsblk | grep "$DRIVE" |  awk '{ if (NR==5) print substr ($1,3) }')"
 						wipefs -a /dev/"$SWAP" &> /dev/null
 						mkswap /dev/"$SWAP" &> /dev/null
 						swapon /dev/"$SWAP" &> /dev/null
 					else
 						echo -e "o\ny\nn\n1\n\n+100M\n\nn\n2\n\n+1M\nEF02\nn\n3\n\n\n\nw\ny" | gdisk /dev/"$DRIVE" &> /dev/null &
-						pid=$! pri=0.3 msg="Partitioning /dev/$DRIVE..." load
+						pid=$! pri=0.3 msg="Partiţionare /dev/$DRIVE..." load
 					fi
 					BOOT="$(lsblk | grep "$DRIVE" |  awk '{ if (NR==2) print substr ($1,3) }')"	
 					ROOT="$(lsblk | grep "$DRIVE" |  awk '{ if (NR==4) print substr ($1,3) }')"
@@ -219,14 +219,14 @@ prepare_drives() {
 			else
 				if "$SWAP" ; then
 					echo -e "o\nn\np\n1\n\n+100M\nn\np\n3\n\n+$SWAPSPACE\nt\n\n82\nn\np\n2\n\n\nw" | fdisk /dev/"$DRIVE" &> /dev/null &
-					pid=$! pri=0.3 msg="Partitioning /dev/$DRIVE..." load
+					pid=$! pri=0.3 msg="Partiţionare /dev/$DRIVE..." load
 					SWAP="$(lsblk | grep "$DRIVE" |  awk '{ if (NR==4) print substr ($1,3) }')"					
 					wipefs -a /dev/"$SWAP" &> /dev/null
 					mkswap /dev/"$SWAP" &> /dev/null
 					swapon /dev/"$SWAP" &> /dev/null
 				else
 					echo -e "o\nn\np\n1\n\n+100M\nn\np\n2\n\n\nw" | fdisk /dev/"$DRIVE" &> /dev/null &
-					pid=$! pri=0.3 msg="Partitioning /dev/$DRIVE..." load
+					pid=$! pri=0.3 msg="Partiţionare /dev/$DRIVE..." load
 				fi				
 				BOOT="$(lsblk | grep "$DRIVE" |  awk '{ if (NR==2) print substr ($1,3) }')"
 				ROOT="$(lsblk | grep "$DRIVE" |  awk '{ if (NR==3) print substr ($1,3) }')"
@@ -235,17 +235,17 @@ prepare_drives() {
 			wipefs -a /dev/"$ROOT" &> /dev/null
 			if "$UEFI" ; then
 				mkfs.vfat -F32 /dev/"$BOOT" &> /dev/null &
-				pid=$! pri=0.2 msg="Creating efi boot partition..." load
+				pid=$! pri=0.2 msg="Se crează partiţia de boot efi..." load
 			else
 				mkfs -t ext4 /dev/"$BOOT" &> /dev/null &
-				pid=$! pri=0.2 msg="Creating boot partition..." load
+				pid=$! pri=0.2 msg="Se crează partiţia de boot..." load
 			fi
 			if [ "$FS" == "jfs" ] || [ "$FS" == "reiserfs" ]; then
 				echo -e "y" | mkfs -t "$FS" /dev/"$ROOT" &> /dev/null &
-				pid=$! pri=1 msg="Please wait while creating $FS filesystem" load
+				pid=$! pri=1 msg="Vă rugăm aşteptaţi până se crează sistemul de fişiere $FS ..." load
 			else
 				mkfs -t "$FS" /dev/"$ROOT" &> /dev/null &
-				pid=$! pri=1 msg="Please wait while creating $FS filesystem" load
+				pid=$! pri=1 msg="Vă rugăm aşteptaţi până se crează sistemul de fişiere $FS ..." load
 			fi
 			mount /dev/"$ROOT" "$ARCH"
 			if [ "$?" -eq "0" ]; then
@@ -254,27 +254,27 @@ prepare_drives() {
 			mkdir $ARCH/boot
 			mount /dev/"$BOOT" "$ARCH"/boot
 		;;
-		"Auto partition encrypted LVM")
+		"Partiţionare automată-criptare LVM")
 			if "$GPT" ; then
 				if "$UEFI" ; then
 					echo -e "n\n\n\n512M\nef00\nn\n\n\n\n\nw\ny" | gdisk /dev/"$DRIVE" &> /dev/null &
-					pid=$! pri=0.3 msg="Partitioning /dev/$DRIVE..." load
+					pid=$! pri=0.3 msg="Partiţionare /dev/$DRIVE..." load
 					BOOT="$(lsblk | grep "$DRIVE" |  awk '{ if (NR==2) print substr ($1,3) }')"
 					ROOT="$(lsblk | grep "$DRIVE" |  awk '{ if (NR==3) print substr ($1,3) }')"
 				else
 					echo -e "o\ny\nn\n1\n\n+100M\n\nn\n2\n\n+1M\nEF02\nn\n3\n\n\n\nw\ny" | gdisk /dev/"$DRIVE" &> /dev/null &
-					pid=$! pri=0.3 msg="Partitioning /dev/$DRIVE..." load
+					pid=$! pri=0.3 msg="Partiţionare /dev/$DRIVE..." load
 					ROOT="$(lsblk | grep "$DRIVE" |  awk '{ if (NR==4) print substr ($1,3) }')"
 					BOOT="$(lsblk | grep "$DRIVE" |  awk '{ if (NR==2) print substr ($1,3) }')"
 				fi
 			else
 				echo -e "o\nn\np\n1\n\n+100M\nn\np\n2\n\n\nw" | fdisk /dev/"$DRIVE" &> /dev/null &
-				pid=$! pri=0.3 msg="Partitioning /dev/$DRIVE..." load
+				pid=$! pri=0.3 msg="Partiţionare /dev/$DRIVE..." load
 				BOOT="$(lsblk | grep "$DRIVE" |  awk '{ if (NR==2) print substr ($1,3) }')"
 				ROOT="$(lsblk | grep "$DRIVE" |  awk '{ if (NR==3) print substr ($1,3) }')"
 				
 			fi
-			if (whiptail --title "Arch Linux Anywhere" --defaultno --yesno "Warning this will encrypt /dev/$DRIVE \n\n *Continue?" 10 60) then
+			if (whiptail --title "Arch Linux Anywhere" --defaultno --yesno "Avertisment: Această acţiune va cripta /dev/$DRIVE \n\n *Continuaţi?" 10 60) then
 				wipefs -a /dev/"$ROOT" &> /dev/null
 				lvm pvcreate /dev/"$ROOT" &> /dev/null
 				lvm vgcreate lvm /dev/"$ROOT" &> /dev/null
@@ -286,22 +286,22 @@ prepare_drives() {
     			input=default
 				while [ "$input" != "$input_chk" ]
             		do
-            	    	input=$(whiptail --passwordbox --nocancel "Please enter a new password for /dev/$DRIVE \n\n *Note this password is used to unencrypt your drive at boot" 10 78 --title "Arch Linux Anywhere" 3>&1 1>&2 2>&3)
-            	    	input_chk=$(whiptail --passwordbox --nocancel "Enter your new password for /dev/$DRIVE again..." 9 78 --title "Arch Linux Anywhere" 3>&1 1>&2 2>&3)
+            	    	input=$(whiptail --passwordbox --nocancel "Tastaţi o parolă nouă pentru /dev/$DRIVE \n\n *Notă: Această parolă este folosită pentru decriptarea disc-ului la boot-are" 10 78 --title "Arch Linux Anywhere" 3>&1 1>&2 2>&3)
+            	    	input_chk=$(whiptail --passwordbox --nocancel "Taastaţi din nou parola pentru /dev/$DRIVE ..." 9 78 --title "Arch Linux Anywhere" 3>&1 1>&2 2>&3)
             	        if [ "$input" != "$input_chk" ]; then
-            	        	whiptail --title "Arch Linux Anywhere" --msgbox "Passwords do not match, please try again." 10 60
+            	        	whiptail --title "Arch Linux Anywhere" --msgbox "Parolele nu se potrivesc, încercaţi din nou." 10 60
             	        fi
             	 	done
 				printf "$input" | cryptsetup luksFormat -c aes-xts-plain64 -s 512 /dev/lvm/lvroot - &
-				pid=$! pri=0.2 msg="Encrypting drive..." load
+				pid=$! pri=0.2 msg="Criptare disc..." load
 				printf "$input" | cryptsetup open --type luks /dev/lvm/lvroot root -
 				input=""
 				if [ "$FS" == "jfs" ] || [ "$FS" == "reiserfs" ]; then
 					echo -e "y" | mkfs -t "$FS" /dev/mapper/root &> /dev/null &
-					pid=$! pri=1 msg="Please wait while creating $FS filesystem" load
+					pid=$! pri=1 msg="Vă rugăm aşteptaţi până se crează sistemul de fişiere $FS " load
 				else
 					mkfs -t "$FS" /dev/mapper/root &> /dev/null &
-					pid=$! pri=1 msg="Please wait while creating $FS filesystem..." load
+					pid=$! pri=1 msg="Vă rugăm aşteptaţi până se crează sistemul de fişiere $FS ..." load
 				fi
 				mount /dev/mapper/root "$ARCH"
 				if [ "$?" -eq "0" ]; then
@@ -311,10 +311,10 @@ prepare_drives() {
 				wipefs -a /dev/"$BOOT" &> /dev/null
 				if "$UEFI" ; then
 					mkfs.vfat -F32 /dev/"$BOOT" &> /dev/null &
-					pid=$! pri=0.2 msg="Creating efi boot partition..." load
+					pid=$! pri=0.2 msg="Se crează partiţia de boot efi..." load
 				else
 					mkfs -t ext4 /dev/"$BOOT" &> /dev/null &
-					pid=$! pri=0.2 msg="Creating boot partition..." load
+					pid=$! pri=0.2 msg="Se crează partiţia de boot..." load
 				fi
 				mkdir $ARCH/boot
 				mount /dev/"$BOOT" "$ARCH"/boot
@@ -322,50 +322,50 @@ prepare_drives() {
 				prepare_drives
 			fi
 		;;
-		"Manual Partition Drive")
+		"Partiţionare manuală")
 			clear
 			$part_tool /dev/"$DRIVE"
 			lsblk | egrep "$DRIVE[0-9]"
 			if [ "$?" -gt "0" ]; then
-				whiptail --title "Arch Linux Anywhere" --msgbox "An error was detected during partitioning \n\n *Returing partitioning menu" 10 60
+				whiptail --title "Arch Linux Anywhere" --msgbox "O eroare a fost detectată în timpul partiţionării \n\n *Revenire la meniul partiţionare" 10 60
 				prepare_drives
 			fi
 			clear
 			partition=$(lsblk | grep "$DRIVE" | grep -v "/\|1K" | sed "1d" | cut -c7- | awk '{print $1" "$4}')
 			if "$UEFI" ; then
-				BOOT=$(whiptail --nocancel --title "Arch Linux Anywhere" --nocancel --menu "Please select your EFI boot partition: \n\n *Generally the first partition size of 512M-1024M" 15 60 5 $partition 3>&1 1>&2 2>&3)
+				BOOT=$(whiptail --nocancel --title "Arch Linux Anywhere" --nocancel --menu "Selectaţi partiţia de boot EFI: \n\n *Generally the first partition size of 512M-1024M" 15 60 5 $partition 3>&1 1>&2 2>&3)
 				i=$(<<<$BOOT cut -c4-)
-				if (whiptail --title "Arch Linux Anywhere" --yesno "This will create a fat32 formatted EFI partition. \n\n *Are you sure you want to do this?" 10 60) then
+				if (whiptail --title "Arch Linux Anywhere" --yesno "Acest lucru va crea o partiţie EFI formatată FAT32. \n\n *Sigur doriţi acest lucru?" 10 60) then
 					echo -e "t\n${i}\nEF00\nw\ny" | gdisk /dev/"$DRIVE" &> /dev/null
 					mkfs.vfat -F32 /dev/"$BOOT" &> /dev/null &
-					pid=$! pri=0.2 msg="Creating efi boot partition..." load
+					pid=$! pri=0.2 msg="Se crează partiţia de boot efi..." load
 				else
 					prepare_drives
 				fi
 				partition=$(lsblk | grep "$DRIVE" | grep -v "/\|1K\|$BOOT" | sed "1d" | cut -c7- | awk '{print $1" "$4}')
 			fi
-			ROOT=$(whiptail --nocancel --title "Arch Linux Anywhere" --menu "Please select your desired root partition: \n\n *This is the main partition all others will be under" 15 60 5 $partition 3>&1 1>&2 2>&3)
-			if (whiptail --title "Arch Linux Anywhere" --yesno "This will create a new filesystem on the partition. \n\n *Are you sure you want to do this?" 10 60) then
-				FS=$(whiptail --title "Arch Linux Anywhere" --nocancel --menu "Select your desired filesystem type: \n\n *Default is ext4" 15 60 6 \
-				"ext4"      "4th extended file system" \
-				"ext3"      "3rd extended file system" \
-				"ext2"      "2nd extended file system" \
-				"btrfs"     "B-Tree File System" \
-				"jfs"       "Journaled File System" \
-				"reiserfs"  "Reiser File System" 3>&1 1>&2 2>&3)
+			ROOT=$(whiptail --nocancel --title "Arch Linux Anywhere" --menu "Selectaţi partiţia dorită pentru root: \n\n *This is the main partition all others will be under" 15 60 5 $partition 3>&1 1>&2 2>&3)
+			if (whiptail --title "Arch Linux Anywhere" --yesno "Această operaţiune va crea un sistem de fişiere pe partiţie. \n\n *Sigur doriţi acest lucru?" 10 60) then
+				FS=$(whiptail --title "Arch Linux Anywhere" --nocancel --menu "Selectaţi sistemul de fişiere dorit: \n\n *Implicit este ext4" 15 60 6 \
+				"ext4"      "Sistem de fişiere ext4" \
+				"ext3"      "Sistem de fişiere ext3" \
+				"ext2"      "Sistem de fişiere ext2" \
+				"btrfs"     "Sistem de fişiere btrfs" \
+				"jfs"       "Sistem de fişiere JFS cu jurnalizare" \
+				"reiserfs"  "Sistem de fişiere ReiserFS" 3>&1 1>&2 2>&3)
 				wipefs -a -q /dev/"$ROOT" &> /dev/null
 				if [ "$FS" == "jfs" ] || [ "$FS" == "reiserfs" ]; then
 					echo -e "y" | mkfs -t "$FS" /dev/"$ROOT" &> /dev/null &
-					pid=$! pri=1 msg="Please wait while creating $FS filesystem..." load
+					pid=$! pri=1 msg="Vă rugăm aşteptaţi până se crează sistemul de fişiere $FS ..." load
 				else
 					mkfs -t "$FS" /dev/"$ROOT" &> /dev/null &
-					pid=$! pri=1 msg="Please wait while creating $FS filesystem..." load
+					pid=$! pri=1 msg="Vă rugăm aşteptaţi până se crează sistemul de fişiere $FS ..." load
 				fi
 				mount /dev/"$ROOT" "$ARCH"
 				if [ "$?" -eq "0" ]; then
 					mounted=true
 				else
-					whiptail --title "Arch Linux Anywhere" --msgbox "An error was detected during partitioning \n\n *Returing partitioning menu" 10 60
+					whiptail --title "Arch Linux Anywhere" --msgbox "O eroare a fost detectată în timpul partiţionării \n\n *Revenire la meniul partiţionare" 10 60
 					prepare_drives
 				fi
 			else
@@ -381,33 +381,33 @@ prepare_drives() {
 			until [ "$new_mnt" == "Done" ] 
 				do
 					partition=$(lsblk | grep "$DRIVE" | grep -v "/\|[SWAP]\|1K" | sed "1d" | cut -c7- | awk '{print $1"     "$4}')
-					new_mnt=$(whiptail --title "Arch Linux Anywhere" --nocancel --menu "Select a partition to create a mount point: \n\n *Select done when finished*" 15 60 6 $partition "Done" "Continue" 3>&1 1>&2 2>&3)
+					new_mnt=$(whiptail --title "Arch Linux Anywhere" --nocancel --menu "Selectaţi o partiţie pentru a crea un punct de montare: \n\n *Selectaţi done când aţi terminat*" 15 60 6 $partition "Done" "Continue" 3>&1 1>&2 2>&3)
 					if [ "$new_mnt" != "Done" ]; then
-						MNT=$(whiptail --title "Arch Linux Anywhere" --menu "Select a mount point for /dev/$new_mnt" 15 60 6 $points 3>&1 1>&2 2>&3)
+						MNT=$(whiptail --title "Arch Linux Anywhere" --menu "Selectaţi un punct de montare pentru /dev/$new_mnt" 15 60 6 $points 3>&1 1>&2 2>&3)
 						if [ "$?" -gt "0" ]; then
 							:
 						elif [ "$MNT" == "SWAP" ]; then
-							if (whiptail --title "Arch Linux Anywhere" --yesno "Will create a swap space on /dev/$new_mnt \n\n *Continue?" 10 60) then
+							if (whiptail --title "Arch Linux Anywhere" --yesno "Va crea o zonă de swap pe /dev/$new_mnt \n\n *Continuaţi?" 10 60) then
 								wipefs -a -q /dev/"$new_mnt"
 								mkswap /dev/"$new_mnt" &> /dev/null
 								swapon /dev/"$new_mnt" &> /dev/null
 							fi
 						else
-							if (whiptail --title "Arch Linux Anywhere" --yesno "Will create mount point $MNT with /dev/$new_mnt \n\n *Continue?" 10 60) then
-								FS=$(whiptail --title "Arch Linux Anywhere" --nocancel --menu "Select your desired filesystem type for $MNT: \n\n *Default is ext4" 15 60 6 \
-								"ext4"      "4th extended file system" \
-								"ext3"      "3rd extended file system" \
-								"ext2"      "2nd extended file system" \
-								"btrfs"     "B-Tree File System" \
-								"jfs"       "Journaled File System" \
-								"reiserfs"  "Reiser File System" 3>&1 1>&2 2>&3)
+							if (whiptail --title "Arch Linux Anywhere" --yesno "Va crea un punct de montare pentru $MNT cu /dev/$new_mnt \n\n *Continuaţi?" 10 60) then
+								FS=$(whiptail --title "Arch Linux Anywhere" --nocancel --menu "Selectaţi tipul de sistem de fişiere pentru $MNT: \n\n *Implicit este ext4" 15 60 6 \
+								"ext4"      "Sistem de fişiere ext4" \
+								"ext3"      "Sistem de fişiere ext3" \
+								"ext2"      "Sistem de fişiere ext2" \
+								"btrfs"     "Sistem de fişiere btrfs" \
+								"jfs"       "Sistem de fişiere JFS cu jurnalizare" \
+								"reiserfs"  "Sistem de fişiere ReiserFS" 3>&1 1>&2 2>&3)
 								wipefs -a -q /dev/"$new_mnt"
 								if [ "$FS" == "jfs" ] || [ "$FS" == "reiserfs" ]; then
 									echo -e "y" | mkfs -t "$FS" /dev/"$new_mnt" &> /dev/null &
-									pid=$! pri=1 msg="Please wait while creating $FS filesystem..." load
+									pid=$! pri=1 msg="Vă rugăm aşteptaţi până se crează sistemul de fişiere $FS ..." load
 								else
 									mkfs -t "$FS" /dev/"$new_mnt" &> /dev/null &
-									pid=$! pri=1 msg="Please wait while creating $FS filesystem..." load
+									pid=$! pri=1 msg="Vă rugăm aşteptaţi până se crează sistemul de fişiere $FS ..." load
 								fi
 								mkdir "$ARCH"/"$MNT"
 								mount /dev/"$new_mnt" "$ARCH"/"$MNT"
@@ -420,7 +420,7 @@ prepare_drives() {
 	esac
 	clear
 	if ! "$mounted" ; then
-		whiptail --title "Arch Linux Anywhere" --msgbox "An error was detected during partitioning \n\n *Returing to drive partitioning" 10 60
+		whiptail --title "Arch Linux Anywhere" --msgbox "O eroare a fost detectată în timpul partiţionării \n\n *Revenire la meniul partiţionare" 10 60
 		prepare_drives
 	fi
 	update_mirrors
@@ -428,8 +428,8 @@ prepare_drives() {
 
 update_mirrors() {
 	countries=$(echo -e "AT Austria\n AU  Australia\n BE Belgium\n BG Bulgaria\n BR Brazil\n BY Belarus\n CA Canada\n CL Chile \n CN China\n CO Columbia\n CZ Czech-Republic\n DK Denmark\n EE Estonia\n ES Spain\n FI Finland\n FR France\n GB United-Kingdom\n HU Hungary\n IE Ireland\n IL Isreal\n IN India\n IT Italy\n JP Japan\n KR Korea\n KZ Kazakhstan\n LK Sri-Lanka\n LU Luxembourg\n LV Lativia\n MK Macedonia\n NC New-Caledonia\n NL Netherlands\n NO Norway\n NZ New-Zealand\n PL Poland\n PT Portugal\n RO Romania\n RS Serbia\n RU Russia\n SE Sweden\n SG Singapore\n SK Slovakia\n TR Turkey\n TW Taiwan\n UA Ukraine\n US United-States\n UZ Uzbekistan\n VN Viet-Nam\n ZA South-Africa")
-	if (whiptail --title "Arch Linux Anywhere" --yesno "Would you like to update your mirrorlist now?" 10 60) then
-		code=$(whiptail --nocancel --title "Arch Linux Anywhere" --menu "Please select your country code:" 15 60 6 $countries 3>&1 1>&2 2>&3)
+	if (whiptail --title "Arch Linux Anywhere" --yesno "Doriţi să actualizaţi acum lista mirror?" 10 60) then
+		code=$(whiptail --nocancel --title "Arch Linux Anywhere" --menu "Vă rugăm selectaţi codul ţării:" 15 60 6 $countries 3>&1 1>&2 2>&3)
 		wget --append-output=/dev/null "https://www.archlinux.org/mirrorlist/?country=$code&protocol=http" -O /etc/pacman.d/mirrorlist.bak &
 		pid=$! pri=0.2 msg="Retreiving new mirrorlist..." load
 		sed -i 's/#//' /etc/pacman.d/mirrorlist.bak
@@ -442,48 +442,48 @@ update_mirrors() {
 
 install_base() {
 	if ! "$INSTALLED" && "$mounted" ; then	
-		if (whiptail --title "Arch Linux Anywhere" --yesno "Begin installing Arch Linux base onto /dev/$DRIVE?" 10 60) then
+		if (whiptail --title "Arch Linux Anywhere" --yesno "Începeţi instalare de bază Arch Linux pe /dev/$DRIVE?" 10 60) then
 			if "$wifi" ; then
 				pacstrap "$ARCH" base base-devel libnewt wireless_tools wpa_supplicant wpa_actiond netctl dialog &> /dev/null &
-				pid=$! pri="$down" msg="Please wait while we install Arch Linux... \n\n *This may take awhile" load
+				pid=$! pri="$down" msg="Vă rugăm aşteptaţi până se instalează Arch Linux... \n\n *Acest lucru poate să dureze" load
 			else
 				if (whiptail --title "Arch Linux Anywhere" --defaultno --yesno "Install wireless tools, netctl, and WPA supplicant? Provides wifi-menu command. \n\n *Necessary for connecting to wifi \n *Select yes if using wifi" 11 60) then
 					pacstrap "$ARCH" base base-devel libnewt wireless_tools wpa_supplicant wpa_actiond netctl dialog &> /dev/null &
-					pid=$! pri="$down" msg="Please wait while we install Arch Linux... \n\n *This may take awhile" load
+					pid=$! pri="$down" msg="Vă rugăm aşteptaţi până se instalează Arch Linux... \n\n *Acest lucru poate să dureze" load
 				else
 					pacstrap "$ARCH" base base-devel libnewt &> /dev/null &
-					pid=$! pri="$down" msg="Please wait while we install Arch Linux... \n\n *This may take awhile" load
+					pid=$! pri="$down" msg="Vă rugăm aşteptaţi până se instalează Arch Linux... \n\n *Acest lucru poate să dureze" load
 				fi
 			fi
 			genfstab -U -p "$ARCH" >> "$ARCH"/etc/fstab
 			INSTALLED=true
 			while [ ! -n "$loader" ]
 				do
-					if (whiptail --title "Arch Linux Anywhere" --yesno "Install GRUB bootloader? \n\n *Required to make system bootable" 10 60) then
-						if (whiptail --title "Arch Linux Anywhere" --defaultno --yesno "Install os-prober first? \n\n *Required for multiboot \n *If dualbooting select yes" 10 60) then
+					if (whiptail --title "Arch Linux Anywhere" --yesno "Instalaţi bootloader-ul GRUB? \n\n *Necesar pentru a face sistemul bootabil" 10 60) then
+						if (whiptail --title "Arch Linux Anywhere" --defaultno --yesno "Instalaţi os-prober întâi? \n\n *Necesar pentru multiboot \n *Dacă aveţi dual boot selectaţi yes" 10 60) then
 							pacstrap "$ARCH" os-prober &> /dev/null &
-							pid=$! pri=0.5 msg="Installing os-prober..." load
+							pid=$! pri=0.5 msg="Instalare os-prober..." load
 						fi
 						pacstrap "$ARCH" grub &> /dev/null &
-						pid=$! pri=0.5 msg="Installing grub..." load
+						pid=$! pri=0.5 msg="Instalare grub..." load
 						if [ "$crypted" == "true" ]; then
 							sed -i 's!quiet!cryptdevice=/dev/lvm/lvroot:root root=/dev/mapper/root!' "$ARCH"/etc/default/grub
 						fi
 						if "$UEFI" ; then
 							pacstrap "$ARCH" efibootmgr &> /dev/null &
-							pid=$! pri=0.5 msg="Installing efibootmgr..." load
+							pid=$! pri=0.5 msg="Se instaleză efibootmgr..." load
 							arch-chroot "$ARCH" grub-install --efi-directory=/boot --target=x86_64-efi --bootloader-id=boot --recheck &> /dev/null &
-							pid=$! pri=0.5 msg="Installing grub to drive..." load
+							pid=$! pri=0.5 msg="Instalare grub pe disc..." load
 							mv "$ARCH"/boot/EFI/boot/grubx64.efi "$ARCH"/boot/EFI/boot/bootx64.efi
 						else
 							arch-chroot "$ARCH" grub-install --recheck /dev/"$DRIVE" &> /dev/null &
-							pid=$! pri=0.5 msg="Installing grub to drive..." load
+							pid=$! pri=0.5 msg="Instalare grub pe disc..." load
 						fi
 						arch-chroot "$ARCH" grub-mkconfig -o /boot/grub/grub.cfg &> /dev/null &
-						pid=$! pri=0.2 msg="Configuring grub..." load
+						pid=$! pri=0.2 msg="Configurare grub..." load
 						if [[ "$UEFI" == "true" && "$crypted" == "false" ]] ; then
 							arch-chroot "$ARCH" mkinitcpio -p linux &> /dev/null &
-							pid=$! pri=1 msg="Please wait while configuring kernel for uEFI..." load
+							pid=$! pri=1 msg="Vă rugăm aşteptaţi până se configureză kernel-ul pentru uEFI..." load
 						fi
 						loader=true
 						bootloader=true
@@ -560,9 +560,9 @@ configure_system() {
 			/Include/s/#//g}' /mnt/etc/pacman.conf
 		fi
 	fi
-	if (whiptail --title "Arch Linux Anywhere" --yesno "Enable DHCP at boot? \n\n *Automatic IP configuration." 10 60) then
+	if (whiptail --title "Arch Linux Anywhere" --yesno "Activaţi DHCP la bootare? \n\n *Configurare automată IP." 10 60) then
 		arch-chroot "$ARCH" systemctl enable dhcpcd.service &> /dev/null &
-		pid=$! pri=0.2 msg="Enabling DHCP..." load
+		pid=$! pri=0.2 msg="Se activează DHCP..." load
 	fi
 	system_configured=true
 	set_hostname
@@ -574,10 +574,10 @@ set_hostname() {
 	echo -e 'input=default
 		while [ "$input" != "$input_chk" ]
             		do
-                   		input=$(whiptail --passwordbox --nocancel "Please enter a new root password \n\n *Set a strong password here" 10 78 --title "Arch Linux Anywhere" 3>&1 1>&2 2>&3)
-            			input_chk=$(whiptail --passwordbox --nocancel "New root password again" 9 78 --title "Arch Linux Anywhere" 3>&1 1>&2 2>&3)
+                   		input=$(whiptail --passwordbox --nocancel "Tastaţi o parolă pentru root \n\n *Setaţi o parolă puternică" 10 78 --title "Arch Linux Anywhere" 3>&1 1>&2 2>&3)
+            			input_chk=$(whiptail --passwordbox --nocancel "Tastaţi din nou parola pentru root" 9 78 --title "Arch Linux Anywhere" 3>&1 1>&2 2>&3)
                    		 if [ "$input" != "$input_chk" ]; then
-                      	      whiptail --title "Arch Linux Anywhere" --msgbox "Passwords do not match, please try again." 10 60
+                      	      whiptail --title "Arch Linux Anywhere" --msgbox "Parolele nu se potrivesc, încercaţi din nou." 10 60
                      	 fi
          		    done
     			echo -e "$input\n$input\n" | passwd &> /dev/null' > /mnt/root/set.sh
@@ -595,11 +595,11 @@ add_user() {
 		main_menu
 	fi
 	if (whiptail --title "Arch Linux Anywhere" --yesno "Create a new user account now?" 10 60) then
-		user=$(whiptail --nocancel --inputbox "Set username: \n\n *Letters and numbers only \n *No spaces or special characters!" 10 60 "" 3>&1 1>&2 2>&3)
+		user=$(whiptail --nocancel --inputbox "Setare utilizator: \n\n *Numai litere şi numere \n *Fără spaţii sau caractere speciale!" 10 60 "" 3>&1 1>&2 2>&3)
 		user=$(<<<$user sed 's/ //g')
 		user_check=$(<<<$user grep "^[0-9]\|[\[\$\!\'\"\`\\|%&#@()_-+=<>~;:/?.,^{}]\|]")
 		if [ -n "$user_check" ]; then
-			whiptail --title "Arch Linux Anywhere" --msgbox "Error username must begin with letter and cannot contain special characters. \n\n *Please try again." 10 60
+			whiptail --title "Arch Linux Anywhere" --msgbox "Eroare: Utilizatorul trebuie să înceapă cu litere şi nu carcatere speciale. \n\n *Încercaţi din nou." 10 60
 			add_user
 		fi
 	else
@@ -610,40 +610,40 @@ add_user() {
 			   input=default
 			           while [ "$input" != "$input_chk" ]
             				do
-                   					 input=$(whiptail --passwordbox --nocancel "Please enter a new password for $user" 9 78 --title "Arch Linux Anywhere" 3>&1 1>&2 2>&3)
-            				         input_chk=$(whiptail --passwordbox --nocancel "New password for $user again" 9 78 --title "Arch Linux Anywhere" 3>&1 1>&2 2>&3)
+                   					 input=$(whiptail --passwordbox --nocancel "Tastaţi o parolă nouă pentru $user" 9 78 --title "Arch Linux Anywhere" 3>&1 1>&2 2>&3)
+            				         input_chk=$(whiptail --passwordbox --nocancel "Tastaţi din nou parola nouă pentru $user " 9 78 --title "Arch Linux Anywhere" 3>&1 1>&2 2>&3)
                    					 if [ "$input" != "$input_chk" ]; then
-                      				      whiptail --title "Arch Linux Anywhere" --msgbox "Passwords do not match, please try again." 10 60
+                      				      whiptail --title "Arch Linux Anywhere" --msgbox "Parolele nu se potrivesc, încercaţi din nou." 10 60
                      				 fi
          				        done
     					echo -e "$input\n$input\n" | passwd "$user" &> /dev/null' > /mnt/root/set.sh
 	chmod +x "$ARCH"/root/set.sh
 	arch-chroot "$ARCH" ./root/set.sh
 	rm "$ARCH"/root/set.sh
-	if (whiptail --title "Arch Linux Anywhere" --yesno "Enable sudo privelege for $user? \n\n *Enables administrative privelege for $user." 10 60) then
+	if (whiptail --title "Arch Linux Anywhere" --yesno "Activaţi privilegiu sudo pentru $user? \n\n *Activaţi privilegii administrative pentru $user." 10 60) then
 		sed -i '/%wheel ALL=(ALL) ALL/s/^#//' $ARCH/etc/sudoers
 	fi
 	user_added=true graphics
 }
 	
 graphics() {
-	if (whiptail --title "Arch Linux Anywhere" --yesno "Would you like to install xorg-server now? \n\n *Select yes for a graphical interface" 10 60) then
-		GPU=$(whiptail --title "Arch Linux Anywhere" --nocancel --menu "Select your desired graphics driver: \n\n *If unsure use mesa-libgl or default \n *If installing in VirtualBox select guest-utils" 17 60 6 \
-		"Default"				 "Auto detect" \
-		"mesa-libgl"             "Mesa OpenSource" \
-		"Nvidia"                 "NVIDIA Graphics" \
-		"Vbox-Guest-Utils"       "VirtualBox Graphics" \
-		"xf86-video-ati"         "AMD/ATI Graphics" \
-		"xf86-video-intel"       "Intel Graphics" 3>&1 1>&2 2>&3)
+	if (whiptail --title "Arch Linux Anywhere" --yesno "Doriţi să instalaţi xorg-server? \n\n *Selectaţi yes pentru o interfaţă grafică" 10 60) then
+		GPU=$(whiptail --title "Arch Linux Anywhere" --nocancel --menu "Selectaţi driverul video dorit: \n\n *Dacă sunteţi nesigur folosiţi mesa-libgl sau implicit \n *Dacă instalaţi în VirtualBox selectaţi guest-utils" 17 60 6 \
+		"Default"				 "Implicit" \
+		"mesa-libgl"             "Driver Mesa" \
+		"Nvidia"                 "Driver NVIDIA" \
+		"Vbox-Guest-Utils"       "Driver VirtualBox" \
+		"xf86-video-ati"         "Driver AMD/ATI" \
+		"xf86-video-intel"       "Driver Intel" 3>&1 1>&2 2>&3)
 	else
-		if (whiptail --title "Arch Linux Anywhere" --yesno "Are you sure you dont want xorg-server? \n\n *You will be booted into command line only." 10 60) then
+		if (whiptail --title "Arch Linux Anywhere" --yesno "Sigur doriţi să nu instalaţi xorg-server? \n\n *You will be booted into command line only." 10 60) then
 			install_software
 		else
 			graphics
 		fi
 	fi
 	if [ "$GPU" == "Nvidia" ]; then
-			GPU=$(whiptail --title "Arch Linux Anywhere" --menu "Select your desired Nvidia driver: \n\n *Cancel if none" 15 60 4 \
+			GPU=$(whiptail --title "Arch Linux Anywhere" --menu "Selectaţi driverul Nvidia dorit: \n\n *Cancel if none" 15 60 4 \
 			"nvidia"       "Latest stable nvidia" \
 			"nvidia-340xx" "Legacy 340xx branch" \
 			"nvidia-304xx" "Legaxy 304xx branch" 3>&1 1>&2 2>&3)
@@ -658,12 +658,12 @@ graphics() {
 			GPU="" 
 	fi
 	pacstrap "$ARCH" xorg-server xorg-server-utils xorg-xinit xterm $(echo "$GPU") &> /dev/null &
-	pid=$! pri="$down" msg="Please wait while installing xorg-server..." load
-	if (whiptail --title "Arch Linux Anywhere" --yesno "Would you like to install a desktop or window manager?" 10 60) then
+	pid=$! pri="$down" msg="Vă rugăm aşteptaţi până se instalează xorg-server..." load
+	if (whiptail --title "Arch Linux Anywhere" --yesno "Doriţi să instalaţi un mediu desktop sau manager de ferestre?" 10 60) then
 		until [ "$DE" == "set" ]
 			do
 				i=false
-				DE=$(whiptail --title "Arch Linux Installer" --menu "Select your desired enviornment:" 15 60 6 \
+				DE=$(whiptail --title "Arch Linux Installer" --menu "Selectaţi mediul desktop dorit:" 15 60 6 \
 				"xfce4"         "Light DE" \
 				"mate"          "Light DE" \
 				"lxde"          "Light DE" \
@@ -681,17 +681,17 @@ graphics() {
 					DE=set
 				else
 					i=true
-					if (whiptail --title "Arch Linux Anywhere" --yesno "Would you like to install LightDM display manager? \n\n *Graphical login manager." 10 60) then
+					if (whiptail --title "Arch Linux Anywhere" --yesno "Doriţi să instalaţi managerul de ferestre LightDM? \n\n *Manager de logare grafic." 10 60) then
 						pacstrap "$ARCH" lightdm lightdm-gtk-greeter &> /dev/null &
-						pid=$! pri="$down" msg="Please wait while installing LightDM..." load
+						pid=$! pri="$down" msg="Vă rugăm aşteptaţi până se instalează LightDM..." load
 						arch-chroot "$ARCH" systemctl enable lightdm.service &> /dev/null
 					else
-						whiptail --title "Arch Linux Anywhere" --msgbox "After login use the command 'startx' to access your desktop." 10 60
+						whiptail --title "Arch Linux Anywhere" --msgbox "După logare folosiţi comanda 'startx' pentru a accesa desktopul dvs." 10 60
 					fi
 				fi
 				case "$DE" in
 					"xfce4") start_term="exec startxfce4" 
-						if (whiptail --title "Arch Linux Installer" --yesno "Install xfce4 goodies?" 10 60) then
+						if (whiptail --title "Arch Linux Installer" --yesno "Instalaţi suplimente(addons) xfce4?" 10 60) then
 							DE_EXTRA="xfce4-goodies"
 						fi ;;
 					"gnome") start_term="exec gnome-session"
@@ -780,30 +780,30 @@ install_software() {
 		wiki=$(<<<$download grep "arch-wiki")
 		if [ -n "$wiki" ]; then
 			wget -O "$ARCH"/usr/bin/arch-wiki https://raw.githubusercontent.com/deadhead420/archlinux/master/wiki/wiki.sh &> /dev/null &
-			pid=$! pri=1 msg="Installing arch-wiki..." load
+			pid=$! pri=1 msg="Instalare arch-wiki..." load
 			chmod +x "$ARCH"/usr/bin/arch-wiki
 			download=$(<<<$download sed 's/arch-wiki/lynx/')
 		fi
     	pacstrap "$ARCH" ${download} &> /dev/null &
-    	pid=$! pri=1 msg="Please wait while installing software... \n\n *This can take awhile depending on the software you selected" load
+    	pid=$! pri=1 msg="Vă rugăm aşteptaţi până se instalează programele... \n\n *Acest lucru poate dura, în funcţie de programele selectate" load
 	fi
 	arch-chroot "$ARCH" pacman -Syy &> /dev/null &
-	pid=$! pri=1 msg="Updating pacman databases..." load
+	pid=$! pri=1 msg="Actualizarea bazelor de date pacman..." load
 	reboot_system
 }
 
 reboot_system() {
 	if "$INSTALLED" ; then
 		if ! "$bootloader" ; then
-			if (whiptail --title "Arch Linux Anywhere" --yesno "Install process complete! \n\n *You did not configure a bootloader \n *Return to the command line to configure?" 10 60) then
+			if (whiptail --title "Arch Linux Anywhere" --yesno "Instalare completă! \n\n *Nu aţi configurat un bootloader \n *Reveniţi în linia de comandă pentru configurare?" 10 60) then
 				clear ; exit
 			fi
 		fi
-		if (whiptail --title "Arch Linux Anywhere" --yesno "Install process complete! Reboot now? \n\n *Select yes to reboot now \n *No to return to command line" 10 60) then
+		if (whiptail --title "Arch Linux Anywhere" --yesno "Instalare completă! Restartez acum? \n\n *Selectaţi yes pentru a restarta acum \n *No pentru a reveni în linia de comandă" 10 60) then
 			umount -R $ARCH
 		    clear ; reboot ; exit
 		else
-			if (whiptail --title "Arch Linux Anywhere" --yesno "System fully installed \n\n *Would you like to unmount?" 10 60) then
+			if (whiptail --title "Arch Linux Anywhere" --yesno "Sistem instalat complet \n\n *Would you like to unmount?" 10 60) then
 				umount -R "$ARCH"
 				clear ; exit
 			else
@@ -811,7 +811,7 @@ reboot_system() {
 			fi
 		fi
 	else
-		if (whiptail --title "Arch Linux Anywhere" --yesno "Install not complete, are you sure you want to reboot?" 10 60) then
+		if (whiptail --title "Arch Linux Anywhere" --yesno "Instalarea nu este completă, sigur doriţi să restartaţi?" 10 60) then
 			umount -R $ARCH
 			clear ; reboot ; exit
 		else
@@ -836,48 +836,48 @@ load() {
 }
 
 main_menu() {
-	return=(whiptail --title "Arch Linux Anywhere" --msgbox "The system hasn't been installed yet \n *returning to menu" 10 60)
-	menu_item=$(whiptail --nocancel --title "Arch Linux Anywhere" --menu "Menu Items:" 15 60 6 \
-		"Set Locale"            "-" \
-		"Set Timezone"          "-" \
-		"Set Keymap"            "-" \
-		"Partition Drive"       "-" \
-		"Update Mirrors"        "-" \
-		"Install Base System"   "-" \
-		"Configure System"      "-" \
-		"Set Hostname"          "-" \
-		"Add User"              "-" \
-		"Install Graphics"      "-" \
-		"Install Software"      "-" \
-		"Reboot System"         "-" \
-		"Exit Installer"        "-" 3>&1 1>&2 2>&3)
+	return=(whiptail --title "Arch Linux Anywhere" --msgbox "Sistemul nu este instalat încă \n *revenire la meniu" 10 60)
+	menu_item=$(whiptail --nocancel --title "Arch Linux Anywhere" --menu "Iteme Meniu:" 15 60 6 \
+		"Setare localizare"			"-" \
+		"Setare fus orar"       	"-" \
+		"Setare tastatură"      	"-" \
+		"Partiţionare hard"     	"-" \
+		"Actualizare Mirror"       	"-" \
+		"Instalare sistem de bază"  "-" \
+		"Configurare Sistem"      	"-" \
+		"Setare Hostname"          	"-" \
+		"Adăugare Utilizator"   	"-" \
+		"Install drivere video"    	"-" \
+		"Instalare programe"      	"-" \
+		"Restartare Sistem"        	"-" \
+		"Ieşire Instalare"        	"-" 3>&1 1>&2 2>&3)
 	case "$menu_item" in
-		"Set Locale" ) 
-			if "$locale_set" ; then whiptail --title "Arch Linux Anywhere" --msgbox "Locale already set, returning to menu" 10 60 ; main_menu ; fi
+		"Setare localizare" ) 
+			if "$locale_set" ; then whiptail --title "Arch Linux Anywhere" --msgbox "Localizarea este setată deja, revenire la meniu" 10 60 ; main_menu ; fi
 			set_locale ;;
-		"Set Timezone")
-			if "$zone_set" ; then whiptail --title "Arch Linux Anywhere" --msgbox "Timezone already set, returning to menu" 10 60 ; main_menu ; fi
+		"Setare fus orar")
+			if "$zone_set" ; then whiptail --title "Arch Linux Anywhere" --msgbox "Fusul orar este setat deja, revenire la meniu" 10 60 ; main_menu ; fi
 			set_zone ;;
-		"Set Keymap")
-			if "$keys_set" ; then whiptail --title "Arch Linux Anywhere" --msgbox "Keymap already set, returning to menu" 10 60 ; main_menu ; fi
+		"Setare tastatură")
+			if "$keys_set" ; then whiptail --title "Arch Linux Anywhere" --msgbox "Tastatura este setată deja, revenire la meniu" 10 60 ; main_menu ; fi
 			set_keys ;;
-		"Partition Drive")
-			if "$mounted" ; then whiptail --title "Arch Linux Anywhere" --msgbox "Drive already mounted, try install base system \n returning to menu" 10 60 ; main_menu ; fi
+		"Partiţionare hard")
+			if "$mounted" ; then whiptail --title "Arch Linux Anywhere" --msgbox "Unitatea este montată deja, încercaţi instalarea sistemului de bază \n revenire la meniu" 10 60 ; main_menu ; fi
  			prepare_drives ;;
-		"Update Mirrors") update_mirrors ;;
-		"Install Base System") install_base ;;
-		"Configure System") if "$INSTALLED" ; then configure_system ; fi ;;
-		"Set Hostname") if "$INSTALLED" ; then set_hostname ; fi ;;
-		"Add User") if "$INSTALLED" ; then add_user ; fi ;;
-		"Install Graphics") if "$INSTALLED" ; then graphics ; fi ;;
-		"Install Software") if "$INSTALLED" ; then install_software ; fi ;;
-		"Reboot System") reboot_system ;;
-		"Exit Installer") 
+		"Actualizare Mirror-uri") update_mirrors ;;
+		"Instalare sistem de bază") install_base ;;
+		"Configurare sistem") if "$INSTALLED" ; then configure_system ; fi ;;
+		"Setare hostname") if "$INSTALLED" ; then set_hostname ; fi ;;
+		"Adăugare utilizator") if "$INSTALLED" ; then add_user ; fi ;;
+		"Instalare drivere video") if "$INSTALLED" ; then graphics ; fi ;;
+		"Instalare programe") if "$INSTALLED" ; then install_software ; fi ;;
+		"Restartare Sistem") reboot_system ;;
+		"Ieşire Instalare") 
 			if "$INSTALLED" ; then
-				whiptail --title "Arch Linux Anywhere" --msgbox "System installed \n\n Exiting arch installer..." 10 60
+				whiptail --title "Arch Linux Anywhere" --msgbox "Sistemul este instalat \n\n Ieşire instalare arch..." 10 60
 				clear ; exit
 			else
-				if (whiptail --title "Arch Linux Anywhere" --yesno "System not installed yet... \n\n Are you sure you want to exit?" 10 60) then
+				if (whiptail --title "Arch Linux Anywhere" --yesno "Sistemul nu este instalat încă... \n\n Sigur doriţi să ieşiţi?" 10 60) then
 					clear ; exit
 				else
 					main_menu
