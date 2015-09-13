@@ -887,4 +887,4 @@ main_menu() {
 	esac
 	$return ; main_menu
 }
-check_connection
+set_locale
