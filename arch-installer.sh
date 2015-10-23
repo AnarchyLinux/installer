@@ -62,11 +62,11 @@ check_connection() {
 				;;
 				*) export down="10" ;;
 			esac
-			wget -O arch-anywhere-latest.sh https://raw.githubusercontent.com/deadhead420/arch-linux-anywhere/master/arch-anywhere-latest.sh &> /dev/null &
+			wget -O arch-installer-online.sh https://raw.githubusercontent.com/deadhead420/arch-linux-anywhere/master/arch-installer-online.sh &> /dev/null &
 			pid=$! pri=1 msg="Fetching latest installer..." load
-			sed -i -e '15,69d;s/check_connection/set_locale/' arch-anywhere-latest.sh
-			chmod +x arch-anywhere-latest.sh
-			./arch-anywhere-latest.sh
+			sed -i -e '15,69d;s/check_connection/set_locale/' arch-installer-online.sh
+			chmod +x arch-installer-online.sh
+			./arch-installer-online.sh
 			exit
 		else
 			cp /root/local-pacman.conf /etc/pacman.conf
@@ -718,7 +718,7 @@ graphics() {
 install_software() {
 	if (whiptail --title "Arch Linux Anywhere" --yesno "Would you like to install some common software? \n\n *Select yes for a list of additional software" 10 60) then
 		software=$(whiptail --title "Arch Linux Anywhere" --checklist "Choose your desired software: \n\n *Use spacebar to check/uncheck software \n *Press enter when finished" 20 60 10 \
-					"arch-wiki"   "Arch wiki CLI" OFF \
+					"arch-wiki"   "Arch wiki CLI" ON \
 					"cmus"        "CLI music player" OFF \
 					"conky"       "Light system monitor for X " OFF \
 					"firefox"     "Graphical Web Browser" OFF \
