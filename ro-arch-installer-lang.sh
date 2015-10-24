@@ -5,7 +5,7 @@ msg1="Retea Wifi detectata, doriti sa va conectati?"
 
 msg2="Imposibil de conectat la reteaua Wifi, continuati instalarea offline?"
 
-msg3="Conexiune detectata. Would you like to install from the official repository? \n\n *Yes will ensure the latest packages \n *No will ensure a fast install."
+msg3="Conexiune detectata. Doriti sa instalati din depozitele oficiale? \n\n *Yes va asigura ultimele pachete \n *No va asigura o instalare rapida."
 
 msg4="Conexiunea dvs este foarte lenta, ar putea sa dureze ceva timp...\n\n *Continuati instalarea?"
 
