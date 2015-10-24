@@ -23,13 +23,13 @@ msg10="Select your desired method of partitioning: \n\n *NOTE Auto Partitioning 
 
 msg11="Return To Menu"
 
-msg12="Select your desired filesystem type: \n *Default is ext4"
+msg12="Selectati sistemul de fisiere dorit: \n *Implicit este ext4"
 
-msg13="Would you like to create SWAP space?"
+msg13="Creati partitie SWAP?"
 
 msg14="Specify your desired swap size: \n *(Align to M or G):"
 
-msg15="Error not enough space on drive!"
+msg15="Eroare! Spatiu insuficient pe hard!"
 
 msg16="Error setting swap! Be sure it is a number ending in 'M' or 'G'"
 
@@ -39,7 +39,7 @@ msg18="Note you must create a UEFI bios partition! \n\n *Size of 512M-1024M type
 
 msg19="System will not boot if you don't setup UEFI partition properly! \n\n *Are you sure you want to continue? \n *Only proceed if you know what you're doing."
 
-msg20="Would you like to use GPT partitioning?"
+msg20="Doriti sa utilizati partitionare GPT?"
 
 msg21="Please select your desired partitioning tool:"
 
