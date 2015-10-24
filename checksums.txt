@@ -1,5 +1,0 @@
-Arch Anywhere version 1.1 official checksums:
-
-md5sum=a31545100308b06763765a643b0da372
-
-sha1sum=fc1a73a1ae6462fa67e183eaa554fecc914af11e

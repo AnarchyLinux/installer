@@ -1,0 +1,24 @@
+[4;36m--------------------------------------------------------------------------------[0m
+[0;36m                            Arch Linux Anywhere
+
+[0;37m  Arch Anywhere contains a built in package repo located at:[0;36m /repo/install-repo
+[0;37m  The local repo enables you to install Arch Linux with no network connection.
+
+[0;37m  Arch Anywhere installer uses the local repo by default if you have no connection.
+[0;37m  To begin the automated installer simply type at any time and press enter:
+[0;36m  	arch-anywhere
+
+[0;37m  If you like you can install arch by hand, but still use the local repository.
+[0;37m  To install Arch locally by hand with no network connection copy the pacman config:
+[0;36m  	cp ~/local-pacman.conf /etc/pacman.conf
+
+[0;37m  You can view the Arch Wiki beginners guide offline by running the command:
+[0;36m  	arch-wiki-guide[0;37m OR:[0;36m arch-wiki-simple
+
+[0;37m  If you are connected to the internet you can view any Arch Wiki page by running:
+[0;36m  	arch-wiki <search-args> 
+
+[0;37m  Example:[0;36m  arch-wiki bootloader
+          [0;36m  arch-wiki graphics
+          [0;36m  arch-wiki partitioning
+[4;36m--------------------------------------------------------------------------------[0m

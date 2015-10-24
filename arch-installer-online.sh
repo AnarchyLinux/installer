@@ -68,6 +68,20 @@ check_connection() {
 	set_locale
 }
 
+#set_lang() {
+#	lang=$(whiptail --nocancel --title "Arch Linux Anywhere" --menu "Please select your desired language:" 15 60 2 \
+#	"English"  "-" \
+#	"Romanian" "-" 3>&1 1>&2 2>&3)
+#	if [ "$lang" == "Romanian" ]; then
+#		wget -O ro-arch-installer.sh https://raw.githubusercontent.com/deadhead420/arch-linux-anywhere/master/ro-arch-anywhere-latest.sh &> /dev/null &
+#		pid=$! pri=1 msg="Fetching $lang installer..." load
+#		sed -i -e '15,69d;s/check_connection/set_locale/' ro-arch-installer.sh
+#		chmod +x ro-arch-installer.sh
+#		./ro-arch-installer.sh
+#		exit
+#	fi
+#}
+
 set_locale() {
 	LOCALE=$(whiptail --nocancel --title "Arch Linux Anywhere" --menu "Please select your desired locale:" 15 60 6 \
 	"en_US.UTF-8" "-" \
@@ -665,18 +679,18 @@ graphics() {
 				i=false
 				DE=$(whiptail --title "Arch Linux Installer" --menu "Select your desired enviornment:" 15 60 6 \
 				"xfce4"         "Light DE" \
-				"mate"          "Light DE" \
-				"lxde"          "Light DE" \
-				"lxqt"          "Light DE" \
-				"gnome"         "Modern DE" \
-				"cinnamon"      "Eligant DE" \
-				"KDE plasma"    "Rich DE" \
-				"enlightenment" "Light WM/DE" \
-				"openbox"       "Stacking WM" \
-				"awesome"       "Awesome WM" \
-				"i3"            "Tiling WM" \
-				"fluxbox"       "Light WM" \
-				"dwm"           "Dynamic WM" 3>&1 1>&2 2>&3)
+				"mate"          "Mate Light Desktop" \
+				"lxde"          "Lxde Light Desktop" \
+				"lxqt"          "Lxqu Light Desktop" \
+				"gnome"         "Gnome Modern Desktop" \
+				"cinnamon"      "Cinnamon Desktop" \
+				"KDE plasma"    "Kde Plasma Desktop" \
+				"enlightenment" "Enlightenment Desktop" \
+				"openbox"       "Openbox Window Manager" \
+				"awesome"       "Awesome Window Manager" \
+				"i3"            "i3 Tiling Window Manager" \
+				"fluxbox"       "Fluxbox Window Manager" \
+				"dwm"           "Dynamic Window Manager" 3>&1 1>&2 2>&3)
 				if [ "$?" -gt "0" ]; then
 					DE=set
 				else
@@ -736,43 +750,43 @@ graphics() {
 install_software() {
 	if (whiptail --title "Arch Linux Anywhere" --yesno "Would you like to install some common software? \n\n *Select yes for a list of additional software" 10 60) then
 		software=$(whiptail --title "Arch Linux Anywhere" --checklist "Choose your desired software: \n\n *Use spacebar to check/uncheck software \n *Press enter when finished" 20 60 10 \
-					"arch-wiki"            "Arch wiki from the CLI" ON \
-					"openssh"     	       "Secure Shell Deamon" ON \
-					"pulseaudio"  	       "Popular sound server" ON \
-					"screenfetch"          "Display System Info" ON \
-					"vim"         	       "Popular Text Editor" ON \
-					"wget"        	       "CLI web downloader" ON \
-					"apache"  	  	       "Web Server" OFF \
-					"audacity"             "Audio editing program" OFF \
-					"chromium"    	       "Graphical Web Browser" OFF \
-					"cmus"        	       "CLI music player" OFF \
-					"conky"       	       "Light system monitor for X" OFF \
-					"dropbox"              "Cloud file sharing" OFF \
-					"emacs"                "OS in a text editor" OFF \
-					"firefox"     	       "Graphical Web Browser" OFF \
-					"gimp"        	       "GNU Image Manipulation " OFF \
-					"git"                  "Source control managment" OFF \
-					"gparted"     	       "GNU Parted GUI" OFF \
-					"htop"        	       "CLI process Info" OFF \
-					"libreoffice" 	       "Open source word processing " OFF \
-					"lmms"                 "Linux MultiMedia Studio" OFF \
-					"lynx"        	       "Terminal Web Browser" OFF \
-					"mpd"         	       "Music Player Daemon" OFF \
-					"mplayer"     	       "Media Player" OFF \
-					"ncmpcpp"     	       "GUI client for MPD" OFF \
-					"nmap"                 "CLI network analyzer" OFF \
-					"pitivi"               "Video editing software" OFF \
-					"projectm"             "Music visuliaztions" OFF \
-					"screen"  	  	       "GNU Screen" OFF \
-					"simplescreenrecorder" "Screen capture software" OFF \
-					"steam"                "Multi-platform gaming" OFF \
-					"tmux"    	  	   	   "Terminal multiplxer" OFF \
-					"transmission-cli" 	   "CLI torrent client" OFF \
-					"transmission-gtk"     "Graphical torrent client" OFF \
-					"virtualbox"  	       "Desktop virtuialization" OFF \
-					"vlc"         	   	   "GUI media player" OFF \
-					"ufw"         	       "Uncomplicated Firewall" OFF \
-					"zsh"                  "The Z-Shell" OFF 3>&1 1>&2 2>&3)
+					"arch-wiki"            "$m0" ON \
+					"openssh"     	       "$m1" ON \
+					"pulseaudio"  	       "$m2" ON \
+					"screenfetch"          "$m3" ON \
+					"vim"         	       "$m4" ON \
+					"wget"        	       "$m5" ON \
+					"apache"  	  	       "$m6" OFF \
+					"audacity"             "$m7" OFF \
+					"chromium"    	       "$m8" OFF \
+					"cmus"        	       "$m9" OFF \
+					"conky"       	       "$m10" OFF \
+					"dropbox"              "$m11" OFF \
+					"emacs"                "$m12" OFF \
+					"firefox"     	       "$m13" OFF \
+					"gimp"        	       "$m14 " OFF \
+					"git"                  "$m15" OFF \
+					"gparted"     	       "$m16" OFF \
+					"htop"        	       "$m17" OFF \
+					"libreoffice" 	       "$m18 " OFF \
+					"lmms"                 "$m19" OFF \
+					"lynx"        	       "$m20" OFF \
+					"mpd"         	       "$m21" OFF \
+					"mplayer"     	       "$m22" OFF \
+					"ncmpcpp"     	       "$m23" OFF \
+					"nmap"                 "$m24" OFF \
+					"pitivi"               "$m25" OFF \
+					"projectm"             "$m26" OFF \
+					"screen"  	  	       "$m27" OFF \
+					"simplescreenrecorder" "$m28" OFF \
+					"steam"                "$m29" OFF \
+					"tmux"    	  	   	   "$m30" OFF \
+					"transmission-cli" 	   "$m31" OFF \
+					"transmission-gtk"     "$m32" OFF \
+					"virtualbox"  	       "$m33" OFF \
+					"vlc"         	   	   "$m34" OFF \
+					"ufw"         	       "$m35" OFF \
+					"zsh"                  "$m36" OFF 3>&1 1>&2 2>&3)
 		if [ "$?" -gt "0" ]; then
 			reboot_system
 		fi
@@ -887,4 +901,4 @@ main_menu() {
 	esac
 	$return ; main_menu
 }
-check_connection
+set_locale
