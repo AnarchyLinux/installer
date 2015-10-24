@@ -21,13 +21,13 @@ msg9="Select the drive you would like to install arch onto:"
 
 msg10="Select your desired method of partitioning: \n\n *NOTE Auto Partitioning will format the selected drive \n *Press cancel to return to drive selection"
 
-msg11="Return To Menu"
+msg11="Inapoi la Meniu"
 
 msg12="Selectati sistemul de fisiere dorit: \n *Implicit este ext4"
 
 msg13="Creati partitie SWAP?"
 
-msg14="Specify your desired swap size: \n *(Align to M or G):"
+msg14="Specificati marimea partitiei SWAP: \n *(Aliniere lign to M or G):"
 
 msg15="Eroare! Spatiu insuficient pe hard!"
 
@@ -209,25 +209,25 @@ tool3="GNU Parted CLI"
 }
 
 part_msg() {
-method0="Auto Partition Drive"
+method0="Partitionare automata"
 
-method1="Auto partition encrypted LVM"
+method1="Partitionare automata-criptare LVM"
 
-method2="Manual Partition Drive"
+method2="Patitionala manuala"
 }
 
 fs_msg() {
-fs0="4th extended file system"
+fs0="Sistem de fisiere ext4"
 
-fs1="3rd extended file system"
+fs1="Sistem de fisiere ext3"
 
-fs2="2nd extended file system"
+fs2="Sistem de fisiere ext2"
 
-fs3="B-Tree File System"
+fs3="Sistem de fisiere btrfs"
 
-fs4="Journaled File System"
+fs4="Sistem de fisiere JFS cu jurnalizare"
 
-fs5="Reiser File System"
+fs5="Sistem de fisiere ReiserFS"
 }
 
 grp_msg() {
