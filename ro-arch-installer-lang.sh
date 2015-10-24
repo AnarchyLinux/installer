@@ -3,11 +3,11 @@ msg0="Bine ati venit la Arch Linux Anywhere! \n\n *Doriti sa incepeti procesul d
 
 msg1="Retea Wifi detectata, doriti sa va conectati?"
 
-msg2="Unable to connect to wifi, continue install offline?"
+msg2="Imposibil de conectat la reteaua Wifi, continuati instalarea offline?"
 
-msg3="Connection detected. Would you like to install from the official repository? \n\n *Yes will ensure the latest packages \n *No will ensure a fast install."
+msg3="Conexiune detectata. Would you like to install from the official repository? \n\n *Yes will ensure the latest packages \n *No will ensure a fast install."
 
-msg4="Your connection is very slow, this might take a long time...\n\n *Continue with install?"
+msg4="Conexiunea dvs este foarte lenta, ar putea sa dureze ceva timp...\n\n *Continuati instalarea?"
 
 msg5="Please select your desired locale:"
 
