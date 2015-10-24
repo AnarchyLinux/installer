@@ -33,7 +33,7 @@ msg15="Eroare! Spatiu insuficient pe hard!"
 
 msg16="Error setting swap! Be sure it is a number ending in 'M' or 'G'"
 
-msg17="Would you like to enable UEFI bios? \n\n *May not work on some systems \n *Enable with caution"
+msg17="Doriti sa activati UEFI? \n\n *Poate sa nu funtioneze pe unele sisteme \n *Activati cu prudentă"
 
 msg18="Nota! Trebuie sa creati o partitie UEFI! \n\n *Size of 512M-1024M type of EF00 \n *Partition scheme must be GPT!"
 
@@ -41,9 +41,9 @@ msg19="Sistemul nu va boota daca nu setati corect partitia UEFI! \n\n *Are you s
 
 msg20="Doriti sa utilizati partitionare GPT?"
 
-msg21="Please select your desired partitioning tool:"
+msg21="Selectaţi utilitarul dorit pentru partitionare:"
 
-msg22="Passwords do not match, please try again."
+msg22="Parolele nu se potrivesc, incercati din nou."
 
 msg24="O eroare a fost detectata in timpul partitionarii \n\n *Returing partitioning menu"
 
