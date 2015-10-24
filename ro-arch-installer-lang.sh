@@ -1,7 +1,7 @@
 main_msg() {
-msg0="Welcome to the Arch Linux Anywhere installer! \n\n *Would you like to begin the install process?"
+msg0="Bine ati venit la Arch Linux Anywhere! \n\n *Doriti sa incepeti procesul de instalare"
 
-msg1="Wifi interface detected, would you like to connect?"
+msg1="Retea Wifi detectata, doriti sa va conectati?"
 
 msg2="Unable to connect to wifi, continue install offline?"
 
