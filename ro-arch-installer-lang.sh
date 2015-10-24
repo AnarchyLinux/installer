@@ -9,11 +9,11 @@ msg3="Conexiune detectata. Doriti sa instalati din depozitele oficiale? \n\n *Ye
 
 msg4="Conexiunea dvs este foarte lenta, ar putea sa dureze ceva timp...\n\n *Continuati instalarea?"
 
-msg5="Please select your desired locale:"
+msg5="Alegeti setarile regionale preferate:"
 
-msg6="Please enter your Time Zone:"
+msg6="Introduceti fusul dvs orar:"
 
-msg7="Please enter your sub-zone:"
+msg7="Introduceti subzona dvs:"
 
 msg8="Setare keymap tastatura: \n\n *Daca sunteti nesigur lasati implicit"
 
