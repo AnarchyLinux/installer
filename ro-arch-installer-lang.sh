@@ -359,9 +359,9 @@ menu0="Set Locale"
 
 menu1="Set Timezone"
 
-menu2="Set Keymap"
+menu2="Setare keymap"
 
-menu3="Partition Drive"
+menu3="Partitionare hard"
 
 menu4="Update Mirrors"
 
@@ -369,9 +369,9 @@ menu5="Install Base System"
 
 menu6="Configure System"
 
-menu7="Set Hostname"
+menu7="Setare hostname"
 
-menu8="Add User"
+menu8="Adaugare utilizator"
 
 menu9="Install Graphics"
 
@@ -379,7 +379,7 @@ menu10="Install Software"
 
 menu11="Reboot System"
 
-menu12="Exit Installer"
+menu12="Iesire instalator"
 }
 
 var_msg() {
