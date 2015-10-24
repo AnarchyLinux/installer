@@ -1,5 +1,5 @@
 main_msg() {
-msg0="Bine ati venit la Arch Linux Anywhere! \n\n *Doriti sa incepeti procesul de instalare"
+msg0="Bine ati venit la instalatorul Arch Linux Anywhere! \n\n *Doriti sa incepeti procesul de instalare"
 
 msg1="Retea Wifi detectata, doriti sa va conectati?"
 
