@@ -15,11 +15,11 @@ msg6="Introduceti fusul dvs orar:"
 
 msg7="Introduceti subzona dvs:"
 
-msg8="Setare keymap tastatura: \n\n *Daca sunteti nesigur lasati implicit"
+msg8="Setare keymap: \n\n *Daca sunteti nesigur lasati implicit"
 
 msg9="Select the drive you would like to install arch onto:"
 
-msg10="Select your desired method of partitioning: \n\n *NOTE Auto Partitioning will format the selected drive \n *Press cancel to return to drive selection"
+msg10="Selectati metoda preferata de partitionare: \n\n *NOTE Auto Partitioning will format the selected drive \n *Press cancel to return to drive selection"
 
 msg11="Inapoi la Meniu"
 
