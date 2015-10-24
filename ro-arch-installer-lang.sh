@@ -35,9 +35,9 @@ msg16="Error setting swap! Be sure it is a number ending in 'M' or 'G'"
 
 msg17="Would you like to enable UEFI bios? \n\n *May not work on some systems \n *Enable with caution"
 
-msg18="Note you must create a UEFI bios partition! \n\n *Size of 512M-1024M type of EF00 \n *Partition scheme must be GPT!"
+msg18="Nota! Trebuie sa creati o partitie UEFI! \n\n *Size of 512M-1024M type of EF00 \n *Partition scheme must be GPT!"
 
-msg19="System will not boot if you don't setup UEFI partition properly! \n\n *Are you sure you want to continue? \n *Only proceed if you know what you're doing."
+msg19="Sistemul nu va boota daca nu setati corect partitia UEFI! \n\n *Are you sure you want to continue? \n *Only proceed if you know what you're doing."
 
 msg20="Doriti sa utilizati partitionare GPT?"
 
@@ -45,7 +45,7 @@ msg21="Please select your desired partitioning tool:"
 
 msg22="Passwords do not match, please try again."
 
-msg24="An error was detected during partitioning \n\n *Returing partitioning menu"
+msg24="O eroare a fost detectata in timpul partitionarii \n\n *Returing partitioning menu"
 
 msg25="Please select your EFI boot partition: \n\n *Generally the first partition size of 512M-1024M"
 
@@ -85,11 +85,11 @@ msg42="Error no filesystem mounted \n\n *Continuing to menu."
 
 msg43="The system has already been configured. \n\n *Continuing to menu..."
 
-msg44="64 bit architecture detected.\n\n *Add multilib repos to pacman.conf?"
+msg44="Arhitectura pe 64 biti detectata.\n\n *Adaugati depozitele multilib in pacman.conf?"
 
 msg45="Enable DHCP at boot? \n\n *Automatic IP configuration."
 
-msg46="Set your system hostname:"
+msg46="Setati hostname-ul dorit:"
 
 msg47="Please enter a new root password \n\n *Set a strong password here"
 
