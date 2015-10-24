@@ -15,7 +15,7 @@ msg6="Please enter your Time Zone:"
 
 msg7="Please enter your sub-zone:"
 
-msg8="Set key-map: \n\n *If unsure leave default"
+msg8="Setare keymap tastatura: \n\n *Daca sunteti nesigur lasati implicit"
 
 msg9="Select the drive you would like to install arch onto:"
 
@@ -69,7 +69,7 @@ msg34="Install wireless tools, netctl, and WPA supplicant? Provides wifi-menu co
 
 msg35="Install GRUB bootloader? \n\n *Required to make system bootable"
 
-msg36="Install os-prober first? \n\n *Required for multiboot \n *If dualbooting select yes"
+msg36="Instalati intai os-prober? \n\n *Necesar pentru multiboot \n *Daca aveti dualboot selectati yes"
 
 msg37="Warning! System will not be bootable! \n\n *You will need to configure a bootloader yourself \n *Continue without a bootloader?"
 
