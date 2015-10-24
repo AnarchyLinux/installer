@@ -99,7 +99,7 @@ msg49="User already added \n\n *Continuing to menu."
 
 msg50="Create a new user account now?"
 
-msg51="Set username: \n\n *Letters and numbers only \n *No spaces or special characters!"
+msg51="Setare utilizator: \n\n *Doar litere si numere \n *Fara spatii sau caractere speciale!"
 
 msg52="Error username must begin with letter and cannot contain special characters. \n\n *Please try again."
 
@@ -169,9 +169,9 @@ load6="Please wait while ranking mirrors..."
 
 load7="Please wait while we install Arch Linux... \n\n *This may take awhile..."
 
-load8="Installing os-prober..."
+load8="Instalare os-prober..."
 
-load9="Installing grub..."
+load9="Instalare grub..."
 
 load10="Installing efibootmgr..."
 
@@ -185,7 +185,7 @@ load14="Please wait while configuring kernel for encryption..."
 
 load15="Setting timezone..."
 
-load16="Enabling DHCP..."
+load16="Activare DHCP..."
 
 load17="Please wait while installing xorg-server..."
 
