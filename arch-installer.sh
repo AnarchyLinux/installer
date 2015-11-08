@@ -20,6 +20,7 @@ check_connection() {
 	clear
 	source /etc/arch-anywhere.conf
 	source /usr/share/arch-anywhere/arch-installer-english.conf
+	export reload=true
 
 	if ! (whiptail --title "$title" --yesno "$intro_msg" 10 60) then
 		clear
