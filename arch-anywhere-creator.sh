@@ -56,7 +56,9 @@ prepare_x86_64() {
 	sudo xargs -a "$aa"/etc/x86_64-package.list cp -t "$customiso"/arch/x86_64/squashfs-root/repo/install-repo
 	sudo repo-add "$customiso"/arch/x86_64/squashfs-root/repo/install-repo/install-repo.db.tar.gz "$customiso"/arch/x86_64/squashfs-root/repo/install-repo/*.pkg.tar.xz
 	sudo cp "$aa"/etc/local-pacman.conf "$customiso"/arch/x86_64/squashfs-root/root
+	sudo cp "$aa"/etc/arch-anywhere.conf "$customiso"/arch/x86_64/squashfs-root/etc/
 	sudo cp "$aa"/arch-installer.sh "$customiso"/arch/x86_64/squashfs-root/usr/bin/arch-anywhere
+	sudo cp "$aa"/lang/arch-installer-english.conf "$customiso"/arch/x86_64/squashfs-root/usr/share/arch-anywhere
 	sudo chmod +x "$customiso"/arch/x86_64/squashfs-root/usr/bin/arch-anywhere
 	sudo cp "$aa"/arch-wiki "$customiso"/arch/x86_64/squashfs-root/usr/bin/arch-wiki
 	sudo chmod +x "$customiso"/arch/x86_64/squashfs-root/usr/bin/arch-wiki
@@ -83,7 +85,9 @@ prepare_i686() {
 	sudo xargs -a "$aa"/etc/i686-package.list cp -t "$customiso"/arch/i686/squashfs-root/repo/install-repo
 	sudo repo-add "$customiso"/arch/i686/squashfs-root/repo/install-repo/install-repo.db.tar.gz "$customiso"/arch/i686/squashfs-root/repo/install-repo/*.pkg.tar.xz
 	sudo cp "$aa"/etc/local-pacman.conf "$customiso"/arch/i686/squashfs-root/root
+	sudo cp "$aa"/etc/arch-anywhere.conf "$customiso"/arch/i686/squashfs-root/etc/
 	sudo cp "$aa"/arch-installer.sh "$customiso"/arch/i686/squashfs-root/usr/bin/arch-anywhere
+	sudo cp "$aa"/lang/arch-installer-english.conf "$customiso"/arch/i686/squashfs-root/usr/share/arch-anywhere
 	sudo chmod +x "$customiso"/arch/i686/squashfs-root/usr/bin/arch-anywhere
 	sudo cp "$aa"/arch-wiki "$customiso"/arch/i686/squashfs-root/usr/bin/arch-wiki
 	sudo chmod +x "$customiso"/arch/i686/squashfs-root/usr/bin/arch-wiki	
