@@ -213,7 +213,7 @@ prepare_drives() {
 				done
 		fi
 
-		efivar -l
+		efivar -l &> /dev/null
 
 		if [ "$?" -eq "0" ]; then
 
@@ -236,7 +236,7 @@ prepare_drives() {
 		fi
 
 	else
-		efivar -l
+		efivar -l &> /dev/null
 
 		if [ "$?" -eq "0" ]; then
 
