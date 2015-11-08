@@ -6,46 +6,70 @@ Arch Linux Anywhere is an Arch Linux ISO, and installer, which allows you to ins
 
 These local package repos allow you to proform a full base / base-devel install directly from the ISO. Not only is it a full base / base-devel repo, but it also contains all of the following packages for both arcitectures:
 
-Graphics and desktops:
+- Graphics and desktops:
+	xorg-server xorg-server-utils xorg-xinit xterm
 
-xorg-server xorg-server-utils xorg-xinit xterm
-xfce4
-awesome
-openbox
-i3
-dwm
-xf86-video-ati
-nvidia nvidia-340xx nvidia-304xx
-xf86-video-intel
-virtualbox-guest-utils
-lightdm
-lightdm-gtk-greeter
+	xfce4
 
-Bootloader:
+	awesome
 
-grub
-os-prober
+	openbox
 
-network utils:
+	i3
 
-wireless_tools
-wpa_supplicant
-netctl
-wpa_actiond
+	dwm
 
-Additional optional programs:
+	xf86-video-ati
 
-arch-wiki
-screenfetch
-openssh
-firefox
-htop
-zsh
-conky
-htop
-lynx
-pulseaudio
-cmus
+	nvidia nvidia-340xx nvidia-304xx
+
+	xf86-video-intel
+
+	virtualbox-guest-utils
+
+	lightdm
+
+	lightdm-gtk-greeter
+
+-	Bootloader:
+
+	grub
+
+	os-prober
+
+- Network Utils:
+
+	wireless_tools
+
+	wpa_supplicant
+	
+	netctl
+
+	wpa_actiond
+
+- Additional optional programs:
+
+	arch-wiki
+
+	screenfetch
+
+	openssh
+
+	firefox
+
+	htop
+
+	zsh
+
+	conky
+
+	htop
+
+	lynx
+
+	pulseaudio
+
+	cmus
 
 All of these packages are contained within the ISO, effectively allowing you to install Arch Linux Anywhere, without being connected to the internet.
 
@@ -55,13 +79,20 @@ My script determines the status of your network connection. If you do not have a
 
 If you are connected to the internet and you choose to install from the official repos you will be given the option to install the additional desktops of your choice:
 
-mate
-lxde
-lxqt
-cinnamon
-gnome
-kde plasma
-enlightenment
-fluxbox
+	mate
+
+	lxde
+
+	lxqt
+
+	cinnamon
+
+	gnome
+
+	kde plasma
+
+	enlightenment
+
+	fluxbox
 
 The online install also offers a longer list of additional optional software to be included with your Arch Linux install, all from the official repos.
