@@ -50,6 +50,8 @@ The local package repos allow you to proform a full base / base-devel install di
 - Bootloader:
 
 	grub
+	
+	efibootmgr
 
 	os-prober
 
@@ -88,6 +90,8 @@ The local package repos allow you to proform a full base / base-devel install di
 	pulseaudio
 
 	cmus
+	
+	xf86-input-synaptics
 
 
 - Online only desktops:
