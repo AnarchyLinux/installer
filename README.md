@@ -6,7 +6,7 @@ Arch Linux Anywhere is an Arch Linux ISO, and installer, which allows you to ins
 
 These local package repos allow you to proform a full base / base-devel install directly from the ISO. Not only is it a full base / base-devel repo, but it also contains all of the following packages for both arcitectures:
 
-Graphics and desktops:
+Graphics and desktops: \n
 
 xorg-server xorg-server-utils xorg-xinit xterm
 xfce4
