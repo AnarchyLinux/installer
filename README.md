@@ -12,8 +12,9 @@ My script determines the status of your network connection. If you do not have a
 
 The local package repos allow you to proform a full base / base-devel install directly from the ISO. Not only that but it allows you the option to install a list of additional software and desktops for both arcitectures. More software options and desktops are available if you select the online install. All packages are from the official arch sync repos.
 
-- You can find the official Arch Linux Anywhere ISO at:
-https://sourceforge.net/projects/arch-anywhere/
+### Official Arch Linux Anywhere ISO:
+
+	https://sourceforge.net/projects/arch-anywhere/
 
 - Graphics and desktops / window managers:
 
