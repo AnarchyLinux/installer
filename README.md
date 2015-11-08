@@ -15,6 +15,10 @@ The local package repos allow you to proform a full base / base-devel install di
 ### Official Arch Linux Anywhere ISO:
 
 	https://sourceforge.net/projects/arch-anywhere/
+	
+### Included software:
+
+- All base / base-devel packages
 
 - Graphics and desktops / window managers:
 
