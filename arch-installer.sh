@@ -1,5 +1,10 @@
 #!/bin/bash
 
+### Arch Linux Anywhere Install Script
+### By: Deadhead (Dylan Schacht)
+### License: GPL v2.0
+###################################################################3
+
 check_connection() {
 
 	clear
