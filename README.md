@@ -6,9 +6,7 @@ All packages needed for a full Arch Linux install are contained within the ISO, 
 
 My ISO also contains a built in installer script I've written in shell. This sctipt can be invoked by simply typing:
 
-	arch-installer 
-
-after booting into the Arch Anywhere ISO.
+	arch-anywhere
 
 My script determines the status of your network connection. If you do not have an active connection to the interent it will automatically install the packages from the local repo. However if you do have an active connection it asks to download all the packages from the official repos, while still giving you the choice of downloading locally.
 
