@@ -1,6 +1,4 @@
 # arch-linux-anywhere
-You can find the official Arch Linux Anywhere ISO at:
-https://sourceforge.net/projects/arch-anywhere/
 
 Arch Linux Anywhere is an Arch Linux ISO, and installer, which allows you to install Arch regardless of the status of your network connection. I have remastered the official archiso to include local package repos for both respective arcitectures (x86_64 and i686).
 
@@ -15,6 +13,9 @@ after booting into the Arch Anywhere ISO.
 My script determines the status of your network connection. If you do not have an active connection to the interent it will automatically install the packages from the local repo. However if you do have an active connection it asks to download all the packages from the official repos, while still giving you the choice of downloading locally.
 
 The local package repos allow you to proform a full base / base-devel install directly from the ISO. Not only that but it allows you the option to install a list of additional software and desktops for both arcitectures. More software options and desktops are available if you select the online install. All packages are from the official arch sync repos.
+
+- You can find the official Arch Linux Anywhere ISO at:
+https://sourceforge.net/projects/arch-anywhere/
 
 - Graphics and desktops / window managers:
 
@@ -42,11 +43,13 @@ The local package repos allow you to proform a full base / base-devel install di
 
 	lightdm-gtk-greeter
 
+
 - Bootloader:
 
 	grub
 
 	os-prober
+
 
 - Network Utils:
 
@@ -57,6 +60,7 @@ The local package repos allow you to proform a full base / base-devel install di
 	netctl
 
 	wpa_actiond
+
 
 - Additional optional programs:
 
@@ -81,6 +85,7 @@ The local package repos allow you to proform a full base / base-devel install di
 	pulseaudio
 
 	cmus
+
 
 - Online only desktops:
 
