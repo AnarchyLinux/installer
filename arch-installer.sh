@@ -1,13 +1,24 @@
 #!/bin/bash
 
 ### Arch Linux Anywhere Install Script
-### By: Deadhead (Dylan Schacht)
-### License: GPL v2.0
-###################################################################3
+##
+## Copyright (C) 2015  Dylan Schacht
+##
+## This program is free software; you can redistribute it and/or
+## modify it under the terms of the GNU General Public License
+## as published by the Free Software Foundation; either version 2
+## of the License, or (at your option) any later version.
+##
+## This program is distributed in the hope that it will be useful,
+## but WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+## GNU General Public License version 2 for more details.
+###################################################################
 
 check_connection() {
 
 	clear
+	source /etc/arch-anywhere.conf
 	source /usr/share/arch-anywhere/arch-installer-english.conf
 
 	if ! (whiptail --title "$title" --yesno "$intro_msg" 10 60) then
@@ -843,6 +854,10 @@ graphics() {
 
 	elif [ "$GPU" == "Default" ]; then
 		GPU=""
+	fi
+
+	if (whiptail --title "$title" --defaultno --yesno "$touchpad_msg" 10 60) then
+		GPU="$GPU xf86-input-synaptics"
 	fi
 
 	pacstrap "$ARCH" xorg-server xorg-server-utils xorg-xinit xterm $(echo "$GPU") &> /dev/null &
