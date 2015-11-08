@@ -1,10 +1,10 @@
 #!/bin/bash
 
 # Set the version here
-export version=arch-anywhere-1.4-dual.iso
+export version=arch-anywhere-1.5-dual.iso
 
 # Set the ISO label here
-export iso_label=ARCH_ANYWHERE_201510
+export iso_label=ARCH_ANYWHERE_201511
 
 # Location variables all directories must exist
 export aa=~/arch-anywhere
@@ -38,11 +38,11 @@ update_repos() {
 	read input
 	if [ "$input" == "" ]; then
 		cd "$repodir"/x86_64
-		sudo pacstrap "$falsepart" -p base base-devel libnewt grub os-prober xorg-server xorg-server-utils xorg-xinit xterm awesome openbox i3 dwm screenfetch openssh lynx htop wireless_tools wpa_supplicant netctl xfce4 xf86-video-ati nvidia nvidia-340xx nvidia-304xx xf86-video-intel lightdm lightdm-gtk-greeter zsh conky htop firefox pulseaudio cmus virtualbox-guest-utils efibootmgr dialog wpa_actiond vim | sed -e '1,9d' > x86_64-package.list
+		sudo pacstrap "$falsepart" -p base base-devel libnewt grub os-prober xorg-server xorg-server-utils xorg-xinit xterm awesome openbox i3 dwm screenfetch openssh lynx htop wireless_tools wpa_supplicant netctl xfce4 xf86-video-ati nvidia nvidia-340xx nvidia-304xx xf86-video-intel lightdm lightdm-gtk-greeter zsh conky htop firefox pulseaudio cmus virtualbox-guest-utils efibootmgr dialog wpa_actiond vim xf86-input-synaptics | sed -e '1,9d' > x86_64-package.list
 		wget -Ni x86_64-package.list
 		repo-add -R x86_64-repo.db.tar.gz *.pkg.tar.xz
 		cd "$aa"
-		sudo pacstrap "$falsepart" --config "$aa"/update-pacman.conf -p base base-devel libnewt grub os-prober xorg-server xorg-server-utils xorg-xinit xterm awesome openbox i3 dwm screenfetch openssh lynx htop wireless_tools wpa_supplicant netctl xfce4 xf86-video-ati nvidia nvidia-340xx nvidia-304xx xf86-video-intel lightdm lightdm-gtk-greeter zsh conky htop firefox pulseaudio cmus virtualbox-guest-utils efibootmgr dialog wpa_actiond vim | sed -e '1,9d' | sed 's!file://!!g' > x86_64-package.list
+		sudo pacstrap "$falsepart" --config "$aa"/etc/update-pacman.conf -p base base-devel libnewt grub os-prober xorg-server xorg-server-utils xorg-xinit xterm awesome openbox i3 dwm screenfetch openssh lynx htop wireless_tools wpa_supplicant netctl xfce4 xf86-video-ati nvidia nvidia-340xx nvidia-304xx xf86-video-intel lightdm lightdm-gtk-greeter zsh conky htop firefox pulseaudio cmus virtualbox-guest-utils efibootmgr dialog wpa_actiond vimxf86-input-synaptics | sed -e '1,9d' | sed 's!file://!!g' > "$aa"/etc/x86_64-package-path.list
 	fi
 	prepare_x86_64
 }
@@ -53,12 +53,15 @@ prepare_x86_64() {
 	sudo unsquashfs airootfs.sfs
 	sudo mkdir "$customiso"/arch/x86_64/squashfs-root/repo/
 	sudo mkdir "$customiso"/arch/x86_64/squashfs-root/repo/install-repo
-	sudo xargs -a "$aa"/etc/x86_64-package.list cp -t "$customiso"/arch/x86_64/squashfs-root/repo/install-repo
+	sudo xargs -a "$aa"/etc/x86_64-package-path.list cp -t "$customiso"/arch/x86_64/squashfs-root/repo/install-repo
 	sudo repo-add "$customiso"/arch/x86_64/squashfs-root/repo/install-repo/install-repo.db.tar.gz "$customiso"/arch/x86_64/squashfs-root/repo/install-repo/*.pkg.tar.xz
 	sudo cp "$aa"/etc/local-pacman.conf "$customiso"/arch/x86_64/squashfs-root/root
+	sudo cp "$aa"/etc/arch-anywhere.conf "$customiso"/arch/x86_64/squashfs-root/etc/
 	sudo cp "$aa"/arch-installer.sh "$customiso"/arch/x86_64/squashfs-root/usr/bin/arch-anywhere
+	sudo mkdir "$customiso"/arch/x86_64/squashfs-root/usr/share/arch-anywhere
+	sudo cp "$aa"/lang/arch-installer-english.conf "$customiso"/arch/x86_64/squashfs-root/usr/share/arch-anywhere
 	sudo chmod +x "$customiso"/arch/x86_64/squashfs-root/usr/bin/arch-anywhere
-	sudo cp "$aa"/arch-wiki "$customiso"/arch/x86_64/squashfs-root/usr/bin/arch-wiki
+	sudo cp "$aa"/extra/arch-wiki "$customiso"/arch/x86_64/squashfs-root/usr/bin/arch-wiki
 	sudo chmod +x "$customiso"/arch/x86_64/squashfs-root/usr/bin/arch-wiki
 	sudo cp "$aa"/extra/.zshrc "$customiso"/arch/x86_64/squashfs-root/root/
 	sudo cp "$aa"/extra/.simple-guide.html "$customiso"/arch/x86_64/squashfs-root/root/
@@ -80,12 +83,15 @@ prepare_i686() {
 	sudo unsquashfs airootfs.sfs
 	sudo mkdir "$customiso"/arch/i686/squashfs-root/repo/
 	sudo mkdir "$customiso"/arch/i686/squashfs-root/repo/install-repo
-	sudo xargs -a "$aa"/etc/i686-package.list cp -t "$customiso"/arch/i686/squashfs-root/repo/install-repo
+	sudo xargs -a "$aa"/etc/i686-package-path.list cp -t "$customiso"/arch/i686/squashfs-root/repo/install-repo
 	sudo repo-add "$customiso"/arch/i686/squashfs-root/repo/install-repo/install-repo.db.tar.gz "$customiso"/arch/i686/squashfs-root/repo/install-repo/*.pkg.tar.xz
 	sudo cp "$aa"/etc/local-pacman.conf "$customiso"/arch/i686/squashfs-root/root
+	sudo cp "$aa"/etc/arch-anywhere.conf "$customiso"/arch/i686/squashfs-root/etc/
 	sudo cp "$aa"/arch-installer.sh "$customiso"/arch/i686/squashfs-root/usr/bin/arch-anywhere
+	sudo mkdir "$customiso"/arch/i686/squashfs-root/usr/share/arch-anywhere
+	sudo cp "$aa"/lang/arch-installer-english.conf "$customiso"/arch/i686/squashfs-root/usr/share/arch-anywhere
 	sudo chmod +x "$customiso"/arch/i686/squashfs-root/usr/bin/arch-anywhere
-	sudo cp "$aa"/arch-wiki "$customiso"/arch/i686/squashfs-root/usr/bin/arch-wiki
+	sudo cp "$aa"/extra/arch-wiki "$customiso"/arch/i686/squashfs-root/usr/bin/arch-wiki
 	sudo chmod +x "$customiso"/arch/i686/squashfs-root/usr/bin/arch-wiki	
 	sudo cp "$aa"/extra/.zshrc "$customiso"/arch/i686/squashfs-root/root/
 	sudo cp "$aa"/extra/.simple-guide.html "$customiso"/arch/i686/squashfs-root/root/
@@ -104,10 +110,10 @@ prepare_i686() {
 configure_boot() {
 	sudo mkdir "$customiso"/EFI/archiso/mnt
 	sudo mount -o loop "$customiso"/EFI/archiso/efiboot.img "$customiso"/EFI/archiso/mnt
-	sed -ie "s/archisolabel=.*/archisolabel=$iso_label/" "$aa"/boot/archiso-x86_64.CD.conf
-	sed -ie "s/archisolabel=.*/archisolabel=$iso_label/" "$aa"/boot/archiso-x86_64.conf
-	sed -ie "s/archisolabel=.*/archisolabel=$iso_label/" "$aa"/boot/archiso_sys64.cfg 
-	sed -ie "s/archisolabel=.*/archisolabel=$iso_label/" "$aa"/boot/archiso_sys32.cfg
+	sed -i "s/archisolabel=.*/archisolabel=$iso_label/" "$aa"/boot/archiso-x86_64.CD.conf
+	sed -i "s/archisolabel=.*/archisolabel=$iso_label/" "$aa"/boot/archiso-x86_64.conf
+	sed -i "s/archisolabel=.*/archisolabel=$iso_label/" "$aa"/boot/archiso_sys64.cfg 
+	sed -i "s/archisolabel=.*/archisolabel=$iso_label/" "$aa"/boot/archiso_sys32.cfg
 	sudo cp "$aa"/boot/archiso-x86_64.CD.conf "$customiso"/EFI/archiso/mnt/loader/entries/archiso-x86_64.conf
 	sudo umount "$customiso"/EFI/archiso/mnt
 	sudo rmdir "$customiso"/EFI/archiso/mnt
@@ -116,7 +122,6 @@ configure_boot() {
 	cp "$aa"/boot/archiso_head.cfg "$customiso"/arch/boot/syslinux
 	cp "$aa"/boot/archiso_sys64.cfg "$customiso"/arch/boot/syslinux
 	cp "$aa"/boot/archiso_sys32.cfg "$customiso"/arch/boot/syslinux
-	create_iso
 }
 
 create_iso() {
