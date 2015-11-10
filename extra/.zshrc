@@ -33,6 +33,7 @@ fi
 alias arch-wiki-guide="elinks ~/.guide.html"
 alias arch-wiki-simple="elinks ~/.simple-guide.html"
 alias help="cat ~/.help"
+alias start="cat /etc/issue"
 
 ## Settings for umask
 #if (( EUID == 0 )); then

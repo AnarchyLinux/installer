@@ -20,6 +20,7 @@ check_connection() {
 	clear
 	source /etc/arch-anywhere.conf
 	source /usr/share/arch-anywhere/arch-installer-english.conf
+	export reload=true
 
 	if ! (whiptail --title "$title" --yesno "$intro_msg" 10 60) then
 		clear
@@ -185,7 +186,7 @@ prepare_drives() {
 			
 			while [ "$swapped" != "true" ]
 				do
-					SWAPSPACE=$(whiptail --inputbox --nocancel "$swap_msg1" 10 35 "512M" 3>&1 1>&2 2>&3)
+					SWAPSPACE=$(whiptail --inputbox --nocancel "$swap_msg1" 10 60 "512M" 3>&1 1>&2 2>&3)
 					unit=$(grep -o ".$" <<< "$SWAPSPACE")
 					unit_size=$(grep -o '[0-9]*' <<< "$SWAPSPACE") 
 					
@@ -693,7 +694,7 @@ configure_system() {
 		if "$UEFI" ; then 
 			echo "/dev/$BOOT              /boot           vfat         rw,relatime,fmask=0022,dmask=0022,codepage=437,iocharset=iso8859-1,shortname=mixed,errors=remount-ro        0       2" > "$ARCH"/etc/fstab
 		else 
-			echo "/dev/$BOOT              /boot           $FS         defaults        0       2" > "$ARCH"/etc/fstab
+			echo "/dev/$BOOT              /boot           ext4         defaults        0       2" > "$ARCH"/etc/fstab
 		fi
 
 		echo "/dev/mapper/root        /               $FS         defaults        0       1" >> "$ARCH"/etc/fstab
@@ -779,7 +780,7 @@ add_user() {
 	fi
 
 	if (whiptail --title "$title" --yesno "$user_msg0" 10 60) then
-		user=$(whiptail --nocancel --inputbox "Set username: \n\n *$user_msg1" 10 60 "" 3>&1 1>&2 2>&3)
+		user=$(whiptail --nocancel --inputbox "$user_msg1" 10 60 "" 3>&1 1>&2 2>&3)
 		user=$(<<<$user sed 's/ //g')
 		user_check=$(<<<$user grep "^[0-9]\|[\[\$\!\'\"\`\\|%&#@()_-+=<>~;:/?.,^{}]\|]")
 		if [ -n "$user_check" ]; then
@@ -889,19 +890,19 @@ graphics() {
 					"awesome"  "$de9" \
 					"i3"       "$de10" \
 					"dwm"      "$de12" 3>&1 1>&2 2>&3)
+				fi
+				
+				if [ "$?" -gt "0" ]; then 
+					DE=set
+				else
+					i=true
 
-					if [ "$?" -gt "0" ]; then 
-						DE=set
+					if (whiptail --title "$title" --yesno "$lightdm_msg" 10 60) then
+						pacstrap "$ARCH" lightdm lightdm-gtk-greeter &> /dev/null &
+						pid=$! pri="1" msg="$lightdm_load" load
+						arch-chroot "$ARCH" systemctl enable lightdm.service &> /dev/null
 					else
-						i=true
-
-						if (whiptail --title "$title" --yesno "$lightdm_msg" 10 60) then
-							pacstrap "$ARCH" lightdm lightdm-gtk-greeter &> /dev/null &
-							pid=$! pri="$down" msg="$lightdm_load" load
-							arch-chroot "$ARCH" systemctl enable lightdm.service &> /dev/null
-						else
-							whiptail --title "$title" --msgbox "$startx_msg" 10 60
-						fi
+						whiptail --title "$title" --msgbox "$startx_msg" 10 60
 					fi
 				fi
 
@@ -1071,6 +1072,7 @@ install_software() {
 	fi
 
 	if "$online" ; then
+		rm "$ARCH"/var/lib/pacman/db.lck
 		arch-chroot "$ARCH" pacman -Syy &> /dev/null &
 		pid=$! pri=1 msg="$pacman_load" load
 	fi
