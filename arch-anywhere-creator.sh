@@ -1,10 +1,10 @@
 #!/bin/bash
 
 # Set the version here
-export version=arch-anywhere-1.5-dual.iso
+export version="arch-anywhere-1.6-dual.iso"
 
 # Set the ISO label here
-export iso_label=ARCH_ANYWHERE_201511
+export iso_label="ARCH_ANYWHERE_201512"
 
 # Location variables all directories must exist
 export aa=~/arch-anywhere
@@ -13,12 +13,15 @@ export customiso=~/arch-anywhere/customiso
 export mntdir=~/arch-anywhere/mnt
 
 init() {
+	
 	if [ -d "$mntdir"/arch ]; then
 		cp -a "$mntdir" "$customiso"
 	else
 		echo "ISO not mounted. [Press enter to mount, any other key to cancel]"
 		read input
+		
 		if [ "$input" == "" ]; then
+			
 			if [ -f "$aa"/archlinux-*.iso ]; then
 				sudo mount -t iso9660 -o loop "$aa"/archlinux-*.iso "$mntdir"
 				cp -a "$mntdir" "$customiso"
@@ -30,21 +33,18 @@ init() {
 			exit
 		fi
 	fi
+	
 	update_repos
 }
 
 update_repos() {
-	echo "Update repo packages first? [Press enter to update, any other key to continue without update]"
-	read input
-	if [ "$input" == "" ]; then
-		cd "$repodir"/x86_64
-		sudo pacstrap "$falsepart" -p base base-devel libnewt grub os-prober xorg-server xorg-server-utils xorg-xinit xterm awesome openbox i3 dwm screenfetch openssh lynx htop wireless_tools wpa_supplicant netctl xfce4 xf86-video-ati nvidia nvidia-340xx nvidia-304xx xf86-video-intel lightdm lightdm-gtk-greeter zsh conky htop firefox pulseaudio cmus virtualbox-guest-utils efibootmgr dialog wpa_actiond vim xf86-input-synaptics | sed -e '1,9d' > x86_64-package.list
-		wget -Ni x86_64-package.list
-		repo-add -R x86_64-repo.db.tar.gz *.pkg.tar.xz
-		cd "$aa"
-		sudo pacstrap "$falsepart" --config "$aa"/etc/update-pacman.conf -p base base-devel libnewt grub os-prober xorg-server xorg-server-utils xorg-xinit xterm awesome openbox i3 dwm screenfetch openssh lynx htop wireless_tools wpa_supplicant netctl xfce4 xf86-video-ati nvidia nvidia-340xx nvidia-304xx xf86-video-intel lightdm lightdm-gtk-greeter zsh conky htop firefox pulseaudio cmus virtualbox-guest-utils efibootmgr dialog wpa_actiond vimxf86-input-synaptics | sed -e '1,9d' | sed 's!file://!!g' > "$aa"/etc/x86_64-package-path.list
-	fi
+
+	sudo pacman --root /opt/arch64 --cachedir /opt/arch64/var/cache/pacman/pkg --config /opt/arch64/pacman.conf -Syyy
+	sudo pacman --root /opt/arch32 --cachedir /opt/arch32/var/cache/pacman/pkg --config /opt/arch32/pacman.conf -Syyy
+	sudo pacman --root /opt/arch64 --cachedir /opt/arch64/var/cache/pacman/pkg --config /opt/arch64/pacman.conf -Sp base base-devel libnewt grub os-prober xorg-server xorg-server-utils xorg-xinit xterm awesome openbox i3 dwm screenfetch openssh lynx htop wireless_tools wpa_supplicant netctl xfce4 xf86-video-ati nvidia nvidia-340xx nvidia-304xx xf86-video-intel lightdm lightdm-gtk-greeter zsh conky htop firefox pulseaudio cmus virtualbox-guest-utils efibootmgr dialog wpa_actiond vim xf86-input-synaptics > "$aa"/etc/x86_64-package.list
+	sudo pacman --root /opt/arch32 --cachedir /opt/arch32/var/cache/pacman/pkg --config /opt/arch32/pacman.conf -Sp base base-devel libnewt grub os-prober xorg-server xorg-server-utils xorg-xinit xterm awesome openbox i3 dwm screenfetch openssh lynx htop wireless_tools wpa_supplicant netctl xfce4 xf86-video-ati nvidia nvidia-340xx nvidia-304xx xf86-video-intel lightdm lightdm-gtk-greeter zsh conky htop firefox pulseaudio cmus virtualbox-guest-utils efibootmgr dialog wpa_actiond vim xf86-input-synaptics > "$aa"/etc/i686-package.list
 	prepare_x86_64
+
 }
 
 prepare_x86_64() {
@@ -53,13 +53,16 @@ prepare_x86_64() {
 	sudo unsquashfs airootfs.sfs
 	sudo mkdir "$customiso"/arch/x86_64/squashfs-root/repo/
 	sudo mkdir "$customiso"/arch/x86_64/squashfs-root/repo/install-repo
-	sudo xargs -a "$aa"/etc/x86_64-package-path.list cp -t "$customiso"/arch/x86_64/squashfs-root/repo/install-repo
+#	sudo xargs -a "$aa"/etc/x86_64-package-path.list cp -t "$customiso"/arch/x86_64/squashfs-root/repo/install-repo
+	cd "$customiso"/arch/x86_64/squashfs-root/repo/install-repo
+	sudo wget -i "$aa"/etc/x86_64-package.list
 	sudo repo-add "$customiso"/arch/x86_64/squashfs-root/repo/install-repo/install-repo.db.tar.gz "$customiso"/arch/x86_64/squashfs-root/repo/install-repo/*.pkg.tar.xz
 	sudo cp "$aa"/etc/local-pacman.conf "$customiso"/arch/x86_64/squashfs-root/root
 	sudo cp "$aa"/etc/arch-anywhere.conf "$customiso"/arch/x86_64/squashfs-root/etc/
 	sudo cp "$aa"/arch-installer.sh "$customiso"/arch/x86_64/squashfs-root/usr/bin/arch-anywhere
 	sudo mkdir "$customiso"/arch/x86_64/squashfs-root/usr/share/arch-anywhere
 	sudo cp "$aa"/lang/arch-installer-english.conf "$customiso"/arch/x86_64/squashfs-root/usr/share/arch-anywhere
+	sudo cp "$aa"/lang/arch-installer-romanian.conf "$customiso"/arch/x86_64/squashfs-root/usr/share/arch-anywhere
 	sudo chmod +x "$customiso"/arch/x86_64/squashfs-root/usr/bin/arch-anywhere
 	sudo cp "$aa"/extra/arch-wiki "$customiso"/arch/x86_64/squashfs-root/usr/bin/arch-wiki
 	sudo chmod +x "$customiso"/arch/x86_64/squashfs-root/usr/bin/arch-wiki
@@ -69,6 +72,7 @@ prepare_x86_64() {
 	sudo cp "$aa"/extra/.help "$customiso"/arch/x86_64/squashfs-root/root/
 	sudo cp "$aa"/boot/issue "$customiso"/arch/x86_64/squashfs-root/etc/
 	sudo cp "$aa"/boot/hostname "$customiso"/arch/x86_64/squashfs-root/etc/
+	cd "$customiso"/arch/x86_64	
 	rm airootfs.sfs
 	echo "Recreating x86_64..."
 	sudo mksquashfs squashfs-root airootfs.sfs -b 1024k -comp xz
@@ -83,13 +87,16 @@ prepare_i686() {
 	sudo unsquashfs airootfs.sfs
 	sudo mkdir "$customiso"/arch/i686/squashfs-root/repo/
 	sudo mkdir "$customiso"/arch/i686/squashfs-root/repo/install-repo
-	sudo xargs -a "$aa"/etc/i686-package-path.list cp -t "$customiso"/arch/i686/squashfs-root/repo/install-repo
+#	sudo xargs -a "$aa"/etc/i686-package-path.list cp -t "$customiso"/arch/i686/squashfs-root/repo/install-repo
+	cd "$customiso"/arch/i686/squashfs-root/repo/install-repo
+	sudo wget -i "$aa"/etc/i686-package.list
 	sudo repo-add "$customiso"/arch/i686/squashfs-root/repo/install-repo/install-repo.db.tar.gz "$customiso"/arch/i686/squashfs-root/repo/install-repo/*.pkg.tar.xz
 	sudo cp "$aa"/etc/local-pacman.conf "$customiso"/arch/i686/squashfs-root/root
 	sudo cp "$aa"/etc/arch-anywhere.conf "$customiso"/arch/i686/squashfs-root/etc/
 	sudo cp "$aa"/arch-installer.sh "$customiso"/arch/i686/squashfs-root/usr/bin/arch-anywhere
 	sudo mkdir "$customiso"/arch/i686/squashfs-root/usr/share/arch-anywhere
 	sudo cp "$aa"/lang/arch-installer-english.conf "$customiso"/arch/i686/squashfs-root/usr/share/arch-anywhere
+	sudo cp "$aa"/lang/arch-installer-romanian.conf "$customiso"/arch/i686/squashfs-root/usr/share/arch-anywhere
 	sudo chmod +x "$customiso"/arch/i686/squashfs-root/usr/bin/arch-anywhere
 	sudo cp "$aa"/extra/arch-wiki "$customiso"/arch/i686/squashfs-root/usr/bin/arch-wiki
 	sudo chmod +x "$customiso"/arch/i686/squashfs-root/usr/bin/arch-wiki	
@@ -99,6 +106,7 @@ prepare_i686() {
 	sudo cp "$aa"/extra/.help "$customiso"/arch/i686/squashfs-root/root/
 	sudo cp "$aa"/boot/issue "$customiso"/arch/i686/squashfs-root/etc/
 	sudo cp "$aa"/boot/hostname "$customiso"/arch/i686/squashfs-root/etc/
+	cd "$customiso"/arch/i686
 	rm airootfs.sfs
 	echo "Recreating i686..."
 	sudo mksquashfs squashfs-root airootfs.sfs -b 1024k -comp xz
