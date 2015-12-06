@@ -9,6 +9,7 @@ if [ "--help" == "$1" ] || [ "-h" == "$1" ]; then
 	echo
 	echo "Options:"
 	echo "  -l --language - useage: $this --language <langhere> <search args>"
+	echo "  -u --update  - useage: $this --update (fetches new script from github)"
 	echo
 	echo "Examples:"
 	echo "  $this ssh"
@@ -18,15 +19,20 @@ if [ "--help" == "$1" ] || [ "-h" == "$1" ]; then
 	exit 0
 fi
 
-# try to detect a console browser:
-if [ -n "$BROWSER" ];        then run_browser=$BROWSER        # Some users might have set the $BOWSER variable
-elif [ -x $(which lynx) ];   then run_browser=$(which lynx)   # Lynx first because of the pretty color output
-elif [ -x $(which elinks) ]; then run_browser=$(which elinks) # Elinks second because it newer fork of original Links
-elif [ -x $(which links) ];  then run_browser=$(which links)  # If anyone uses...
-
-else  # no console browser found -> exit
-	echo "Please install one of the following packages to use this script: elinks links lynx"
-	exit 1
+if [ -n "$BROWSER" ]; then run_browser=$BROWSER
+else BROWSER=lynx int=1
+	until [ -n "$run_browser" ]
+	 do
+		which $BROWSER &>/dev/null
+		if [ "$?" -eq "0" ]; then run_browser=$BROWSER
+		elif [ "$int" -eq "1" ]; then BROWSER=elinks
+		elif [ "$int" -eq "2" ]; then BROWSER=links
+		else
+			echo "Please install one of the following packages to use this script: elinks links lynx"
+			exit 1
+		fi
+		int=$((int+1))
+	 done
 fi
 
 query="$*"  # get all params into single query string
