@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Set the version here
-export version="arch-anywhere-1.6-dual.iso"
+export version="arch-anywhere-1.7-dual.iso"
 
 # Set the ISO label here
 export iso_label="ARCH_ANYWHERE_201512"
@@ -62,6 +62,8 @@ prepare_x86_64() {
 	sudo cp "$aa"/arch-installer.sh "$customiso"/arch/x86_64/squashfs-root/usr/bin/arch-anywhere
 	sudo mkdir "$customiso"/arch/x86_64/squashfs-root/usr/share/arch-anywhere
 	sudo cp "$aa"/lang/arch-installer-english.conf "$customiso"/arch/x86_64/squashfs-root/usr/share/arch-anywhere
+	sudo cp "$aa"/lang/arch-installer-german.conf "$customiso"/arch/x86_64/squashfs-root/usr/share/arch-anywhere
+	sudo cp "$aa"/lang/arch-installer-portuguese.conf "$customiso"/arch/x86_64/squashfs-root/usr/share/arch-anywhere
 	sudo cp "$aa"/lang/arch-installer-romanian.conf "$customiso"/arch/x86_64/squashfs-root/usr/share/arch-anywhere
 	sudo chmod +x "$customiso"/arch/x86_64/squashfs-root/usr/bin/arch-anywhere
 	sudo cp "$aa"/extra/arch-wiki "$customiso"/arch/x86_64/squashfs-root/usr/bin/arch-wiki
@@ -96,6 +98,8 @@ prepare_i686() {
 	sudo cp "$aa"/arch-installer.sh "$customiso"/arch/i686/squashfs-root/usr/bin/arch-anywhere
 	sudo mkdir "$customiso"/arch/i686/squashfs-root/usr/share/arch-anywhere
 	sudo cp "$aa"/lang/arch-installer-english.conf "$customiso"/arch/i686/squashfs-root/usr/share/arch-anywhere
+	sudo cp "$aa"/lang/arch-installer-german.conf "$customiso"/arch/i686/squashfs-root/usr/share/arch-anywhere
+	sudo cp "$aa"/lang/arch-installer-portuguese.conf "$customiso"/arch/i686/squashfs-root/usr/share/arch-anywhere
 	sudo cp "$aa"/lang/arch-installer-romanian.conf "$customiso"/arch/i686/squashfs-root/usr/share/arch-anywhere
 	sudo chmod +x "$customiso"/arch/i686/squashfs-root/usr/bin/arch-anywhere
 	sudo cp "$aa"/extra/arch-wiki "$customiso"/arch/i686/squashfs-root/usr/bin/arch-wiki
