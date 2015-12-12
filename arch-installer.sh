@@ -4,6 +4,13 @@
 ##
 ## Copyright (C) 2015  Dylan Schacht
 ##
+## By: Deadhead (Dylan Schacht)
+## Email: deadhead3492@gmail.com
+## Webpage: arch-anywhere.tgits.co.uk
+##
+## Any questions, comments, or bug reports may be sent to abve
+## email address. Enjoy, and keep on using Arch.
+##
 ## This program is free software; you can redistribute it and/or
 ## modify it under the terms of the GNU General Public License
 ## as published by the Free Software Foundation; either version 2
@@ -15,16 +22,24 @@
 ## GNU General Public License version 2 for more details.
 ###################################################################
 
-lang() {
+lang_config() {
 
 	clear
 	ILANG=$(whiptail --nocancel --title "Arch Linux Anywhere" --menu "Select your desired install language:" 15 60 6 \
-		"English" "-" \
-		"Romanian" "-" 3>&1 1>&2 2>&3)
+		"English" "" \
+		"German" "Deutsche" \
+		"Portuguese" "Português" \
+		"Romanian" "Română" 3>&1 1>&2 2>&3)
 
 	case "$ILANG" in
 		"English")
 			export lang_file=/usr/share/arch-anywhere/arch-installer-english.conf
+		;;
+		"German")
+			export lang_file=/usr/share/arch-anywhere/arch-installer-german.conf
+		;;
+		"Portuguese")
+			export lang_file=/usr/share/arch-anywhere/arch-installer-portuguese.conf
 		;;
 		"Romanian")
 			export lang_file=/usr/share/arch-anywhere/arch-installer-romanian.conf
@@ -34,20 +49,50 @@ lang() {
 	source /etc/arch-anywhere.conf
 	source "$lang_file"
 	export reload=true
+	set_keys
+
+}
+
+set_keys() {
+
+	if ! (whiptail --title "$title" --yes-button "$yes" --no-button "$no" --yesno "$intro_msg" 10 60) then
+		clear ; exit
+	fi
+	
+	keyboard=$(whiptail --nocancel --title "$title" --ok-button "$ok" --menu "$keys_msg" 15 60 6 \
+	"$default" "$default Keymap" \
+	"us" "United States" \
+	"ro" "Romanian" \
+	"fr" "French" \
+	"es" "Spanish" \
+	"ru" "Russian" \
+	"uk" "United Kingdom" \
+	"pt-latin9" "Portugal" \
+	"$other"       "-"		 3>&1 1>&2 2>&3)
+	source "$lang_file"
+
+	if [ "$keyboard" = "$other" ]; then
+		keyboard=$(whiptail --title "$title" --ok-button "$ok" --cancel-button "$cancel" --menu "$keys_msg" 15 60 6  $key_maps 3>&1 1>&2 2>&3)
+		if [ "$?" -gt "0" ]; then
+			set_keys
+		fi
+	
+	elif [ "$keyboard" != "$default" ]; then
+		loadkeys "$keyboard" &
+		pid=$! pri=0.1 msg="$keys_load_var" load
+	fi
+
+	keys_set=true 
 	check_connection
 
 }
 
 check_connection() {
 
-	if ! (whiptail --title "$title" --yes-button "$yes" --no-button "$no" --yesno "$intro_msg" 10 60) then
-		clear
-		exit
-	fi
+	ping -w 3 google.com &> /dev/null &
+	pid=$! pri=0.2 msg="$connection_load" load
 
-	ping -w 2 google.com &> /dev/null
-
-	if [ "$?" -gt "0" ]; then
+	if "$err" ; then
 
 		if [ -n "$wifi_network" ]; then
 
@@ -57,7 +102,7 @@ check_connection() {
 				if [ "$?" -gt "0" ]; then
 
 					if ! (whiptail --title "$title" --yes-button "$yes" --no-button "$no" --yesno "$wifi_msg1" 10 60) then
-						clear ; exit 1
+						exit 1
 					fi
 
 				else
@@ -65,6 +110,7 @@ check_connection() {
 					wifi=true
 				fi
 			fi
+			err=false
 		fi
 
 	else
@@ -89,16 +135,14 @@ check_connection() {
 				4[0-9]) export down="7" ;;
 				5[0-9]) export down="8" ;;
 				6[0-9]) export down="9" ;;
+				[7-9][0-9]) export down="10" ;;
 				[0-9][0-9][0-9]) 
-
 					if (whiptail --title "$title" --yes-button "$yes" --no-button "$no" --yesno "$connection_msg1" 10 60) then
 						export down="15"
 					else
-						exit
+						clear ; exit
 					fi
 				;;
-
-				*) export down="10" ;;
 			esac
 			set_locale
 		fi
@@ -113,17 +157,20 @@ check_connection() {
 set_locale() {
 
 	LOCALE=$(whiptail --nocancel --title "$title" --ok-button "$ok" --menu "$locale_msg" 15 60 6 \
-	"en_US.UTF-8" "-" \
-	"en_AU.UTF-8" "-" \
-	"en_CA.UTF-8" "-" \
-	"en_GB.UTF-8" "-" \
-	"en_MX.UTF-8" "-" \
-	"Other"       "-"		 3>&1 1>&2 2>&3)
+	"en_US.UTF-8" "United States" \
+	"en_AU.UTF-8" "Australia" \
+	"en_CA.UTF-8" "Canada" \
+	"en_GB.UTF-8" "Great Britain" \
+	"en_MX.UTF-8" "Mexico" \
+	"pt_PT.UTF-8" "Portugal" \
+	"$other"       "-"		 3>&1 1>&2 2>&3)
 
-	if [ "$LOCALE" = "Other" ]; then
+	if [ "$LOCALE" = "$other" ]; then
 		LOCALE=$(whiptail --title "$title" --ok-button "$ok" --cancel-button "$cancel" --menu "$locale_msg" 15 60 6  $localelist 3>&1 1>&2 2>&3)
 
-		if [ "$?" -gt "0" ]; then set_locale ; fi
+		if [ "$?" -gt "0" ]; then 
+			set_locale
+		fi
 	fi
 
 	locale_set=true
@@ -151,14 +198,7 @@ set_zone() {
 			fi
 		fi
 
-	zone_set=true set_keys
-
-}
-
-set_keys() {
-
-	keyboard=$(whiptail --nocancel --inputbox "$keys_msg" 10 35 "us" 3>&1 1>&2 2>&3)
-	keys_set=true 
+	zone_set=true
 	prepare_drives
 
 }
@@ -167,7 +207,7 @@ prepare_drives() {
 
 	DRIVE=$(whiptail --nocancel --title "$title" --ok-button "$ok" --menu "$drive_msg" 15 60 5 $drive 3>&1 1>&2 2>&3)
 	source "$lang_file"
-	PART=$(whiptail --title "$title" --ok-button "$ok" --cancel-button "$cancel" --menu "$part_msg" 15 60 4 \
+	PART=$(whiptail --title "$title" --ok-button "$ok" --cancel-button "$cancel" --menu "$part_msg" 16 62 4 \
 	"$method0"           "-" \
 	"$method1"   "-" \
 	"$method2"         "-" \
@@ -180,22 +220,25 @@ prepare_drives() {
 		main_menu
 
 	elif [ "$PART" == "$method1" ] || [ "$PART" == "$method0" ]; then
-		crypted=false
 
 		if (whiptail --title "$title" --defaultno --yes-button "$yes" --no-button "$no" --yesno "$drive_var" 10 60) then
 			sgdisk --zap-all "$DRIVE" &> /dev/null
 		else
 			prepare_drives
 		fi
-		
-		FS=$(whiptail --title "$title" --nocancel --menu "$fs_msg" 15 60 6 \
-		"ext4"      "$fs0" \
-		"ext3"      "$fs1" \
-		"ext2"      "$fs2" \
-		"btrfs"     "$fs3" \
-		"jfs"       "$fs4" \
-		"reiserfs"  "$fs5" 3>&1 1>&2 2>&3)
-		source "$lang_file"
+
+		fs() {
+			FS=$(whiptail --title "$title" --nocancel --menu "$fs_msg" 15 60 6 \
+			"ext4"      "$fs0" \
+			"ext3"      "$fs1" \
+			"ext2"      "$fs2" \
+			"btrfs"     "$fs3" \
+			"jfs"       "$fs4" \
+			"reiserfs"  "$fs5" 3>&1 1>&2 2>&3)
+			source "$lang_file"
+		}
+
+		fs
 
 		if (whiptail --title "$title" --yes-button "$yes" --no-button "$no" --yesno "$swap_msg0" 10 60) then
 			drive_bytes=$(fdisk -l | grep -w "$DRIVE" | awk '{print $5}') 
@@ -247,7 +290,6 @@ prepare_drives() {
 		fi
 
 		if [ "$UEFI" == "false" ]; then 
-			GPT=false
 
 			if (whiptail --title "$title" --defaultno --yes-button "$yes" --no-button "$no" --yesno "$gpt_msg" 10 60) then 
 				GPT=true
@@ -453,16 +495,20 @@ prepare_drives() {
 
 		"$method2")
 
-			clear
 			$part_tool /dev/"$DRIVE"
-			lsblk | egrep "$DRIVE[0-9]"
+			
+			if [ "$?" -gt "0" ]; then err=true; fi
 
-			if [ "$?" -gt "0" ]; then
+			lsblk | egrep "$DRIVE[0-9]" &>/dev/null
+
+			if [ "$?" -gt "0" ]; then err=true; fi
+
+			if "$err" ; then
 				whiptail --title "$title" --ok-button "$ok" --msgbox "$part_err_msg" 10 60
+				err=false
 				prepare_drives
 			fi
 
-			clear
 			partition=$(lsblk | grep "$DRIVE" | grep -v "/\|1K" | sed "1d" | cut -c7- | awk '{print $1" "$4}')
 
 			if "$UEFI" ; then
@@ -473,6 +519,9 @@ prepare_drives() {
 					echo -e "t\n${i}\nEF00\nw\ny" | gdisk /dev/"$DRIVE" &> /dev/null
 					mkfs.vfat -F32 /dev/"$BOOT" &> /dev/null &
 					pid=$! pri=0.2 msg="$efi_load" load
+					points=$(echo -e "/home   >\n/srv    >\n/usr    >\n/var    >\nSWAP   >")
+					mkdir $ARCH/boot
+					mount /dev/"$BOOT" "$ARCH"/boot	
 				else
 					prepare_drives
 				fi
@@ -483,14 +532,7 @@ prepare_drives() {
 			ROOT=$(whiptail --nocancel --title "$title" --ok-button "$ok" --menu "$root_msg" 15 60 5 $partition 3>&1 1>&2 2>&3)
 
 			if (whiptail --title "$title" --yes-button "$yes" --no-button "$no" --yesno "$new_fs_msg" 10 60) then
-				FS=$(whiptail --title "$title" --nocancel --menu "$fs_msg" 15 60 6 \
-				"ext4"      "$fs0" \
-				"ext3"      "$fs1" \
-				"ext2"      "$fs2" \
-				"btrfs"     "$fs3" \
-				"jfs"       "$fs4" \
-				"reiserfs"  "$fs5" 3>&1 1>&2 2>&3)
-				source "$lang_file"
+				fs
 				wipefs -a -q /dev/"$ROOT" &> /dev/null
 
 				if [ "$FS" == "jfs" ] || [ "$FS" == "reiserfs" ]; then
@@ -514,15 +556,7 @@ prepare_drives() {
 				prepare_drives
 			fi
 
-			if "$UEFI" ; then
-				points=$(echo -e "/home   >\n/srv    >\n/usr    >\n/var    >\nSWAP   >")
-				mkdir $ARCH/boot
-				mount /dev/"$BOOT" "$ARCH"/boot
-			else
-				points=$(echo -e "/boot   >\n/home   >\n/srv    >\n/usr    >\n/var    >\nSWAP   >")
-			fi
-
-			until [ "$new_mnt" == "Done" ] 
+			until [ "$new_mnt" == "$done_msg" ] 
 				do
 					partition=$(lsblk | grep "$DRIVE" | grep -v "/\|[SWAP]\|1K" | sed "1d" | cut -c7- | awk '{print $1"     "$4}')
 					new_mnt=$(whiptail --title "$title" --nocancel --menu "$part_sel_msg" 15 60 6 $partition "$done_msg" "$continue_msg" 3>&1 1>&2 2>&3)
@@ -531,28 +565,19 @@ prepare_drives() {
 						source "$lang_file"
 						MNT=$(whiptail --title "$title" --ok-button "$ok" --cancel-button "$cancel" --menu "$mnt_var0" 15 60 6 $points 3>&1 1>&2 2>&3)
 
-						if [ "$?" -gt "0" ]; then	
-							:
-						elif [ "$MNT" == "SWAP" ]; then
+						if [ "$MNT" == "SWAP" ]; then
 
-							if (whiptail --title "$title" --yes-button "$yes" --no-button "$no" --yesno "Will create a swap space on /dev/$new_mnt \n\n *Continue?" 10 60) then
+							if (whiptail --title "$title" --yes-button "$yes" --no-button "$no" --yesno "$swap_var" 10 60) then
 								wipefs -a -q /dev/"$new_mnt"
 								mkswap /dev/"$new_mnt" &> /dev/null
 								swapon /dev/"$new_mnt" &> /dev/null
 							fi
 
-						else
+						elif [ -n "$MNT" ]; then
 							source "$lang_file"
 							
 							if (whiptail --title "$title" --yes-button "$yes" --no-button "$no" --yesno "$mnt_var1" 10 60) then
-								FS=$(whiptail --title "$title" --nocancel --menu "$fs_msg" 15 60 6 \
-								"ext4"      "$fs0" \
-								"ext3"      "$fs1" \
-								"ext2"      "$fs2" \
-								"btrfs"     "$fs3" \
-								"jfs"       "$fs4" \
-								"reiserfs"  "$fs5" 3>&1 1>&2 2>&3)
-								source "$lang_file"
+								fs
 								wipefs -a -q /dev/"$new_mnt"
 								
 								if [ "$FS" == "jfs" ] || [ "$FS" == "reiserfs" ]; then
@@ -572,7 +597,6 @@ prepare_drives() {
 				done
 		;;
 	esac
-	clear
 
 	if ! "$mounted" ; then
 		whiptail --title "$title" --ok-button "$ok" --msgbox "$part_err_msg" 10 60
@@ -585,7 +609,7 @@ prepare_drives() {
 
 update_mirrors() {
 
-	if [ "$connection" == "true" ]; then
+	if "$connection" ; then
 
 		if (whiptail --title "$title" --yes-button "$yes" --no-button "$no" --yesno "$mirror_msg0" 10 60) then
 			code=$(whiptail --nocancel --title "$title" --ok-button "$ok" --menu "$mirror_msg1" 15 60 6 $countries 3>&1 1>&2 2>&3)
@@ -638,28 +662,28 @@ install_base() {
 						pacstrap "$ARCH" grub &> /dev/null &
 						pid=$! pri=0.5 msg="$grub_load0" load
 
-						if [ "$crypted" == "true" ]; then
+						if "$crypted" ; then
 							sed -i 's!quiet!cryptdevice=/dev/lvm/lvroot:root root=/dev/mapper/root!' "$ARCH"/etc/default/grub
 						fi
 
 						if "$UEFI" ; then
 							pacstrap "$ARCH" efibootmgr &> /dev/null &
 							pid=$! pri=0.5 msg="Installing efibootmgr..." load
-							arch-chroot "$ARCH" grub-install --efi-directory=/boot --target=x86_64-efi --bootloader-id=boot --recheck &> /dev/null &
+							arch-chroot "$ARCH" grub-install --efi-directory=/boot --target=x86_64-efi --bootloader-id=boot &> /dev/null &
 							pid=$! pri=0.5 msg="$grub_load1" load
 							mv "$ARCH"/boot/EFI/boot/grubx64.efi "$ARCH"/boot/EFI/boot/bootx64.efi
+							
+							if ! "$crypted" ; then
+								arch-chroot "$ARCH" mkinitcpio -p linux &> /dev/null &
+								pid=$! pri=1 msg="$uefi_config_load" load
+							fi
 						else
-							arch-chroot "$ARCH" grub-install --recheck /dev/"$DRIVE" &> /dev/null &
+							arch-chroot "$ARCH" grub-install /dev/"$DRIVE" &> /dev/null &
 							pid=$! pri=0.5 msg="$grub_load1" load
 						fi
 
 						arch-chroot "$ARCH" grub-mkconfig -o /boot/grub/grub.cfg &> /dev/null &
 						pid=$! pri=0.2 msg="$grub_load2" load
-
-						if [[ "$UEFI" == "true" && "$crypted" == "false" ]] ; then
-							arch-chroot "$ARCH" mkinitcpio -p linux &> /dev/null &
-							pid=$! pri=1 msg="$uefi_config_load" load
-						fi
 
 						loader=true
 						bootloader=true
@@ -733,8 +757,10 @@ configure_system() {
 	echo LANG="$LOCALE" > "$ARCH"/etc/locale.conf
 	arch-chroot "$ARCH" locale-gen &> /dev/null &
 	pid=$! pri=0.2 msg="$locale_load_var" load
-	arch-chroot "$ARCH" loadkeys "$keyboard" &> /dev/null &
-	pid=$! pri=0.2 msg="$keys_load_var" load
+	
+	if [ "$keyboard" != "$default" ]; then
+		echo "KEYMAP=$keyboard" > "$ARCH"/etc/vconsole.conf
+	fi
 
 	if [ -n "$SUB_SUBZONE" ]; then
 		arch-chroot "$ARCH" ln -s /usr/share/zoneinfo/"$ZONE"/"$SUBZONE"/"$SUB_SUBZONE" /etc/localtime &
@@ -746,7 +772,7 @@ configure_system() {
 
 	elif [ -n "$ZONE" ]; then
 		arch-chroot "$ARCH" ln -s /usr/share/zoneinfo/"$ZONE" /etc/localtime &
-		pid=$! pri=0.2 msg="$zone_load_var_2" load
+		pid=$! pri=0.2 msg="$zone_load_var2" load	
 	fi
 
 	if [ "$arch" == "x86_64" ]; then
@@ -841,7 +867,7 @@ graphics() {
 
 	if (whiptail --title "$title" --yes-button "$yes" --no-button "$no" --yesno "$xorg_msg" 10 60) then
 		GPU=$(whiptail --title "$title" --ok-button "$ok" --cancel-button "$cancel" --menu "$graphics_msg" 17 60 6 \
-		"Default"			"$g0" \
+		"$default"			"$g0" \
 		"mesa-libgl"        "$g1" \
 		"Nvidia"            "$g2" \
 		"Vbox-Guest-Utils"  "$g3" \
@@ -1005,7 +1031,7 @@ graphics() {
 					pacstrap "$ARCH" $(echo "$DE $DE_EXTRA") &> /dev/null &
 					pid=$! pri="$down" msg="$desktop_load" load
 
-					if [ "$user_added" == "true" ]; then
+					if "$user_added" ; then
 						echo "$start_term" > "$ARCH"/home/"$user"/.xinitrc
 					else
 						echo "$start_term" > "$ARCH"/root/.xinitrc
@@ -1023,6 +1049,7 @@ graphics() {
 install_software() {
 
 	if (whiptail --title "$title" --yes-button "$yes" --no-button "$no" --yesno "$software_msg0" 10 60) then
+		
 		if "$online" ; then
 			software=$(whiptail --title "$title" --ok-button "$ok" --cancel-button "$cancel" --checklist "$software_msg1" 20 60 10 \
 					"arch-wiki"            "$m0" ON \
@@ -1082,7 +1109,7 @@ install_software() {
 		fi
 
 		download=$(echo "$software" | sed 's/\"//g')
-	    	wiki=$(<<<$download grep "arch-wiki")
+		wiki=$(<<<$download grep "arch-wiki")
 
 		if [ -n "$wiki" ]; then
 			cp /usr/bin/arch-wiki "$ARCH"/usr/bin
@@ -1110,20 +1137,20 @@ reboot_system() {
 		if ! "$bootloader" ; then
 
 			if (whiptail --title "$title" --yes-button "$yes" --no-button "$no" --yesno "$complete_no_boot_msg" 10 60) then
-				clear ; exit
+				exit
 			fi
 		fi
 
 		if (whiptail --title "$title" --yes-button "$yes" --no-button "$no" --yesno "$complete_msg0" 10 60) then
 			umount -R $ARCH
-			clear ; reboot ; exit
+			reboot ; exit
 		else
 
 			if (whiptail --title "$title" --yes-button "$yes" --no-button "$no" --yesno "$complete_msg1" 10 60) then
 				umount -R "$ARCH"
-				clear ; exit
+				exit
 			else
-				clear ; exit
+				exit
 			fi
 		fi
 
@@ -1131,7 +1158,7 @@ reboot_system() {
 
 		if (whiptail --title "$title" --yes-button "$yes" --no-button "$no" --yesno "$not_complete_msg" 10 60) then
 			umount -R $ARCH
-			clear ; reboot ; exit
+			reboot ; exit
 		else
 			main_menu
 		fi
@@ -1145,7 +1172,7 @@ load() {
         	while (true)
     	    	do
     	            proc=$(ps | grep "$pid")
-    	            if [ "$?" -gt "0" ]; then break; fi
+    	            if [ "$?" -gt "0" ]; then err=true break; fi
     	            sleep $pri
     	            echo $int
     	            int=$((int+1))
@@ -1279,4 +1306,4 @@ main_menu() {
 
 }
 
-lang
+lang_config
