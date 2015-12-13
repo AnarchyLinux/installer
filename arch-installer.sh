@@ -1088,6 +1088,7 @@ install_software() {
 					"virtualbox"  	       "$m33" OFF \
 					"vlc"         	   	   "$m34" OFF \
 					"ufw"         	       "$m35" OFF \
+					"wget"                 "Wget cli downloader" ON \
 					"zsh"                  "$m36" OFF 3>&1 1>&2 2>&3)
 			else
 				software=$(whiptail --title "$title" --ok-button "$ok" --cancel-button "$cancel" --checklist "$software_msg1" 20 60 10 \
@@ -1101,6 +1102,7 @@ install_software() {
 					"pulseaudio"  "$m2" ON \
 					"screenfetch" "$m3" ON \
 					"vim"         "$m4" OFF \
+					"wget"        "Wget cli downloader" ON \
 					"zsh"         "$m36" OFF 3>&1 1>&2 2>&3)
 			fi
 
@@ -1137,20 +1139,20 @@ reboot_system() {
 		if ! "$bootloader" ; then
 
 			if (whiptail --title "$title" --yes-button "$yes" --no-button "$no" --yesno "$complete_no_boot_msg" 10 60) then
-				exit
+				clear ; exit
 			fi
 		fi
 
 		if (whiptail --title "$title" --yes-button "$yes" --no-button "$no" --yesno "$complete_msg0" 10 60) then
 			umount -R $ARCH
-			reboot ; exit
+			clear ; reboot ; exit
 		else
 
 			if (whiptail --title "$title" --yes-button "$yes" --no-button "$no" --yesno "$complete_msg1" 10 60) then
 				umount -R "$ARCH"
-				exit
+				clear ; exit
 			else
-				exit
+				clear ; exit
 			fi
 		fi
 
@@ -1158,7 +1160,7 @@ reboot_system() {
 
 		if (whiptail --title "$title" --yes-button "$yes" --no-button "$no" --yesno "$not_complete_msg" 10 60) then
 			umount -R $ARCH
-			reboot ; exit
+			clear ; reboot ; exit
 		else
 			main_menu
 		fi
