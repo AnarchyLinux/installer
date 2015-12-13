@@ -39,10 +39,30 @@ init() {
 
 update_repos() {
 
+	echo -n "How would you like to fetch the packages?\n\n1.) Local dh-repo packages (At home only)\n2.) Offical repo packages (If online)\n\n[1 or 2]: "
+	read input
+
+	if [ "$input" -eq "2" ]; then
+		if [ ! -d /opt/arch64 ]; then
+			sudo mkdir /opt/arch64
+			sudo cp /etc/pacman.conf /opt/arch64
+			sudo cp /etc/pacman.d/mirrorlist /opt/arch64
+			sudo mkdir -p /opt/arch64/var/{cache/pacman/pkg,lib/pacman}
+		fi
+			
+		if [ ! -d /opt/arch32 ]; then
+			sudo mkdir /opt/arch32
+			sudo sed -e 's/\$arch/i686/g' /etc/pacman.d/mirrorlist > /opt/arch32/mirrorlist
+			sudo sed -e 's@/etc/pacman.d/mirrorlist@/opt/arch32/mirrorlist@g' -e '/Architecture/ s,auto,i686,'  /etc/pacman.conf > /opt/arch32/pacman.conf
+			sudo mkdir -p /opt/arch32/var/{cache/pacman/pkg,lib/pacman}
+		fi
+	fi
+
 	sudo pacman --root /opt/arch64 --cachedir /opt/arch64/var/cache/pacman/pkg --config /opt/arch64/pacman.conf -Syyy
 	sudo pacman --root /opt/arch32 --cachedir /opt/arch32/var/cache/pacman/pkg --config /opt/arch32/pacman.conf -Syyy
-	sudo pacman --root /opt/arch64 --cachedir /opt/arch64/var/cache/pacman/pkg --config /opt/arch64/pacman.conf -Sp base base-devel libnewt grub os-prober xorg-server xorg-server-utils xorg-xinit xterm awesome openbox i3 dwm screenfetch openssh lynx htop wireless_tools wpa_supplicant netctl xfce4 xf86-video-ati nvidia nvidia-340xx nvidia-304xx xf86-video-intel lightdm lightdm-gtk-greeter zsh conky htop firefox pulseaudio cmus virtualbox-guest-utils efibootmgr dialog wpa_actiond vim xf86-input-synaptics > "$aa"/etc/x86_64-package.list
-	sudo pacman --root /opt/arch32 --cachedir /opt/arch32/var/cache/pacman/pkg --config /opt/arch32/pacman.conf -Sp base base-devel libnewt grub os-prober xorg-server xorg-server-utils xorg-xinit xterm awesome openbox i3 dwm screenfetch openssh lynx htop wireless_tools wpa_supplicant netctl xfce4 xf86-video-ati nvidia nvidia-340xx nvidia-304xx xf86-video-intel lightdm lightdm-gtk-greeter zsh conky htop firefox pulseaudio cmus virtualbox-guest-utils efibootmgr dialog wpa_actiond vim xf86-input-synaptics > "$aa"/etc/i686-package.list
+	sudo pacman --root /opt/arch64 --cachedir /opt/arch64/var/cache/pacman/pkg --config /opt/arch64/pacman.conf -Sp base base-devel libnewt grub os-prober wget xorg-server xorg-server-utils xorg-xinit xterm awesome openbox i3 dwm screenfetch openssh lynx htop wireless_tools wpa_supplicant netctl xfce4 xf86-video-ati nvidia nvidia-340xx nvidia-304xx xf86-video-intel lightdm lightdm-gtk-greeter zsh conky htop firefox pulseaudio cmus virtualbox-guest-utils efibootmgr dialog wpa_actiond vim xf86-input-synaptics > "$aa"/etc/x86_64-package.list
+	sudo pacman --root /opt/arch32 --cachedir /opt/arch32/var/cache/pacman/pkg --config /opt/arch32/pacman.conf -Sp base base-devel libnewt grub os-prober wget xorg-server xorg-server-utils xorg-xinit xterm awesome openbox i3 dwm screenfetch openssh lynx htop wireless_tools wpa_supplicant netctl xfce4 xf86-video-ati nvidia nvidia-340xx nvidia-304xx xf86-video-intel lightdm lightdm-gtk-greeter zsh conky htop firefox pulseaudio cmus virtualbox-guest-utils efibootmgr dialog wpa_actiond vim xf86-input-synaptics > "$aa"/etc/i686-package.list
+
 	prepare_x86_64
 
 }
