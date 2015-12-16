@@ -29,7 +29,7 @@ lang_config() {
 		"English" "" \
 		"German" "Deutsche" \
 		"Portuguese" "Português" \
-		"Romanian" "Română" 3>&1 1>&2 2>&3)
+		"Romanian" "Româna" 3>&1 1>&2 2>&3)
 
 	case "$ILANG" in
 		"English")
@@ -49,46 +49,17 @@ lang_config() {
 	source /etc/arch-anywhere.conf
 	source "$lang_file"
 	export reload=true
-	set_keys
-
-}
-
-set_keys() {
-
-	if ! (whiptail --title "$title" --yes-button "$yes" --no-button "$no" --yesno "$intro_msg" 10 60) then
-		clear ; exit
-	fi
-	
-	keyboard=$(whiptail --nocancel --title "$title" --ok-button "$ok" --menu "$keys_msg" 15 60 6 \
-	"$default" "$default Keymap" \
-	"us" "United States" \
-	"ro" "Romanian" \
-	"fr" "French" \
-	"es" "Spanish" \
-	"ru" "Russian" \
-	"uk" "United Kingdom" \
-	"pt-latin9" "Portugal" \
-	"$other"       "-"		 3>&1 1>&2 2>&3)
-	source "$lang_file"
-
-	if [ "$keyboard" = "$other" ]; then
-		keyboard=$(whiptail --title "$title" --ok-button "$ok" --cancel-button "$cancel" --menu "$keys_msg" 15 60 6  $key_maps 3>&1 1>&2 2>&3)
-		if [ "$?" -gt "0" ]; then
-			set_keys
-		fi
-	
-	elif [ "$keyboard" != "$default" ]; then
-		loadkeys "$keyboard" &
-		pid=$! pri=0.1 msg="$keys_load_var" load
-	fi
-
-	keys_set=true 
+	setlang "$lang"
 	check_connection
 
 }
 
 check_connection() {
 
+	if ! (whiptail --title "$title" --yes-button "$yes" --no-button "$no" --yesno "$intro_msg" 10 60) then
+		clear ; exit
+	fi
+	
 	ping -w 3 google.com &> /dev/null &
 	pid=$! pri=0.2 msg="$connection_load" load
 
@@ -199,6 +170,36 @@ set_zone() {
 		fi
 
 	zone_set=true
+	set_keys
+
+}
+
+set_keys() {
+	
+	keyboard=$(whiptail --nocancel --title "$title" --ok-button "$ok" --menu "$keys_msg" 15 60 6 \
+	"$default" "$default Keymap" \
+	"us" "United States" \
+	"ro" "Romanian" \
+	"fr" "French" \
+	"es" "Spanish" \
+	"ru" "Russian" \
+	"uk" "United Kingdom" \
+	"pt-latin9" "Portugal" \
+	"$other"       "-"		 3>&1 1>&2 2>&3)
+	source "$lang_file"
+
+	if [ "$keyboard" = "$other" ]; then
+		keyboard=$(whiptail --title "$title" --ok-button "$ok" --cancel-button "$cancel" --menu "$keys_msg" 15 60 6  $key_maps 3>&1 1>&2 2>&3)
+		if [ "$?" -gt "0" ]; then
+			set_keys
+		fi
+	
+	elif [ "$keyboard" != "$default" ]; then
+		loadkeys "$keyboard" &
+		pid=$! pri=0.1 msg="$keys_load_var" load
+	fi
+
+	keys_set=true 
 	prepare_drives
 
 }
