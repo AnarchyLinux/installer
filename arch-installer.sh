@@ -29,7 +29,7 @@ lang_config() {
 		"English" "" \
 		"German" "Deutsche" \
 		"Portuguese" "Português" \
-		"Romanian" "Româna" 3>&1 1>&2 2>&3)
+		"Romanian" "Română" 3>&1 1>&2 2>&3)
 
 	case "$ILANG" in
 		"English")
@@ -48,8 +48,8 @@ lang_config() {
 
 	source /etc/arch-anywhere.conf
 	source "$lang_file"
+#	setfont "$font"
 	export reload=true
-	setlang "$lang"
 	check_connection
 
 }
@@ -60,67 +60,76 @@ check_connection() {
 		clear ; exit
 	fi
 	
-	ping -w 3 google.com &> /dev/null &
-	pid=$! pri=0.2 msg="$connection_load" load
-
-	if "$err" ; then
-
-		if [ -n "$wifi_network" ]; then
-
-			if (whiptail --title "$title" --yes-button "$yes" --no-button "$no" --yesno "$wifi_msg0" 10 60) then
-				wifi_menu
-
-				if [ "$?" -gt "0" ]; then
-
-					if ! (whiptail --title "$title" --yes-button "$yes" --no-button "$no" --yesno "$wifi_msg1" 10 60) then
-						exit 1
-					fi
-
-				else
-					connection=true
-					wifi=true
-				fi
-			fi
-			err=false
-		fi
-
-	else
-		connection=true
-	fi
-	
-	if "$connection" ; then
-
-		if (whiptail --title "$title" --yes-button "$yes" --no-button "$no" --yesno "$connection_msg0" 11 60) then
-			online=true
-			start=$(date +%s)
-			wget -O /dev/null http://cachefly.cachefly.net/10mb.test &> /dev/null &
-			pid=$! pri=1 msg="$connection_load" load
-			end=$(date +%s)
-			diff=$((end-start))
-			case "$diff" in
-				[1-4]) export down="2" ;;
-				[5-9]) export down="3" ;;
-				1[0-9]) export down="4" ;;
-				2[0-9]) export down="5" ;;
-				3[0-9]) export down="6" ;;
-				4[0-9]) export down="7" ;;
-				5[0-9]) export down="8" ;;
-				6[0-9]) export down="9" ;;
-				[7-9][0-9]) export down="10" ;;
-				[0-9][0-9][0-9]) 
-					if (whiptail --title "$title" --yes-button "$yes" --no-button "$no" --yesno "$connection_msg1" 10 60) then
-						export down="15"
+	until "$connection"
+	  do
+		wget --append-output=/tmp/wget.log -O /dev/null "http://speedtest.wdc01.softlayer.com/downloads/test10.zip" &
+		pid=$! pri=1 msg="$connection_load" load
+    
+		if "$err" ; then
+    
+			if [ -n "$wifi_network" ]; then
+    
+				if (whiptail --title "$title" --yes-button "$yes" --no-button "$no" --yesno "$wifi_msg0" 10 60) then
+					wifi_menu
+    
+					if [ "$?" -gt "0" ]; then
+						whiptail --title "$title" --ok-button "$ok" --msgbox "$wifi_msg0" 10 60
+							clear ; echo "$connect_err1" ; exit 1
 					else
-						clear ; exit
+						err=false
+						wifi=true
 					fi
+				else
+					whiptail --title "$title" --ok-button "$ok" --msgbox "$connect_err0" 10 60
+					clear ; echo "$connect_err1" ; exit 1
+				fi
+			else
+				whiptail --title "$title" --ok-button "$ok" --msgbox "$connect_err0" 10 60
+				clear ; echo "$connect_err1" ;  exit 1
+			fi
+		else
+			connection_speed=$(tail -n 2 /tmp/wget.log | grep -oP '(?<=\().*(?=\))' | awk '{print $1}')
+			connection_rate=$(tail -n 2 /tmp/wget.log | grep -oP '(?<=\().*(?=\))' | awk '{print $2}')
+        
+			case "$connection_rate" in
+				KB/s)
+					down_sec=$((arch_total*1000/connection_speed))
+				;;
+				MB/s)
+					down_sec=$((arch_total/connection_speed))
+				;;
+				GB/s)
+					down_sec="1"
+					down_min="1/2"
 				;;
 			esac
-			set_locale
+        
+			cpu_mhz=$(lscpu | grep "CPU max MHz" | awk '{print $4}' | sed 's/\..*//')
+        
+			if [ "$?" -gt "0" ]; then
+				cpu_mhz=$(lscpu | grep "CPU MHz" | awk '{print $3}' | sed 's/\..*//')
+			fi
+        
+			case "$cpu_mhz" in
+				[0-9][0-9][0-9])
+					cpu_sleep=5
+				;;
+				[1][0-9][0-9][0-9])
+					cpu_sleep=4
+				;;
+				[2][0-9][0-9][0-9])
+					cpu_sleep=3
+				;;
+				[3-5][0-9][0-9][0-9])
+					cpu_sleep=1
+				;;
+			esac
+        
+			down=$((down_sec/100+cpu_sleep))
+			down_min=$((down*100/60))
+			connection=true
 		fi
-	fi
-
-	cp /root/local-pacman.conf /etc/pacman.conf
-	down="2"
+	done
 	set_locale
 
 }
@@ -131,9 +140,12 @@ set_locale() {
 	"en_US.UTF-8" "United States" \
 	"en_AU.UTF-8" "Australia" \
 	"en_CA.UTF-8" "Canada" \
+	"de_DE.UTF-8" "German" \
 	"en_GB.UTF-8" "Great Britain" \
 	"en_MX.UTF-8" "Mexico" \
 	"pt_PT.UTF-8" "Portugal" \
+	"ro_RO.UTF-8" "Romanian" \
+	"ru_RU.UTF-8" "Russian" \
 	"$other"       "-"		 3>&1 1>&2 2>&3)
 
 	if [ "$LOCALE" = "$other" ]; then
@@ -158,14 +170,18 @@ set_zone() {
 			sublist=$(find /usr/share/zoneinfo/"$ZONE" -maxdepth 1 | sed -n -e 's!^.*/!!p' | sort | sed 's/$/ -/g')
 			SUBZONE=$(whiptail --title "$title" --ok-button "$ok" --cancel-button "$cancel" --menu "$zone_msg1" 15 60 6 $sublist 3>&1 1>&2 2>&3)
 
-			if [ "$?" -gt "0" ]; then set_zone ; fi
+			if [ "$?" -gt "0" ]; then 
+				set_zone 
+			fi
 			chk_dir=$(find /usr/share/zoneinfo/"$ZONE" -maxdepth 1 -type  d | sed -n -e 's!^.*/!!p' | grep "$SUBZONE")
 
 			if [ -n "$chk_dir" ]; then
 				sublist=$(find /usr/share/zoneinfo/"$ZONE"/"$SUBZONE" -maxdepth 1 | sed -n -e 's!^.*/!!p' | sort | sed 's/$/ -/g')
 				SUB_SUBZONE=$(whiptail --title "$title" --ok-button "$ok" --cancel-button "$cancel" --menu "$zone_msg1" 15 60 6 $sublist 3>&1 1>&2 2>&3)
 
-				if [ "$?" -gt "0" ]; then set_zone ; fi
+				if [ "$?" -gt "0" ]; then 
+					set_zone 
+				fi
 			fi
 		fi
 
@@ -179,12 +195,13 @@ set_keys() {
 	keyboard=$(whiptail --nocancel --title "$title" --ok-button "$ok" --menu "$keys_msg" 15 60 6 \
 	"$default" "$default Keymap" \
 	"us" "United States" \
-	"ro" "Romanian" \
-	"fr" "French" \
+	"de" "German" \
 	"es" "Spanish" \
+	"fr" "French" \
+	"pt-latin9" "Portugal" \
+	"ro" "Romanian" \
 	"ru" "Russian" \
 	"uk" "United Kingdom" \
-	"pt-latin9" "Portugal" \
 	"$other"       "-"		 3>&1 1>&2 2>&3)
 	source "$lang_file"
 
@@ -193,10 +210,6 @@ set_keys() {
 		if [ "$?" -gt "0" ]; then
 			set_keys
 		fi
-	
-	elif [ "$keyboard" != "$default" ]; then
-		loadkeys "$keyboard" &
-		pid=$! pri=0.1 msg="$keys_load_var" load
 	fi
 
 	keys_set=true 
@@ -209,10 +222,10 @@ prepare_drives() {
 	DRIVE=$(whiptail --nocancel --title "$title" --ok-button "$ok" --menu "$drive_msg" 15 60 5 $drive 3>&1 1>&2 2>&3)
 	source "$lang_file"
 	PART=$(whiptail --title "$title" --ok-button "$ok" --cancel-button "$cancel" --menu "$part_msg" 16 62 4 \
-	"$method0"           "-" \
-	"$method1"   "-" \
-	"$method2"         "-" \
-	"$menu_msg"                 "-" 3>&1 1>&2 2>&3)
+	"$method0" "-" \
+	"$method1" "-" \
+	"$method2"  "-" \
+	"$menu_msg" "-" 3>&1 1>&2 2>&3)
 
 	if [ "$?" -gt "0" ]; then
 		prepare_drives
@@ -228,8 +241,7 @@ prepare_drives() {
 			prepare_drives
 		fi
 
-		fs() {
-			FS=$(whiptail --title "$title" --nocancel --menu "$fs_msg" 15 60 6 \
+		FS=$(whiptail --title "$title" --nocancel --menu "$fs_msg" 15 60 6 \
 			"ext4"      "$fs0" \
 			"ext3"      "$fs1" \
 			"ext2"      "$fs2" \
@@ -237,9 +249,6 @@ prepare_drives() {
 			"jfs"       "$fs4" \
 			"reiserfs"  "$fs5" 3>&1 1>&2 2>&3)
 			source "$lang_file"
-		}
-
-		fs
 
 		if (whiptail --title "$title" --yes-button "$yes" --no-button "$no" --yesno "$swap_msg0" 10 60) then
 			drive_bytes=$(fdisk -l | grep -w "$DRIVE" | awk '{print $5}') 
@@ -452,9 +461,12 @@ prepare_drives() {
 	            	    		input=$(whiptail --passwordbox --nocancel "$encrypt_var1" 10 78 --title "$title" 3>&1 1>&2 2>&3)
 	            	    		input_chk=$(whiptail --passwordbox --nocancel "$encrypt_var2" 9 78 --title "$title" 3>&1 1>&2 2>&3)
 
-	            	        	if [ "$input" != "$input_chk" ]; then
-	            	        		whiptail --title "$title" --ok-button "$ok" --msgbox "$passwd_msg" 10 60
-	            	        	fi
+	            	        	if [ -z "$input" ]; then
+                   			 		whiptail --title "$title" --ok-button "$ok" --msgbox "'$passwd_msg0'" 10 60
+                   			 		input_chk=default
+                   			 	elif [ "$input" != "$input_chk" ]; then
+                      		    	whiptail --title "$title" --ok-button "$ok" --msgbox "'$passwd_msg1'" 10 60
+                     		 	fi
 	            	 	  done
 
 				printf "$input" | cryptsetup luksFormat -c aes-xts-plain64 -s 512 /dev/lvm/lvroot - &
@@ -533,7 +545,14 @@ prepare_drives() {
 			ROOT=$(whiptail --nocancel --title "$title" --ok-button "$ok" --menu "$root_msg" 15 60 5 $partition 3>&1 1>&2 2>&3)
 
 			if (whiptail --title "$title" --yes-button "$yes" --no-button "$no" --yesno "$new_fs_msg" 10 60) then
-				fs
+				FS=$(whiptail --title "$title" --nocancel --menu "$fs_msg" 15 60 6 \
+				"ext4"      "$fs0" \
+				"ext3"      "$fs1" \
+				"ext2"      "$fs2" \
+				"btrfs"     "$fs3" \
+				"jfs"       "$fs4" \
+				"reiserfs"  "$fs5" 3>&1 1>&2 2>&3)
+				source "$lang_file"
 				wipefs -a -q /dev/"$ROOT" &> /dev/null
 
 				if [ "$FS" == "jfs" ] || [ "$FS" == "reiserfs" ]; then
@@ -578,7 +597,14 @@ prepare_drives() {
 							source "$lang_file"
 							
 							if (whiptail --title "$title" --yes-button "$yes" --no-button "$no" --yesno "$mnt_var1" 10 60) then
-								fs
+								FS=$(whiptail --title "$title" --nocancel --menu "$fs_msg" 15 60 6 \
+									"ext4"      "$fs0" \
+									"ext3"      "$fs1" \
+									"ext2"      "$fs2" \
+									"btrfs"     "$fs3" \
+									"jfs"       "$fs4" \
+									"reiserfs"  "$fs5" 3>&1 1>&2 2>&3)
+								source "$lang_file"
 								wipefs -a -q /dev/"$new_mnt"
 								
 								if [ "$FS" == "jfs" ] || [ "$FS" == "reiserfs" ]; then
@@ -610,17 +636,14 @@ prepare_drives() {
 
 update_mirrors() {
 
-	if "$connection" ; then
-
-		if (whiptail --title "$title" --yes-button "$yes" --no-button "$no" --yesno "$mirror_msg0" 10 60) then
-			code=$(whiptail --nocancel --title "$title" --ok-button "$ok" --menu "$mirror_msg1" 15 60 6 $countries 3>&1 1>&2 2>&3)
-			wget --append-output=/dev/null "https://www.archlinux.org/mirrorlist/?country=$code&protocol=http" -O /etc/pacman.d/mirrorlist.bak &
-			pid=$! pri=0.2 msg="$mirror_load0" load
-			sed -i 's/#//' /etc/pacman.d/mirrorlist.bak
-			rankmirrors -n 6 /etc/pacman.d/mirrorlist.bak > /etc/pacman.d/mirrorlist &
-  			pid=$! pri=0.5 msg="$mirror_load1" load
-  			mirrors_updated=true
-		fi
+	if (whiptail --title "$title" --yes-button "$yes" --no-button "$no" --yesno "$mirror_msg0" 10 60) then
+		code=$(whiptail --nocancel --title "$title" --ok-button "$ok" --menu "$mirror_msg1" 15 60 6 $countries 3>&1 1>&2 2>&3)
+		wget --append-output=/dev/null "https://www.archlinux.org/mirrorlist/?country=$code&protocol=http" -O /etc/pacman.d/mirrorlist.bak &
+		pid=$! pri=0.2 msg="$mirror_load0" load
+		sed -i 's/#//' /etc/pacman.d/mirrorlist.bak
+		rankmirrors -n 6 /etc/pacman.d/mirrorlist.bak > /etc/pacman.d/mirrorlist &
+ 		pid=$! pri=0.8 msg="$mirror_load1" load
+ 		mirrors_updated=true
 	fi
 
 	install_base
@@ -665,6 +688,8 @@ install_base() {
 
 						if "$crypted" ; then
 							sed -i 's!quiet!cryptdevice=/dev/lvm/lvroot:root root=/dev/mapper/root!' "$ARCH"/etc/default/grub
+						else
+							sed -i 's/quiet//' "$ARCH"/etc/default/grub
 						fi
 
 						if "$UEFI" ; then
@@ -803,8 +828,11 @@ set_hostname() {
             		do
                    			 input=$(whiptail --passwordbox --nocancel "'$root_passwd_msg0'" 10 78 --title "'$title'" 3>&1 1>&2 2>&3)
             		         input_chk=$(whiptail --passwordbox --nocancel "'$root_passwd_msg1'" 9 78 --title "'$title'" 3>&1 1>&2 2>&3)
-                   			 if [ "$input" != "$input_chk" ]; then
-                      		      whiptail --title "$title" --ok-button "$ok" --msgbox "'$passwd_msg'" 10 60
+                   			 if [ -z "$input" ]; then
+                   			 	whiptail --title "$title" --ok-button "$ok" --msgbox "'$passwd_msg0'" 10 60
+                   			 	input_chk=default
+                   			 elif [ "$input" != "$input_chk" ]; then
+                      		      whiptail --title "$title" --ok-button "$ok" --msgbox "'$passwd_msg1'" 10 60
                      		 fi
          		        done
     			echo -e "$input\n$input\n" | passwd &> /dev/null' > /mnt/root/set.sh
@@ -826,8 +854,15 @@ add_user() {
 
 	if (whiptail --title "$title" --yes-button "$yes" --no-button "$no" --yesno "$user_msg0" 10 60) then
 		user=$(whiptail --nocancel --inputbox "$user_msg1" 10 60 "" 3>&1 1>&2 2>&3)
+		
+		if [ -z "$user" ]; then
+			whiptail --title "$title" --ok-button "$ok" --msgbox "$user_err_msg" 10 60
+			add_user
+		fi
+
 		user=$(<<<$user sed 's/ //g')
 		user_check=$(<<<$user grep "^[0-9]\|[\[\$\!\'\"\`\\|%&#@()_-+=<>~;:/?.,^{}]\|]")
+		
 		if [ -n "$user_check" ]; then
 			whiptail --title "$title" --ok-button "$ok" --msgbox "$user_err_msg" 10 60
 			add_user
@@ -845,9 +880,12 @@ add_user() {
             				do
                    					 input=$(whiptail --passwordbox --nocancel "'$user_var0'" 9 78 --title "'$title'" 3>&1 1>&2 2>&3)
             				         input_chk=$(whiptail --passwordbox --nocancel "'$user_var1'" 9 78 --title "'$title'" 3>&1 1>&2 2>&3)
-                   					 if [ "$input" != "$input_chk" ]; then
-                      				      whiptail --title "$title" --ok-button "$ok" --msgbox "'$passwd_msg'" 10 60
-                     				 fi
+                   					 if [ -z "$input" ]; then
+                   			 			whiptail --title "$title" --ok-button "$ok" --msgbox "'$passwd_msg0'" 10 60
+                   			 			input_chk=default
+                   			 		 elif [ "$input" != "$input_chk" ]; then
+                      		    		whiptail --title "$title" --ok-button "$ok" --msgbox "'$passwd_msg1'" 10 60
+                     		 		fi
          				        done
     					echo -e "$input\n$input\n" | passwd "$user" &> /dev/null' > /mnt/root/set.sh
 	chmod +x "$ARCH"/root/set.sh
@@ -911,35 +949,25 @@ graphics() {
 	fi
 
 	pacstrap "$ARCH" xorg-server xorg-server-utils xorg-xinit xterm $(echo "$GPU") &> /dev/null &
-	pid=$! pri="$down" msg="$xorg_load" load
+	pid=$! pri=2 msg="$xorg_load" load
 	if (whiptail --title "$title" --yes-button "$yes" --no-button "$no" --yesno "$desktop_msg" 10 60) then
 		until [ "$DE" == "set" ]
 			do
 				i=false
-				
-				if "$online" ; then
-					DE=$(whiptail --title "$title" --ok-button "$ok" --cancel-button "$cancel" --menu "$enviornment_msg" 15 60 6 \
-					"xfce4"         "$de0" \
-					"mate"          "$de1" \
-					"lxde"          "$de2" \
-					"lxqt"          "$de3" \
-					"gnome"         "$de4" \
-					"cinnamon"      "$de5" \
-					"KDE plasma"    "$de6" \
-					"enlightenment" "$de7" \
-					"openbox"       "$de8" \
-					"awesome"       "$de9" \
-					"i3"            "$de10" \
-					"fluxbox"       "$de11" \
-					"dwm"           "$de12" 3>&1 1>&2 2>&3)
-				else
-					DE=$(whiptail --title "$title" --ok-button "$ok" --cancel-button "$cancel" --menu "$enviornment_msg" 15 60 6 \
-					"xfce4"    "$de0" \
-					"openbox"  "$de8" \
-					"awesome"  "$de9" \
-					"i3"       "$de10" \
-					"dwm"      "$de12" 3>&1 1>&2 2>&3)
-				fi
+				DE=$(whiptail --title "$title" --ok-button "$ok" --cancel-button "$cancel" --menu "$enviornment_msg" 15 60 6 \
+				"xfce4"         "$de0" \
+				"mate"          "$de1" \
+				"lxde"          "$de2" \
+				"lxqt"          "$de3" \
+				"gnome"         "$de4" \
+				"cinnamon"      "$de5" \
+				"KDE plasma"    "$de6" \
+				"enlightenment" "$de7" \
+				"openbox"       "$de8" \
+				"awesome"       "$de9" \
+				"i3"            "$de10" \
+				"fluxbox"       "$de11" \
+				"dwm"           "$de12" 3>&1 1>&2 2>&3)
 				
 				if [ "$?" -gt "0" ]; then 
 					DE=set
@@ -958,34 +986,32 @@ graphics() {
 				case "$DE" in
 
 					"xfce4") start_term="exec startxfce4" 
-						if "$online" ; then
 
 							if (whiptail --title "$title" --yes-button "$yes" --no-button "$no" --yesno "$extra_msg0" 10 60) then
 								DE_EXTRA="xfce4-goodies"
 							fi
-						fi 
 					;;
 
 					"gnome") start_term="exec gnome-session"
 
 						if (whiptail --title "$title" --yes-button "$yes" --no-button "$no" --yesno "$extra_msg1" 10 60) then
-							DE_EXTRA="gnome-extra" down=$((down+5))
+							DE_EXTRA="gnome-extra" de_down=$((down+4))
 						fi 
 					;;
 
 					"mate") start_term="exec mate-session"
 
 						if (whiptail --title "$title" --yes-button "$yes" --no-button "$no" --yesno "$extra_msg2" 10 60) then
-							DE_EXTRA="mate-extra" down=$((down+2))
+							DE_EXTRA="mate-extra" de_down=$((down+2))
 						fi
 					;;
 
 					"KDE plasma") start_term="exec startkde" DE="kde-applications"
 
 						if (whiptail --title "$title" --defaultno --yes-button "$yes" --no-button "$no" --yesno "$extra_msg3" 10 60) then
-							DE_EXTRA="plasma-desktop" down=$((down+4))
+							DE_EXTRA="plasma-desktop" de_down=$((down+4))
 						else
-							DE_EXTRA="plasma" down=$((down+5))
+							DE_EXTRA="plasma" de_down=$((down+5))
 						fi
 					;;
 
@@ -1024,13 +1050,17 @@ graphics() {
 					;;
 					
 					"i3") 
-						start_term="exec i3" 
+						start_term="exec i3"
 					;;
 				esac
 
+				if [ -z "$de_down" ]; then
+					de_down=$((down-1))
+				fi
+
 				if "$i" ; then
 					pacstrap "$ARCH" $(echo "$DE $DE_EXTRA") &> /dev/null &
-					pid=$! pri="$down" msg="$desktop_load" load
+					pid=$! pri="$de_down" msg="$desktop_load" load
 
 					if "$user_added" ; then
 						echo "$start_term" > "$ARCH"/home/"$user"/.xinitrc
@@ -1050,62 +1080,45 @@ graphics() {
 install_software() {
 
 	if (whiptail --title "$title" --yes-button "$yes" --no-button "$no" --yesno "$software_msg0" 10 60) then
-		
-		if "$online" ; then
-			software=$(whiptail --title "$title" --ok-button "$ok" --cancel-button "$cancel" --checklist "$software_msg1" 20 60 10 \
-					"arch-wiki"            "$m0" ON \
-					"openssh"     	       "$m1" ON \
-					"pulseaudio"  	       "$m2" ON \
-					"screenfetch"          "$m3" ON \
-					"vim"         	       "$m4" ON \
-					"wget"        	       "$m5" ON \
-					"apache"  	  	       "$m6" OFF \
-					"audacity"             "$m7" OFF \
-					"chromium"    	       "$m8" OFF \
-					"cmus"        	       "$m9" OFF \
-					"conky"       	       "$m10" OFF \
-					"dropbox"              "$m11" OFF \
-					"emacs"                "$m12" OFF \
-					"firefox"     	       "$m13" OFF \
-					"gimp"        	       "$m14 " OFF \
-					"git"                  "$m15" OFF \
-					"gparted"     	       "$m16" OFF \
-					"htop"        	       "$m17" OFF \
-					"libreoffice" 	       "$m18 " OFF \
-					"lmms"                 "$m19" OFF \
-					"lynx"        	       "$m20" OFF \
-					"mpd"         	       "$m21" OFF \
-					"mplayer"     	       "$m22" OFF \
-					"ncmpcpp"     	       "$m23" OFF \
-					"nmap"                 "$m24" OFF \
-					"pitivi"               "$m25" OFF \
-					"projectm"             "$m26" OFF \
-					"screen"  	  	       "$m27" OFF \
-					"simplescreenrecorder" "$m28" OFF \
-					"steam"                "$m29" OFF \
-					"tmux"    	  	   	   "$m30" OFF \
-					"transmission-cli" 	   "$m31" OFF \
-					"transmission-gtk"     "$m32" OFF \
-					"virtualbox"  	       "$m33" OFF \
-					"vlc"         	   	   "$m34" OFF \
-					"ufw"         	       "$m35" OFF \
-					"wget"                 "Wget cli downloader" ON \
-					"zsh"                  "$m36" OFF 3>&1 1>&2 2>&3)
-			else
-				software=$(whiptail --title "$title" --ok-button "$ok" --cancel-button "$cancel" --checklist "$software_msg1" 20 60 10 \
-					"arch-wiki"   "$m0" ON \
-					"cmus"        "$m9" OFF \
-					"conky"       "$m10 " OFF \
-					"firefox"     "$m13" OFF \
-					"htop"        "$m17" OFF \
-					"lynx"        "$m20" OFF \
-					"openssh"     "$m1" OFF \
-					"pulseaudio"  "$m2" ON \
-					"screenfetch" "$m3" ON \
-					"vim"         "$m4" OFF \
-					"wget"        "Wget cli downloader" ON \
-					"zsh"         "$m36" OFF 3>&1 1>&2 2>&3)
-			fi
+		software=$(whiptail --title "$title" --ok-button "$ok" --cancel-button "$cancel" --checklist "$software_msg1" 20 60 10 \
+		"arch-wiki"            "$m0" ON \
+		"openssh"     	       "$m1" ON \
+		"pulseaudio"  	       "$m2" ON \
+		"screenfetch"          "$m3" ON \
+		"vim"         	       "$m4" ON \
+		"wget"        	       "$m5" ON \
+		"apache"  	  	       "$m6" OFF \
+		"audacity"             "$m7" OFF \
+		"chromium"    	       "$m8" OFF \
+		"cmus"        	       "$m9" OFF \
+		"conky"       	       "$m10" OFF \
+		"dropbox"              "$m11" OFF \
+		"emacs"                "$m12" OFF \
+		"firefox"     	       "$m13" OFF \
+		"gimp"        	       "$m14 " OFF \
+		"git"                  "$m15" OFF \
+		"gparted"     	       "$m16" OFF \
+		"htop"        	       "$m17" OFF \
+		"libreoffice" 	       "$m18 " OFF \
+		"lmms"                 "$m19" OFF \
+		"lynx"        	       "$m20" OFF \
+		"mpd"         	       "$m21" OFF \
+		"mplayer"     	       "$m22" OFF \
+		"ncmpcpp"     	       "$m23" OFF \
+		"nmap"                 "$m24" OFF \
+		"pitivi"               "$m25" OFF \
+		"projectm"             "$m26" OFF \
+		"screen"  	  	       "$m27" OFF \
+		"simplescreenrecorder" "$m28" OFF \
+		"steam"                "$m29" OFF \
+		"tmux"    	  	   	   "$m30" OFF \
+		"transmission-cli" 	   "$m31" OFF \
+		"transmission-gtk"     "$m32" OFF \
+		"virtualbox"  	       "$m33" OFF \
+		"vlc"         	   	   "$m34" OFF \
+		"ufw"         	       "$m35" OFF \
+		"wget"                 "Wget cli downloader" ON \
+		"zsh"                  "$m36" OFF 3>&1 1>&2 2>&3)
 
 		if [ "$?" -gt "0" ]; then
 			reboot_system
@@ -1123,11 +1136,12 @@ install_software() {
 	    	pid=$! pri=1 msg="$software_load" load
 	fi
 
-	if "$online" ; then
+	if [ -f "$ARCH"/var/lib/pacman/db.lck ]; then
 		rm "$ARCH"/var/lib/pacman/db.lck
-		arch-chroot "$ARCH" pacman -Syy &> /dev/null &
-		pid=$! pri=1 msg="$pacman_load" load
 	fi
+
+	arch-chroot "$ARCH" pacman -Syyy &> /dev/null &
+	pid=$! pri=1 msg="$pacman_load" load
 
 	reboot_system
 
@@ -1188,7 +1202,6 @@ load() {
 
 main_menu() {
 
-	return=(whiptail --title "$title" --ok-button "$ok" --msgbox "$return_msg" 10 60)
 	menu_item=$(whiptail --nocancel --title "$title" --ok-button "$ok" --menu "$menu" 15 60 6 \
 		"$menu0"            "-" \
 		"$menu1"          "-" \
@@ -1254,7 +1267,9 @@ main_menu() {
 			
 			if "$INSTALLED" ; then 
 				configure_system
-			fi 
+			fi
+
+			whiptail --title "$title" --ok-button "$ok" --msgbox "$return_msg" 10 60
 		;;
 		
 		"$menu7")
@@ -1262,27 +1277,35 @@ main_menu() {
 			if "$INSTALLED" ; then 
 				set_hostname
 			fi
+
+			whiptail --title "$title" --ok-button "$ok" --msgbox "$return_msg" 10 60
 		;;
 		
 		"$menu8")
 			
 			if "$INSTALLED" ; then 
 				add_user
-			fi 
+			fi
+
+			whiptail --title "$title" --ok-button "$ok" --msgbox "$return_msg" 10 60
 		;;
 		
 		"$menu9")
 			
 			if "$INSTALLED" ; then 
 				graphics
-			fi 
+			fi
+
+			whiptail --title "$title" --ok-button "$ok" --msgbox "$return_msg" 10 60
 		;;
 		
 		"$menu10")
 			
 			if "$INSTALLED" ; then
 				install_software
-			fi 
+			fi
+
+			whiptail --title "$title" --ok-button "$ok" --msgbox "$return_msg" 10 60
 		;;
 		
 		"$menu11") 
@@ -1305,7 +1328,7 @@ main_menu() {
 		;;
 	esac
 
-	$return ; main_menu
+	main_menu
 
 }
 

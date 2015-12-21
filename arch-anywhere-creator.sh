@@ -76,21 +76,20 @@ init() {
 
 # Check depends
 
-	if [ ! -f /usr/bin/mksquashfs ] || [ ! -f /usr/bin/xorriso ]; then
+	if [ ! -f /usr/bin/mksquashfs ] || [ ! -f /usr/bin/xorriso ] || [ ! -f /usr/bin/wget ]; then
 		depends=false
 		until "$depends"
 		  do
 			echo
-			echo -n "ISO creation requires mksquashfs-tools, would you like to install it now? [y/N]: "
+			echo -n "ISO creation requires mksquashfs-tools, libisoburn, and wget, would you like to install missing dependencies now? [y/N]: "
 			read input
 
 			case "$input" in
 				y|Y|yes|Yes|yY|Yy|yy|YY)
-					if [ ! -f /usr/bin/xorriso ]; then
-						sudo pacman -S mksquashfs-tools libisoburn
-					else
-						sudo pacman -S mksquashfs-tools
-					fi
+					if [ ! -f "/usr/bin/wget" ]; then query="wget"; fi
+					if [ ! -f /usr/bin/xorriso ]; then query="$query libisoburn"; fi
+					if [ ! -f /usr/bin/mksquashfs ]; then query="$query squashfs-tools"; fi
+					sudo pacman -Syy $(echo "$query")
 					depends=true
 				;;
 				n|N|no|No|nN|Nn|nn|NN)
@@ -104,102 +103,37 @@ init() {
 			esac
 		done
 	fi
-
-	update_repos
-
-}
-
-update_repos() {
-
-	ready=false
-	correct=false
-	echo -en "How would you like to fetch the packages?\n\n1.) Local dh-repo packages (At home only)\n2.) Offical repo packages (If online)\n\n[1 or 2]: "
-	read input
-
-	until "$ready"
-	  do
-		case "$input" in
-			2|2.)
-				if [ ! -d /opt/arch64 ]; then
-					sudo mkdir /opt/arch64
-					sudo mkdir -p /opt/arch64/var/{cache/pacman/pkg,lib/pacman}
-				fi
-
-				if [ ! -f /opt/arch64/pacman.conf ]; then
-					sudo cp "$aa"/etc/x86_64-pacman.conf /opt/arch64
-					sudo cp "$aa"/etc/x86_64-mirrorlist /opt/arch64
-				fi
-			
-				if [ ! -d /opt/arch32 ]; then
-					sudo mkdir /opt/arch32
-					sudo mkdir -p /opt/arch32/var/{cache/pacman/pkg,lib/pacman}
-				fi
-
-				if [ ! -f /opt/arch32/pacman.conf ]; then
-					sudo cp "$aa"/etc/i686-pacman.conf /opt/arch32
-					sudo cp "$aa"/etc/i686-mirrorlist /opt/arch32
-				fi
-				
-				ready=true
-			;;
-			1|1.)
-				if [ ! -d /opt/arch64 ] || [ ! -f /opt/arch64/pacman.conf ]; then
-					until "$correct"
-					  do
-						echo "Error: This option requires a custom repository to be setup and 64 bit + 32 bit install roots to be setup at /opt/arch64 and /opt/arch32"
-						echo -n "Would you like to use the official repos instead? [y/N]: "
-						read input
-
-						case "$input" in
-							y|Y|yes|Yes|yY|Yy|yy|YY)
-								correct=true
-								input="2"
-							;;
-							n|N|no|No|nN|Nn|nn|NN)
-								echo "Error: creation of the ISO requires access to a package repo, exiting."
-								exit 1
-							;;
-						esac
-					done
-				else
-					ready=true
-				fi
-			;;
-		esac
-	done
-
-	sudo pacman --root /opt/arch64 --cachedir /opt/arch64/var/cache/pacman/pkg --config /opt/arch64/pacman.conf -Syyy
-	sudo pacman --root /opt/arch32 --cachedir /opt/arch32/var/cache/pacman/pkg --config /opt/arch32/pacman.conf -Syyy
-	sudo pacman --root /opt/arch64 --cachedir /opt/arch64/var/cache/pacman/pkg --config /opt/arch64/pacman.conf -Sp base base-devel libnewt grub os-prober wget xorg-server xorg-server-utils xorg-xinit xterm awesome openbox i3 dwm screenfetch openssh lynx htop wireless_tools wpa_supplicant netctl xfce4 xf86-video-ati nvidia nvidia-340xx nvidia-304xx xf86-video-intel lightdm lightdm-gtk-greeter zsh conky htop firefox pulseaudio cmus virtualbox-guest-utils efibootmgr dialog wpa_actiond vim xf86-input-synaptics > "$aa"/etc/x86_64-package.list
-	sudo pacman --root /opt/arch32 --cachedir /opt/arch32/var/cache/pacman/pkg --config /opt/arch32/pacman.conf -Sp base base-devel libnewt grub os-prober wget xorg-server xorg-server-utils xorg-xinit xterm awesome openbox i3 dwm screenfetch openssh lynx htop wireless_tools wpa_supplicant netctl xfce4 xf86-video-ati nvidia nvidia-340xx nvidia-304xx xf86-video-intel lightdm lightdm-gtk-greeter zsh conky htop firefox pulseaudio cmus virtualbox-guest-utils efibootmgr dialog wpa_actiond vim xf86-input-synaptics > "$aa"/etc/i686-package.list
 	prepare_x86_64
 
 }
+
 
 prepare_x86_64() {
 	
 	echo "Preparing x86_64..."
 	cd "$customiso"/arch/x86_64
 	sudo unsquashfs airootfs.sfs
-	sudo mkdir "$customiso"/arch/x86_64/squashfs-root/repo/
-	sudo mkdir "$customiso"/arch/x86_64/squashfs-root/repo/install-repo
-	cd "$customiso"/arch/x86_64/squashfs-root/repo/install-repo
-	sudo wget -i "$aa"/etc/x86_64-package.list
-	sudo repo-add "$customiso"/arch/x86_64/squashfs-root/repo/install-repo/install-repo.db.tar.gz "$customiso"/arch/x86_64/squashfs-root/repo/install-repo/*.pkg.tar.xz
-	sudo cp "$aa"/etc/local-pacman.conf "$customiso"/arch/x86_64/squashfs-root/root
+#	sudo arch-chroot squashfs-root /bin/bash pacman-key --init
+#	sudo arch-chroot squashfs-root /bin/bash pacman-key --populate archlinux
+	sudo pacman --root squashfs-root --cachedir squashfs-root/var/cache/pacman/pkg  --config squashfs-root/etc/pacman.conf --noconfirm -Syyy terminus-font
+	sudo pacman --root squashfs-root --cachedir squashfs-root/var/cache/pacman/pkg  --config squashfs-root/etc/pacman.conf -Sl | awk '/\[installed\]$/ {print $1 "/" $2 "-" $3}' > "$customiso"/arch/pkglist.x86_64.txt
+	sudo pacman --root squashfs-root --cachedir squashfs-root/var/cache/pacman/pkg  --config squashfs-root/etc/pacman.conf --noconfirm -Scc
 	sudo cp "$aa"/etc/arch-anywhere.conf "$customiso"/arch/x86_64/squashfs-root/etc/
+	sudo cp "$aa"/etc/locale.gen "$customiso"/arch/x86_64/squashfs-root/etc
+	sudo arch-chroot squashfs-root /bin/bash locale-gen
+	sudo cp "$aa"/etc/vconsole.conf "$customiso"/arch/x86_64/squashfs-root/etc
 	sudo cp "$aa"/arch-installer.sh "$customiso"/arch/x86_64/squashfs-root/usr/bin/arch-anywhere
 	sudo mkdir "$customiso"/arch/x86_64/squashfs-root/usr/share/arch-anywhere
+	
 	sudo cp "$aa"/lang/arch-installer-english.conf "$customiso"/arch/x86_64/squashfs-root/usr/share/arch-anywhere
 	sudo cp "$aa"/lang/arch-installer-german.conf "$customiso"/arch/x86_64/squashfs-root/usr/share/arch-anywhere
 	sudo cp "$aa"/lang/arch-installer-portuguese.conf "$customiso"/arch/x86_64/squashfs-root/usr/share/arch-anywhere
 	sudo cp "$aa"/lang/arch-installer-romanian.conf "$customiso"/arch/x86_64/squashfs-root/usr/share/arch-anywhere
+	
 	sudo chmod +x "$customiso"/arch/x86_64/squashfs-root/usr/bin/arch-anywhere
 	sudo cp "$aa"/extra/arch-wiki "$customiso"/arch/x86_64/squashfs-root/usr/bin/arch-wiki
 	sudo chmod +x "$customiso"/arch/x86_64/squashfs-root/usr/bin/arch-wiki
 	sudo cp "$aa"/extra/.zshrc "$customiso"/arch/x86_64/squashfs-root/root/
-	sudo cp "$aa"/extra/.simple-guide.html "$customiso"/arch/x86_64/squashfs-root/root/
-	sudo cp "$aa"/extra/.guide.html "$customiso"/arch/x86_64/squashfs-root/root/
 	sudo cp "$aa"/extra/.help "$customiso"/arch/x86_64/squashfs-root/root/
 	sudo cp "$aa"/boot/issue "$customiso"/arch/x86_64/squashfs-root/etc/
 	sudo cp "$aa"/boot/hostname "$customiso"/arch/x86_64/squashfs-root/etc/
@@ -218,25 +152,29 @@ prepare_i686() {
 	echo "Preparing i686..."
 	cd "$customiso"/arch/i686
 	sudo unsquashfs airootfs.sfs
-	sudo mkdir "$customiso"/arch/i686/squashfs-root/repo/
-	sudo mkdir "$customiso"/arch/i686/squashfs-root/repo/install-repo
-	cd "$customiso"/arch/i686/squashfs-root/repo/install-repo
-	sudo wget -i "$aa"/etc/i686-package.list
-	sudo repo-add "$customiso"/arch/i686/squashfs-root/repo/install-repo/install-repo.db.tar.gz "$customiso"/arch/i686/squashfs-root/repo/install-repo/*.pkg.tar.xz
-	sudo cp "$aa"/etc/local-pacman.conf "$customiso"/arch/i686/squashfs-root/root
+#	sudo setarch i686 arch-chroot squashfs-root /bin/bash pacman-key --init
+#	sudo setarch i686 arch-chroot squashfs-root /bin/bash pacman-key --populate archlinux
+	sudo sed -i 's/\$arch/i686/g' squashfs-root/etc/pacman.d/mirrorlist
+	sudo sed -i 's/auto/i686/' squashfs-root/etc/pacman.conf
+	sudo setarch i686 pacman --root squashfs-root --cachedir squashfs-root/var/cache/pacman/pkg  --config squashfs-root/etc/pacman.conf --noconfirm -Syyy terminus-font
+	sudo setarch i686 pacman --root squashfs-root --cachedir squashfs-root/var/cache/pacman/pkg  --config squashfs-root/etc/pacman.conf -Sl | awk '/\[installed\]$/ {print $1 "/" $2 "-" $3}' > "$customiso"/arch/pkglist.i686.txt
+	sudo setarch i686 pacman --root squashfs-root --cachedir squashfs-root/var/cache/pacman/pkg  --config squashfs-root/etc/pacman.conf --noconfirm -Scc
 	sudo cp "$aa"/etc/arch-anywhere.conf "$customiso"/arch/i686/squashfs-root/etc/
+	sudo cp "$aa"/etc/locale.gen "$customiso"/arch/i686/squashfs-root/etc
+	sudo arch-chroot squashfs-root /bin/bash locale-gen
+	sudo cp "$aa"/etc/vconsole.conf "$customiso"/arch/i686/squashfs-root/etc
 	sudo cp "$aa"/arch-installer.sh "$customiso"/arch/i686/squashfs-root/usr/bin/arch-anywhere
 	sudo mkdir "$customiso"/arch/i686/squashfs-root/usr/share/arch-anywhere
+
 	sudo cp "$aa"/lang/arch-installer-english.conf "$customiso"/arch/i686/squashfs-root/usr/share/arch-anywhere
 	sudo cp "$aa"/lang/arch-installer-german.conf "$customiso"/arch/i686/squashfs-root/usr/share/arch-anywhere
 	sudo cp "$aa"/lang/arch-installer-portuguese.conf "$customiso"/arch/i686/squashfs-root/usr/share/arch-anywhere
 	sudo cp "$aa"/lang/arch-installer-romanian.conf "$customiso"/arch/i686/squashfs-root/usr/share/arch-anywhere
+	
 	sudo chmod +x "$customiso"/arch/i686/squashfs-root/usr/bin/arch-anywhere
 	sudo cp "$aa"/extra/arch-wiki "$customiso"/arch/i686/squashfs-root/usr/bin/arch-wiki
 	sudo chmod +x "$customiso"/arch/i686/squashfs-root/usr/bin/arch-wiki	
 	sudo cp "$aa"/extra/.zshrc "$customiso"/arch/i686/squashfs-root/root/
-	sudo cp "$aa"/extra/.simple-guide.html "$customiso"/arch/i686/squashfs-root/root/
-	sudo cp "$aa"/extra/.guide.html "$customiso"/arch/i686/squashfs-root/root/
 	sudo cp "$aa"/extra/.help "$customiso"/arch/i686/squashfs-root/root/
 	sudo cp "$aa"/boot/issue "$customiso"/arch/i686/squashfs-root/etc/
 	sudo cp "$aa"/boot/hostname "$customiso"/arch/i686/squashfs-root/etc/
@@ -266,12 +204,13 @@ configure_boot() {
 	cp "$aa"/boot/archiso_head.cfg "$customiso"/arch/boot/syslinux
 	cp "$aa"/boot/archiso_sys64.cfg "$customiso"/arch/boot/syslinux
 	cp "$aa"/boot/archiso_sys32.cfg "$customiso"/arch/boot/syslinux
-	create_iso
+#	create_iso
 
 }
 
 create_iso() {
 
+	cd "$aa"
 	xorriso -as mkisofs iso-level 3 \
 	-full-iso9660-filenames \
 	-volid "$iso_label" \
