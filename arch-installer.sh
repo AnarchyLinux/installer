@@ -1338,13 +1338,14 @@ main_menu() {
 git_update() {
 
 	echo "$lang_link" >> /usr/share/arch-anywhere/git-update.link
-	wget -O /tmp -i /usr/share/arch-anywhere/git-update.link
-	pid="$!" pri=0.5 msg="Initializing installer..."
-	mv /tmp/arch-anywhere /usr/bin/arch-anywhere-latest
+	cd /tmp
+	wget -i /usr/share/arch-anywhere/git-update.link &> /dev/null &
+	pid="$!" pri=0.5 msg="Initializing installer..." load
+	mv /tmp/arch-installer.sh /usr/bin/arch-anywhere-latest
 	sed -i '25,135d' /usr/bin/arch-anywhere-latest
 	sed -i 's!lang_config!source /etc/arch-anywhere.conf ; source "$lang_file" ; export reload=true ; set_locale!' /usr/bin/arch-anywhere-latest
 	mv /tmp/arch-anywhere.conf /etc
-	mv /tmp/* "$lang_file"
+	mv /tmp/* /usr/share/arch-anywhere/
 	bash /usr/bin/arch-anywhere-latest
 
 }
