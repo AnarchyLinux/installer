@@ -91,12 +91,12 @@ check_connection() {
 				clear ; echo "$connect_err1" ;  exit 1
 			fi
 		else
-			connection_speed=$(tail -n 2 /tmp/wget.log | grep -oP '(?<=\().*(?=\))' | awk '{print $1}')
-			connection_rate=$(tail -n 2 /tmp/wget.log | grep -oP '(?<=\().*(?=\))' | awk '{print $2}')
+			export connection_speed=$(tail -n 2 /tmp/wget.log | grep -oP '(?<=\().*(?=\))' | awk '{print $1}')
+			export connection_rate=$(tail -n 2 /tmp/wget.log | grep -oP '(?<=\().*(?=\))' | awk '{print $2}')
         
 			case "$connection_rate" in
 				KB/s)
-					down_sec=$((arch_total*1012/connection_speed))
+					down_sec=$((arch_total*1024/connection_speed))
 				;;
 				MB/s)
 					down_sec=$((arch_total/connection_speed))
@@ -1337,12 +1337,14 @@ main_menu() {
 
 git_update() {
 
-	(wget -O "$lang_file" "$lang_link"
-	wget -O /etc/arch-anywhere.conf "https://raw.githubusercontent.com/deadhead420/arch-linux-anywhere/master/etc/arch-anywhere.conf"
-	wget -O /usr/bin/arch-anywhere-latest "https://raw.githubusercontent.com/deadhead420/arch-linux-anywhere/master/arch-installer.sh") &> /dev/null &
-	pid="$!" pri=0.5 msg="Initating installer..."
-	sed -e '25,139d' /usr/bin/arch-anywhere-latest
+	echo "$lang_link" >> /usr/share/arch-anywhere/git-update.link
+	wget -O /tmp -i /usr/share/arch-anywhere/git-update.link
+	pid="$!" pri=0.5 msg="Initializing installer..."
+	mv /tmp/arch-anywhere /usr/bin/arch-anywhere-latest
+	sed -i '25,135d' /usr/bin/arch-anywhere-latest
 	sed -i 's!lang_config!source /etc/arch-anywhere.conf ; source "$lang_file" ; export reload=true ; set_locale!' /usr/bin/arch-anywhere-latest
+	mv /tmp/arch-anywhere.conf /etc
+	mv /tmp/* "$lang_file"
 	bash /usr/bin/arch-anywhere-latest
 
 }
