@@ -34,22 +34,25 @@ lang_config() {
 	case "$ILANG" in
 		"English")
 			export lang_file=/usr/share/arch-anywhere/arch-installer-english.conf
+			export lang_link="https://raw.githubusercontent.com/deadhead420/arch-linux-anywhere/master/lang/arch-installer-english.conf"
 		;;
 		"German")
 			export lang_file=/usr/share/arch-anywhere/arch-installer-german.conf
+			export lang_link="https://raw.githubusercontent.com/deadhead420/arch-linux-anywhere/master/lang/arch-installer-german.conf"
 		;;
 		"Portuguese")
 			export lang_file=/usr/share/arch-anywhere/arch-installer-portuguese.conf
+			export lang_link="https://raw.githubusercontent.com/deadhead420/arch-linux-anywhere/master/lang/arch-installer-portuguese.conf"
 		;;
 		"Romanian")
 			export lang_file=/usr/share/arch-anywhere/arch-installer-romanian.conf
+			export lang_link="https://raw.githubusercontent.com/deadhead420/arch-linux-anywhere/master/lang/arch-installer-romanian.conf"
 		;;
 	esac
 
 	source /etc/arch-anywhere.conf
 	source "$lang_file"
 #	setfont "$font"
-	export reload=true
 	check_connection
 
 }
@@ -93,7 +96,7 @@ check_connection() {
         
 			case "$connection_rate" in
 				KB/s)
-					down_sec=$((arch_total*1000/connection_speed))
+					down_sec=$((arch_total*1012/connection_speed))
 				;;
 				MB/s)
 					down_sec=$((arch_total/connection_speed))
@@ -112,7 +115,7 @@ check_connection() {
         
 			case "$cpu_mhz" in
 				[0-9][0-9][0-9])
-					cpu_sleep=5
+					cpu_sleep=4
 				;;
 				[1][0-9][0-9][0-9])
 					cpu_sleep=4
@@ -121,16 +124,16 @@ check_connection() {
 					cpu_sleep=3
 				;;
 				[3-5][0-9][0-9][0-9])
-					cpu_sleep=1
+					cpu_sleep=2
 				;;
 			esac
         
-			down=$((down_sec/100+cpu_sleep))
-			down_min=$((down*100/60))
+			export down=$((down_sec/100+cpu_sleep))
+			export down_min=$((down*100/60))
 			connection=true
 		fi
 	done
-	set_locale
+	git_update
 
 }
 
@@ -1329,6 +1332,18 @@ main_menu() {
 	esac
 
 	main_menu
+
+}
+
+git_update() {
+
+	(wget -O "$lang_file" "$lang_link"
+	wget -O /etc/arch-anywhere.conf "https://raw.githubusercontent.com/deadhead420/arch-linux-anywhere/master/etc/arch-anywhere.conf"
+	wget -O /usr/bin/arch-anywhere-latest "https://raw.githubusercontent.com/deadhead420/arch-linux-anywhere/master/arch-installer.sh") &> /dev/null &
+	pid="$!" pri=0.5 msg="Initating installer..."
+	sed -e '25,139d' /usr/bin/arch-anywhere-latest
+	sed -i 's!lang_config!source /etc/arch-anywhere.conf ; source "$lang_file" ; export reload=true ; set_locale!' /usr/bin/arch-anywhere-latest
+	bash /usr/bin/arch-anywhere-latest
 
 }
 
