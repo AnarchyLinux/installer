@@ -36,6 +36,10 @@ lang_config() {
 			export lang_file=/usr/share/arch-anywhere/arch-installer-english.conf
 			export lang_link="https://raw.githubusercontent.com/deadhead420/arch-linux-anywhere/master/lang/arch-installer-english.conf"
 		;;
+		"French")
+			export lang_file=/usr/share/arch-anywhere/arch-installer-french.conf
+			export lang_link="https://raw.githubusercontent.com/deadhead420/arch-linux-anywhere/master/lang/arch-installer-french.conf"
+		;;
 		"German")
 			export lang_file=/usr/share/arch-anywhere/arch-installer-german.conf
 			export lang_link="https://raw.githubusercontent.com/deadhead420/arch-linux-anywhere/master/lang/arch-installer-german.conf"
@@ -143,6 +147,7 @@ set_locale() {
 	"en_US.UTF-8" "United States" \
 	"en_AU.UTF-8" "Australia" \
 	"en_CA.UTF-8" "Canada" \
+	"fr_FR.UTF-8" "French"
 	"de_DE.UTF-8" "German" \
 	"en_GB.UTF-8" "Great Britain" \
 	"en_MX.UTF-8" "Mexico" \
@@ -1340,9 +1345,9 @@ git_update() {
 	echo "$lang_link" >> /usr/share/arch-anywhere/git-update.link
 	cd /tmp
 	wget -i /usr/share/arch-anywhere/git-update.link &> /dev/null &
-	pid="$!" pri=0.5 msg="Initializing installer..." load
+	pid="$!" pri=0.5 msg="$init_load" load
 	mv /tmp/arch-installer.sh /usr/bin/arch-anywhere-latest
-	sed -i '25,135d' /usr/bin/arch-anywhere-latest
+	sed -i '25,138d' /usr/bin/arch-anywhere-latest
 	sed -i 's!lang_config!source /etc/arch-anywhere.conf ; source "$lang_file" ; export reload=true ; set_locale!' /usr/bin/arch-anywhere-latest
 	mv /tmp/arch-anywhere.conf /etc
 	mv /tmp/* /usr/share/arch-anywhere/
