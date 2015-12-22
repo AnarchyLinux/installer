@@ -26,7 +26,8 @@ lang_config() {
 
 	clear
 	ILANG=$(whiptail --nocancel --title "Arch Linux Anywhere" --menu "Select your desired install language:" 15 60 6 \
-		"English" "" \
+		"English" "-" \
+		"French" "Français" \
 		"German" "Deutsche" \
 		"Portuguese" "Português" \
 		"Romanian" "Română" 3>&1 1>&2 2>&3)
@@ -147,7 +148,7 @@ set_locale() {
 	"en_US.UTF-8" "United States" \
 	"en_AU.UTF-8" "Australia" \
 	"en_CA.UTF-8" "Canada" \
-	"fr_FR.UTF-8" "French"
+	"fr_FR.UTF-8" "French" \
 	"de_DE.UTF-8" "German" \
 	"en_GB.UTF-8" "Great Britain" \
 	"en_MX.UTF-8" "Mexico" \
@@ -1347,7 +1348,7 @@ git_update() {
 	wget -i /usr/share/arch-anywhere/git-update.link &> /dev/null &
 	pid="$!" pri=0.5 msg="$init_load" load
 	mv /tmp/arch-installer.sh /usr/bin/arch-anywhere-latest
-	sed -i '25,138d' /usr/bin/arch-anywhere-latest
+	sed -i '25,142d' /usr/bin/arch-anywhere-latest
 	sed -i 's!lang_config!source /etc/arch-anywhere.conf ; source "$lang_file" ; export reload=true ; set_locale!' /usr/bin/arch-anywhere-latest
 	mv /tmp/arch-anywhere.conf /etc
 	mv /tmp/* /usr/share/arch-anywhere/
