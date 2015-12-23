@@ -260,17 +260,24 @@ prepare_drives() {
 			source "$lang_file"
 
 		if (whiptail --title "$title" --yes-button "$yes" --no-button "$no" --yesno "$swap_msg0" 10 60) then
-			drive_bytes=$(fdisk -l | grep -w "$DRIVE" | awk '{print $5}') 
-			total_mb=$(echo "$drive_bytes/(2^20)-4096" | bc)
-			total_gb=$(echo "$drive_bytes/(2^30)-4" | bc)
+			drive_gigs=$(lsblk | grep -w "$DRIVE" | awk '{print $4}' | grep -o '[0-9]*') 
+			total_mb=$(echo "$drive_gigs*1000-4096" | bc)
+			total_gb=$(echo "$drive_gigs-4" | bc)
 			
-			while [ "$swapped" != "true" ]
-				do
-					SWAPSPACE=$(whiptail --inputbox --nocancel "$swap_msg1" 10 60 "512M" 3>&1 1>&2 2>&3)
+			while ! "$swapped" ; do
+					SWAPSPACE=$(whiptail --inputbox --ok-button "$ok" --cancel-button "$cancel" "$swap_msg1" 10 60 "512M" 3>&1 1>&2 2>&3)
+					
+					if [ "$?" -gt "0" ]; then
+						SWAP=false
+						swapped=true
+					fi
+
 					unit=$(grep -o ".$" <<< "$SWAPSPACE")
 					unit_size=$(grep -o '[0-9]*' <<< "$SWAPSPACE") 
 					
-					if [ "$unit" == "M" ]; then 
+					if "$swapped" ; then
+						:
+					elif [ "$unit" == "M" ]; then 
 
 						if [ "$unit_size" -lt "$total_mb" ]; then 
 							SWAP=true 
@@ -308,7 +315,7 @@ prepare_drives() {
 			fi
 		fi
 
-		if [ "$UEFI" == "false" ]; then 
+		if ! "$UEFI" ; then 
 
 			if (whiptail --title "$title" --defaultno --yes-button "$yes" --no-button "$no" --yesno "$gpt_msg" 10 60) then 
 				GPT=true
