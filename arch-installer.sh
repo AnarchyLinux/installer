@@ -70,9 +70,9 @@ check_connection() {
 	
 	until "$connection"
 	  do
-		wget --append-output=/tmp/wget.log -O /dev/null "http://speedtest.wdc01.softlayer.com/downloads/test10.zip" &
-		pid=$! pri=1 msg="$connection_load" load
-    
+		ping -w 3 google.com &> /dev/null &
+		pid=$! pri=0.2 msg="$connection_load" load    
+		
 		if "$err" ; then
     
 			if [ -n "$wifi_network" ]; then
@@ -96,6 +96,8 @@ check_connection() {
 				clear ; echo "$connect_err1" ;  exit 1
 			fi
 		else
+			wget --append-output=/tmp/wget.log -O /dev/null "http://speedtest.wdc01.softlayer.com/downloads/test10.zip" &
+			pid=$! pri=1 msg="$connection_load" load
 			export connection_speed=$(tail -n 2 /tmp/wget.log | grep -oP '(?<=\().*(?=\))' | awk '{print $1}')
 			export connection_rate=$(tail -n 2 /tmp/wget.log | grep -oP '(?<=\().*(?=\))' | awk '{print $2}')
         
