@@ -2,7 +2,7 @@
 
 ### Arch Linux Anywhere Install Script
 ##
-## Copyright (C) 2015  Dylan Schacht
+## Copyright (C) 2016  Dylan Schacht
 ##
 ## By: Deadhead (Dylan Schacht)
 ## Email: deadhead3492@gmail.com
@@ -67,12 +67,16 @@ check_connection() {
 	if ! (whiptail --title "$title" --yes-button "$yes" --no-button "$no" --yesno "$intro_msg" 10 60) then
 		clear ; exit
 	fi
+
+	ping -w 1 google.com &> /dev/null
 	
+	if [ "$?" -gt "0" ]; then
+		err=true
+	fi
+
 	until "$connection"
 	  do
-		wget --append-output=/tmp/wget.log -O /dev/null "http://speedtest.wdc01.softlayer.com/downloads/test10.zip" &
-		pid=$! pri=1 msg="$connection_load" load
-    
+	    
 		if "$err" ; then
     
 			if [ -n "$wifi_network" ]; then
@@ -84,18 +88,20 @@ check_connection() {
 						whiptail --title "$title" --ok-button "$ok" --msgbox "$wifi_msg0" 10 60
 							clear ; echo "$connect_err1" ; exit 1
 					else
-						err=false
 						wifi=true
+						err=false
 					fi
 				else
 					whiptail --title "$title" --ok-button "$ok" --msgbox "$connect_err0" 10 60
-					clear ; echo "$connect_err1" ; exit 1
+					clear ; echo -e "$connect_err1" ; exit 1
 				fi
 			else
 				whiptail --title "$title" --ok-button "$ok" --msgbox "$connect_err0" 10 60
 				clear ; echo "$connect_err1" ;  exit 1
 			fi
 		else
+			wget --append-output=/tmp/wget.log -O /dev/null "http://speedtest.wdc01.softlayer.com/downloads/test10.zip" &
+			pid=$! pri=1 msg="$connection_load" load
 			export connection_speed=$(tail -n 2 /tmp/wget.log | grep -oP '(?<=\().*(?=\))' | awk '{print $1}')
 			export connection_rate=$(tail -n 2 /tmp/wget.log | grep -oP '(?<=\().*(?=\))' | awk '{print $2}')
         
@@ -845,10 +851,10 @@ set_hostname() {
                    			 input=$(whiptail --passwordbox --nocancel "'$root_passwd_msg0'" 10 78 --title "'$title'" 3>&1 1>&2 2>&3)
             		         input_chk=$(whiptail --passwordbox --nocancel "'$root_passwd_msg1'" 9 78 --title "'$title'" 3>&1 1>&2 2>&3)
                    			 if [ -z "$input" ]; then
-                   			 	whiptail --title "$title" --ok-button "$ok" --msgbox "'$passwd_msg0'" 10 60
+                   			 	whiptail --title "'$title'" --ok-button "'$ok'" --msgbox "'$passwd_msg0'" 10 60
                    			 	input_chk=default
                    			 elif [ "$input" != "$input_chk" ]; then
-                      		      whiptail --title "$title" --ok-button "$ok" --msgbox "'$passwd_msg1'" 10 60
+                      		      whiptail --title "'$title'" --ok-button "'$ok'" --msgbox "'$passwd_msg1'" 10 60
                      		 fi
          		        done
     			echo -e "$input\n$input\n" | passwd &> /dev/null' > /mnt/root/set.sh
@@ -897,10 +903,10 @@ add_user() {
                    					 input=$(whiptail --passwordbox --nocancel "'$user_var0'" 9 78 --title "'$title'" 3>&1 1>&2 2>&3)
             				         input_chk=$(whiptail --passwordbox --nocancel "'$user_var1'" 9 78 --title "'$title'" 3>&1 1>&2 2>&3)
                    					 if [ -z "$input" ]; then
-                   			 			whiptail --title "$title" --ok-button "$ok" --msgbox "'$passwd_msg0'" 10 60
+                   			 			whiptail --title "'$title'" --ok-button "'$ok'" --msgbox "'$passwd_msg0'" 10 60
                    			 			input_chk=default
                    			 		 elif [ "$input" != "$input_chk" ]; then
-                      		    		whiptail --title "$title" --ok-button "$ok" --msgbox "'$passwd_msg1'" 10 60
+                      		    		whiptail --title "'$title'" --ok-button "'$ok'" --msgbox "'$passwd_msg1'" 10 60
                      		 		fi
          				        done
     					echo -e "$input\n$input\n" | passwd "$user" &> /dev/null' > /mnt/root/set.sh
@@ -1205,7 +1211,7 @@ load() {
         	while (true)
     	    	do
     	            proc=$(ps | grep "$pid")
-    	            if [ "$?" -gt "0" ]; then err=true break; fi
+    	            if [ "$?" -gt "0" ]; then break; fi
     	            sleep $pri
     	            echo $int
     	            int=$((int+1))
@@ -1355,7 +1361,7 @@ git_update() {
 	wget -i /usr/share/arch-anywhere/git-update.link &> /dev/null &
 	pid="$!" pri=0.5 msg="$init_load" load
 	mv /tmp/arch-installer.sh /usr/bin/arch-anywhere-latest
-	sed -i '25,143d' /usr/bin/arch-anywhere-latest
+	sed -i '25,150d' /usr/bin/arch-anywhere-latest
 	sed -i 's!lang_config!source /etc/arch-anywhere.conf ; source "$lang_file" ; export reload=true ; set_locale!' /usr/bin/arch-anywhere-latest
 	mv /tmp/arch-anywhere.conf /etc
 	mv /tmp/* /usr/share/arch-anywhere/
