@@ -12,7 +12,7 @@
 
 [0;37m  Installing Arch Linux requires an active internet connection.
 [0;37m  You can check the status of your connection with the 'ping' command:
-[0;36m  ping -c 3 google.com
+[0;36m  	ping -c 3 google.com
 
 [0;37m  If using a wifi connection you may connect using the command:[0;36m wifi-menu
 
