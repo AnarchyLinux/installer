@@ -130,8 +130,6 @@ prepare_x86_64() {
 	sudo cp "$aa"/lang/arch-installer-german.conf "$customiso"/arch/x86_64/squashfs-root/usr/share/arch-anywhere
 	sudo cp "$aa"/lang/arch-installer-portuguese.conf "$customiso"/arch/x86_64/squashfs-root/usr/share/arch-anywhere
 	sudo cp "$aa"/lang/arch-installer-romanian.conf "$customiso"/arch/x86_64/squashfs-root/usr/share/arch-anywhere
-	sudo cp "$aa"/lang/arch-installer-swedish.conf "$customiso"/arch/x86_64/squashfs-root/usr/share/arch-anywhere
-
 	
 	sudo chmod +x "$customiso"/arch/x86_64/squashfs-root/usr/bin/arch-anywhere
 	sudo cp "$aa"/extra/arch-wiki "$customiso"/arch/x86_64/squashfs-root/usr/bin/arch-wiki
