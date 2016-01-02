@@ -1,10 +1,10 @@
 #!/bin/bash
 
 # Set the version here
-export version="arch-anywhere-1.7-dual.iso"
+export version="arch-anywhere-1.8-dual.iso"
 
 # Set the ISO label here
-export iso_label="ARCH_ANYWHERE_201512"
+export iso_label="ARCH_ANYWHERE_201601"
 
 # Location variables all directories must exist
 export aa=~/arch-anywhere
@@ -13,7 +13,7 @@ export customiso=~/arch-anywhere/customiso
 export mntdir=~/arch-anywhere/mnt
 
 # Link to the iso used to create Arch Anywhere
-export archiso_link="http://arch.localmsp.org/arch/iso/2015.12.01/archlinux-2015.12.01-dual.iso"
+export archiso_link="http://arch.localmsp.org/arch/iso/2016.01.01/archlinux-2016.01.01-dual.iso"
 
 init() {
 	
