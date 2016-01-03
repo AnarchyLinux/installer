@@ -611,7 +611,7 @@ prepare_drives() {
 					partition=$(lsblk | grep "$DRIVE" | grep -v "/\|[SWAP]\|1K" | sed "1d" | cut -c7- | awk '{print $1"     "$4}')
 					new_mnt=$(whiptail --title "$title" --nocancel --menu "$part_sel_msg" 15 60 6 $partition "$done_msg" "$continue_msg" 3>&1 1>&2 2>&3)
 
-					if [ "$new_mnt" != "Done" ]; then
+					if [ "$new_mnt" != "$done_msg" ]; then
 						source "$lang_file"
 						MNT=$(whiptail --title "$title" --ok-button "$ok" --cancel-button "$cancel" --menu "$mnt_var0" 15 60 6 $points 3>&1 1>&2 2>&3)
 
