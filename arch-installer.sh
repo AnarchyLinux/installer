@@ -100,8 +100,7 @@ check_connection() {
 				clear ; echo "$connect_err1" ;  exit 1
 			fi
 		else
-#			wget --append-output=/tmp/wget.log -O /dev/null "http://speedtest.wdc01.softlayer.com/downloads/test10.zip" &
-			wget --append-output=/tmp/wget.log -O /dev/null "ftp://192.168.1.218/dh-repo/x86_64/archlinux-wallpaper-1.4-2-any.pkg.tar.xz" &
+			wget --append-output=/tmp/wget.log -O /dev/null "http://speedtest.wdc01.softlayer.com/downloads/test10.zip" &
 			pid=$! pri=1 msg="$connection_load" load
 			export connection_speed=$(tail -n 2 /tmp/wget.log | grep -oP '(?<=\().*(?=\))' | awk '{print $1}')
 			export connection_rate=$(tail -n 2 /tmp/wget.log | grep -oP '(?<=\().*(?=\))' | awk '{print $2}')
