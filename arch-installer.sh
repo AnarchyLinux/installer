@@ -2,7 +2,7 @@
 
 ### Arch Linux Anywhere Install Script
 ##
-## Copyright (C) 2015  Dylan Schacht
+## Copyright (C) 2016  Dylan Schacht
 ##
 ## By: Deadhead (Dylan Schacht)
 ## Email: deadhead3492@gmail.com
@@ -26,7 +26,8 @@ lang_config() {
 
 	clear
 	ILANG=$(whiptail --nocancel --title "Arch Linux Anywhere" --menu "Select your desired install language:" 15 60 6 \
-		"English" "" \
+		"English" "-" \
+		"French" "Français" \
 		"German" "Deutsche" \
 		"Portuguese" "Português" \
 		"Romanian" "Română" 3>&1 1>&2 2>&3)
@@ -35,6 +36,10 @@ lang_config() {
 		"English")
 			export lang_file=/usr/share/arch-anywhere/arch-installer-english.conf
 			export lang_link="https://raw.githubusercontent.com/deadhead420/arch-linux-anywhere/master/lang/arch-installer-english.conf"
+		;;
+		"French")
+			export lang_file=/usr/share/arch-anywhere/arch-installer-french.conf
+			export lang_link="https://raw.githubusercontent.com/deadhead420/arch-linux-anywhere/master/lang/arch-installer-french.conf"
 		;;
 		"German")
 			export lang_file=/usr/share/arch-anywhere/arch-installer-german.conf
@@ -62,12 +67,16 @@ check_connection() {
 	if ! (whiptail --title "$title" --yes-button "$yes" --no-button "$no" --yesno "$intro_msg" 10 60) then
 		clear ; exit
 	fi
+
+	ping -w 1 google.com &> /dev/null
 	
+	if [ "$?" -gt "0" ]; then
+		err=true
+	fi
+
 	until "$connection"
 	  do
-		wget --append-output=/tmp/wget.log -O /dev/null "http://speedtest.wdc01.softlayer.com/downloads/test10.zip" &
-		pid=$! pri=1 msg="$connection_load" load
-    
+	    
 		if "$err" ; then
     
 			if [ -n "$wifi_network" ]; then
@@ -79,18 +88,20 @@ check_connection() {
 						whiptail --title "$title" --ok-button "$ok" --msgbox "$wifi_msg0" 10 60
 							clear ; echo "$connect_err1" ; exit 1
 					else
-						err=false
 						wifi=true
+						err=false
 					fi
 				else
 					whiptail --title "$title" --ok-button "$ok" --msgbox "$connect_err0" 10 60
-					clear ; echo "$connect_err1" ; exit 1
+					clear ; echo -e "$connect_err1" ; exit 1
 				fi
 			else
 				whiptail --title "$title" --ok-button "$ok" --msgbox "$connect_err0" 10 60
 				clear ; echo "$connect_err1" ;  exit 1
 			fi
 		else
+			wget --append-output=/tmp/wget.log -O /dev/null "http://speedtest.wdc01.softlayer.com/downloads/test10.zip" &
+			pid=$! pri=1 msg="$connection_load" load
 			export connection_speed=$(tail -n 2 /tmp/wget.log | grep -oP '(?<=\().*(?=\))' | awk '{print $1}')
 			export connection_rate=$(tail -n 2 /tmp/wget.log | grep -oP '(?<=\().*(?=\))' | awk '{print $2}')
         
@@ -99,7 +110,7 @@ check_connection() {
 					down_sec=$((arch_total*1024/connection_speed))
 				;;
 				MB/s)
-					down_sec=$((arch_total/connection_speed))
+					down_sec=$(echo "$arch_total/$connection_speed" | bc)
 				;;
 				GB/s)
 					down_sec="1"
@@ -115,7 +126,7 @@ check_connection() {
         
 			case "$cpu_mhz" in
 				[0-9][0-9][0-9])
-					cpu_sleep=4
+					cpu_sleep=5
 				;;
 				[1][0-9][0-9][0-9])
 					cpu_sleep=4
@@ -127,9 +138,9 @@ check_connection() {
 					cpu_sleep=2
 				;;
 			esac
-        
-			export down=$((down_sec/100+cpu_sleep))
-			export down_min=$((down*100/60))
+        	
+			export down=$((down_sec/100+cpu_sleep+1))
+			export down_min=$((down*100/60+1))
 			connection=true
 		fi
 	done
@@ -143,6 +154,7 @@ set_locale() {
 	"en_US.UTF-8" "United States" \
 	"en_AU.UTF-8" "Australia" \
 	"en_CA.UTF-8" "Canada" \
+	"fr_FR.UTF-8" "French" \
 	"de_DE.UTF-8" "German" \
 	"en_GB.UTF-8" "Great Britain" \
 	"en_MX.UTF-8" "Mexico" \
@@ -222,6 +234,13 @@ set_keys() {
 
 prepare_drives() {
 
+	lsblk | grep "/mnt\|SWAP" &> /dev/null
+	
+	if [ "$?" -gt "0" ]; then
+		umount -R "$ARCH" &> /dev/null
+		swapoff -a &> /dev/null
+	fi
+
 	DRIVE=$(whiptail --nocancel --title "$title" --ok-button "$ok" --menu "$drive_msg" 15 60 5 $drive 3>&1 1>&2 2>&3)
 	source "$lang_file"
 	PART=$(whiptail --title "$title" --ok-button "$ok" --cancel-button "$cancel" --menu "$part_msg" 16 62 4 \
@@ -239,7 +258,8 @@ prepare_drives() {
 	elif [ "$PART" == "$method1" ] || [ "$PART" == "$method0" ]; then
 
 		if (whiptail --title "$title" --defaultno --yes-button "$yes" --no-button "$no" --yesno "$drive_var" 10 60) then
-			sgdisk --zap-all "$DRIVE" &> /dev/null
+			sgdisk --zap-all /dev/"$DRIVE" &> /dev/null
+			wipefs -a /dev/"$DRIVE" &> /dev/null
 		else
 			prepare_drives
 		fi
@@ -254,17 +274,24 @@ prepare_drives() {
 			source "$lang_file"
 
 		if (whiptail --title "$title" --yes-button "$yes" --no-button "$no" --yesno "$swap_msg0" 10 60) then
-			drive_bytes=$(fdisk -l | grep -w "$DRIVE" | awk '{print $5}') 
-			total_mb=$(echo "$drive_bytes/(2^20)-4096" | bc)
-			total_gb=$(echo "$drive_bytes/(2^30)-4" | bc)
+			drive_gigs=$(lsblk | grep -w "$DRIVE" | awk '{print $4}' | grep -o '[0-9]*' | awk 'NR==1') 
+			total_mb=$(echo "$drive_gigs*1000-4096" | bc)
+			total_gb=$(echo "$drive_gigs-4" | bc)
 			
-			while [ "$swapped" != "true" ]
-				do
-					SWAPSPACE=$(whiptail --inputbox --nocancel "$swap_msg1" 10 60 "512M" 3>&1 1>&2 2>&3)
+			while ! "$swapped" ; do
+					SWAPSPACE=$(whiptail --inputbox --ok-button "$ok" --cancel-button "$cancel" "$swap_msg1" 10 60 "512M" 3>&1 1>&2 2>&3)
+					
+					if [ "$?" -gt "0" ]; then
+						SWAP=false
+						swapped=true
+					fi
+
 					unit=$(grep -o ".$" <<< "$SWAPSPACE")
 					unit_size=$(grep -o '[0-9]*' <<< "$SWAPSPACE") 
 					
-					if [ "$unit" == "M" ]; then 
+					if "$swapped" ; then
+						:
+					elif [ "$unit" == "M" ]; then 
 
 						if [ "$unit_size" -lt "$total_mb" ]; then 
 							SWAP=true 
@@ -302,7 +329,7 @@ prepare_drives() {
 			fi
 		fi
 
-		if [ "$UEFI" == "false" ]; then 
+		if ! "$UEFI" ; then 
 
 			if (whiptail --title "$title" --defaultno --yes-button "$yes" --no-button "$no" --yesno "$gpt_msg" 10 60) then 
 				GPT=true
@@ -584,7 +611,7 @@ prepare_drives() {
 					partition=$(lsblk | grep "$DRIVE" | grep -v "/\|[SWAP]\|1K" | sed "1d" | cut -c7- | awk '{print $1"     "$4}')
 					new_mnt=$(whiptail --title "$title" --nocancel --menu "$part_sel_msg" 15 60 6 $partition "$done_msg" "$continue_msg" 3>&1 1>&2 2>&3)
 
-					if [ "$new_mnt" != "Done" ]; then
+					if [ "$new_mnt" != "$done_msg" ]; then
 						source "$lang_file"
 						MNT=$(whiptail --title "$title" --ok-button "$ok" --cancel-button "$cancel" --menu "$mnt_var0" 15 60 6 $points 3>&1 1>&2 2>&3)
 
@@ -661,15 +688,15 @@ install_base() {
 
 			if "$wifi" ; then
 				pacstrap "$ARCH" base base-devel libnewt wireless_tools wpa_supplicant wpa_actiond netctl dialog &> /dev/null &
-				pid=$! pri="$down" msg="$install_load" load
+				pid=$! pri="$down.5" msg="$install_load" load
 			else
 
 				if (whiptail --title "$title" --defaultno --yes-button "$yes" --no-button "$no" --yesno "$wifi_option_msg" 11 60) then
 					pacstrap "$ARCH" base base-devel libnewt wireless_tools wpa_supplicant wpa_actiond netctl dialog &> /dev/null &
-					pid=$! pri="$down" msg="$install_load" load
+					pid=$! pri="$down.5" msg="$install_load" load
 				else
 					pacstrap "$ARCH" base base-devel libnewt &> /dev/null &
-					pid=$! pri="$down" msg="$install_load" load
+					pid=$! pri="$down.5" msg="$install_load" load
 				fi
 			fi
 			
@@ -832,10 +859,10 @@ set_hostname() {
                    			 input=$(whiptail --passwordbox --nocancel "'$root_passwd_msg0'" 10 78 --title "'$title'" 3>&1 1>&2 2>&3)
             		         input_chk=$(whiptail --passwordbox --nocancel "'$root_passwd_msg1'" 9 78 --title "'$title'" 3>&1 1>&2 2>&3)
                    			 if [ -z "$input" ]; then
-                   			 	whiptail --title "$title" --ok-button "$ok" --msgbox "'$passwd_msg0'" 10 60
+                   			 	whiptail --title "'$title'" --ok-button "'$ok'" --msgbox "'$passwd_msg0'" 10 60
                    			 	input_chk=default
                    			 elif [ "$input" != "$input_chk" ]; then
-                      		      whiptail --title "$title" --ok-button "$ok" --msgbox "'$passwd_msg1'" 10 60
+                      		      whiptail --title "'$title'" --ok-button "'$ok'" --msgbox "'$passwd_msg1'" 10 60
                      		 fi
          		        done
     			echo -e "$input\n$input\n" | passwd &> /dev/null' > /mnt/root/set.sh
@@ -884,10 +911,10 @@ add_user() {
                    					 input=$(whiptail --passwordbox --nocancel "'$user_var0'" 9 78 --title "'$title'" 3>&1 1>&2 2>&3)
             				         input_chk=$(whiptail --passwordbox --nocancel "'$user_var1'" 9 78 --title "'$title'" 3>&1 1>&2 2>&3)
                    					 if [ -z "$input" ]; then
-                   			 			whiptail --title "$title" --ok-button "$ok" --msgbox "'$passwd_msg0'" 10 60
+                   			 			whiptail --title "'$title'" --ok-button "'$ok'" --msgbox "'$passwd_msg0'" 10 60
                    			 			input_chk=default
                    			 		 elif [ "$input" != "$input_chk" ]; then
-                      		    		whiptail --title "$title" --ok-button "$ok" --msgbox "'$passwd_msg1'" 10 60
+                      		    		whiptail --title "'$title'" --ok-button "'$ok'" --msgbox "'$passwd_msg1'" 10 60
                      		 		fi
          				        done
     					echo -e "$input\n$input\n" | passwd "$user" &> /dev/null' > /mnt/root/set.sh
@@ -1192,7 +1219,7 @@ load() {
         	while (true)
     	    	do
     	            proc=$(ps | grep "$pid")
-    	            if [ "$?" -gt "0" ]; then err=true break; fi
+    	            if [ "$?" -gt "0" ]; then break; fi
     	            sleep $pri
     	            echo $int
     	            int=$((int+1))
@@ -1340,9 +1367,9 @@ git_update() {
 	echo "$lang_link" >> /usr/share/arch-anywhere/git-update.link
 	cd /tmp
 	wget -i /usr/share/arch-anywhere/git-update.link &> /dev/null &
-	pid="$!" pri=0.5 msg="Initializing installer..." load
+	pid="$!" pri=0.5 msg="$init_load" load
 	mv /tmp/arch-installer.sh /usr/bin/arch-anywhere-latest
-	sed -i '25,135d' /usr/bin/arch-anywhere-latest
+	sed -i '25,150d' /usr/bin/arch-anywhere-latest
 	sed -i 's!lang_config!source /etc/arch-anywhere.conf ; source "$lang_file" ; export reload=true ; set_locale!' /usr/bin/arch-anywhere-latest
 	mv /tmp/arch-anywhere.conf /etc
 	mv /tmp/* /usr/share/arch-anywhere/
