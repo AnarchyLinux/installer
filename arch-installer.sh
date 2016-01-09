@@ -30,7 +30,8 @@ lang_config() {
 		"French" "Français" \
 		"German" "Deutsche" \
 		"Portuguese" "Português" \
-		"Romanian" "Română" 3>&1 1>&2 2>&3)
+		"Romanian" "Română"\
+		"Russian" "Русский" 3>&1 1>&2 2>&3)
 
 	case "$ILANG" in
 		"English")
@@ -52,6 +53,10 @@ lang_config() {
 		"Romanian")
 			export lang_file=/usr/share/arch-anywhere/arch-installer-romanian.conf
 			export lang_link="https://raw.githubusercontent.com/deadhead420/arch-linux-anywhere/master/lang/arch-installer-romanian.conf"
+		;;
+		"Russian")
+			export lang_file=/usr/share/arch-anywhere/arch-installer-russian.conf
+			export lang_link="https://raw.githubusercontent.com/deadhead420/arch-linux-anywhere/master/lang/arch-installer-russian.conf"
 		;;
 	esac
 
