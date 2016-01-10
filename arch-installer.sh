@@ -1374,7 +1374,7 @@ git_update() {
 	wget -i /usr/share/arch-anywhere/git-update.link &> /dev/null &
 	pid="$!" pri=0.5 msg="$init_load" load
 	mv /tmp/arch-installer.sh /usr/bin/arch-anywhere-latest
-	sed -i '25,150d' /usr/bin/arch-anywhere-latest
+	sed -i '25,155d' /usr/bin/arch-anywhere-latest
 	sed -i 's!lang_config!source /etc/arch-anywhere.conf ; source "$lang_file" ; export reload=true ; set_locale!' /usr/bin/arch-anywhere-latest
 	mv /tmp/arch-anywhere.conf /etc
 	mv /tmp/* /usr/share/arch-anywhere/
