@@ -210,14 +210,15 @@ configure_boot() {
 	cp "$aa"/boot/archiso_head.cfg "$customiso"/arch/boot/syslinux
 	cp "$aa"/boot/archiso_sys64.cfg "$customiso"/arch/boot/syslinux
 	cp "$aa"/boot/archiso_sys32.cfg "$customiso"/arch/boot/syslinux
-#	create_iso
+	create_iso
 
 }
 
 create_iso() {
 
 	cd "$aa"
-	xorriso -as mkisofs iso-level 3 \
+	xorriso -as mkisofs \
+	 -iso-level 3 \
 	-full-iso9660-filenames \
 	-volid "$iso_label" \
 	-eltorito-boot isolinux/isolinux.bin \
@@ -237,6 +238,7 @@ create_iso() {
 		case "$input" in
 			y|Y|yes|Yes|yY|Yy|yy|YY)
 				rm -rf "$customiso"
+				sudo umount "$mntdir"
 				exit
 			;;
 			n|N|no|No|nN|Nn|nn|NN)
@@ -247,7 +249,6 @@ create_iso() {
 		echo "Error: ISO creation failed, please email the developer: deadhead3492@gmail.com"
 		exit 1
 	fi
-
 }
 
 init
