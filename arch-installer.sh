@@ -30,7 +30,8 @@ lang_config() {
 		"French" "Français" \
 		"German" "Deutsche" \
 		"Portuguese" "Português" \
-		"Romanian" "Română" 3>&1 1>&2 2>&3)
+		"Romanian" "Română"\
+		"Russian" "Русский" 3>&1 1>&2 2>&3)
 
 	case "$ILANG" in
 		"English")
@@ -52,6 +53,10 @@ lang_config() {
 		"Romanian")
 			export lang_file=/usr/share/arch-anywhere/arch-installer-romanian.conf
 			export lang_link="https://raw.githubusercontent.com/deadhead420/arch-linux-anywhere/master/lang/arch-installer-romanian.conf"
+		;;
+		"Russian")
+			export lang_file=/usr/share/arch-anywhere/arch-installer-russian.conf
+			export lang_link="https://raw.githubusercontent.com/deadhead420/arch-linux-anywhere/master/lang/arch-installer-russian.conf"
 		;;
 	esac
 
@@ -1369,8 +1374,7 @@ git_update() {
 	wget -i /usr/share/arch-anywhere/git-update.link &> /dev/null &
 	pid="$!" pri=0.5 msg="$init_load" load
 	mv /tmp/arch-installer.sh /usr/bin/arch-anywhere-latest
-	sed -i '25,150d' /usr/bin/arch-anywhere-latest
-	sed -i 's!lang_config!source /etc/arch-anywhere.conf ; source "$lang_file" ; export reload=true ; set_locale!' /usr/bin/arch-anywhere-latest
+	sed -i 's/lang_config()/null()/;s!lang_config!source /etc/arch-anywhere.conf ; source "$lang_file" ; export reload=true ; set_locale!' /usr/bin/arch-anywhere-latest
 	mv /tmp/arch-anywhere.conf /etc
 	mv /tmp/* /usr/share/arch-anywhere/
 	bash /usr/bin/arch-anywhere-latest
