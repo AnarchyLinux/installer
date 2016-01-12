@@ -1118,6 +1118,7 @@ install_software() {
 		"simplescreenrecorder"	"$m28" OFF \
 		"smplayer"		"$m44" OFF\
 		"steam"			"$m29" OFF \
+		"thunderbird"		"$m48" OFF \
 		"tmux"			"$m30" OFF \
 		"transmission-cli" 	"$m31" OFF \
 		"transmission-gtk"	"$m32" OFF \
