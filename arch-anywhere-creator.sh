@@ -76,12 +76,12 @@ init() {
 
 # Check depends
 
-	if [ ! -f /usr/bin/mksquashfs ] || [ ! -f /usr/bin/xorriso ] || [ ! -f /usr/bin/wget ]; then
+	if [ ! -f /usr/bin/mksquashfs ] || [ ! -f /usr/bin/xorriso ] || [ ! -f /usr/bin/wget ] || [ ! -f /usr/bin/arch-chroot ]; then
 		depends=false
 		until "$depends"
 		  do
 			echo
-			echo -n "ISO creation requires mksquashfs-tools, libisoburn, and wget, would you like to install missing dependencies now? [y/N]: "
+			echo -n "ISO creation requires arch-install-scripts, mksquashfs-tools, libisoburn, and wget, would you like to install missing dependencies now? [y/N]: "
 			read input
 
 			case "$input" in
@@ -89,6 +89,7 @@ init() {
 					if [ ! -f "/usr/bin/wget" ]; then query="wget"; fi
 					if [ ! -f /usr/bin/xorriso ]; then query="$query libisoburn"; fi
 					if [ ! -f /usr/bin/mksquashfs ]; then query="$query squashfs-tools"; fi
+					if [ ! -f /usr/bin/arch-chroot ]; then query="$query arch-install-scripts"; fi
 					sudo pacman -Syy $(echo "$query")
 					depends=true
 				;;
@@ -113,8 +114,6 @@ prepare_x86_64() {
 	echo "Preparing x86_64..."
 	cd "$customiso"/arch/x86_64
 	sudo unsquashfs airootfs.sfs
-#	sudo arch-chroot squashfs-root /bin/bash pacman-key --init
-#	sudo arch-chroot squashfs-root /bin/bash pacman-key --populate archlinux
 	sudo pacman --root squashfs-root --cachedir squashfs-root/var/cache/pacman/pkg  --config squashfs-root/etc/pacman.conf --noconfirm -Syyy terminus-font
 	sudo pacman --root squashfs-root --cachedir squashfs-root/var/cache/pacman/pkg  --config squashfs-root/etc/pacman.conf -Sl | awk '/\[installed\]$/ {print $1 "/" $2 "-" $3}' > "$customiso"/arch/pkglist.x86_64.txt
 	sudo pacman --root squashfs-root --cachedir squashfs-root/var/cache/pacman/pkg  --config squashfs-root/etc/pacman.conf --noconfirm -Scc
@@ -124,14 +123,7 @@ prepare_x86_64() {
 	sudo cp "$aa"/etc/vconsole.conf "$customiso"/arch/x86_64/squashfs-root/etc
 	sudo cp "$aa"/arch-installer.sh "$customiso"/arch/x86_64/squashfs-root/usr/bin/arch-anywhere
 	sudo mkdir "$customiso"/arch/x86_64/squashfs-root/usr/share/arch-anywhere
-	
-	sudo cp "$aa"/lang/arch-installer-english.conf "$customiso"/arch/x86_64/squashfs-root/usr/share/arch-anywhere
-	sudo cp "$aa"/lang/arch-installer-french.conf "$customiso"/arch/x86_64/squashfs-root/usr/share/arch-anywhere
-	sudo cp "$aa"/lang/arch-installer-german.conf "$customiso"/arch/x86_64/squashfs-root/usr/share/arch-anywhere
-	sudo cp "$aa"/lang/arch-installer-portuguese.conf "$customiso"/arch/x86_64/squashfs-root/usr/share/arch-anywhere
-	sudo cp "$aa"/lang/arch-installer-romanian.conf "$customiso"/arch/x86_64/squashfs-root/usr/share/arch-anywhere
-	sudo cp "$aa"/lang/arch-installer-russian.conf "$customiso"/arch/x86_64/squashfs-root/usr/share/arch-anywhere
-	
+	sudo cp "$aa"/lang/* "$customiso"/arch/x86_64/squashfs-root/usr/share/arch-anywhere
 	sudo chmod +x "$customiso"/arch/x86_64/squashfs-root/usr/bin/arch-anywhere
 	sudo cp "$aa"/extra/arch-wiki "$customiso"/arch/x86_64/squashfs-root/usr/bin/arch-wiki
 	sudo chmod +x "$customiso"/arch/x86_64/squashfs-root/usr/bin/arch-wiki
@@ -155,8 +147,6 @@ prepare_i686() {
 	echo "Preparing i686..."
 	cd "$customiso"/arch/i686
 	sudo unsquashfs airootfs.sfs
-#	sudo setarch i686 arch-chroot squashfs-root /bin/bash pacman-key --init
-#	sudo setarch i686 arch-chroot squashfs-root /bin/bash pacman-key --populate archlinux
 	sudo sed -i 's/\$arch/i686/g' squashfs-root/etc/pacman.d/mirrorlist
 	sudo sed -i 's/auto/i686/' squashfs-root/etc/pacman.conf
 	sudo setarch i686 pacman --root squashfs-root --cachedir squashfs-root/var/cache/pacman/pkg  --config squashfs-root/etc/pacman.conf --noconfirm -Syyy terminus-font
@@ -168,14 +158,7 @@ prepare_i686() {
 	sudo cp "$aa"/etc/vconsole.conf "$customiso"/arch/i686/squashfs-root/etc
 	sudo cp "$aa"/arch-installer.sh "$customiso"/arch/i686/squashfs-root/usr/bin/arch-anywhere
 	sudo mkdir "$customiso"/arch/i686/squashfs-root/usr/share/arch-anywhere
-
-	sudo cp "$aa"/lang/arch-installer-english.conf "$customiso"/arch/i686/squashfs-root/usr/share/arch-anywhere
-	sudo cp "$aa"/lang/arch-installer-french.conf "$customiso"/arch/i686/squashfs-root/usr/share/arch-anywhere
-	sudo cp "$aa"/lang/arch-installer-german.conf "$customiso"/arch/i686/squashfs-root/usr/share/arch-anywhere
-	sudo cp "$aa"/lang/arch-installer-portuguese.conf "$customiso"/arch/i686/squashfs-root/usr/share/arch-anywhere
-	sudo cp "$aa"/lang/arch-installer-romanian.conf "$customiso"/arch/i686/squashfs-root/usr/share/arch-anywhere
-	sudo cp "$aa"/lang/arch-installer-russian.conf "$customiso"/arch/i686/squashfs-root/usr/share/arch-anywhere
-	
+	sudo cp "$aa"/lang/* "$customiso"/arch/i686/squashfs-root/usr/share/arch-anywhere
 	sudo chmod +x "$customiso"/arch/i686/squashfs-root/usr/bin/arch-anywhere
 	sudo cp "$aa"/extra/arch-wiki "$customiso"/arch/i686/squashfs-root/usr/bin/arch-wiki
 	sudo chmod +x "$customiso"/arch/i686/squashfs-root/usr/bin/arch-wiki	
