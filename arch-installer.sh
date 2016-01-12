@@ -1098,6 +1098,7 @@ install_software() {
 		"gparted"     	       "$m16" OFF \
 		"gpm"                  "$m37" OFF \
 		"htop"        	       "$m17" OFF \
+		"k3b"			"$m45" OFF \
 		"libreoffice" 	       "$m18 " OFF \
 		"lmms"                 "$m19" OFF \
 		"lynx"        	       "$m20" OFF \
