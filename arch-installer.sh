@@ -1113,6 +1113,7 @@ install_software() {
 		"pulseaudio"  	       "$m2" ON \
 		"screen"		"$m27" OFF \
 		"screenfetch"		"$m3" ON \
+		"scrot"			"$m46" OFF \
 		"simplescreenrecorder"	"$m28" OFF \
 		"smplayer"		"$m44" OFF\
 		"steam"			"$m29" OFF \
