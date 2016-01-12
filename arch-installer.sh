@@ -1082,7 +1082,7 @@ install_software() {
 	if (whiptail --title "$title" --yes-button "$yes" --no-button "$no" --yesno "$software_msg0" 10 60) then
 		software=$(whiptail --title "$title" --ok-button "$ok" --cancel-button "$cancel" --checklist "$software_msg1" 20 60 10 \
 		"arch-wiki"            "$m0" ON \
-		"apache"  	  	       "$m6" OFF \
+		"apache"  	       "$m6" OFF \
 		"audacious"            "$m41" OFF \
 		"audacity"             "$m7" OFF \
 		"chromium"    	       "$m8" OFF \
@@ -1110,20 +1110,21 @@ install_software() {
 		"pitivi"               "$m25" OFF \
 		"projectm"             "$m26" OFF \
 		"pulseaudio"  	       "$m2" ON \
-		"screen"  	  	       "$m27" OFF \
-		"screenfetch"          "$m3" ON \
-		"simplescreenrecorder" "$m28" OFF \
-		"steam"                "$m29" OFF \
-		"tmux"    	  	   	   "$m30" OFF \
-		"transmission-cli" 	   "$m31" OFF \
-		"transmission-gtk"     "$m32" OFF \
+		"screen"		"$m27" OFF \
+		"screenfetch"		"$m3" ON \
+		"simplescreenrecorder"	"$m28" OFF \
+		"smplayer"		"$m44" OFF\
+		"steam"			"$m29" OFF \
+		"tmux"			"$m30" OFF \
+		"transmission-cli" 	"$m31" OFF \
+		"transmission-gtk"	"$m32" OFF \
 		"tuxcmd"		"$m43" OFF \
-		"vim"         	       "$m4" ON \
-		"virtualbox"  	       "$m33" OFF \
-		"vlc"         	   	   "$m34" OFF \
-		"ufw"         	       "$m35" OFF \
-		"wget"                 "$m38" ON \
-		"zsh"                  "$m36" OFF 3>&1 1>&2 2>&3)
+		"vim"			"$m4" ON \
+		"virtualbox"		"$m33" OFF \
+		"vlc"         	   	"$m34" OFF \
+		"ufw"			"$m35" OFF \
+		"wget"			"$m38" ON \
+		"zsh"			"$m36" OFF 3>&1 1>&2 2>&3)
 
 		if [ "$?" -gt "0" ]; then
 			reboot_system
