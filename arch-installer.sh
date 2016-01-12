@@ -1102,6 +1102,7 @@ install_software() {
 		"libreoffice" 	       "$m18 " OFF \
 		"lmms"                 "$m19" OFF \
 		"lynx"        	       "$m20" OFF \
+		"minitube"		"$m47" OFF \
 		"mpd"         	       "$m21" OFF \
 		"mplayer"     	       "$m22" OFF \
 		"ncmpcpp"     	       "$m23" OFF \
