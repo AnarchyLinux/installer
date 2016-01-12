@@ -30,39 +30,20 @@ lang_config() {
 		"French" "Français" \
 		"German" "Deutsche" \
 		"Portuguese" "Português" \
-		"Romanian" "Română"\
+		"Romanian" "Română" \
 		"Russian" "Русский" 3>&1 1>&2 2>&3)
 
 	case "$ILANG" in
-		"English")
-			export lang_file=/usr/share/arch-anywhere/arch-installer-english.conf
-			export lang_link="https://raw.githubusercontent.com/deadhead420/arch-linux-anywhere/master/lang/arch-installer-english.conf"
-		;;
-		"French")
-			export lang_file=/usr/share/arch-anywhere/arch-installer-french.conf
-			export lang_link="https://raw.githubusercontent.com/deadhead420/arch-linux-anywhere/master/lang/arch-installer-french.conf"
-		;;
-		"German")
-			export lang_file=/usr/share/arch-anywhere/arch-installer-german.conf
-			export lang_link="https://raw.githubusercontent.com/deadhead420/arch-linux-anywhere/master/lang/arch-installer-german.conf"
-		;;
-		"Portuguese")
-			export lang_file=/usr/share/arch-anywhere/arch-installer-portuguese.conf
-			export lang_link="https://raw.githubusercontent.com/deadhead420/arch-linux-anywhere/master/lang/arch-installer-portuguese.conf"
-		;;
-		"Romanian")
-			export lang_file=/usr/share/arch-anywhere/arch-installer-romanian.conf
-			export lang_link="https://raw.githubusercontent.com/deadhead420/arch-linux-anywhere/master/lang/arch-installer-romanian.conf"
-		;;
-		"Russian")
-			export lang_file=/usr/share/arch-anywhere/arch-installer-russian.conf
-			export lang_link="https://raw.githubusercontent.com/deadhead420/arch-linux-anywhere/master/lang/arch-installer-russian.conf"
-		;;
+		"English") export lang_file=/usr/share/arch-anywhere/arch-installer-english.conf ;;
+		"French") export lang_file=/usr/share/arch-anywhere/arch-installer-french.conf ;;
+		"German") export lang_file=/usr/share/arch-anywhere/arch-installer-german.conf ;;
+		"Portuguese") export lang_file=/usr/share/arch-anywhere/arch-installer-portuguese.conf ;;
+		"Romanian") export lang_file=/usr/share/arch-anywhere/arch-installer-romanian.conf ;;
+		"Russian") export lang_file=/usr/share/arch-anywhere/arch-installer-russian.conf ;;
 	esac
 
 	source /etc/arch-anywhere.conf
 	source "$lang_file"
-#	setfont "$font"
 	check_connection
 
 }
@@ -97,12 +78,11 @@ check_connection() {
 						err=false
 					fi
 				else
-					whiptail --title "$title" --ok-button "$ok" --msgbox "$connect_err0" 10 60
-					clear ; echo -e "$connect_err1" ; exit 1
+					unset wifi_network
 				fi
 			else
 				whiptail --title "$title" --ok-button "$ok" --msgbox "$connect_err0" 10 60
-				clear ; echo "$connect_err1" ;  exit 1
+				clear ; echo -e "$connect_err1" ;  exit 1
 			fi
 		else
 			wget --append-output=/tmp/wget.log -O /dev/null "http://speedtest.wdc01.softlayer.com/downloads/test10.zip" &
@@ -111,16 +91,9 @@ check_connection() {
 			export connection_rate=$(tail -n 2 /tmp/wget.log | grep -oP '(?<=\().*(?=\))' | awk '{print $2}')
         
 			case "$connection_rate" in
-				KB/s)
-					down_sec=$((arch_total*1024/connection_speed))
-				;;
-				MB/s)
-					down_sec=$(echo "$arch_total/$connection_speed" | bc)
-				;;
-				GB/s)
-					down_sec="1"
-					down_min="1/2"
-				;;
+				KB/s) down_sec=$((arch_total*1024/connection_speed)) ;;
+				MB/s) down_sec=$(echo "$arch_total/$connection_speed" | bc) ;;
+				GB/s) down_sec="1" down_min="1/2" ;;
 			esac
         
 			cpu_mhz=$(lscpu | grep "CPU max MHz" | awk '{print $4}' | sed 's/\..*//')
@@ -130,18 +103,10 @@ check_connection() {
 			fi
         
 			case "$cpu_mhz" in
-				[0-9][0-9][0-9])
-					cpu_sleep=5
-				;;
-				[1][0-9][0-9][0-9])
-					cpu_sleep=4
-				;;
-				[2][0-9][0-9][0-9])
-					cpu_sleep=3
-				;;
-				[3-5][0-9][0-9][0-9])
-					cpu_sleep=2
-				;;
+				[0-9][0-9][0-9]) cpu_sleep=5 ;;
+				[1][0-9][0-9][0-9]) cpu_sleep=4 ;;
+				[2][0-9][0-9][0-9]) cpu_sleep=3 ;;
+				[3-5][0-9][0-9][0-9]) cpu_sleep=2 ;;
 			esac
         	
 			export down=$((down_sec/100+cpu_sleep+1))
@@ -1117,22 +1082,21 @@ install_software() {
 	if (whiptail --title "$title" --yes-button "$yes" --no-button "$no" --yesno "$software_msg0" 10 60) then
 		software=$(whiptail --title "$title" --ok-button "$ok" --cancel-button "$cancel" --checklist "$software_msg1" 20 60 10 \
 		"arch-wiki"            "$m0" ON \
-		"openssh"     	       "$m1" ON \
-		"pulseaudio"  	       "$m2" ON \
-		"screenfetch"          "$m3" ON \
-		"vim"         	       "$m4" ON \
-		"wget"        	       "$m5" ON \
 		"apache"  	  	       "$m6" OFF \
+		"audacious"            "$m41" OFF \
 		"audacity"             "$m7" OFF \
 		"chromium"    	       "$m8" OFF \
 		"cmus"        	       "$m9" OFF \
 		"conky"       	       "$m10" OFF \
+		"deluge"               "$m40" OFF \
 		"dropbox"              "$m11" OFF \
 		"emacs"                "$m12" OFF \
+		"filezilla"            "$m42" OFF \
 		"firefox"     	       "$m13" OFF \
 		"gimp"        	       "$m14 " OFF \
 		"git"                  "$m15" OFF \
 		"gparted"     	       "$m16" OFF \
+		"gpm"                  "$m37" OFF \
 		"htop"        	       "$m17" OFF \
 		"libreoffice" 	       "$m18 " OFF \
 		"lmms"                 "$m19" OFF \
@@ -1141,18 +1105,23 @@ install_software() {
 		"mplayer"     	       "$m22" OFF \
 		"ncmpcpp"     	       "$m23" OFF \
 		"nmap"                 "$m24" OFF \
+		"openssh"     	       "$m1" OFF \
+		"pinta"                "$m39" OFF \
 		"pitivi"               "$m25" OFF \
 		"projectm"             "$m26" OFF \
+		"pulseaudio"  	       "$m2" ON \
 		"screen"  	  	       "$m27" OFF \
+		"screenfetch"          "$m3" ON \
 		"simplescreenrecorder" "$m28" OFF \
 		"steam"                "$m29" OFF \
 		"tmux"    	  	   	   "$m30" OFF \
 		"transmission-cli" 	   "$m31" OFF \
 		"transmission-gtk"     "$m32" OFF \
+		"vim"         	       "$m4" ON \
 		"virtualbox"  	       "$m33" OFF \
 		"vlc"         	   	   "$m34" OFF \
 		"ufw"         	       "$m35" OFF \
-		"wget"                 "Wget cli downloader" ON \
+		"wget"                 "$m38" ON \
 		"zsh"                  "$m36" OFF 3>&1 1>&2 2>&3)
 
 		if [ "$?" -gt "0" ]; then
