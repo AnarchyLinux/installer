@@ -1117,6 +1117,7 @@ install_software() {
 		"tmux"    	  	   	   "$m30" OFF \
 		"transmission-cli" 	   "$m31" OFF \
 		"transmission-gtk"     "$m32" OFF \
+		"tuxcmd"		"$m43" OFF \
 		"vim"         	       "$m4" ON \
 		"virtualbox"  	       "$m33" OFF \
 		"vlc"         	   	   "$m34" OFF \
