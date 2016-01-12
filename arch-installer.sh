@@ -1116,6 +1116,7 @@ install_software() {
 		"screenfetch"		"$m3" ON \
 		"scrot"			"$m46" OFF \
 		"simplescreenrecorder"	"$m28" OFF \
+		"skype"			"$m49" OFF \
 		"smplayer"		"$m44" OFF\
 		"steam"			"$m29" OFF \
 		"thunderbird"		"$m48" OFF \
