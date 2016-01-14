@@ -31,7 +31,8 @@ lang_config() {
 		"German" "Deutsche" \
 		"Portuguese" "Português" \
 		"Romanian" "Română" \
-		"Russian" "Русский" 3>&1 1>&2 2>&3)
+		"Russian" "Русский" \
+		"Swedish" "Svenska" 3>&1 1>&2 2>&3)
 
 	case "$ILANG" in
 		"English") export lang_file=/usr/share/arch-anywhere/arch-installer-english.conf ;;
@@ -40,6 +41,7 @@ lang_config() {
 		"Portuguese") export lang_file=/usr/share/arch-anywhere/arch-installer-portuguese.conf ;;
 		"Romanian") export lang_file=/usr/share/arch-anywhere/arch-installer-romanian.conf ;;
 		"Russian") export lang_file=/usr/share/arch-anywhere/arch-installer-russian.conf ;;
+		"Swedish") export lang_file=/usr/share/arch-anywhere/arch-installer-swedish.conf ;;
 	esac
 
 	source /etc/arch-anywhere.conf
