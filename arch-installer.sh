@@ -1092,20 +1092,20 @@ install_software() {
 			"dropbox"		"$m11" OFF \
 			"emacs"			"$m12" OFF \
 			"firefox"		"$m13" OFF \
-			"gimp"        	       "$m14" OFF \
-			"git"                  "$m15" OFF \
-			"gparted"     	       "$m16" OFF \
-			"gpm"                  "$m37" OFF \
-			"htop"        	       "$m17" OFF \
-			"libreoffice" 	       "$m18" OFF \
-			"lmms"                 "$m19" OFF \
-			"lynx"        	       "$m20" OFF \
-			"mpd"         	       "$m21" OFF \
-			"mplayer"     	       "$m22" OFF \
-			"ncmpcpp"     	       "$m23" OFF \
-			"nmap"                 "$m24" OFF \
-			"openssh"     	       "$m1" OFF \
-			"pitivi"               "$m25" OFF \
+			"gimp"			"$m14" OFF \
+			"git"			"$m15" OFF \
+			"gparted"		"$m16" OFF \
+			"gpm"			"$m37" OFF \
+			"htop"			"$m17" OFF \
+			"libreoffice"		"$m18" OFF \
+			"lmms"			"$m19" OFF \
+			"lynx"			"$m20" OFF \
+			"mpd"			"$m21" OFF \
+			"mplayer"		"$m22" OFF \
+			"ncmpcpp"		"$m23" OFF \
+			"nmap"			"$m24" OFF \
+			"openssh"		"$m1" OFF \
+			"pitivi"		"$m25" OFF \
 			"projectm"		"$m26" OFF \
 			"pulseaudio"		"$m2" ON \
 			"screen"		"$m27" OFF \
