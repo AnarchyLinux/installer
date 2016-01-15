@@ -1125,6 +1125,7 @@ install_software() {
 			"transmission-gtk"	"$m32" OFF \
 			"tuxcmd"		"$m43" OFF \
 			"vim"			"$m4" ON \
+			"virtualbox"		"$m33" OFF \
 			"vlc"         	   	"$m34" OFF \
 			"ufw"			"$m35" OFF \
 			"wget"			"$m38" ON \
