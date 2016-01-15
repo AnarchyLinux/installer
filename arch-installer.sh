@@ -1086,34 +1086,44 @@ install_software() {
 			"arch-wiki"		"$m0" ON \
 			"apache"		"$m6" OFF \
 			"audacity"		"$m7" OFF \
+			"audacious"		"$m41" OFF \
 			"chromium"		"$m8" OFF \
 			"cmus"			"$m9" OFF \
 			"conky"			"$m10" OFF \
-			#"dropbox"		"$m11" OFF \
 			"emacs"			"$m12" OFF \
+			"filezilla"		"$m42" OFF \
 			"firefox"		"$m13" OFF \
 			"gimp"			"$m14" OFF \
 			"git"			"$m15" OFF \
 			"gparted"		"$m16" OFF \
 			"gpm"			"$m37" OFF \
+			"handbrake"		"$m51" OFF \
 			"htop"			"$m17" OFF \
+			"inxi"			"$m50" OFF \
+			"k3b"			"$m45" OFF \
 			"libreoffice"		"$m18" OFF \
 			"lmms"			"$m19" OFF \
 			"lynx"			"$m20" OFF \
+			"minitube"		"$m47" OFF \
 			"mpd"			"$m21" OFF \
 			"mplayer"		"$m22" OFF \
 			"ncmpcpp"		"$m23" OFF \
 			"nmap"			"$m24" OFF \
 			"openssh"		"$m1" OFF \
+			"pinta"			"$m39" OFF \
 			"pitivi"		"$m25" OFF \
 			"projectm"		"$m26" OFF \
 			"pulseaudio"		"$m2" ON \
 			"screen"		"$m27" OFF \
 			"screenfetch"		"$m3" ON \
+			"scrot"			"$m46" OFF \
 			"simplescreenrecorder"	"$m28" OFF \
+			"smplayer"		"$m44" OFF \
+			"thunderbird"		"$m48" OFF \
 			"tmux"			"$m30" OFF \
 			"transmission-cli" 	"$m31" OFF \
 			"transmission-gtk"	"$m32" OFF \
+			"tuxcmd"		"$m43" OFF \
 			"vim"			"$m4" ON \
 			"vlc"         	   	"$m34" OFF \
 			"ufw"			"$m35" OFF \
