@@ -1089,7 +1089,7 @@ install_software() {
 		"chromium"    	       "$m8" OFF \
 		"cmus"        	       "$m9" OFF \
 		"conky"       	       "$m10" OFF \
-		"deluge"               "$m40" OFF \
+		#"deluge"               "$m40" OFF \
 		"dropbox"              "$m11" OFF \
 		"emacs"                "$m12" OFF \
 		"firefox"     	       "$m13" OFF \
@@ -1101,19 +1101,19 @@ install_software() {
 		"libreoffice" 	       "$m18" OFF \
 		"lmms"                 "$m19" OFF \
 		"lynx"        	       "$m20" OFF \
-		"minitube"		"$m47" OFF \
+		#"minitube"		"$m47" OFF \
 		"mpd"         	       "$m21" OFF \
 		"mplayer"     	       "$m22" OFF \
 		"ncmpcpp"     	       "$m23" OFF \
 		"nmap"                 "$m24" OFF \
 		"openssh"     	       "$m1" OFF \
-		"pinta"                "$m39" OFF \
+		#"pinta"                "$m39" OFF \
 		"pitivi"               "$m25" OFF \
 		"projectm"             "$m26" OFF \
 		"pulseaudio"  	       "$m2" ON \
 		"screen"		"$m27" OFF \
 		"screenfetch"		"$m3" ON \
-		"scrot"			"$m46" OFF \
+		#"scrot"			"$m46" OFF \
 		"simplescreenrecorder"	"$m28" OFF \
 		"tmux"			"$m30" OFF \
 		"transmission-cli" 	"$m31" OFF \
