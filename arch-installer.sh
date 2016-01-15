@@ -1089,7 +1089,7 @@ install_software() {
 			"chromium"		"$m8" OFF \
 			"cmus"			"$m9" OFF \
 			"conky"			"$m10" OFF \
-			"dropbox"		"$m11" OFF \
+			#"dropbox"		"$m11" OFF \
 			"emacs"			"$m12" OFF \
 			"firefox"		"$m13" OFF \
 			"gimp"			"$m14" OFF \
