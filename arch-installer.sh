@@ -1093,12 +1093,12 @@ install_software() {
 		"dropbox"              "$m11" OFF \
 		"emacs"                "$m12" OFF \
 		"firefox"     	       "$m13" OFF \
-		"gimp"        	       "$m14 " OFF \
+		"gimp"        	       "$m14" OFF \
 		"git"                  "$m15" OFF \
 		"gparted"     	       "$m16" OFF \
 		"gpm"                  "$m37" OFF \
 		"htop"        	       "$m17" OFF \
-		"libreoffice" 	       "$m18 " OFF \
+		"libreoffice" 	       "$m18" OFF \
 		"lmms"                 "$m19" OFF \
 		"lynx"        	       "$m20" OFF \
 		"minitube"		"$m47" OFF \
