@@ -1116,7 +1116,6 @@ install_software() {
 		"scrot"			"$m46" OFF \
 		"simplescreenrecorder"	"$m28" OFF \
 		"tmux"			"$m30" OFF \
-		"tuxcmd"		"$m43" OFF \
 		"transmission-cli" 	"$m31" OFF \
 		"transmission-gtk"	"$m32" OFF \
 		"vim"			"$m4" ON \
