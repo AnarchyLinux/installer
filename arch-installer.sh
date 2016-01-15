@@ -908,12 +908,12 @@ graphics() {
 
 	if (whiptail --title "$title" --yes-button "$yes" --no-button "$no" --yesno "$xorg_msg" 10 60) then
 		GPU=$(whiptail --title "$title" --ok-button "$ok" --cancel-button "$cancel" --menu "$graphics_msg" 17 60 6 \
-		"$default"			"$g0" \
-		"mesa-libgl"        "$g1" \
-		"Nvidia"            "$g2" \
-		"Vbox-Guest-Utils"  "$g3" \
-		"xf86-video-ati"    "$g4" \
-		"xf86-video-intel"  "$g5" 3>&1 1>&2 2>&3)
+		"$default"			"$gr0" \
+		"mesa-libgl"        "$gr1" \
+		"Nvidia"            "$gr2" \
+		"Vbox-Guest-Utils"  "$gr3" \
+		"xf86-video-ati"    "$gr4" \
+		"xf86-video-intel"  "$gr5" 3>&1 1>&2 2>&3)
 
 		if [ "$?" -gt "0" ]; then
 			graphics
@@ -928,9 +928,9 @@ graphics() {
 
 	if [ "$GPU" == "Nvidia" ]; then
 		GPU=$(whiptail --title "$title" --ok-button "$ok" --cancel-button "$cancel" --menu "$nvidia_msg" 15 60 4 \
-		"nvidia"       "$g6" \
-		"nvidia-340xx" "$g7" \
-		"nvidia-304xx" "$g8" 3>&1 1>&2 2>&3)
+		"nvidia"       "$gr6" \
+		"nvidia-340xx" "$gr7" \
+		"nvidia-304xx" "$gr8" 3>&1 1>&2 2>&3)
 
 		if [ "$?" -gt "0" ]; then
 			graphics
