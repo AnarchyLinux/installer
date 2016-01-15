@@ -1084,8 +1084,7 @@ install_software() {
 	if (whiptail --title "$title" --yes-button "$yes" --no-button "$no" --yesno "$software_msg0" 10 60) then
 		software=$(whiptail --title "$title" --ok-button "$ok" --cancel-button "$cancel" --checklist "$software_msg1" 20 60 10 \
 		"arch-wiki"            "$m0" ON \
-		"apache"  	       "$m6" OFF \
-		"audacious"            "$m41" OFF \
+		"apache"  	       	   "$m6" OFF \
 		"audacity"             "$m7" OFF \
 		"chromium"    	       "$m8" OFF \
 		"cmus"        	       "$m9" OFF \
@@ -1093,16 +1092,12 @@ install_software() {
 		"deluge"               "$m40" OFF \
 		"dropbox"              "$m11" OFF \
 		"emacs"                "$m12" OFF \
-		"filezilla"            "$m42" OFF \
 		"firefox"     	       "$m13" OFF \
 		"gimp"        	       "$m14 " OFF \
 		"git"                  "$m15" OFF \
 		"gparted"     	       "$m16" OFF \
 		"gpm"                  "$m37" OFF \
-		"handbrake"		"$m51" OFF \
 		"htop"        	       "$m17" OFF \
-		"inxi"			"$m50"	OFF \
-		"k3b"			"$m45" OFF \
 		"libreoffice" 	       "$m18 " OFF \
 		"lmms"                 "$m19" OFF \
 		"lynx"        	       "$m20" OFF \
@@ -1120,16 +1115,10 @@ install_software() {
 		"screenfetch"		"$m3" ON \
 		"scrot"			"$m46" OFF \
 		"simplescreenrecorder"	"$m28" OFF \
-		"skype"			"$m49" OFF \
-		"smplayer"		"$m44" OFF\
-		"steam"			"$m29" OFF \
-		"thunderbird"		"$m48" OFF \
 		"tmux"			"$m30" OFF \
 		"transmission-cli" 	"$m31" OFF \
 		"transmission-gtk"	"$m32" OFF \
-		"tuxcmd"		"$m43" OFF \
 		"vim"			"$m4" ON \
-		"virtualbox"		"$m33" OFF \
 		"vlc"         	   	"$m34" OFF \
 		"ufw"			"$m35" OFF \
 		"wget"			"$m38" ON \
