@@ -1084,17 +1084,9 @@ install_software() {
 	if (whiptail --title "$title" --yes-button "$yes" --no-button "$no" --yesno "$software_msg0" 10 60) then
 		software=$(whiptail --title "$title" --ok-button "$ok" --cancel-button "$cancel" --checklist "$software_msg1" 20 60 10 \
 		"arch-wiki"            "$m0" ON \
-		"apache"  	       "$m6" OFF \
 		"audacity"             "$m7" OFF \
 		"chromium"    	       "$m8" OFF \
-		"cmus"        	       "$m9" OFF \
-		"conky"       	       "$m10" OFF \
-		"dropbox"              "$m11" OFF \
-		"emacs"                "$m12" OFF \
 		"firefox"     	       "$m13" OFF \
-		"gimp"        	       "$m14" OFF \
-		"git"                  "$m15" OFF \
-		"gparted"     	       "$m16" OFF \
 		"zsh"			"$m36" OFF 3>&1 1>&2 2>&3)
 
 		if [ "$?" -gt "0" ]; then
