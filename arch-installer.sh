@@ -28,10 +28,11 @@ lang_config() {
 	ILANG=$(whiptail --nocancel --title "Arch Linux Anywhere" --menu "Select your desired install language:" 15 60 6 \
 		"English" "-" \
 		"French" "Français" \
-		"German" "Deutsche" \
+		"German" "Deutsch" \
 		"Portuguese" "Português" \
 		"Romanian" "Română" \
 		"Russian" "Русский" \
+		"Spanish" "Español" \
 		"Swedish" "Svenska" 3>&1 1>&2 2>&3)
 
 	case "$ILANG" in
@@ -41,6 +42,7 @@ lang_config() {
 		"Portuguese") export lang_file=/usr/share/arch-anywhere/arch-installer-portuguese.conf ;;
 		"Romanian") export lang_file=/usr/share/arch-anywhere/arch-installer-romanian.conf ;;
 		"Russian") export lang_file=/usr/share/arch-anywhere/arch-installer-russian.conf ;;
+		"Spanish") export lang_file=/usr/share/arch-anywhere/arch-installer-spanish.conf ;;
 		"Swedish") export lang_file=/usr/share/arch-anywhere/arch-installer-swedish.conf ;;
 	esac
 
