@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Set the version here
-export version="arch-anywhere-1.9-dual.iso"
+export version="arch-anywhere-2.0-dual.iso"
 
 # Set the ISO label here
 export iso_label="ARCH_ANYWHERE_201601"
