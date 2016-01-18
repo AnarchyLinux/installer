@@ -215,9 +215,9 @@ prepare_drives() {
 		swapoff -a &> /dev/null
 	fi
 
-	DRIVE=$(whiptail --nocancel --title "$title" --ok-button "$ok" --menu "$drive_msg" 19 60 5 $drive 3>&1 1>&2 2>&3)
+	DRIVE=$(whiptail --nocancel --title "$title" --ok-button "$ok" --menu "$drive_msg" 15 60 5 $drive 3>&1 1>&2 2>&3)
 	source "$lang_file"
-	PART=$(whiptail --title "$title" --ok-button "$ok" --cancel-button "$cancel" --menu "$part_msg" 20 62 4 \
+	PART=$(whiptail --title "$title" --ok-button "$ok" --cancel-button "$cancel" --menu "$part_msg" 16 62 4 \
 	"$method0" "-" \
 	"$method1" "-" \
 	"$method2"  "-" \
