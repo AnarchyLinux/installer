@@ -238,7 +238,7 @@ prepare_drives() {
 			prepare_drives
 		fi
 
-		FS=$(whiptail --title "$title" --nocancel --menu "$fs_msg" 15 60 6 \
+		FS=$(whiptail --title "$title" --nocancel --menu "$fs_msg" 17 60 6 \
 			"ext4"      "$fs0" \
 			"ext3"      "$fs1" \
 			"ext2"      "$fs2" \
