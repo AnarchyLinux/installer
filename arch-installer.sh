@@ -22,7 +22,7 @@
 ## GNU General Public License version 2 for more details.
 ###################################################################
 
-lang_config() {
+init() {
 
 	clear
 	ILANG=$(whiptail --nocancel --title "Arch Linux Anywhere" --menu "Select your desired install language:" 15 60 6 \
@@ -36,14 +36,14 @@ lang_config() {
 		"Swedish" "Svenska" 3>&1 1>&2 2>&3)
 
 	case "$ILANG" in
-		"English") export lang_file=/usr/share/arch-anywhere/arch-installer-english.conf ;;
-		"French") export lang_file=/usr/share/arch-anywhere/arch-installer-french.conf ;;
-		"German") export lang_file=/usr/share/arch-anywhere/arch-installer-german.conf ;;
-		"Portuguese") export lang_file=/usr/share/arch-anywhere/arch-installer-portuguese.conf ;;
-		"Romanian") export lang_file=/usr/share/arch-anywhere/arch-installer-romanian.conf ;;
-		"Russian") export lang_file=/usr/share/arch-anywhere/arch-installer-russian.conf ;;
-		"Spanish") export lang_file=/usr/share/arch-anywhere/arch-installer-spanish.conf ;;
-		"Swedish") export lang_file=/usr/share/arch-anywhere/arch-installer-swedish.conf ;;
+		"English") export lang_file=/usr/share/arch-anywhere/lang/arch-installer-english.conf ;;
+		"French") export lang_file=/usr/share/arch-anywhere/lang/arch-installer-french.conf ;;
+		"German") export lang_file=/usr/share/arch-anywhere/lang/arch-installer-german.conf ;;
+		"Portuguese") export lang_file=/usr/share/arch-anywhere/lang/arch-installer-portuguese.conf ;;
+		"Romanian") export lang_file=/usr/share/arch-anywhere/lang/arch-installer-romanian.conf ;;
+		"Russian") export lang_file=/usr/share/arch-anywhere/lang/arch-installer-russian.conf ;;
+		"Spanish") export lang_file=/usr/share/arch-anywhere/lang/arch-installer-spanish.conf ;;
+		"Swedish") export lang_file=/usr/share/arch-anywhere/lang/arch-installer-swedish.conf ;;
 	esac
 
 	source /etc/arch-anywhere.conf
@@ -118,7 +118,7 @@ check_connection() {
 			connection=true
 		fi
 	done
-	git_update
+	set_locale
 
 }
 
@@ -1126,7 +1126,7 @@ install_software() {
 			"transmission-cli" 	"$m31" OFF \
 			"transmission-gtk"	"$m32" OFF \
 			"tuxcmd"		"$m43" OFF \
-			"vim"			"$m4" ON \
+			"vim"			"$m4" OFF \
 			"virtualbox"		"$m33" OFF \
 			"vlc"         	   	"$m34" OFF \
 			"ufw"			"$m35" OFF \
@@ -1345,18 +1345,4 @@ main_menu() {
 
 }
 
-git_update() {
-
-	echo "$lang_link" >> /usr/share/arch-anywhere/git-update.link
-	cd /tmp
-	wget -i /usr/share/arch-anywhere/git-update.link &> /dev/null &
-	pid="$!" pri=0.5 msg="$init_load" load
-	mv /tmp/arch-installer.sh /usr/bin/arch-anywhere-latest
-	sed -i 's/lang_config()/null()/;s!lang_config!source /etc/arch-anywhere.conf ; source "$lang_file" ; export reload=true ; set_locale!' /usr/bin/arch-anywhere-latest
-	mv /tmp/arch-anywhere.conf /etc
-	mv /tmp/* /usr/share/arch-anywhere/
-	bash /usr/bin/arch-anywhere-latest
-
-}
-
-lang_config
+init
