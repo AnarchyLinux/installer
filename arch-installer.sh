@@ -129,6 +129,7 @@ set_locale() {
 	"en_US.UTF-8" "United States" \
 	"en_AU.UTF-8" "Australia" \
 	"en_CA.UTF-8" "Canada" \
+	"es_ES.UTF-8" "Spanish" \
 	"fr_FR.UTF-8" "French" \
 	"de_DE.UTF-8" "German" \
 	"en_GB.UTF-8" "Great Britain" \
@@ -136,6 +137,7 @@ set_locale() {
 	"pt_PT.UTF-8" "Portugal" \
 	"ro_RO.UTF-8" "Romanian" \
 	"ru_RU.UTF-8" "Russian" \
+	"sv_SE.UTF-8" "Swedish" \
 	"$other"       "-"		 3>&1 1>&2 2>&3)
 
 	if [ "$LOCALE" = "$other" ]; then

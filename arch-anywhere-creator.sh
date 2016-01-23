@@ -8,7 +8,6 @@ export iso_label="ARCH_ANYWHERE_201601"
 
 # Location variables all directories must exist
 export aa=~/arch-linux-anywhere
-export repodir=~/arch-linux-anywhere/base
 export customiso=~/arch-linux-anywhere/customiso
 export mntdir=~/arch-linux-anywhere/mnt
 
@@ -222,16 +221,37 @@ create_iso() {
 			y|Y|yes|Yes|yY|Yy|yy|YY)
 				rm -rf "$customiso"
 				sudo umount "$mntdir"
-				exit
+				check_sums
 			;;
 			n|N|no|No|nN|Nn|nn|NN)
-				exit
+				check_sums
 			;;
 		esac
 	else
 		echo "Error: ISO creation failed, please email the developer: deadhead3492@gmail.com"
 		exit 1
 	fi
+
+}
+
+check_sums() {
+
+echo
+echo "Generating ISO checksums..."
+md5_sum=$(md5sum "$version" | awk '{print $1}')
+sha1sum=$(sha1sum "$version" | awk '{print $1}')
+timestamp=$(timedatectl | grep "Universal" | awk '{print $4" "$5" "$6}')
+echo -e "Arch Anywhere is licensed under GPL v2
+- Developer: Dylan Schacht (deadhead3492@gmail.com)
+- Webpage: http://arch-anywhere.org
+- ISO timestamp: $timestamp
+- $version Official Check Sums:\n
+* md5sum: $md5_sum
+* sha1sum: $sha1_sum" > arch-anywhere-checksums.txt
+echo
+echo "$version generated successfully! Exiting ISO creator."
+exit
+
 }
 
 init
