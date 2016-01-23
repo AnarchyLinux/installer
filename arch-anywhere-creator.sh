@@ -239,7 +239,7 @@ check_sums() {
 echo
 echo "Generating ISO checksums..."
 md5_sum=$(md5sum "$version" | awk '{print $1}')
-sha1sum=$(sha1sum "$version" | awk '{print $1}')
+sha1_sum=$(sha1sum "$version" | awk '{print $1}')
 timestamp=$(timedatectl | grep "Universal" | awk '{print $4" "$5" "$6}')
 echo -e "Arch Anywhere is licensed under GPL v2
 - Developer: Dylan Schacht (deadhead3492@gmail.com)
