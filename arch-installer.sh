@@ -48,6 +48,7 @@ init() {
 
 	source /etc/arch-anywhere.conf
 	source "$lang_file"
+	export reload=true
 	check_connection
 
 }

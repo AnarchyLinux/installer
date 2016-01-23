@@ -123,7 +123,8 @@ prepare_x86_64() {
 	sudo cp "$aa"/etc/vconsole.conf "$customiso"/arch/x86_64/squashfs-root/etc
 	sudo cp "$aa"/arch-installer.sh "$customiso"/arch/x86_64/squashfs-root/usr/bin/arch-anywhere
 	sudo mkdir "$customiso"/arch/x86_64/squashfs-root/usr/share/arch-anywhere
-	sudo cp "$aa"/lang/* "$customiso"/arch/x86_64/squashfs-root/usr/share/arch-anywhere
+	sudo mkdir "$customiso"/arch/x86_64/squashfs-root/usr/share/arch-anywhere/lang
+	sudo cp "$aa"/lang/* "$customiso"/arch/x86_64/squashfs-root/usr/share/arch-anywhere/lang
 	sudo chmod +x "$customiso"/arch/x86_64/squashfs-root/usr/bin/arch-anywhere
 	sudo cp "$aa"/extra/arch-wiki "$customiso"/arch/x86_64/squashfs-root/usr/bin/arch-wiki
 	sudo chmod +x "$customiso"/arch/x86_64/squashfs-root/usr/bin/arch-wiki
@@ -131,7 +132,6 @@ prepare_x86_64() {
 	sudo cp "$aa"/extra/.help "$customiso"/arch/x86_64/squashfs-root/root/
 	sudo cp "$aa"/boot/issue "$customiso"/arch/x86_64/squashfs-root/etc/
 	sudo cp "$aa"/boot/hostname "$customiso"/arch/x86_64/squashfs-root/etc/
-	sudo cp "$aa"/etc/git-update.link "$customiso"/arch/x86_64/squashfs-root/usr/share/arch-anywhere
 	cd "$customiso"/arch/x86_64	
 	rm airootfs.sfs
 	echo "Recreating x86_64..."
@@ -158,7 +158,8 @@ prepare_i686() {
 	sudo cp "$aa"/etc/vconsole.conf "$customiso"/arch/i686/squashfs-root/etc
 	sudo cp "$aa"/arch-installer.sh "$customiso"/arch/i686/squashfs-root/usr/bin/arch-anywhere
 	sudo mkdir "$customiso"/arch/i686/squashfs-root/usr/share/arch-anywhere
-	sudo cp "$aa"/lang/* "$customiso"/arch/i686/squashfs-root/usr/share/arch-anywhere
+	sudo mkdir "$customiso"/arch/i686/squashfs-root/usr/share/arch-anywhere/lang
+	sudo cp "$aa"/lang/* "$customiso"/arch/i686/squashfs-root/usr/share/arch-anywhere/lang
 	sudo chmod +x "$customiso"/arch/i686/squashfs-root/usr/bin/arch-anywhere
 	sudo cp "$aa"/extra/arch-wiki "$customiso"/arch/i686/squashfs-root/usr/bin/arch-wiki
 	sudo chmod +x "$customiso"/arch/i686/squashfs-root/usr/bin/arch-wiki	
@@ -166,7 +167,6 @@ prepare_i686() {
 	sudo cp "$aa"/extra/.help "$customiso"/arch/i686/squashfs-root/root/
 	sudo cp "$aa"/boot/issue "$customiso"/arch/i686/squashfs-root/etc/
 	sudo cp "$aa"/boot/hostname "$customiso"/arch/i686/squashfs-root/etc/
-	sudo cp "$aa"/etc/git-update.link "$customiso"/arch/i686/squashfs-root/usr/share/arch-anywhere
 	cd "$customiso"/arch/i686
 	rm airootfs.sfs
 	echo "Recreating i686..."
