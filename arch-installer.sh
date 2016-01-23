@@ -866,8 +866,7 @@ add_user() {
 		fi
 
 		user=$(<<<$user sed 's/ //g')
-		user_check=$(<<<$user grep "^[0-9]\|[\[\$\!\'\"\`\\|%&#@()_-+=<>~;:/?.,^{}]\|]")
-		
+		user_check=$(<<<$user grep "^[0-9]\|[ABCDEFGHIJKLMNOPQRSTUVWXYZ\[\$\!\'\"\`\\|%&#@()_-+=<>~;:/?.,^{}]\|]")	
 		if [ -n "$user_check" ]; then
 			whiptail --title "$title" --ok-button "$ok" --msgbox "$user_err_msg" 10 60
 			add_user
