@@ -7,10 +7,10 @@ export version="arch-anywhere-2.0.1-dual.iso"
 export iso_label="ARCH_ANYWHERE_201601"
 
 # Location variables all directories must exist
-export aa=~/arch-anywhere
-export repodir=~/arch-anywhere/base
-export customiso=~/arch-anywhere/customiso
-export mntdir=~/arch-anywhere/mnt
+export aa=~/arch-linux-anywhere
+export repodir=~/arch-linux-anywhere/base
+export customiso=~/arch-linux-anywhere/customiso
+export mntdir=~/arch-linux-anywhere/mnt
 
 # Link to the iso used to create Arch Anywhere
 export archiso_link="http://arch.localmsp.org/arch/iso/2016.01.01/archlinux-2016.01.01-dual.iso"
