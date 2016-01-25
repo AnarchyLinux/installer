@@ -1125,7 +1125,7 @@ install_software() {
 						"lmms"			"$m19" OFF \
 						"mpd"			"$m21" OFF \
 						"ncmpcpp"		"$m23" OFF \
-						"pulseaudio"	"$m2" OFF 3>&1 1>&2 2>&3)
+						"pulseaudio"		"$m2" OFF 3>&1 1>&2 2>&3)
 					if [ "$?" -eq "0" ]; then
 						if ! (whiptail --title "$title" --yes-button "$ok" --no-button "$no" --yesno "$software_confirm_msg0: $software" 10 60) then
 							unset software
@@ -1151,9 +1151,9 @@ install_software() {
 				"$graphic")
 					software=$(whiptail --title "$title" --ok-button "$ok" --cancel-button "$cancel" --checklist "$software_msg1" 15 63 5 \
 						"blender"		"$m72" OFF \
-						"darktable"           "$m70" OFF \
+						"darktable"		"$m70" OFF \
 						"gimp"			"$m14" OFF \
-						"imagemagick"	"$m71" OFF \
+						"imagemagick"		"$m71" OFF \
 						"pinta"			"$m39" OFF 3>&1 1>&2 2>&3)
 					if [ "$?" -eq "0" ]; then
 						if ! (whiptail --title "$title" --yes-button "$ok" --no-button "$no" --yesno "$software_confirm_msg0: $software" 10 60) then
@@ -1178,9 +1178,9 @@ install_software() {
 				"$office")
 					software=$(whiptail --title "$title" --ok-button "$ok" --cancel-button "$cancel" --checklist "$software_msg1" 15 63 4 \
 						"abiword"               "$m18" OFF \
-						"calligra"                 "$m61" OFF \
-						"calligra-sheets"    "$m62" OFF \
-						"libreoffice-fresh" "$m18" OFF 3>&1 1>&2 2>&3)
+						"calligra"              "$m61" OFF \
+						"calligra-sheets"	"$m62" OFF \
+						"libreoffice-fresh"	"$m18" OFF 3>&1 1>&2 2>&3)
 					if [ "$?" -eq "0" ]; then
 						if ! (whiptail --title "$title" --yes-button "$ok" --no-button "$no" --yesno "$software_confirm_msg0: $software" 10 60) then
 							unset software
@@ -1189,13 +1189,13 @@ install_software() {
 				;;
 				"$terminal")
 					software=$(whiptail --title "$title" --ok-button "$ok" --cancel-button "$cancel" --checklist "$software_msg1" 15 63 7 \
-						"fbterm"                      "$m56" OFF \
-						"guake"                        "$m57" OFF \
-						"pantheon-terminal" "$m60" OFF \
-						"rxvt-unicode"            "$m55" OFF \
-						"terminator"               "$m59" OFF \
+						"fbterm"		"$m56" OFF \
+						"guake"                 "$m57" OFF \
+						"pantheon-terminal"	"$m60" OFF \
+						"rxvt-unicode"          "$m55" OFF \
+						"terminator"            "$m59" OFF \
 						"xfce4-terminal"        "$m54" OFF \
-						"yakuake"                    "$m58" OFF 3>&1 1>&2 2>&3)
+						"yakuake"               "$m58" OFF 3>&1 1>&2 2>&3)
 					if [ "$?" -eq "0" ]; then
 						if ! (whiptail --title "$title" --yes-button "$ok" --no-button "$no" --yesno "$software_confirm_msg0: $software" 10 60) then
 							unset software
@@ -1204,11 +1204,11 @@ install_software() {
 				;;
 				"$text_editor")
 					software=$(whiptail --title "$title" --ok-button "$ok" --cancel-button "$cancel" --checklist "$software_msg1" 15 63 6 \
-						"emacs"		"$m12" OFF \
-						"geany"                  "$m63" OFF \
+						"emacs"			"$m12" OFF \
+						"geany"                 "$m63" OFF \
 						"gedit"			"$m64" OFF \
-						"gvim"                    "$m65" OFF \
-						"mousepad"          "$m66" OFF \
+						"gvim"                  "$m65" OFF \
+						"mousepad"		"$m66" OFF \
 						"vim"			"$m4" OFF 3>&1 1>&2 2>&3)
 					if [ "$?" -eq "0" ]; then
 						if ! (whiptail --title "$title" --yes-button "$ok" --no-button "$no" --yesno "$software_confirm_msg0: $software" 10 60) then
@@ -1230,26 +1230,26 @@ install_software() {
 				;;
 				"$system")
 					software=$(whiptail --title "$title" --ok-button "$ok" --cancel-button "$cancel" --checklist "$software_msg1" 18 65 10 \
-						"arch-wiki"		 "$m0" ON \
-						"apache"		 "$m6" OFF \
-						"conky"			 "$m10" OFF \
-						"git"			 "$m15" OFF \
-						"gparted"		 "$m16" OFF \
-						"gpm"			 "$m37" OFF \
-						"htop"			 "$m17" OFF \
-						"inxi"			 "$m50" OFF \
-						"k3b"			 "$m45" OFF \
-						"networkmanager" "$m52" ON \
-						"nmap"			 "$m24" OFF \
-						"openssh"		 "$m1" OFF \
-						"screen"		 "$m27" OFF \
-						"screenfetch"	 "$m3" ON \
-						"scrot"			 "$m46" OFF \
-						"tmux"			 "$m30" OFF \
-						"tuxcmd"		 "$m43" OFF \
-						"virtualbox"	 "$m33" OFF \
-						"ufw"			 "$m35" ON \
-						"wget"			 "$m38" ON 3>&1 1>&2 2>&3)
+						"arch-wiki"		"$m0" ON \
+						"apache"		"$m6" OFF \
+						"conky"			"$m10" OFF \
+						"git"			"$m15" OFF \
+						"gparted"		"$m16" OFF \
+						"gpm"			"$m37" OFF \
+						"htop"			"$m17" OFF \
+						"inxi"			"$m50" OFF \
+						"k3b"			"$m45" OFF \
+						"networkmanager"	"$m52" ON \
+						"nmap"			"$m24" OFF \
+						"openssh"		"$m1" OFF \
+						"screen"		"$m27" OFF \
+						"screenfetch"		"$m3" ON \
+						"scrot"			"$m46" OFF \
+						"tmux"			"$m30" OFF \
+						"tuxcmd"		"$m43" OFF \
+						"virtualbox"		"$m33" OFF \
+						"ufw"			"$m35" ON \
+						"wget"			"$m38" ON 3>&1 1>&2 2>&3)
 					if [ "$?" -eq "0" ]; then
 						if ! (whiptail --title "$title" --yes-button "$ok" --no-button "$no" --yesno "$software_confirm_msg0: $software" 10 60) then
 							unset software
