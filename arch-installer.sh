@@ -1,15 +1,17 @@
 #!/bin/bash
-
+###############################################################
 ### Arch Linux Anywhere Install Script
 ##
 ## Copyright (C) 2016  Dylan Schacht
 ##
 ## By: Deadhead (Dylan Schacht)
 ## Email: deadhead3492@gmail.com
-## Webpage: arch-anywhere.tgits.co.uk
+## Webpage: http://arch-anywhere.org
 ##
 ## Any questions, comments, or bug reports may be sent to abve
 ## email address. Enjoy, and keep on using Arch.
+##
+## License: GPL v2.0
 ##
 ## This program is free software; you can redistribute it and/or
 ## modify it under the terms of the GNU General Public License
@@ -20,7 +22,7 @@
 ## but WITHOUT ANY WARRANTY; without even the implied warranty of
 ## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 ## GNU General Public License version 2 for more details.
-###################################################################
+###############################################################
 
 init() {
 
@@ -73,11 +75,11 @@ check_connection() {
 			if [ -n "$wifi_network" ]; then
     
 				if (whiptail --title "$title" --yes-button "$yes" --no-button "$no" --yesno "$wifi_msg0" 10 60) then
-					wifi_menu
+					wifi-menu "$wifi_network"
     
 					if [ "$?" -gt "0" ]; then
 						whiptail --title "$title" --ok-button "$ok" --msgbox "$wifi_msg0" 10 60
-							clear ; echo "$connect_err1" ; exit 1
+						clear ; echo "$connect_err1" ; exit 1
 					else
 						wifi=true
 						err=false
@@ -586,7 +588,7 @@ prepare_drives() {
 			until [ "$new_mnt" == "$done_msg" ] 
 				do
 					partition=$(lsblk | grep "$DRIVE" | grep -v "/\|[SWAP]\|1K" | sed "1d" | cut -c7- | awk '{print $1"     "$4}')
-					new_mnt=$(whiptail --title "$title" --nocancel --menu "$part_sel_msg" 15 60 6 $partition "$done_msg" "$continue_msg" 3>&1 1>&2 2>&3)
+					new_mnt=$(whiptail --title "$title" --nocancel --menu "$part_sel_msg" 15 65 6 $partition "$done_msg" "$continue_msg" 3>&1 1>&2 2>&3)
 
 					if [ "$new_mnt" != "$done_msg" ]; then
 						source "$lang_file"
@@ -957,10 +959,10 @@ graphics() {
 	pacstrap "$ARCH" xorg-server xorg-server-utils xorg-xinit xterm $(echo "$GPU") &> /dev/null &
 	pid=$! pri=2 msg="$xorg_load" load
 	if (whiptail --title "$title" --yes-button "$yes" --no-button "$no" --yesno "$desktop_msg" 10 60) then
-		until [ "$DE" == "set" ]
+
+		until "$de_set"
 			do
-				i=false
-				DE=$(whiptail --title "$title" --ok-button "$ok" --cancel-button "$cancel" --menu "$enviornment_msg" 15 60 6 \
+				DE=$(whiptail --title "$title" --ok-button "$ok" --cancel-button "$cancel" --menu "$enviornment_msg" 18 65 10 \
 				"xfce4"         "$de0" \
 				"mate"          "$de1" \
 				"lxde"          "$de2" \
@@ -976,17 +978,9 @@ graphics() {
 				"dwm"           "$de12" 3>&1 1>&2 2>&3)
 				
 				if [ "$?" -gt "0" ]; then 
-					DE=set
+					err=true
 				else
-					i=true
-
-					if (whiptail --title "$title" --yes-button "$yes" --no-button "$no" --yesno "$lightdm_msg" 10 60) then
-						pacstrap "$ARCH" lightdm lightdm-gtk-greeter &> /dev/null &
-						pid=$! pri="1" msg="$lightdm_load" load
-						arch-chroot "$ARCH" systemctl enable lightdm.service &> /dev/null
-					else
-						whiptail --title "$title" --ok-button "$ok" --msgbox "$startx_msg" 10 60
-					fi
+					de_set=true
 				fi
 
 				case "$DE" in
@@ -1012,7 +1006,7 @@ graphics() {
 						fi
 					;;
 
-					"KDE plasma") start_term="exec startkde" DE="kde-applications"
+					"KDE plasma") start_term="exec startkde" DE="kde-applications" dm_set=true
 
 						if (whiptail --title "$title" --defaultno --yes-button "$yes" --no-button "$no" --yesno "$extra_msg3" 10 60) then
 							DE_EXTRA="plasma-desktop" de_down=$((down+4))
@@ -1064,17 +1058,29 @@ graphics() {
 					de_down=$((down-1))
 				fi
 
-				if "$i" ; then
+				if "$de_set" ; then
+					if ! "$dm_set" ; then
+						if (whiptail --title "$title" --yes-button "$yes" --no-button "$no" --yesno "$lightdm_msg" 10 60) then
+							pacstrap "$ARCH" lightdm lightdm-gtk-greeter &> /dev/null &
+							pid=$! pri="1" msg="$lightdm_load" load
+							arch-chroot "$ARCH" systemctl enable lightdm.service &> /dev/null
+						else
+							whiptail --title "$title" --ok-button "$ok" --msgbox "$startx_msg" 10 60
+						fi
+					fi
 					pacstrap "$ARCH" $(echo "$DE $DE_EXTRA") &> /dev/null &
 					pid=$! pri="$de_down" msg="$desktop_load" load
-
+					desktop=true
+					
 					if "$user_added" ; then
 						echo "$start_term" > "$ARCH"/home/"$user"/.xinitrc
 					else
 						echo "$start_term" > "$ARCH"/root/.xinitrc
 					fi
-
-					DE=set
+				elif "$err" ; then
+					if (whiptail --title "$title" --yes-button "$yes" --no-button "$no" --yesno "$desktop_cancel_msg" 10 60) then
+						de_set=true
+					fi
 				fi
 			done
 	fi
@@ -1086,71 +1092,220 @@ graphics() {
 install_software() {
 
 	if (whiptail --title "$title" --yes-button "$yes" --no-button "$no" --yesno "$software_msg0" 10 60) then
-		software=$(whiptail --title "$title" --ok-button "$ok" --cancel-button "$cancel" --checklist "$software_msg1" 20 60 10 \
-			"arch-wiki"		"$m0" ON \
-			"apache"		"$m6" OFF \
-			"audacity"		"$m7" OFF \
-			"audacious"		"$m41" OFF \
-			"chromium"		"$m8" OFF \
-			"cmus"			"$m9" OFF \
-			"conky"			"$m10" OFF \
-			"emacs"			"$m12" OFF \
-			"filezilla"		"$m42" OFF \
-			"firefox"		"$m13" OFF \
-			"gimp"			"$m14" OFF \
-			"git"			"$m15" OFF \
-			"gparted"		"$m16" OFF \
-			"gpm"			"$m37" OFF \
-			"handbrake"		"$m51" OFF \
-			"htop"			"$m17" OFF \
-			"inxi"			"$m50" OFF \
-			"k3b"			"$m45" OFF \
-			"libreoffice"		"$m18" OFF \
-			"lmms"			"$m19" OFF \
-			"lynx"			"$m20" OFF \
-			"minitube"		"$m47" OFF \
-			"mpd"			"$m21" OFF \
-			"mplayer"		"$m22" OFF \
-			"ncmpcpp"		"$m23" OFF \
-			"nmap"			"$m24" OFF \
-			"openssh"		"$m1" OFF \
-			"pinta"			"$m39" OFF \
-			"pitivi"		"$m25" OFF \
-			"projectm"		"$m26" OFF \
-			"pulseaudio"		"$m2" ON \
-			"screen"		"$m27" OFF \
-			"screenfetch"		"$m3" ON \
-			"scrot"			"$m46" OFF \
-			"simplescreenrecorder"	"$m28" OFF \
-			"smplayer"		"$m44" OFF \
-			"thunderbird"		"$m48" OFF \
-			"tmux"			"$m30" OFF \
-			"transmission-cli" 	"$m31" OFF \
-			"transmission-gtk"	"$m32" OFF \
-			"tuxcmd"		"$m43" OFF \
-			"vim"			"$m4" OFF \
-			"virtualbox"		"$m33" OFF \
-			"vlc"         	   	"$m34" OFF \
-			"ufw"			"$m35" OFF \
-			"wget"			"$m38" ON \
-			"zsh"			"$m36" OFF 3>&1 1>&2 2>&3)
+		
+		until "$software_selected"
+		  do
+			unset software
+			software_menu=$(whiptail --title "$title" --ok-button "$ok" --cancel-button "$cancel" --menu "$software_type_msg" 17 65 10 \
+				"$audio" "$audio_msg" \
+				"$graphic" "$graphic_msg" \
+				"$internet" "$internet_msg" \
+				"$multimedia" "$multimedia_msg" \
+				"$office" "$office_msg" \
+				"$terminal" "$terminal_msg" \
+				"$text_editor" "$text_editor_msg" \
+				"$shell" "$shell_msg" \
+				"$system" "$system_msg" \
+				"$done_msg" "$install" 3>&1 1>&2 2>&3)
+			
+			if [ "$?" -gt "0" ]; then
+				if (whiptail --title "$title" --yes-button "$yes" --no-button "$no" --defaultno --yesno "$software_warn_msg" 10 60) then
+					software_selected=true
+					unset software_menu
+				fi
+			fi
 
-		if [ "$?" -gt "0" ]; then
-			reboot_system
-		fi
+			case "$software_menu" in
+				"$audio")
+					software=$(whiptail --title "$title" --ok-button "$ok" --cancel-button "$cancel" --checklist "$software_msg1" 16 65 8 \
+						"audacity"		"$m7" OFF \
+						"audacious"		"$m41" OFF \
+						"cmus"			"$m9" OFF \
+						"projectm"		"$m53" OFF \
+						"lmms"			"$m19" OFF \
+						"mpd"			"$m21" OFF \
+						"ncmpcpp"		"$m23" OFF \
+						"pulseaudio"	"$m2" OFF 3>&1 1>&2 2>&3)
+					if [ "$?" -eq "0" ]; then
+						if ! (whiptail --title "$title" --yes-button "$ok" --no-button "$no" --yesno "$software_confirm_msg0: $software" 10 60) then
+							unset software
+						fi
+					fi
+				;;
+				"$internet")
+					software=$(whiptail --title "$title" --ok-button "$ok" --cancel-button "$cancel" --checklist "$software_msg1" 16 65 8 \
+						"chromium"		"$m8" OFF \
+						"filezilla"		"$m42" OFF \
+						"firefox"		"$m13" OFF \
+						"lynx"			"$m20" OFF \
+						"minitube"		"$m47" OFF \
+						"thunderbird"		"$m48" OFF \
+						"transmission-cli" 	"$m31" OFF \
+						"transmission-gtk"	"$m32" OFF 3>&1 1>&2 2>&3)
+					if [ "$?" -eq "0" ]; then
+						if ! (whiptail --title "$title" --yes-button "$ok" --no-button "$no" --yesno "$software_confirm_msg0: $software" 10 60) then
+							unset software
+						fi
+					fi
+				;;
+				"$graphic")
+					software=$(whiptail --title "$title" --ok-button "$ok" --cancel-button "$cancel" --checklist "$software_msg1" 15 63 5 \
+						"blender"		"$m72" OFF \
+						"darktable"           "$m70" OFF \
+						"gimp"			"$m14" OFF \
+						"imagemagick"	"$m71" OFF \
+						"pinta"			"$m39" OFF 3>&1 1>&2 2>&3)
+					if [ "$?" -eq "0" ]; then
+						if ! (whiptail --title "$title" --yes-button "$ok" --no-button "$no" --yesno "$software_confirm_msg0: $software" 10 60) then
+							unset software
+						fi
+					fi
+				;;
+				"$multimedia")
+					software=$(whiptail --title "$title" --ok-button "$ok" --cancel-button "$cancel" --checklist "$software_msg1" 15 63 6 \
+						"handbrake"		"$m51" OFF \
+						"mplayer"		"$m22" OFF \
+						"pitivi"		"$m25" OFF \
+						"simplescreenrecorder"	"$m28" OFF \
+						"smplayer"		"$m44" OFF \
+						"vlc"         	   	"$m34" OFF 3>&1 1>&2 2>&3)
+					if [ "$?" -eq "0" ]; then
+						if ! (whiptail --title "$title" --yes-button "$ok" --no-button "$no" --yesno "$software_confirm_msg0: $software" 10 60) then
+							unset software
+						fi
+					fi
+				;;
+				"$office")
+					software=$(whiptail --title "$title" --ok-button "$ok" --cancel-button "$cancel" --checklist "$software_msg1" 15 63 4 \
+						"abiword"               "$m18" OFF \
+						"calligra"                 "$m61" OFF \
+						"calligra-sheets"    "$m62" OFF \
+						"libreoffice-fresh" "$m18" OFF 3>&1 1>&2 2>&3)
+					if [ "$?" -eq "0" ]; then
+						if ! (whiptail --title "$title" --yes-button "$ok" --no-button "$no" --yesno "$software_confirm_msg0: $software" 10 60) then
+							unset software
+						fi
+					fi
+				;;
+				"$terminal")
+					software=$(whiptail --title "$title" --ok-button "$ok" --cancel-button "$cancel" --checklist "$software_msg1" 15 63 7 \
+						"fbterm"                      "$m56" OFF \
+						"guake"                        "$m57" OFF \
+						"pantheon-terminal" "$m60" OFF \
+						"rxvt-unicode"            "$m55" OFF \
+						"terminator"               "$m59" OFF \
+						"xfce4-terminal"        "$m54" OFF \
+						"yakuake"                    "$m58" OFF 3>&1 1>&2 2>&3)
+					if [ "$?" -eq "0" ]; then
+						if ! (whiptail --title "$title" --yes-button "$ok" --no-button "$no" --yesno "$software_confirm_msg0: $software" 10 60) then
+							unset software
+						fi
+					fi
+				;;
+				"$text_editor")
+					software=$(whiptail --title "$title" --ok-button "$ok" --cancel-button "$cancel" --checklist "$software_msg1" 15 63 6 \
+						"emacs"		"$m12" OFF \
+						"geany"                  "$m63" OFF \
+						"gedit"			"$m64" OFF \
+						"gvim"                    "$m65" OFF \
+						"mousepad"          "$m66" OFF \
+						"vim"			"$m4" OFF 3>&1 1>&2 2>&3)
+					if [ "$?" -eq "0" ]; then
+						if ! (whiptail --title "$title" --yes-button "$ok" --no-button "$no" --yesno "$software_confirm_msg0: $software" 10 60) then
+							unset software
+						fi
+					fi
+				;;
+				"$shell")
+					software=$(whiptail --title "$title" --ok-button "$ok" --cancel-button "$cancel" --checklist "$software_msg1" 15 63 4 \
+						"dash"			"$m67" OFF \
+						"fish"			"$m68" OFF \
+						"tcsh"			"$m69" OFF \
+						"zsh"			"$m36" ON 3>&1 1>&2 2>&3)
+					if [ "$?" -eq "0" ]; then
+						if ! (whiptail --title "$title" --yes-button "$ok" --no-button "$no" --yesno "$software_confirm_msg0: $software" 10 60) then
+							unset software
+						fi
+					fi
+				;;
+				"$system")
+					software=$(whiptail --title "$title" --ok-button "$ok" --cancel-button "$cancel" --checklist "$software_msg1" 18 65 10 \
+						"arch-wiki"		 "$m0" ON \
+						"apache"		 "$m6" OFF \
+						"conky"			 "$m10" OFF \
+						"git"			 "$m15" OFF \
+						"gparted"		 "$m16" OFF \
+						"gpm"			 "$m37" OFF \
+						"htop"			 "$m17" OFF \
+						"inxi"			 "$m50" OFF \
+						"k3b"			 "$m45" OFF \
+						"networkmanager" "$m52" ON \
+						"nmap"			 "$m24" OFF \
+						"openssh"		 "$m1" OFF \
+						"screen"		 "$m27" OFF \
+						"screenfetch"	 "$m3" ON \
+						"scrot"			 "$m46" OFF \
+						"tmux"			 "$m30" OFF \
+						"tuxcmd"		 "$m43" OFF \
+						"virtualbox"	 "$m33" OFF \
+						"ufw"			 "$m35" ON \
+						"wget"			 "$m38" ON 3>&1 1>&2 2>&3)
+					if [ "$?" -eq "0" ]; then
+						if ! (whiptail --title "$title" --yes-button "$ok" --no-button "$no" --yesno "$software_confirm_msg0: $software" 10 60) then
+							unset software
+						fi
+					fi
+				;;
+				"$done_msg")
+					if [ -z "$final_software" ]; then
+						if (whiptail --title "$title" --yes-button "$yes" --no-button "$no" --defaultno --yesno "$software_warn_msg" 10 60) then
+							software_selected=true
+						fi
+					else
+						download=$(echo "$final_software" | sed 's/\"//g' | tr ' ' '\n' | nl | sort -u -k2 | sort -n | cut -f2-)
+						if (whiptail --title "$title" --yes-button "$ok" --no-button "$no" --yesno "$software_confirm_msg1: $download" 15 60) then
+							wiki=$(<<<$download grep "arch-wiki")
+							nwman=$(<<<$download grep "networkmanager")
+							vbox=$(<<<download grep "virtualbox")
 
-		download=$(echo "$software" | sed 's/\"//g')
-		wiki=$(<<<$download grep "arch-wiki")
+							if [ -n "$wiki" ]; then
+								cp /usr/bin/arch-wiki "$ARCH"/usr/bin
+								download=$(<<<$download sed 's/arch-wiki/lynx/')
+							fi
 
-		if [ -n "$wiki" ]; then
-			cp /usr/bin/arch-wiki "$ARCH"/usr/bin
-			download=$(<<<$download sed 's/arch-wiki/lynx/')
-		fi
+							if [ -n "$vbox" ]; then
+								echo -e "vboxdrv\nvboxnetflt\nvboxnetadp\nvboxpci" > "$ARCH"/etc/modules-load.d/virtualbox.conf
+							fi
 
-	    	pacstrap "$ARCH" ${download} &> /dev/null &
-	    	pid=$! pri=1 msg="$software_load" load
+							if "$desktop" ; then
+								if [ -n "$nwman" ]; then
+									download=$(<<<$download sed 's/networkmanager/network manager network-manager-applet/')
+								fi
+							fi
+
+						    	pacstrap "$ARCH" $(echo "$download") &> /dev/null &
+						    	pid=$! pri=1 msg="$software_load" load
+	  					    	software_selected=true
+							unset software
+						else
+							unset "$final_software"
+						fi
+					fi
+				;;
+			esac
+			
+			if [ -n "$software" ]; then
+				final_software="$software $final_software"
+			fi
+		done
 	fi
 
+	if [ -f "$ARCH"/usr/bin/NetworkManager ]; then
+		arch-chroot "$ARCH" systemctl enable NetworkManager.service &>/dev/null &
+	elif [ -f "$ARCH"/usr/bin/netctl ]; then
+		arch-chroot "$ARCH" systemctl enable netctl.service &>/dev/null &
+	fi
+	
 	if [ -f "$ARCH"/var/lib/pacman/db.lck ]; then
 		rm "$ARCH"/var/lib/pacman/db.lck
 	fi
