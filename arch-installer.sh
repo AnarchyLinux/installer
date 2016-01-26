@@ -1288,7 +1288,7 @@ install_software() {
 						download_list=$(echo "$download" |  sed -e 's/^[ \t]*//;s/ / - /g')
 						software_int=$(echo "$download" | wc -w)
 						
-						if (whiptail --title "$title" --yes-button "$ok" --no-button "$no" --yesno "$software_confirm_msg1 $software_int $software_int_msg1: $download_list" 12 55) then
+						if (whiptail --title "$title" --yes-button "$ok" --no-button "$no" --yesno "$software_confirm_msg1 $software_int $software_int_msg0: $download_list" 12 55) then
 							wiki=$(<<<$download grep "arch-wiki")
 							nwman=$(<<<$download grep "networkmanager")
 							vbox=$(<<<download grep "virtualbox")
