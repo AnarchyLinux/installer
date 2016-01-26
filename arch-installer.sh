@@ -110,10 +110,10 @@ check_connection() {
 			fi
         
 			case "$cpu_mhz" in
-				[0-9][0-9][0-9]) cpu_sleep=5 ;;
-				[1][0-9][0-9][0-9]) cpu_sleep=4 ;;
-				[2][0-9][0-9][0-9]) cpu_sleep=3 ;;
-				[3-5][0-9][0-9][0-9]) cpu_sleep=2 ;;
+				[0-9][0-9][0-9]) export cpu_sleep=5 ;;
+				[1][0-9][0-9][0-9]) export cpu_sleep=4 ;;
+				[2][0-9][0-9][0-9]) export cpu_sleep=3 ;;
+				[3-5][0-9][0-9][0-9]) export cpu_sleep=2 ;;
 			esac
         	
 			export down=$((down_sec/100+cpu_sleep+1))
@@ -992,85 +992,69 @@ graphics() {
 				fi
 
 				case "$DE" in
-
 					"xfce4") start_term="exec startxfce4" 
 
 							if (whiptail --title "$title" --yes-button "$yes" --no-button "$no" --yesno "$extra_msg0" 10 60) then
-								DE_EXTRA="xfce4-goodies"
+								DE="xfce4 xfce4-goodies"
 							fi
 					;;
-
 					"gnome") start_term="exec gnome-session"
 
 						if (whiptail --title "$title" --yes-button "$yes" --no-button "$no" --yesno "$extra_msg1" 10 60) then
-							DE_EXTRA="gnome-extra" de_down=$((down+4))
+							DE="gnome gnome-extra"
 						fi 
 					;;
-
 					"mate") start_term="exec mate-session"
 
 						if (whiptail --title "$title" --yes-button "$yes" --no-button "$no" --yesno "$extra_msg2" 10 60) then
-							DE_EXTRA="mate-extra" de_down=$((down+2))
+							DE="mate mate-extra"
 						fi
 					;;
-
-					"KDE plasma") start_term="exec startkde" DE="kde-applications" dm_set=true
+					"KDE plasma") start_term="exec startkde" dm_set=true
 
 						if (whiptail --title "$title" --defaultno --yes-button "$yes" --no-button "$no" --yesno "$extra_msg3" 10 60) then
-							DE_EXTRA="plasma-desktop" de_down=$((down+4))
+							DE="kde-applications plasma-desktop"
 						else
-							DE_EXTRA="plasma" de_down=$((down+5))
-						fi
+							DE="kde-applications plasma"
+						fi 
 					;;
-
 					"cinnamon") 
-						start_term="exec cinnamon-session"
-					;;
-					
+						start_term="exec cinnamon-session" ;;
 					"lxde") 
-						start_term="exec startlxde"
-					;;
-					
+						start_term="exec startlxde" ;;
 					"lxqt") 
 						start_term="exec startlxqt" 
-						DE="lxqt oxygen-icons"
-					;;
-					
+						DE="lxqt oxygen-icons" ;;
 					"enlightenment") 
 						start_term="exec enlightenment_start"
-						DE="enlightenment terminology"
-					;;
-					
+						DE="enlightenment terminology" ;;
 					"fluxbox") 
-						start_term="exec startfluxbox"
-					;;
-					
+						start_term="exec startfluxbox" ;;
 					"openbox") 
-						start_term="exec openbox-session"
-					;;
-					
+						start_term="exec openbox-session" ;;
 					"awesome") 
-						start_term="exec awesome"
-					;;
-					
+						start_term="exec awesome" ;;	
 					"dwm") 
-						start_term="exec dwm"
-					;;
+						start_term="exec dwm" ;;
 					
 					"i3") 
-						start_term="exec i3"
-					;;
+						start_term="exec i3" ;;
 				esac
 
-				if [ -z "$de_down" ]; then
-					de_down=$((down-1))
-				fi
 
 				if "$de_set" ; then
 
-					source "$lang_file"
+					# Total sum of all packages
+						download_sum=$(pacman -S --print-format='%s' $(echo "$DE") | awk '{s+=$1} END {print s/1024/1024}')
+						
+					# Total sum used to calculate loading time
+						download_size=$(printf "%.0f\n" "$download_sum")
+						
+					# Total sum displayed to user and total number of packages to install
+						software_size=$(echo "$download_sum Mib")
+						cal_rate
 
-					if (whiptail --title "$title" --yes-button "$yes" --no-button "$no" --yesno "$desktop_confirm_var" 10 60) then
+					if (whiptail --title "$title" --yes-button "$yes" --no-button "$no" --yesno "$desktop_confirm_var" 15 60) then
 					
 						if ! "$dm_set" ; then
 							if (whiptail --title "$title" --yes-button "$yes" --no-button "$no" --yesno "$lightdm_msg" 10 60) then
@@ -1081,8 +1065,8 @@ graphics() {
 								whiptail --title "$title" --ok-button "$ok" --msgbox "$startx_msg" 10 60
 							fi
 						fi
-						pacstrap "$ARCH" $(echo "$DE $DE_EXTRA") &> /dev/null &
-						pid=$! pri="$de_down" msg="$desktop_load" load
+						pacstrap "$ARCH" $(echo "$DE") &> /dev/null &
+						pid=$! pri="$down" msg="$desktop_load" load
 						desktop=true
 					
 						if "$user_added" ; then
@@ -1279,20 +1263,44 @@ install_software() {
 					fi
 				;;
 				"$done_msg")
+				# Check if user selected any additional software
 					if [ -z "$final_software" ]; then
+					# If no software selected ask to confirm
 						if (whiptail --title "$title" --yes-button "$yes" --no-button "$no" --defaultno --yesno "$software_warn_msg" 10 60) then
 							software_selected=true
 						fi
 					else
+					# List of packages for pacstrap command
 						download=$(echo "$final_software" | sed 's/\"//g' | tr ' ' '\n' | nl | sort -u -k2 | sort -n | cut -f2- | sed 's/$/ /g' | tr -d '\n')
-						download_list=$(echo "$download" |  sed -e 's/^[ \t]*//;s/ / - /g')
-						software_int=$(echo "$download" | wc -w)
 						
-						if (whiptail --title "$title" --yes-button "$ok" --no-button "$no" --yesno "$software_confirm_msg1 $software_int $software_int_msg0: $download_list" 12 55) then
+					# List of packages displayed for user
+						download_list=$(echo "$download" |  sed -e 's/^[ \t]*//;s/ / - /g')
+						
+					# Total sum of all packages
+						download_sum=$(pacman -S --print-format='%s' $(echo $download) | awk '{s+=$1} END {print s/1024/1024}')
+						
+					# Total sum used to calculate loading time
+						download_size=$(printf "%.0f\n" "$download_sum")
+						
+					# Total sum displayed to user and total number of packages to install
+						software_size=$(echo "$download_sum Mib")
+						software_int=$(echo "$download" | wc -w)
+						cal_rate
+
+					# If number of software greater than 40 use a larger menu
+						if [ "$software_int" -gt 40 ]; then
+							menu_height=20
+						else
+							menu_height=15
+						fi
+
+					# Confirm installing additional software
+						if (whiptail --title "$title" --yes-button "$ok" --no-button "$no" --yesno "$software_confirm_var1" "$menu_height" 60) then
 							wiki=$(<<<$download grep "arch-wiki")
 							nwman=$(<<<$download grep "networkmanager")
 							vbox=$(<<<download grep "virtualbox")
-
+							
+						# Check for program requirements
 							if [ -n "$wiki" ]; then
 								cp /usr/bin/arch-wiki "$ARCH"/usr/bin
 								download=$(<<<$download sed 's/arch-wiki/lynx/')
@@ -1308,8 +1316,9 @@ install_software() {
 								fi
 							fi
 
+						# Install additional software
 						    pacstrap "$ARCH" $(echo "$download") &> /dev/null &
-						    pid=$! pri=$((down-1)) msg="$software_load" load
+						    pid=$! pri="$down" msg="$software_load" load
 	  					    software_selected=true
 							err=true
 						else
@@ -1320,12 +1329,26 @@ install_software() {
 			esac
 			
 			if ! "$err" ; then
+			# If software not defined when leaving menu ask to confirm
 				if [ -z "$software" ]; then
 					if ! (whiptail --title "$title" --yes-button "$ok" --no-button "$no" --defaultno --yesno "$software_noconfirm_msg ${software_menu}?" 10 60) then
 						skip=true
 					fi
 				else
-					if (whiptail --title "$title" --yes-button "$ok" --no-button "$no" --yesno "$software_confirm_msg0: $software" 10 60) then
+				# Add software from menu list
+					add_software=$(echo "$software" | sed 's/\"//g')
+					software_list=$(echo "$add_software" | sed -e 's/^[ \t]*//;s/ / - /g')
+					
+				# Total sum of all packages
+					download_sum=$(pacman -S --print-format='%s' $(echo $add_software) | awk '{s+=$1} END {print s/1024/1024}')
+						
+				# Total sum displayed to user and total number of packages to install
+					software_size=$(echo "$download_sum Mib")
+					software_int=$(echo "$add_software" | wc -w)
+					source "$lang_file"
+
+				# Confirm adding software message:
+					if (whiptail --title "$title" --yes-button "$ok" --no-button "$no" --yesno "$software_confirm_var0" 10 60) then
 						final_software="$software $final_software"
 					fi
 				fi
@@ -1385,6 +1408,20 @@ reboot_system() {
 			main_menu
 		fi
 	fi
+
+}
+
+cal_rate() {
+			
+	case "$connection_rate" in
+		KB/s) down_sec=$((download_size*1024/connection_speed)) ;;
+		MB/s) down_sec=$(echo "$download_size/$connection_speed" | bc) ;;
+		GB/s) down_sec="1" down_min="1" ;;
+	esac
+        
+	export down=$((down_sec/100+cpu_sleep+1))
+	export down_min=$((down*100/60+1))
+	source "$lang_file"
 
 }
 
