@@ -1212,7 +1212,7 @@ install_software() {
 						"abiword"               "$m18" OFF \
 						"calligra"              "$m61" OFF \
 						"calligra-sheets"	"$m62" OFF \
-						"libreoffice-fresh"	"$m18" OFF 3>&1 1>&2 2>&3)
+						"libreoffice-fresh"	"$m26" OFF 3>&1 1>&2 2>&3)
 					if [ "$?" -gt "0" ]; then
 						err=true
 					fi
