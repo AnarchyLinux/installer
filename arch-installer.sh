@@ -1172,12 +1172,12 @@ install_software() {
 				;;
 				"$games")
 					software=$(whiptail --title "$title" --ok-button "$ok" --cancel-button "$cancel" --checklist "$software_msg1" 18 70 8 \
-						"alienarena"	"$m75" OFF \
+						"alienarena"		"$m75" OFF \
 						"bzflag"		"$m80" OFF \
-						"flightgear"	"$m79" OFF \
+						"flightgear"		"$m79" OFF \
 						"supertux"		"$m73" OFF \
-						"supertuxkart"	"$m74" OFF \
-						"urbanterror"	"$m78" OFF\
+						"supertuxkart"		"$m74" OFF \
+						"urbanterror"		"$m78" OFF\
 						"warsow"		"$m77" OFF \
 						"xonotic"		"$m76" OFF 3>&1 1>&2 2>&3)
 					if [ "$?" -gt "0" ]; then
@@ -1209,19 +1209,19 @@ install_software() {
 				;;
 				"$office")
 					software=$(whiptail --title "$title" --ok-button "$ok" --cancel-button "$cancel" --checklist "$software_msg1" 15 63 4 \
-						"abiword"               "$m18" OFF \
+						"abiword"               "$m29" OFF \
 						"calligra"              "$m61" OFF \
 						"calligra-sheets"	"$m62" OFF \
-						"libreoffice-fresh"	"$m26" OFF 3>&1 1>&2 2>&3)
+						"libreoffice-fresh"	"$m18" OFF 3>&1 1>&2 2>&3)
 					if [ "$?" -gt "0" ]; then
 						err=true
 					fi
 				;;
 				"$terminal")
 					software=$(whiptail --title "$title" --ok-button "$ok" --cancel-button "$cancel" --checklist "$software_msg1" 17 63 7 \
-						"fbterm"				"$m56" OFF \
+						"fbterm"		"$m56" OFF \
 						"guake"                 "$m57" OFF \
-						"pantheon-terminal"		"$m60" OFF \
+						"pantheon-terminal"	"$m60" OFF \
 						"rxvt-unicode"          "$m55" OFF \
 						"terminator"            "$m59" OFF \
 						"xfce4-terminal"        "$m54" OFF \
@@ -1233,9 +1233,9 @@ install_software() {
 				"$text_editor")
 					software=$(whiptail --title "$title" --ok-button "$ok" --cancel-button "$cancel" --checklist "$software_msg1" 16 60 6 \
 						"emacs"			"$m12" OFF \
-						"geany"         "$m63" OFF \
+						"geany"			"$m63" OFF \
 						"gedit"			"$m64" OFF \
-						"gvim"          "$m65" OFF \
+						"gvim"			"$m65" OFF \
 						"mousepad"		"$m66" OFF \
 						"vim"			"$m4" OFF 3>&1 1>&2 2>&3)
 					if [ "$?" -gt "0" ]; then
