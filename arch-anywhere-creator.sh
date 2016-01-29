@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Set the version here
-export version="arch-anywhere-2.0.2-dual.iso"
+export version="arch-anywhere-2.0.3-dual.iso"
 
 # Set the ISO label here
 export iso_label="ARCH_ANYWHERE_201601"
@@ -116,6 +116,7 @@ prepare_x86_64() {
 	sudo pacman --root squashfs-root --cachedir squashfs-root/var/cache/pacman/pkg  --config squashfs-root/etc/pacman.conf --noconfirm -Syyy terminus-font
 	sudo pacman --root squashfs-root --cachedir squashfs-root/var/cache/pacman/pkg  --config squashfs-root/etc/pacman.conf -Sl | awk '/\[installed\]$/ {print $1 "/" $2 "-" $3}' > "$customiso"/arch/pkglist.x86_64.txt
 	sudo pacman --root squashfs-root --cachedir squashfs-root/var/cache/pacman/pkg  --config squashfs-root/etc/pacman.conf --noconfirm -Scc
+	sudo rm -f "$customiso"/arch/x86_64/squashfs-root//var/cache/pacman/pkg/*
 	sudo cp "$aa"/etc/arch-anywhere.conf "$customiso"/arch/x86_64/squashfs-root/etc/
 	sudo cp "$aa"/etc/locale.gen "$customiso"/arch/x86_64/squashfs-root/etc
 	sudo arch-chroot squashfs-root /bin/bash locale-gen
@@ -151,6 +152,7 @@ prepare_i686() {
 	sudo setarch i686 pacman --root squashfs-root --cachedir squashfs-root/var/cache/pacman/pkg  --config squashfs-root/etc/pacman.conf --noconfirm -Syyy terminus-font
 	sudo setarch i686 pacman --root squashfs-root --cachedir squashfs-root/var/cache/pacman/pkg  --config squashfs-root/etc/pacman.conf -Sl | awk '/\[installed\]$/ {print $1 "/" $2 "-" $3}' > "$customiso"/arch/pkglist.i686.txt
 	sudo setarch i686 pacman --root squashfs-root --cachedir squashfs-root/var/cache/pacman/pkg  --config squashfs-root/etc/pacman.conf --noconfirm -Scc
+	sudo rm -f "$customiso"/arch/i686/squashfs-root//var/cache/pacman/pkg/*
 	sudo cp "$aa"/etc/arch-anywhere.conf "$customiso"/arch/i686/squashfs-root/etc/
 	sudo cp "$aa"/etc/locale.gen "$customiso"/arch/i686/squashfs-root/etc
 	sudo arch-chroot squashfs-root /bin/bash locale-gen
