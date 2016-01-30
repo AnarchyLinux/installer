@@ -118,12 +118,12 @@ check_connection() {
 		else
 		
 		### Test connection speed with 10mb file output into /dev/null
-#			wget --append-output=/tmp/wget.log -O /dev/null "http://speedtest.wdc01.softlayer.com/downloads/test10.zip" &
-#			pid=$! pri=1 msg="\n$connection_load" load
+			wget --append-output=/tmp/wget.log -O /dev/null "http://speedtest.wdc01.softlayer.com/downloads/test10.zip" &
+			pid=$! pri=1 msg="\n$connection_load" load
 
 		### For testing purpose only - leave this line commented 
-			wget --append-output=/tmp/wget.log -O /dev/null "ftp://192.168.1.68/dh-repo/x86_64/lib32-gcc-libs-5.3.0-3-x86_64.pkg.tar.xz" &
-		pid=$! pri=1 msg="\n$connection_load" load
+#			wget --append-output=/tmp/wget.log -O /dev/null "ftp://192.168.1.68/dh-repo/x86_64/lib32-gcc-libs-5.3.0-3-x86_64.pkg.tar.xz" &
+#			pid=$! pri=1 msg="\n$connection_load" load
 
 		### Define network connection speed variables from data in wget.log
 			export connection_speed=$(tail -n 2 /tmp/wget.log | grep -oP '(?<=\().*(?=\))' | awk '{print $1}')
