@@ -118,12 +118,12 @@ check_connection() {
 		else
 		
 		### Test connection speed with 10mb file output into /dev/null
-			wget --append-output=/tmp/wget.log -O /dev/null "http://speedtest.wdc01.softlayer.com/downloads/test10.zip" &
-			pid=$! pri=1 msg="\n$connection_load" load
+#			wget --append-output=/tmp/wget.log -O /dev/null "http://speedtest.wdc01.softlayer.com/downloads/test10.zip" &
+#			pid=$! pri=1 msg="\n$connection_load" load
 
 		### For testing purpose only - leave this line commented 
-###			wget --append-output=/tmp/wget.log -O /dev/null "ftp://192.168.1.68/dh-repo/x86_64/lib32-gcc-libs-5.3.0-3-x86_64.pkg.tar.xz" &
-###			pid=$! pri=1 msg="\n$connection_load" load
+			wget --append-output=/tmp/wget.log -O /dev/null "ftp://192.168.1.68/dh-repo/x86_64/lib32-gcc-libs-5.3.0-3-x86_64.pkg.tar.xz" &
+		pid=$! pri=1 msg="\n$connection_load" load
 
 		### Define network connection speed variables from data in wget.log
 			export connection_speed=$(tail -n 2 /tmp/wget.log | grep -oP '(?<=\().*(?=\))' | awk '{print $1}')
@@ -194,7 +194,7 @@ set_zone() {
 	ZONE=$(whiptail --nocancel --title "$title" --ok-button "$ok" --menu "$zone_msg0" 18 60 10 $zonelist 3>&1 1>&2 2>&3)
 
 	### If selected zone is a directory set with subzone inside selected directory
-		if (find /usr/share/zoneinfo -maxdepth 1 -type d | sed -n -e 's!^.*/!!p' | grep "$ZONE"); then
+		if (find /usr/share/zoneinfo -maxdepth 1 -type d | sed -n -e 's!^.*/!!p' | grep "$ZONE" &> /dev/null); then
 			sublist=$(find /usr/share/zoneinfo/"$ZONE" -maxdepth 1 | sed -n -e 's!^.*/!!p' | sort | sed 's/$/ -/g')
 			SUBZONE=$(whiptail --title "$title" --ok-button "$ok" --cancel-button "$cancel" --menu "$zone_msg1" 18 60 10 $sublist 3>&1 1>&2 2>&3)
 
@@ -203,7 +203,7 @@ set_zone() {
 			fi
 
 		### If subzone is a directory set again inside selected directory
-			if (find /usr/share/zoneinfo/"$ZONE" -maxdepth 1 -type  d | sed -n -e 's!^.*/!!p' | grep "$SUBZONE"); then
+			if (find /usr/share/zoneinfo/"$ZONE" -maxdepth 1 -type  d | sed -n -e 's!^.*/!!p' | grep "$SUBZONE" &> /dev/null); then
 				sublist=$(find /usr/share/zoneinfo/"$ZONE"/"$SUBZONE" -maxdepth 1 | sed -n -e 's!^.*/!!p' | sort | sed 's/$/ -/g')
 				SUB_SUBZONE=$(whiptail --title "$title" --ok-button "$ok" --cancel-button "$cancel" --menu "$zone_msg1" 15 60 6 $sublist 3>&1 1>&2 2>&3)
 
@@ -280,7 +280,18 @@ prepare_drives() {
 	elif [ "$PART" != "$method2" ]; then
 	
 	### Prompt user to select drive for auto partitioning
-		DRIVE=$(whiptail --title "$title" --ok-button "$ok" --cancel-button "$cancel" --menu "$drive_msg" 15 60 4 $drive 3>&1 1>&2 2>&3)
+		cat <<-EOF > /tmp/part.sh
+			#!/bin/bash
+			# simple script used to generate block device menu
+			auto_part=\$(whiptail --title "$title" --ok-button "$ok" --cancel-button "$cancel" --menu "$drive_msg" 15 60 4 \\
+			$(lsblk | grep "disk" | awk '{print "\""$1"\"""    ""\"""Type: "$6"    ""'$size': "$4"\""" \\"}' |
+			sed "s/\.[0-9]*//;s/ [0-9][G,M]/&   /;s/ [0-9][0-9][G,M]/&  /;s/ [0-9][0-9][0-9][G,M]/& /")
+			3>&1 1>&2 2>&3) ; echo "\$auto_part" > /tmp/part.var
+		EOF
+	
+		bash /tmp/part.sh
+		
+		DRIVE=$(</tmp/part.var)
 	
 		if [ "$?" -gt "0" ]; then
 			prepare_drives
@@ -661,7 +672,7 @@ manual_partition() {
 
 ### Reset variables
 	unset manual_part
-	rm -r /tmp/{part.var,part.sh,part.tmp} &> /dev/null
+	rm -r /tmp/{part.var,part.sh} &> /dev/null
 	part_count=$(lsblk | grep "disk\|part" | wc -l)
 	
 ### Set menu height variable based on the number of listed partitions
@@ -676,26 +687,20 @@ manual_partition() {
 		menu_height=14
 	fi
 	
-### Begin disgusting un-called for string of commands
-### morph the output of lsblk using sed and awk to begin creating partition menu
-	lsblk | grep -v "K" | grep "disk\|part" | sed 's/\/mnt/\//;s/\/\//\//' | awk '{print "\""$1"\"""    ""\"""Type: "$6"    ""'$size': "$4"    '$mountpoint': "$7"\""" \\"}' > /tmp/part.tmp
-	
-### Echo some stuff into a file to be used for something
-	echo "manual_part=\$(whiptail --title "\"$title"\" --ok-button "\"$ok"\" --cancel-button "\"$cancel"\" --menu "\"$manual_part_msg"\" "\"$height"\" 70 "\"$menu_height"\" \\" > /tmp/whiptail.tmp
-	cat /tmp/whiptail.tmp /tmp/part.tmp > /tmp/part.sh
-	
-### echo append some more stuff into another file to do other stuff
-	echo '"'$done_msg'" "'$write'>" 3>&1 1>&2 2>&3) ; echo "$manual_part" > /tmp/part.var' >> /tmp/part.sh
-	
-### This is just getting insane now... Use sed to properly space partition size column then to remove 'Mountpoint:' if line is a drive instead of partition
-	sed -i "s/\.[0-9]*//;s/ [0-9][G,M]/&   /;s/ [0-9][0-9][G,M]/&  /;s/ [0-9][0-9][0-9][G,M]/& /;s/\(^\"sd.*Size:......\).*/\1\" \\\/" /tmp/part.sh
-	
+	cat <<-EOF > /tmp/part.sh
+		#!/bin/bash
+		# simple script used to generate block device menu
+		manual_part=\$(whiptail --title "$title" --ok-button "$ok" --cancel-button "$cancel" --menu "$manual_part_msg" 15 70 4 \\
+		$(lsblk | grep -v "K" | grep "disk\|part" | sed 's/\/mnt/\//;s/\/\//\//' | awk '{print "\""$1"\"""    ""\"""Type: "$6"    ""'$size': "$4"    '$mountpoint': "$7"\""" \\"}' |
+		sed "s/\.[0-9]*//;s/ [0-9][G,M]/&   /;s/ [0-9][0-9][G,M]/&  /;s/ [0-9][0-9][0-9][G,M]/& /;s/\(^\"sd.*Size:......\).*/\1\" \\\/")
+		"$done_msg" "$write>" 3>&1 1>&2 2>&3) ; echo "\$manual_part" > /tmp/part.var
+	EOF
+
 ### Run the script which does all of whatever the above stuff is and end up with a beautiful menu... somehow...
 	bash /tmp/part.sh
 
 ### All the above lines just to set one variable from the output in one file
-	manual_part=$(</tmp/partvar)
-	clear
+	manual_part=$(</tmp/part.var)
 	
 	if [ -z "$manual_part" ]; then
 		prepare_drives
@@ -743,6 +748,7 @@ manual_partition() {
 								mounted=true
 								ROOT="$part"
 								DRIVE=$(<<<$part sed 's/[0-9]//')
+								manual_partition
 							else
 
 							### Partition failed to mount display error and return to prepare drives function
