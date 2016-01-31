@@ -72,18 +72,16 @@ check_connection() {
 	fi
 
 ### Ping google to check status of internet connection
-	ping -w 1 google.com &> /dev/null
-	
-	if [ "$?" -gt "0" ]; then
-		err=true
-	fi
+	(ping -w 2.5 google.com
+	echo "$?" > /tmp/ex_status.var) &> /dev/null &
+	pid=$! pri=0.1 msg="$wait_load" load
 
 ### Begin connection test and error check
 	until "$connection"
 	  do
 	
 	### If ping exited with error
-		if "$err" ; then
+		if [ "$(</tmp/ex_status.var)" -gt "0" ]; then
     	
 		### If connection error check for wifi network
 			if [ -n "$wifi_network" ]; then
@@ -100,7 +98,7 @@ check_connection() {
 				### Else set wifi to true and error to false
 					else
 						wifi=true
-						err=false
+						echo "0" > /tmp/ex_status.var
 					fi
 			
 			### Else if user would not like to connect unset wifi network	
@@ -118,16 +116,16 @@ check_connection() {
 		else
 		
 		### Test connection speed with 10mb file output into /dev/null
-			wget --append-output=/tmp/wget.log -O /dev/null "http://speedtest.wdc01.softlayer.com/downloads/test10.zip" &
-			pid=$! pri=1 msg="\n$connection_load" load
+		#	wget --append-output=/tmp/wget.log -O /dev/null "http://speedtest.wdc01.softlayer.com/downloads/test10.zip" &
+	#		pid=$! pri=1 msg="\n$connection_load" load
 
 		### For testing purpose only - leave this line commented 
-#			wget --append-output=/tmp/wget.log -O /dev/null "ftp://192.168.1.68/dh-repo/x86_64/lib32-gcc-libs-5.3.0-3-x86_64.pkg.tar.xz" &
-#			pid=$! pri=1 msg="\n$connection_load" load
+			wget --append-output=/tmp/wget.log -O /dev/null "ftp://192.168.1.68/dh-repo/x86_64/lib32-gcc-libs-5.3.0-3-x86_64.pkg.tar.xz" &
+			pid=$! pri=1 msg="\n$connection_load" load
 
 		### Define network connection speed variables from data in wget.log
-			export connection_speed=$(tail -n 2 /tmp/wget.log | grep -oP '(?<=\().*(?=\))' | awk '{print $1}')
-			export connection_rate=$(tail -n 2 /tmp/wget.log | grep -oP '(?<=\().*(?=\))' | awk '{print $2}')
+			connection_speed=$(tail -n 2 /tmp/wget.log | grep -oP '(?<=\().*(?=\))' | awk '{print $1}')
+			connection_rate=$(tail -n 2 /tmp/wget.log | grep -oP '(?<=\().*(?=\))' | awk '{print $2}')
         
     	### Define cpu frequency variables
         	cpu_mhz=$(lscpu | grep "CPU max MHz" | awk '{print $4}' | sed 's/\..*//')
@@ -138,16 +136,26 @@ check_connection() {
         
        ### Define cpu sleep variable based on total cpu frequency
 			case "$cpu_mhz" in
-				[0-9][0-9][0-9]) export cpu_sleep=5 ;;
-				[1][0-9][0-9][0-9]) export cpu_sleep=4 ;;
-				[2][0-9][0-9][0-9]) export cpu_sleep=3 ;;
-				[3-5][0-9][0-9][0-9]) export cpu_sleep=2 ;;
+				[0-9][0-9][0-9]) 
+					cpu_sleep=5
+				;;
+				[1][0-9][0-9][0-9])
+					cpu_sleep=4
+				;;
+				[2][0-9][0-9][0-9])
+					cpu_sleep=2.5
+				;;
+				*)
+					cpu_sleep=2
+				;;
 			esac
-        	
+        		
+			export connection_speed connection_rate cpu_sleep
 			connection=true
 		fi
 	done
 
+	rm /tmp/ex_status.var
 	set_locale
 
 }
@@ -174,14 +182,13 @@ set_locale() {
 
 ### If user selects 'other' locale display full list
 	if [ "$LOCALE" = "$other" ]; then
-		LOCALE=$(whiptail --title "$title" --ok-button "$ok" --cancel-button "$cancel" --menu "$locale_msg" 15 60 6  $localelist 3>&1 1>&2 2>&3)
+		LOCALE=$(whiptail --title "$title" --ok-button "$ok" --cancel-button "$cancel" --menu "$locale_msg" 15 60 6 $localelist 3>&1 1>&2 2>&3)
 
 		if [ "$?" -gt "0" ]; then 
 			set_locale
 		fi
 	fi
 
-	locale_set=true
 	set_zone
 
 }
@@ -213,7 +220,6 @@ set_zone() {
 			fi
 		fi
 
-	zone_set=true
 	set_keys
 
 }
@@ -244,7 +250,6 @@ set_keys() {
 		fi
 	fi
 
-	keys_set=true 
 	prepare_drives
 
 }
@@ -279,37 +284,29 @@ prepare_drives() {
 ### If manual partition NOT selected begin setting drive configuration
 	elif [ "$PART" != "$method2" ]; then
 	
-	### Prompt user to select drive for auto partitioning
+	### Use cat to generate a drive selection menu script
+	### create the file '/tmp/part.sh' containing the command for the properly formatted menu
+	### I then set the variable 'DRIVE' to the output of running the generated script and clean-up
 		cat <<-EOF > /tmp/part.sh
-			#!/bin/bash
-			# simple script used to generate block device menu
-			auto_part=\$(whiptail --title "$title" --ok-button "$ok" --cancel-button "$cancel" --menu "$drive_msg" 15 60 4 \\
-			$(lsblk | grep "disk" | awk '{print "\""$1"\"""    ""\"""Type: "$6"    ""'$size': "$4"\""" \\"}' |
-			sed "s/\.[0-9]*//;s/ [0-9][G,M]/&   /;s/ [0-9][0-9][G,M]/&  /;s/ [0-9][0-9][0-9][G,M]/& /")
-			3>&1 1>&2 2>&3) ; echo "\$auto_part" > /tmp/part.var
-		EOF
-	
-		bash /tmp/part.sh
+				#!/bin/bash
+				# simple script used to generate block device menu
+				whiptail --title "$title" --ok-button "$ok" --cancel-button "$cancel" --menu "$drive_msg" 15 60 4 \\
+				$(lsblk | grep "disk" | awk '{print "\""$1"\"""    ""\"""Type: "$6"    ""'$size': "$4"\""" \\"}' |
+				sed "s/\.[0-9]*//;s/ [0-9][G,M]/&   /;s/ [0-9][0-9][G,M]/&  /;s/ [0-9][0-9][0-9][G,M]/& /")
+				3>&1 1>&2 2>&3
+			EOF
 		
-		DRIVE=$(</tmp/part.var)
-	
-		if [ "$?" -gt "0" ]; then
+		DRIVE=$(bash /tmp/part.sh)
+		rm /tmp/part.sh
+		
+	### If drive variable is not set user selected cancel
+	### return to beginning of prepare drives function
+		if [ -z "$DRIVE" ]; then
 			prepare_drives
 		fi
 		
 	### Read total gigabytes of selected drive and source language file variables
 		drive_gigs=$(lsblk | grep -w "$DRIVE" | awk '{print $4}' | grep -o '[0-9]*' | awk 'NR==1') 
-		source "$lang_file"
-
-	### Prompt user to format selected drive
-		if (whiptail --title "$title" --defaultno --yes-button "$write" --no-button "$cancel" --yesno "$drive_var" 12 60) then
-			sgdisk --zap-all /dev/"$DRIVE" &> /dev/null &
-			pid=$! pri=0.1 msg="$wait_load" load
-	
-	### Else reset back to beginning of prepare drives function
-		else
-			prepare_drives
-		fi
 
 	### Prompt user to select new filesystem type
 		FS=$(whiptail --title "$title" --nocancel --menu "$fs_msg" 16 65 6 \
@@ -319,7 +316,6 @@ prepare_drives() {
 			"btrfs"     "$fs3" \
 			"jfs"       "$fs4" \
 			"reiserfs"  "$fs5" 3>&1 1>&2 2>&3)
-		source "$lang_file"
 
 	### Prompt user to create new swap space
 		if (whiptail --title "$title" --yes-button "$yes" --no-button "$no" --yesno "$swap_msg0" 10 60) then
@@ -340,10 +336,10 @@ prepare_drives() {
 				else
 					
 				### If selected unit is set to 'M' MiB
-					if [ $(grep -o ".$" <<< "$SWAPSPACE") == "M" ]; then 
+					if [ "$(grep -o ".$" <<< "$SWAPSPACE")" == "M" ]; then 
 						
 					### If swapsize exceeded the total volume of the drive in MiB taking into account 4 GiB for install space
-						if [ $(grep -o '[0-9]*' <<< "$SWAPSPACE") -lt $(echo "$drive_gigs*1000-4096" | bc) ]; then 
+						if [ "$(grep -o '[0-9]*' <<< "$SWAPSPACE")" -lt "$(echo "$drive_gigs*1000-4096" | bc)" ]; then 
 							SWAP=true 
 							swapped=true
 						
@@ -353,10 +349,10 @@ prepare_drives() {
 						fi
 
 				### Else if selected unit is set to 'G' GiB
-					elif [ $(grep -o ".$" <<< "$SWAPSPACE") == "G" ]; then 
+					elif [ "$(grep -o ".$" <<< "$SWAPSPACE")" == "G" ]; then 
 
 				### If swapsize exceeded the total volume of the drive in GiB taking into account 4 GiB for install space
-						if [ $(grep -o '[0-9]*' <<< "$SWAPSPACE") -lt $(echo "$drive_gigs-4" | bc) ]; then 
+						if [ "$(grep -o '[0-9]*' <<< "$SWAPSPACE")" -lt "$(echo "$drive_gigs-4" | bc)" ]; then 
 							SWAP=true 
 							swapped=true
 							
@@ -396,7 +392,33 @@ prepare_drives() {
 				GPT=true
 			fi
 		fi
+
+		source "$lang_file"
+
+		if "$SWAP" ; then
+			drive_var="$drive_var1"
+			height=15
+
+			if "$UEFI" ; then
+				drive_var="$drive_var2"
+				height=16
+			fi
+		elif "$UEFI" ; then
+			drive_var="$drive_var3"
+			height=15
+		else
+			height=13
+		fi
 	
+	### Prompt user to format selected drive
+		if (whiptail --title "$title" --defaultno --yes-button "$write" --no-button "$cancel" --yesno "$drive_var" "$height" 60) then
+			sgdisk --zap-all /dev/"$DRIVE" &> /dev/null &
+			pid=$! pri=0.1 msg="$frmt_load" load
+	
+	### Else reset back to beginning of prepare drives function
+		else
+			prepare_drives
+		fi
 ### End setting drive configuration
 	fi
 	
@@ -424,9 +446,10 @@ prepare_drives() {
 						SWAP="$(lsblk | grep "$DRIVE" |  awk '{ if (NR==4) print substr ($1,3) }')"
 						
 					### Wipe swap filesystem create and enable new swapspace
-						wipefs -a /dev/"$SWAP" &> /dev/null
-						mkswap /dev/"$SWAP" &> /dev/null
-						swapon /dev/"$SWAP" &> /dev/null
+						(wipefs -a /dev/"$SWAP"
+						mkswap /dev/"$SWAP"
+						swapon /dev/"$SWAP") &> /dev/null &
+						pid=$! pri=0.1 msg="\n$swap_load" load
 					
 				### Else swapspace false
 					else
@@ -454,9 +477,11 @@ prepare_drives() {
 						echo -e "o\ny\nn\n1\n\n+100M\n\nn\n2\n\n+1M\nEF02\nn\n4\n\n+$SWAPSPACE\n8200\nn\n3\n\n\n\nw\ny" | gdisk /dev/"$DRIVE" &> /dev/null &
 						pid=$! pri=0.1 msg="\n$load_var0" load
 						SWAP="$(lsblk | grep "$DRIVE" |  awk '{ if (NR==5) print substr ($1,3) }')"
-						wipefs -a /dev/"$SWAP" &> /dev/null
-						mkswap /dev/"$SWAP" &> /dev/null
-						swapon /dev/"$SWAP" &> /dev/null
+						(wipefs -a /dev/"$SWAP"
+						mkswap /dev/"$SWAP"
+						swapon /dev/"$SWAP") &> /dev/null &
+						pid=$! pri=0.1 msg="\n$swap_load" load
+
 					
 				### Else swapspace is false
 					else
@@ -483,9 +508,11 @@ prepare_drives() {
 					echo -e "o\nn\np\n1\n\n+100M\nn\np\n3\n\n+$SWAPSPACE\nt\n\n82\nn\np\n2\n\n\nw" | fdisk /dev/"$DRIVE" &> /dev/null &
 					pid=$! pri=0.1 msg="\n$load_var0" load
 					SWAP="$(lsblk | grep "$DRIVE" |  awk '{ if (NR==4) print substr ($1,3) }')"					
-					wipefs -a /dev/"$SWAP" &> /dev/null
-					mkswap /dev/"$SWAP" &> /dev/null
-					swapon /dev/"$SWAP" &> /dev/null
+					(wipefs -a /dev/"$SWAP"
+					mkswap /dev/"$SWAP"
+					swapon /dev/"$SWAP") &> /dev/null &
+					pid=$! pri=0.1 msg="\n$swap_load" load
+
 				else
 					
 				### If swap is false echo commands into 'fdisk'
@@ -502,8 +529,9 @@ prepare_drives() {
 			fi
 
 		### Wipe the filesystems on the new boot and root partitions
-			wipefs -a /dev/"$BOOT" &> /dev/null
-			wipefs -a /dev/"$ROOT" &> /dev/null
+			(wipefs -a /dev/"$BOOT"
+			wipefs -a /dev/"$ROOT") &> /dev/null &
+			pid=$! pri=0.1 msg="\n$frmt_load" load
 
 		### If uefi boot is set to true create new boot filesystem type of 'vfat'
 			if "$UEFI" ; then
@@ -521,15 +549,17 @@ prepare_drives() {
 			pid=$! pri=1 msg="\n$load_var1" load
 
 		### Mount root partition at arch mountpoint
-			mount /dev/"$ROOT" "$ARCH"
+			(mount /dev/"$ROOT" "$ARCH"
+			echo "$?" > /tmp/ex_status.var
+			mkdir $ARCH/boot
+			mount /dev/"$BOOT" "$ARCH"/boot) &> /dev/null &
+			pid=$! pri=0.1 msg="\n$mnt_load" load
 
-			if [ "$?" -eq "0" ]; then
+			if [ "$(</tmp/ex_status.var)" -eq "0" ]; then
 				mounted=true
 			fi
 
-		### Create boot directory and mount boot partition
-			mkdir $ARCH/boot
-			mount /dev/"$BOOT" "$ARCH"/boot
+			rm /tmp/ex_status.var
 		;;
 
 	### Auto partition encrypted LVM
@@ -592,42 +622,36 @@ prepare_drives() {
 			fi
 
 		### Wipe filesystem on root partition
-			wipefs -a /dev/"$ROOT" &> /dev/null
-			
+			(wipefs -a /dev/"$ROOT"
+			wipefs -a /dev/"$BOOT") &> /dev/null &
+			pid=$! pri=0.1 msg="\n$frmt_load" load
+
 		### Create new physical volume and volume group on root partition using LVM
-			lvm pvcreate /dev/"$ROOT" &> /dev/null
-			lvm vgcreate lvm /dev/"$ROOT" &> /dev/null
+			(lvm pvcreate /dev/"$ROOT"
+			lvm vgcreate lvm /dev/"$ROOT") &> /dev/null &
+			pid=$! pri=0.1 msg="\n$pv_load" load
 
 		### If swap is set to true create new swap logical volume set to size of swapspace
 			if "$SWAP" ; then
-				lvm lvcreate -L $SWAPSPACE -n swap lvm &> /dev/null
+				lvm lvcreate -L "$SWAPSPACE" -n swap lvm &> /dev/null &
+				pid=$! pri=0.1 msg="\n$swap_load" load
 			fi
 
 		### Create new locical volume for tmp and root filesystems 'tmp' and 'lvroot'
-			lvm lvcreate -L 500M -n tmp lvm &> /dev/null
-			lvm lvcreate -l 100%FREE -n lvroot lvm &> /dev/null
+			(lvm lvcreate -L 500M -n tmp lvm
+			lvm lvcreate -l 100%FREE -n lvroot lvm) &> /dev/null &
+			pid=$! pri=0.1 msg="\n$lv_load" load
 
 		### Encrypt root logical volume using cryptsetup lukas format
-			printf "$input" | cryptsetup luksFormat -c aes-xts-plain64 -s 512 /dev/lvm/lvroot - &
+			(printf "$input" | cryptsetup luksFormat -c aes-xts-plain64 -s 512 /dev/lvm/lvroot -
+			printf "$input" | cryptsetup open --type luks /dev/lvm/lvroot root -) &> /dev/null &
 			pid=$! pri=0.2 msg="\n$encrypt_load" load
-
-		### Open new encrypted volume
-			printf "$input" | cryptsetup open --type luks /dev/lvm/lvroot root -
-			unset input
+			unset input ; input_chk=default
 
 		### Create and mount root filesystem on new encrypted volume
 			mkfs -F -t "$FS" /dev/mapper/root &> /dev/null &
 			pid=$! pri=1 msg="\n$load_var1" load
-			mount /dev/mapper/root "$ARCH"
-
-			if [ "$?" -eq "0" ]; then
-				mounted=true
-				crypted=true
-			fi
-
-		### Wipe boot partition filesystem
-			wipefs -a /dev/"$BOOT" &> /dev/null
-
+			
 		### If efi is true create new boot filesystem using 'vfat'
 			if "$UEFI" ; then
 				mkfs.vfat -F32 /dev/"$BOOT" &> /dev/null &
@@ -639,9 +663,19 @@ prepare_drives() {
 				pid=$! pri=0.2 msg="\n$boot_load" load
 			fi
 
-		### Create new boot mountpoint and mount boot partition
+			(mount /dev/mapper/root "$ARCH"
+			echo "$?" > /tmp/ex_status.var
 			mkdir $ARCH/boot
-			mount /dev/"$BOOT" "$ARCH"/boot
+			mount /dev/"$BOOT" "$ARCH"/boot) &> /dev/null &
+			pid=$! pri=0.1 msg="\n$mnt_load" load
+
+			if [ $(</tmp/ex_status.var) -eq "0" ]; then
+				mounted=true
+				crypted=true
+			fi
+
+			rm /tmp/ex_status.var
+
 		;;
 
 	### Manual partitioning selected
@@ -650,7 +684,6 @@ prepare_drives() {
 		### Set mountpoints variable and move into manual partition function
 			points=$(echo -e "$points_orig\n$custom $custom-mountpoint")
 			manual_partition
-			clear
 		;;
 	esac
 
@@ -667,12 +700,12 @@ prepare_drives() {
 }
 
 ### This next function takes care of guided manual partitioning
+### also one of the more complex functions in this program
 
 manual_partition() {
 
 ### Reset variables
 	unset manual_part
-	rm -r /tmp/{part.var,part.sh} &> /dev/null
 	part_count=$(lsblk | grep "disk\|part" | wc -l)
 	
 ### Set menu height variable based on the number of listed partitions
@@ -687,36 +720,51 @@ manual_partition() {
 		menu_height=14
 	fi
 	
+### Prompt user to select a drive or partition to edit
+### due to the formatting of the partition menu I was forced to cat this menu into its own script
+### cat creates the file '/tmp/part.sh containing the command used create the partition menu
+### I then set the variable 'manual_part' to the output of running the generated script and clean-up
 	cat <<-EOF > /tmp/part.sh
-		#!/bin/bash
-		# simple script used to generate block device menu
-		manual_part=\$(whiptail --title "$title" --ok-button "$ok" --cancel-button "$cancel" --menu "$manual_part_msg" 15 70 4 \\
-		$(lsblk | grep -v "K" | grep "disk\|part" | sed 's/\/mnt/\//;s/\/\//\//' | awk '{print "\""$1"\"""    ""\"""Type: "$6"    ""'$size': "$4"    '$mountpoint': "$7"\""" \\"}' |
-		sed "s/\.[0-9]*//;s/ [0-9][G,M]/&   /;s/ [0-9][0-9][G,M]/&  /;s/ [0-9][0-9][0-9][G,M]/& /;s/\(^\"sd.*Size:......\).*/\1\" \\\/")
-		"$done_msg" "$write>" 3>&1 1>&2 2>&3) ; echo "\$manual_part" > /tmp/part.var
-	EOF
+			#!/bin/bash
+			# simple script used to generate block device menu
+			whiptail --title "$title" --ok-button "$ok" --cancel-button "$cancel" --menu "$manual_part_msg" "$height" 70 "$menu_height" \\
+			$(lsblk | grep -v "K" | grep "disk\|part" | sed 's/\/mnt/\//;s/\/\//\//' | awk '{print "\""$1"\"""    ""\"""Type: "$6"    ""'$size': "$4"    '$mountpoint': "$7"\""" \\"}' |
+			sed "s/\.[0-9]*//;s/ [0-9][G,M]/&   /;s/ [0-9][0-9][G,M]/&  /;s/ [0-9][0-9][0-9][G,M]/& /;s/\(^\"sd.*Size:......\).*/\1\" \\\/")
+			"$done_msg" "$write>" 3>&1 1>&2 2>&3
+		EOF
 
-### Run the script which does all of whatever the above stuff is and end up with a beautiful menu... somehow...
-	bash /tmp/part.sh
-
-### All the above lines just to set one variable from the output in one file
-	manual_part=$(</tmp/part.var)
+	manual_part=$(bash /tmp/part.sh)
+	rm /tmp/part.sh
+	clear
 	
+### If manual_part is not defined this means the user selected cancel
+### return to prepare drives function
 	if [ -z "$manual_part" ]; then
 		prepare_drives
 	
-	elif (<<<$manual_part grep "[0-9]"); then
+### Else if the manual_part variable contains a number 0-9 this means it is a partition
+	elif (<<<$manual_part grep "[0-9]" &> /dev/null); then
+
+	### Remove the line output so you're left with only device location eg 'sda1'
+	### set the size of the selected partition
+	### specify the existing mountpoint (if any)
 		part=$(<<<$manual_part sed 's/├─//;s/└─//')
 		part_size=$(lsblk | grep "$part" | awk '{print $4}')
 		part_mount=$(lsblk | grep "$part" | awk '{print $7}' | sed 's/\/mnt/\//;s/\/\//\//')
 		source "$lang_file"
+
+	### If no partitions are mounted user must create root partition first
+		if ! (lsblk | grep "part" | grep "/" &> /dev/null); then
 	
-		if ! (lsblk | grep "part" | grep "/"); then
-	
+		### Check the size of the selected partition
+		### Root partition can't be smaller than 4 Gib
 			case "$part_size" in
 				[4-9]G|[0-9][0-9]*G|[4-9].*G|T)
-					# Ask to create root if no partitions and size is in range
+				
+				### If partition is in the correct size range prompt user to create new root partition
 					if (whiptail --title "$title" --yes-button "$yes" --no-button "$cancel" --defaultno --yesno "$root_var" 13 60) then
+						
+					### Prompt user for new root partition filesystem type
 						FS=$(whiptail --title "$title" --ok-button "$ok" --cancel-button "$cancel" --menu "$fs_msg" 16 65 6 \
 							"ext4"      "$fs0" \
 							"ext3"      "$fs1" \
@@ -725,153 +773,209 @@ manual_partition() {
 							"jfs"       "$fs4" \
 							"reiserfs"  "$fs5" 3>&1 1>&2 2>&3)
 
+					### If exit status greater than '0' user selected cancel
+					### return to beginning for manual partition function
 						if [ "$?" -gt "0" ]; then
 							manual_partition
 						fi
 
 						source "$lang_file"
 
+					### Prompt user to confirm creating new root mountpoint on partition
+					### displays partition location partition size new mountpoint filesystem type
 						if (whiptail --title "$title" --yes-button "$write" --no-button "$cancel" --defaultno --yesno "$root_confirm_var" 14 50) then
 						
-						### Wipe root filesystem
+						### Wipe root filesystem on selected partition
 							wipefs -a -q /dev/"$part" &> /dev/null &
-							pid=$! pri=0.1 msg="$wait_load" load
+							pid=$! pri=0.1 msg="$frmt_load" load
 
 						### Create new filesystem on root partition
 							mkfs -F -t "$FS" /dev/"$part" &> /dev/null &
 							pid=$! pri=1 msg="\n$load_var1" load
 
 						### Mount new root partition at arch mountpoint
-							mount /dev/"$part" "$ARCH" &> /dev/null &
+							(mount /dev/"$part" "$ARCH"
+							echo "$?" > /tmp/ex_status.var) &> /dev/null &
+							pid=$! pri=0.1 msg="\n$mnt_load" load
 
-							if [ "$?" -eq "0" ]; then
+						### If exit status is equal to '0' set mounted, root, and drive variables
+							if [ $(</tmp/ex_status) -eq "0" ]; then
 								mounted=true
 								ROOT="$part"
 								DRIVE=$(<<<$part sed 's/[0-9]//')
-								manual_partition
-							else
 
-							### Partition failed to mount display error and return to prepare drives function
+						### Else mount command failed
+						### display error message and return to prepare drives function
+							else
 								whiptail --title "$title" --ok-button "$ok" --msgbox "$part_err_msg1" 10 60
 								prepare_drives
 							fi
 						fi
 					fi
 				;;
+			### Size of selected partition is less than 4GB and root partition has not been selected
 				*)
-					### Partition too small to be root partition display error
+				### Partition too small to be root partition display error and prompt user to select another partition to be root
 					whiptail --title "$title" --ok-button "$ok" --msgbox "$root_err_msg" 10 60
 				;;
 			esac
 
+	### Else if partition is already mounted
 		elif [ -n "$part_mount" ]; then
+			
+		### Display mounted message with partition info and mountpoint with edit and back buttons
 			if (whiptail --title "$title" --yes-button "$edit" --no-button "$back" --defaultno --yesno "$manual_part_var0" 13 60) then
 			
+			### If user selects to edit existing mountpoint check if it is the root partition
+			### if existing mountpoint is root warn user
 				if [ "$part" == "$ROOT" ]; then
 					if (whiptail --title "$title" --yes-button "$yes" --no-button "$no" --defaultno --yesno "$manual_part_var2" 11 60) then
+						
+					### If user decides to change mountpoint on root partition set mounted to false
+					### unset variables and unmount recursive root partition
 						mounted=false
 						unset ROOT DRIVE
 						umount -R "$ARCH" &> /dev/null &
 						pid=$! pri=0.1 msg="$wait_load" load
 					fi
+				
+			### Else if user selected to edit existing mountpoint and is not root partition
 				else
 			
+				### Check if mountpoint is swap partition
+				### if mountpoint is swap and user would like to edit mountpoint turn off swap
 					if [ "$part_mount" == "[SWAP]" ]; then
 						if (whiptail --title "$title" --yes-button "$yes" --no-button "$no" --defaultno --yesno "$manual_swap_var" 10 60) then
-							swapoff /dev/"$part" &> /dev/null
-						fi
-					else
-						if (whiptail --title "$title" --yes-button "$yes" --no-button "$no" --defaultno --yesno "$manual_part_var1" 10 60) then
-							umount  "$ARCH"/"$part_mount" &> /dev/null &
+							swapoff /dev/"$part" &> /dev/null &
 							pid=$! pri=0.1 msg="$wait_load" load
-							rm -r "$ARCH"/"$part_mount"
-							points=$(echo -e "$part_mount   mountpoint>\n$points")
 						fi
+					
+				### Else if mountpoint is not swap prompt user if they would like to change mountpoint
+				### if user selects yes unmount the partition remove the created mountpoint and echo the mountpoint back into the points menu
+					elif (whiptail --title "$title" --yes-button "$yes" --no-button "$no" --defaultno --yesno "$manual_part_var1" 10 60) then
+						umount  "$ARCH"/"$part_mount" &> /dev/null &
+						pid=$! pri=0.1 msg="$wait_load" load
+						rm -r "$ARCH"/"$part_mount"
+						points=$(echo -e "$part_mount   mountpoint>\n$points")
 					fi
 				fi
 			fi
 
-		else
-			# Create a new mountpoint on part?
-			if (whiptail --title "$title" --yes-button "$edit" --no-button "$cancel" --yesno "$manual_new_part_var" 12 60) then
-				mnt=$(whiptail --title "$title" --ok-button "$ok" --cancel-button "$cancel" --menu "$mnt_var0" 15 60 6 $points 3>&1 1>&2 2>&3)
+	### Else if root partition has already been mounted and selected partition is not already mounted
+	### prompt user to create a new mountpoint on selected partition
+		elif (whiptail --title "$title" --yes-button "$edit" --no-button "$cancel" --yesno "$manual_new_part_var" 12 60) then
+			
+		### set the variable mnt to the location of new mountpoint
+			mnt=$(whiptail --title "$title" --ok-button "$ok" --cancel-button "$cancel" --menu "$mnt_var0" 15 60 6 $points 3>&1 1>&2 2>&3)
 				
+		### If exit status is greater than '0' user selected cancel
+		### return to beginning of manual partition function
+			if [ "$?" -gt "0" ]; then
+				manual_partition
+			fi
+
+		### if user selected a custom mountpoint set err variable to true
+			if [ "$mnt" == "$custom" ]; then
+				err=true
+
+			### begin custom mountpoint menu loop
+			### until err is set to false prompt user to input custom mountpoint
+				until ! "$err"
+				  do
+					mnt=$(whiptail --title "$title" --ok-button "$ok" --cancel-button "$cancel" --inputbox "$custom_msg" 10 50 "/" 3>&1 1>&2 2>&3)
+					
+				### If exit status is greater than '0' user selected cancel
+				### return to beginning of manual partition function
+					if [ "$?" -gt "0" ]; then
+						err=false
+						manual_partition
+					
+				### Else if custom mountpoint contains special characters display error message and return to beginning of custom mountpoint loop
+					elif (<<<$mnt grep "[\[\$\!\'\"\`\\|%&#@()+=<>~;:?.,^{}]\|]" &> /dev/null); then
+						whiptail --title "$title" --ok-button "$ok" --msgbox "$custom_err_msg0" 10 60
+
+				### Else if custom mountpoint is set to root '/' display error message and return to beginning of custom mountpoint loop
+					elif (<<<$mnt grep "^[/]$" &> /dev/null); then
+						whiptail --title "$title" --ok-button "$ok" --msgbox "$custom_err_msg1" 10 60
+					
+				### Else custom mountpoint is valid set err variable to false
+					else
+						err=false
+					fi
+				
+			### End custom mountpoint loop
+				done
+			fi
+
+					
+		### Else prompt user to select filesystem type for selected partition
+			if [ "$mnt" != "SWAP" ]; then
+				FS=$(whiptail --title "$title" --ok-button "$ok" --cancel-button "$cancel" --menu "$fs_msg" 16 65 6 \
+					"ext4"      "$fs0" \
+					"ext3"      "$fs1" \
+					"ext2"      "$fs2" \
+					"btrfs"     "$fs3" \
+					"jfs"       "$fs4" \
+					"reiserfs"  "$fs5" 3>&1 1>&2 2>&3)
+					
 				if [ "$?" -gt "0" ]; then
 					manual_partition
 				fi
+			else
+				FS="SWAP"
+			fi
 
-				if [ "$mnt" == "$custom" ]; then
-					err=true
-
-					until ! "$err"
-					  do
-						mnt=$(whiptail --title "$title" --ok-button "$ok" --cancel-button "$cancel" --inputbox "$custom_msg" 10 50 "/" 3>&1 1>&2 2>&3)
-					
-						if [ "$?" -gt "0" ]; then
-							err=false
-							manual_partition
-						elif (<<<$mnt grep "[\[\$\!\'\"\`\\|%&#@()+=<>~;:?.,^{}]\|]"); then
-							whiptail --title "$title" --ok-button "$ok" --msgbox "$custom_err_msg0" 10 60
-						elif (<<<$mnt grep "^[/]$"); then
-							whiptail --title "$title" --ok-button "$ok" --msgbox "$custom_err_msg1" 10 60
-						else
-							err=false
-						fi
-					done
-				fi
-
+			source "$lang_file"
+		
+		### Confirm creating new mountpoint on partition
+			if (whiptail --title "$title" --yes-button "$write" --no-button "$cancel" --defaultno --yesno "$part_confirm_var" 14 50) then
+				
+			### If user set  mountpoint to swap
+			### wipe filesystem on selected partition
+			### create new swapspace on partition and turn swap on
 				if [ "$mnt" == "SWAP" ]; then
-					wipefs -a -q /dev/"$part"
-					mkswap /dev/"$part" &> /dev/null
-					pid=$! pri=0.1 msg="$wait_load" load
-					swapon /dev/"$part" &> /dev/null
+					(wipefs -a -q /dev/"$part"
+					mkswap /dev/"$part"
+					swapon /dev/"$part") &> /dev/null &
+					pid=$! pri=0.1 msg="\n$swap_load" load
+				
+			### Else if mount is not equal to swap
 				else
-					FS=$(whiptail --title "$title" --ok-button "$ok" --cancel-button "$cancel" --menu "$fs_msg" 16 65 6 \
-						"ext4"      "$fs0" \
-						"ext3"      "$fs1" \
-						"ext2"      "$fs2" \
-						"btrfs"     "$fs3" \
-						"jfs"       "$fs4" \
-						"reiserfs"  "$fs5" 3>&1 1>&2 2>&3)
-					
-					if [ "$?" -gt "0" ]; then
-						manual_partition
-					fi
-					
 					points=$(echo  "$points" | grep -v "$mnt")
-					source "$lang_file"
-
-					if (whiptail --title "$title" --yes-button "$write" --no-button "$cancel" --defaultno --yesno "$part_confirm_var" 14 50) then
-						wipefs -a -q /dev/"$part" &> /dev/null &
-						pid=$! pri=0.1 msg="$wait_load" load
-					
-						mkfs -F -t "$FS" /dev/"$part" &> /dev/null &
-						pid=$! pri=1 msg="\n$load_var1" load
-					
-						mkdir -p "$ARCH"/"$mnt"
-						mount /dev/"$part" "$ARCH"/"$mnt" &> /dev/null &
-						pid=$! pri=0.1 msg="$wait_load" load
-					
-						if [ "$?" -gt "0" ]; then
-							whiptail --title "$title" --ok-button "$ok" --msgbox "$part_err_msg1" 10 60
-						fi
-					fi
+				
+				### Wipe filesystem on selected partition
+					wipefs -a -q /dev/"$part" &> /dev/null &
+					pid=$! pri=0.1 msg="\n$frmt_load" load
+				
+				### Create new filesystem on selected partition
+					mkfs -F -t "$FS" /dev/"$part" &> /dev/null &
+					pid=$! pri=1 msg="\n$load_var1" load
+				
+				### Create new mountpoint and mount selected partition
+					(mkdir -p "$ARCH"/"$mnt"
+					mount /dev/"$part" "$ARCH"/"$mnt") &> /dev/null &
+					pid=$! pri=0.1 msg="\n$mnt_load" load
 				fi
 			fi
-			
 		fi
 
 		manual_partition
 
+### Else if manual part variable is set to 'done'
 	elif [ "$manual_part" == "$done_msg" ]; then
 	
+	### If no partition is mounted display error message to user and return to beginning of manual partition function
 		if ! "$mounted" ; then
 			whiptail --title "$title" --ok-button "$ok" --msgbox "$root_err_msg1" 10 60
 			manual_partition
+		
+	### Else partition is mounted, create a list and count of final partitions
 		else
 			final_part=$(lsblk | grep "/\|[SWAP]" | grep "part" | awk '{print $1"      "$4"       "$7}' | sed 's/\/mnt/\//;s/\/\//\//;1i'$partition': '$size':       '$mountpoint': ' | sed "s/\.[0-9]*//;s/ [0-9][G,M]/&   /;s/ [0-9][0-9][G,M]/&  /;s/ [0-9][0-9][0-9][G,M]/& /")
 			final_count=$(lsblk | grep "/\|[SWAP]" | grep "part"  | wc -l)
 
+			
+		### Set the height of the write confirm menu based on the number of partitions to be added
 			if [ "$final_count" -lt "7" ]; then
 				height=17
 			elif [ "$final_count" -lt "13" ]; then
@@ -882,24 +986,37 @@ manual_partition() {
 				height=30
 			fi
 
-			if ! (whiptail --title "$title" --yes-button "$write" --no-button "$cancel" --defaultno --yesno "$write_confirm_msg \n\n $final_part \n\n $write_confirm" "$height" 50) then
-				manual_partition
+		### Confirm writing changes to partition table and continue with install
+			if (whiptail --title "$title" --yes-button "$write" --no-button "$cancel" --defaultno --yesno "$write_confirm_msg \n\n $final_part \n\n $write_confirm" "$height" 50) then
+				update_mirrors
 			fi
 		fi
+	
+### Else user selected a root block device 
+### Prompt user to edit partition scheme
 	else
+		
+	### Set the size of selected block device
 		part_size=$(lsblk | grep "$manual_part" | awk 'NR==1 {print $4}')
 		source "$lang_file"
 
-		if (lsblk | grep "$manual_part" | grep "$ARCH"); then	
+	### Check if block device contains mounted partitions
+		if (lsblk | grep "$manual_part" | grep "$ARCH" &> /dev/null); then	
+			
+		### If partitions are mounted display warning to user
 			if (whiptail --title "$title" --yes-button "$edit" --no-button "$cancel" --defaultno --yesno "$mount_warn_var" 10 60) then
+				
+			### If user selects to edit partition scheme anyway unmount all partitions turn off any swap and edit with cfdisk
 				points=$(echo -e "$points_orig\n$custom $custom-mountpoint")
-				umount -R "$ARCH" &> /dev/null &
+				(umount -R "$ARCH"
+				swapoff -a) &> /dev/null &
 				pid=$! pri=0.1 msg="$wait_load" load
-				swapoff -a &> /dev/null
 				mounted=false
 				unset DRIVE
 				cfdisk /dev/"$manual_part"
 			fi
+		
+	### Else block device does not contain any mounted partitions prompt user to edit partition scheme with cfdisk
 		elif (whiptail --title "$title" --yes-button "$edit" --no-button "$cancel" --yesno "$manual_part_var3" 12 60) then
 			cfdisk /dev/"$manual_part"
 		fi
@@ -911,10 +1028,16 @@ manual_partition() {
 
 update_mirrors() {
 
+### Prompt user to update pacman mirrorlist
 	if (whiptail --title "$title" --yes-button "$yes" --no-button "$no" --yesno "$mirror_msg0" 10 60) then
+		
+	### Display full list of mirrorlist country codes to user
+	### use wget to fetch mirrorlist
 		code=$(whiptail --nocancel --title "$title" --ok-button "$ok" --menu "$mirror_msg1" 18 60 10 $countries 3>&1 1>&2 2>&3)
 		wget --append-output=/dev/null "https://www.archlinux.org/mirrorlist/?country=$code&protocol=http" -O /etc/pacman.d/mirrorlist.bak &
 		pid=$! pri=0.2 msg="\n$mirror_load0" load
+		
+	### Use sed to remove comments from mirrorlist and rank the top 6 mirrors into /etc/pacman.d/mirrorlist
 		sed -i 's/#//' /etc/pacman.d/mirrorlist.bak
 		rankmirrors -n 6 /etc/pacman.d/mirrorlist.bak > /etc/pacman.d/mirrorlist &
  		pid=$! pri=0.8 msg="\n$mirror_load1" load
@@ -927,27 +1050,36 @@ update_mirrors() {
 
 install_base() {
 
-	if ! "$INSTALLED" && "$mounted" ; then	
+	
+### Check if system is installed and drive is mounted
+### if system is not installed but drive is mounted begin install process
+	if "$mounted" ; then	
 
+	### Display install menu prompting user to install base, base-devel, or linuxLTS
 		install_menu=$(whiptail --title "$title" --ok-button "$ok" --cancel-button "$cancel" --menu "$install_type_msg" 14 64 4 \
 			"Arch-Linux-Base" 			"$base_msg0" \
 			"Arch-Linux-Base-Devel" 	"$base_msg1" \
 			"Arch-Linux-LTS-Base" 		"$LTS_msg0" \
 			"Arch-Linux-LTS-Base-Devel" "$LTS_msg1" 3>&1 1>&2 2>&3)
 		
+	### If user selects cancel display exit message
 		if [ "$?" -gt "0" ]; then
+			
+		### If user decides to exit return to main menu function
 			if (whiptail --title "$title" --yes-button "$yes" --no-button "$no" --yesno "$exit_msg" 10 60) then
 				main_menu
 			else
 				install_base
 			fi
 
+	### If user is not using wifi prompt to install netctl wireless tools and wpa supplicant
 		elif ! "$wifi" ; then
 			if (whiptail --title "$title" --defaultno --yes-button "$yes" --no-button "$no" --yesno "$wifi_option_msg" 11 60) then
 				wifi=true
 			fi
 		fi
 
+	### Begin setting base install variable based on the users install type selection
 		case "$install_menu" in
 			"Arch-Linux-Base")
 				base_install="base libnewt sudo"
@@ -963,10 +1095,12 @@ install_base() {
 			;;
 		esac
 
+	### If user is using wifi or selected to install wifi tools add to base install variable
 		if "$wifi" ; then
 			base_install="$base_install wireless_tools wpa_supplicant wpa_actiond netctl dialog"
 		fi
 
+	### Prompt user to install grub bootloader and add to base install variable
 		if (whiptail --title "$title" --yes-button "$yes" --no-button "$no" --yesno "$grub_msg0" 10 60) then	
 			base_install="$base_install grub"
 			bootloader=true
@@ -980,55 +1114,89 @@ install_base() {
 			fi
 		fi
 
+	### Prompt user to install os-prober and add to install variable
 		if (whiptail --title "$title" --defaultno --yes-button "$yes" --no-button "$no" --yesno "$os_prober_msg" 10 60) then
 			base_install="$base_install os-prober"
 		fi
 
+	### Use pacstrap to print the total size of all packages selected in the base install variable
 		pacstrap "$ARCH" --print-format='%s' $(echo "$base_install") | sed '1,6d' | awk '{s+=$1} END {print s/1024/1024}' &> /tmp/size.var &
 		pid=$! pri=1 msg="\n$pacman_load" load
 		download_size=$(</tmp/size.var)
-		export add_int=$(echo "$download_size" | sed 's/\..*$//')
+
+	### export the software size variable to display in menu to user then load the cal rate function to estimate download speed
 		export software_size=$(echo "$download_size Mib")
 		cal_rate
 
+	### Prompt user to confirm installing Arch Linux
+	### display packages to add size connection speed and estimated install time
 		if (whiptail --title "$title" --yes-button "$install" --no-button "$cancel" --yesno "\n$install_var" 16 60) then
-			pacstrap "$ARCH" $(echo "$base_install") &> /dev/null &
-			pid=$! pri="$down" msg="$install_load" load
+			
+		### Begin installing arch linux to mountpoint with packages from the base install variable
+			(pacstrap "$ARCH" $(echo "$base_install")
 			genfstab -U -p "$ARCH" >> "$ARCH"/etc/fstab
-			INSTALLED=true
+			echo "$?" > /tmp/ex_status.var) &> /dev/null &
+			pid=$! pri="$down" msg="$install_load" load
+			
+			if [ $(</tmp/ex_status.var) -eq "0" ]; then
+				INSTALLED=true
+			fi
+			
+			rm /tmp/ex_status.var
 
+		### Check if bootloader was installed
 			if "$bootloader" ; then
 						
+			### If encrypted configure grub with cryptdevice=/dev/lvm/lvroot:root root=/dev/mapper/root replacing quiet boot
 				if "$crypted" ; then
 					sed -i 's!quiet!cryptdevice=/dev/lvm/lvroot:root root=/dev/mapper/root!' "$ARCH"/etc/default/grub
+				
+			### Else remove quiet boot from grub ---------------------------------------------------------
+			### True linux should always have the init of the system scrolling by on the screen super fast
+			### You can always tell a true linux badass by their screen at bootup
 				else
 					sed -i 's/quiet//' "$ARCH"/etc/default/grub
 				fi
 
+			### If user selected efi boot
 				if "$UEFI" ; then
+					
+				### Install efibootmgr
 					pacstrap "$ARCH" efibootmgr &> /dev/null &
 					pid="\n$efi_load" load
+					
+				### Chroot into system and install grub with efi options enabled
+				### Rename the grubx64.efi boot file
 					arch-chroot "$ARCH" grub-install --efi-directory=/boot --target=x86_64-efi --bootloader-id=boot &> /dev/null &
 					pid=$! pri=0.5 msg="\n$grub_load1" load
 					mv "$ARCH"/boot/EFI/boot/grubx64.efi "$ARCH"/boot/EFI/boot/bootx64.efi
 							
+				### If not encrypted but efi is enabled reconfigure kernel after grub is installed
 					if ! "$crypted" ; then
 						arch-chroot "$ARCH" mkinitcpio -p linux &> /dev/null &
 						pid=$! pri=1 msg="\n$uefi_config_load" load
 					fi
+				
+			### Else efi boot is not enabled
 				else
+					
+				### Chroot into system and install grub to root drive
 					arch-chroot "$ARCH" grub-install /dev/"$DRIVE" &> /dev/null &
 					pid=$! pri=0.5 msg="\n$grub_load1" load
 				fi
 
+			### Chroot into system and configure grub
 				arch-chroot "$ARCH" grub-mkconfig -o /boot/grub/grub.cfg &> /dev/null &
 				pid=$! pri=0.1 msg="\n$grub_load2" load
 			fi
 
+		### When install is complete continue to the configure system function
 			configure_system
 
+	### Else user selected no to installing system
 		else
 
+		### Display are you sure you dont want to install new system message and return to main menu function
 			if (whiptail --title "$title" --yes-button "$yes" --no-button "$no" --yesno "$exit_msg" 10 60) then
 				main_menu
 			else
@@ -1036,10 +1204,14 @@ install_base() {
 			fi
 		fi
 
+### Else if system has already been installed display error message and return to main menu
 	elif "$INSTALLED" ; then
 		whiptail --title "$title" --ok-button "$ok" --msgbox "$install_err_msg0" 10 60
 		main_menu
 
+### Else drive has not been mounted
+### Prompt user to return to prepare drive function
+### else return to main menu
 	else
 
 		if (whiptail --title "$title" --yes-button "$yes" --no-button "$no" --yesno "$install_err_msg1" 10 60) then
@@ -1052,57 +1224,75 @@ install_base() {
 
 }
 
+### This function is responsible for configuring the newly installed system
+
 configure_system() {
 
-	if "$system_configured" ; then
-		whiptail --title "$title" --ok-button "$ok" --msgbox "$config_err_msg" 10 60
+	if ! "$INSTALLED" ; then
+		whiptail --title "$title" --ok-button "$ok" --msgbox "$install_err_msg3" 10 60
 		main_menu
 	fi
 
+### Check if system is encrypted
 	if "$crypted" ; then
 
+	### If system is enctypted and efi boot is enabled echo new boot data into fstab
 		if "$UEFI" ; then 
 			echo "/dev/$BOOT              /boot           vfat         rw,relatime,fmask=0022,dmask=0022,codepage=437,iocharset=iso8859-1,shortname=mixed,errors=remount-ro        0       2" > "$ARCH"/etc/fstab
+		
+	### Else if system is only encrypted not with efi enabled echo new boot data into grub
 		else 
-			echo "/dev/$BOOT              /boot           ext4         defaults        0       2" > "$ARCH"/etc/fstab
+			echo "/dev/$BOOT              /boot           $FS         defaults        0       2" > "$ARCH"/etc/fstab
 		fi
 
+	### echo new encrypted volume data into fstab
 		echo "/dev/mapper/root        /               $FS         defaults        0       1" >> "$ARCH"/etc/fstab
 		echo "/dev/mapper/tmp         /tmp            tmpfs        defaults        0       0" >> "$ARCH"/etc/fstab
+		
+	### echo data for encrypted tmp volume into crypttab
 		echo "tmp	       /dev/lvm/tmp	       /dev/urandom	tmp,cipher=aes-xts-plain64,size=256" >> "$ARCH"/etc/crypttab
 
 		if "$SWAP" ; then
+			
+		### if enctypted swap volume exists echo data into fstab and crypttab
 			echo "/dev/mapper/swap     none            swap          sw                    0       0" >> "$ARCH"/etc/fstab
 			echo "swap	/dev/lvm/swap	/dev/urandom	swap,cipher=aes-xts-plain64,size=256" >> "$ARCH"/etc/crypttab
 		fi
 
+	### use sed to insert lvm2 and encrypt into mkinitcpio.conf and reconfigure kernel with encryption options
 		sed -i 's/k filesystems k/k lvm2 encrypt filesystems k/' "$ARCH"/etc/mkinitcpio.conf
 		arch-chroot "$ARCH" mkinitcpio -p linux &> /dev/null &
 		pid=$! pri=1 msg="\n$encrypt_load1" load
 	fi
 
+### Configure new system locale with data from LOCALE variable
 	sed -i -e "s/#$LOCALE/$LOCALE/" "$ARCH"/etc/locale.gen
 	echo LANG="$LOCALE" > "$ARCH"/etc/locale.conf
 	arch-chroot "$ARCH" locale-gen &> /dev/null &
 	pid=$! pri=0.1 msg="\n$locale_load_var" load
 	
+### If keyboard variable is not set to default echo keymap into vconsole.conf
 	if [ "$keyboard" != "$default" ]; then
 		echo "KEYMAP=$keyboard" > "$ARCH"/etc/vconsole.conf
 	fi
 
+### if sub-subzone variable is set then set timezone to zone subzone sub-subzone
 	if [ -n "$SUB_SUBZONE" ]; then
 		arch-chroot "$ARCH" ln -s /usr/share/zoneinfo/"$ZONE"/"$SUBZONE"/"$SUB_SUBZONE" /etc/localtime &
 		pid=$! pri=0.1 msg="\n$zone_load_var0" load
 
+### else if subzone variable is set then set timezone to zone subzone
 	elif [ -n "$SUBZONE" ]; then
 		arch-chroot "$ARCH" ln -s /usr/share/zoneinfo/"$ZONE"/"$SUBZONE" /etc/localtime &
 		pid=$! pri=0.1 msg="\n$zone_load_var1" load
 
-	elif [ -n "$ZONE" ]; then
+### else set timezone to zone
+	else
 		arch-chroot "$ARCH" ln -s /usr/share/zoneinfo/"$ZONE" /etc/localtime &
 		pid=$! pri=0.1 msg="\n$zone_load_var2" load	
 	fi
 
+### If system architecture is x86_64 prompt user to add multilib repos to pacman.conf
 	if [ "$arch" == "x86_64" ]; then
 		if (whiptail --title "$title" --yes-button "$yes" --no-button "$no" --yesno "\n$multilib_msg" 12 60) then
 			sed -i '/\[multilib]$/ {
@@ -1111,41 +1301,53 @@ configure_system() {
 		fi
 	fi
 
+### Prompt user to enable dhcp at boot
 	if (whiptail --title "$title" --yes-button "$yes" --no-button "$no" --yesno "\n$dhcp_msg" 12 60) then
 		arch-chroot "$ARCH" systemctl enable dhcpcd.service &> /dev/null &
 		pid=$! pri=0.1 msg="\n$dhcp_load" load
 	fi
 
-	system_configured=true
 	set_hostname
 
 }
 
+### This function is responsible for setting the new system hostname and also the root passowrd
+
 set_hostname() {
 
-	hostname=$(whiptail --title "$title" --ok-button "$ok" --nocancel --inputbox "\n$host_msg" 12 55 "arch-anywhere" 3>&1 1>&2 2>&3)
-	hostname=$(<<<$hostname sed 's/ //g')
+### Prompt user to input the system hostname default is 'arch-anywhere' using sed to remove spaces from output
+	hostname=$(whiptail --title "$title" --ok-button "$ok" --nocancel --inputbox "\n$host_msg" 12 55 "arch-anywhere" 3>&1 1>&2 2>&3 | sed 's/ //g')
 	
-	if (<<<$hostname grep "^[0-9]\|[\[\$\!\'\"\`\\|%&#@()+=<>~;:/?.,^{}]\|]"); then
+### If hostname input contains special chatracters display error message and return to beginning of function
+	if (<<<$hostname grep "^[0-9]\|[\[\$\!\'\"\`\\|%&#@()+=<>~;:/?.,^{}]\|]" &> /dev/null); then
 		whiptail --title "$title" --ok-button "$ok" --msgbox "$host_err_msg" 10 60
 		set_hostname
 	fi
 	
+### Echo new hostname into newly installed system
 	echo "$hostname" > "$ARCH"/etc/hostname
 	
+### Begin set root password loop until new password is equal to new password check
 	while [ "$input" != "$input_chk" ]
 	  do
+	 	
+	### Ask user to enter new root password
 	 	input=$(whiptail --passwordbox --nocancel --ok-button "$ok" "$root_passwd_msg0" 11 55 --title "$title" 3>&1 1>&2 2>&3)
      	input_chk=$(whiptail --passwordbox --nocancel "$root_passwd_msg1" 11 55 --title "$title" 3>&1 1>&2 2>&3)
+	 	
+	### If user doesn't enter password then display error and return to beginning of loop
 	 	if [ -z "$input" ]; then
 	 		whiptail --title "$title" --ok-button "$ok" --msgbox "$passwd_msg0" 10 55
 	 		input_chk=default
+	 	
+	### else if password input does not match display error and return to beginning of loop
 	 	elif [ "$input" != "$input_chk" ]; then
 	 	     whiptail --title "$title" --ok-button "$ok" --msgbox "$passwd_msg1" 10 55
 	 	fi
 	done
 
-	printf "$input\n$input" | arch-chroot "$ARCH" passwd &> /dev/null
+	(printf "$input\n$input" | arch-chroot "$ARCH" passwd) &> /dev/null &
+	pid=$! pri=0.1 msg="$wait_load" load
 	unset input ; input_chk=default
 
 	hostname_set=true
@@ -1153,200 +1355,234 @@ set_hostname() {
 
 }
 
+### This function is responsible for adding a new user account
+
 add_user() {
 
-	if "$user_added" ; then
-		whiptail --title "$title" --ok-button "$ok" --msgbox "$user_exists_msg" 10 60
-		main_menu
+### Prompt user to create new user account
+	if ! "$menu_enter" ; then
+		if ! (whiptail --title "$title" --yes-button "$yes" --no-button "$no" --yesno "$user_msg0" 10 60) then
+			graphics
+		fi
 	fi
 
-	if (whiptail --title "$title" --yes-button "$yes" --no-button "$no" --yesno "$user_msg0" 10 60) then
-		user=$(whiptail --nocancel --inputbox "\n$user_msg1" 11 55 "" 3>&1 1>&2 2>&3)
+### Prompt user to input a new username
+	user=$(whiptail --nocancel --inputbox "\n$user_msg1" 11 55 "" 3>&1 1>&2 2>&3 | sed 's/ //g')
 		
-		if [ -z "$user" ]; then
-			whiptail --title "$title" --ok-button "$ok" --msgbox "$user_err_msg" 10 60
-			add_user
-		fi
+### If no username is entered display error and return to beginning of function
+### Check output of user variable for anything beginning with 0-9 or containing capital letters or special characters
+### display error message if true and return to beginning of function
+### check to see if user has already been created
+	if [ -z "$user" ]; then
+		whiptail --title "$title" --ok-button "$ok" --msgbox "$user_err_msg" 10 60
+		add_user
 
-		user=$(<<<$user sed 's/ //g')
-		user_check=$(<<<$user grep "^[0-9]\|[ABCDEFGHIJKLMNOPQRSTUVWXYZ\[\$\!\'\"\`\\|%&#@()_-+=<>~;:/?.,^{}]\|]")	
-		if [ -n "$user_check" ]; then
-			whiptail --title "$title" --ok-button "$ok" --msgbox "$user_err_msg" 10 60
-			add_user
-		fi
-
-	else
-		graphics
+	elif (<<<$user grep "^[0-9]\|[ABCDEFGHIJKLMNOPQRSTUVWXYZ\[\$\!\'\"\`\\|%&#@()_-+=<>~;:/?.,^{}]\|]" &> /dev/null); then
+		whiptail --title "$title" --ok-button "$ok" --msgbox "$user_err_msg" 10 60
+		add_user
+	
+	elif (<<<$user grep "$created_users" &> /dev/null); then
+		whiptail --title "$title" --ok-button "$ok" --msgbox "$user_err_msg1" 10 60
+		add_user
 	fi
 
-	source "$lang_file"
-	arch-chroot "$ARCH" useradd -m -g users -G wheel,audio,network,power,storage,optical -s /bin/bash "$user"
+### Chroot into system and create new user account
+	(arch-chroot "$ARCH" useradd -m -g users -G audio,network,power,storage,optical -s /bin/bash "$user") &>/dev/null &
 	pid=$! pri=0.1 msg="$wait_load" load
+	source "$lang_file"
 	
+### Begin user password while loop
 	while [ "$input" != "$input_chk" ]
 	  do
-		 input=$(whiptail --passwordbox --nocancel "$user_var0" 10 55 --title "$title" 3>&1 1>&2 2>&3)
-         input_chk=$(whiptail --passwordbox --nocancel "$user_var1" 10 55 --title "$title" 3>&1 1>&2 2>&3)
 		 
-		 if [ -z "$input" ]; then
+	### Prompt user to enter a new password for user account
+		input=$(whiptail --passwordbox --nocancel "$user_var0" 10 55 --title "$title" 3>&1 1>&2 2>&3)
+        input_chk=$(whiptail --passwordbox --nocancel "$user_var1" 10 55 --title "$title" 3>&1 1>&2 2>&3)
+		 
+	### If no password entered display error and return to beginning of loop
+		if [ -z "$input" ]; then
 			whiptail --title "$title" --ok-button "$ok" --msgbox "$passwd_msg0" 11 55
 			input_chk=default
-		 elif [ "$input" != "$input_chk" ]; then
+		 
+	### else if passwords do not match display error and return to beginning of loop
+		elif [ "$input" != "$input_chk" ]; then
 			whiptail --title "$title" --ok-button "$ok" --msgbox "$passwd_msg1" 11 55
 		fi
 	done
 
-	printf "$input\n$input" | arch-chroot "$ARCH" passwd "$user" &> /dev/null
+	(printf "$input\n$input" | arch-chroot "$ARCH" passwd "$user") &> /dev/null &
+	pid=$! pri=0.1 msg="$wait_load" load
 	unset input ; input_chk=default
 
-	if (whiptail --title "$title" --yes-button "$yes" --no-button "$no" --yesno "$sudo_var" 10 60) then
-		sed -i '/%wheel ALL=(ALL) ALL/s/^#//' $ARCH/etc/sudoers
+### Prompt user to enable sudo for new user account
+	if [ -n "$created_users" ]; then
+		if (whiptail --title "$title" --yes-button "$yes" --no-button "$no" --yesno "$sudo_var" 10 60) then
+			(arch-chroot "$ARCH" usermod -a -G wheel "$user") &> /dev/null &
+			pid=$! pri=0.1 msg="$wait_load" load
+		fi
+	else
+		if (whiptail --title "$title" --yes-button "$yes" --no-button "$no" --yesno "$sudo_var" 10 60) then
+			(sed -i '/%wheel ALL=(ALL) ALL/s/^#//' $ARCH/etc/sudoers
+			arch-chroot "$ARCH" usermod -a -G wheel "$user") &> /dev/null &
+			pid=$! pri=0.1 msg="$wait_load" load
+		fi
 	fi
 
-	export "$user"
+	created_users="$user"
+	export user
 	export user_added=true 
-	graphics
+	
+	if "$menu_enter" ; then
+		menu_enter=false
+		reboot_system
+	else	
+		graphics
+	fi
 
 }
 	
+### This function is responsible for installing xorg server a dektop or window manager and graphics drivers
+
 graphics() {
 
-	if (whiptail --title "$title" --yes-button "$yes" --no-button "$no" --yesno "$desktop_msg" 10 60) then
-		DE=$(whiptail --title "$title" --ok-button "$ok" --cancel-button "$cancel" --menu "$enviornment_msg" 18 60 10 \
-			"xfce4"         "$de0" \
-			"mate"          "$de1" \
-			"lxde"          "$de2" \
-			"lxqt"          "$de3" \
-			"gnome"         "$de4" \
-			"cinnamon"      "$de5" \
-			"KDE plasma"    "$de6" \
-			"enlightenment" "$de7" \
-			"openbox"       "$de8" \
-			"awesome"       "$de9" \
-			"i3"            "$de10" \
-			"fluxbox"       "$de11" \
-			"dwm"           "$de12" 3>&1 1>&2 2>&3)
+	if ! "$menu_enter" ; then
+		if ! (whiptail --title "$title" --yes-button "$yes" --no-button "$no" --yesno "$desktop_msg" 10 60) then
+			if (whiptail --title "$title" --yes-button "$yes" --no-button "$no" --yesno "$desktop_cancel_msg" 10 60) then	
+				install_software
+			fi	
+		fi
+	fi
+	
+	DE=$(whiptail --title "$title" --ok-button "$ok" --cancel-button "$cancel" --menu "$enviornment_msg" 18 60 10 \
+		"xfce4"         "$de0" \
+		"mate"          "$de1" \
+		"lxde"          "$de2" \
+		"lxqt"          "$de3" \
+		"gnome"         "$de4" \
+		"cinnamon"      "$de5" \
+		"KDE plasma"    "$de6" \
+		"enlightenment" "$de7" \
+		"openbox"       "$de8" \
+		"awesome"       "$de9" \
+		"i3"            "$de10" \
+		"fluxbox"       "$de11" \
+		"dwm"           "$de12" 3>&1 1>&2 2>&3)
 			
-			if [ "$?" -gt "0" ]; then 
-				if (whiptail --title "$title" --yes-button "$yes" --no-button "$no" --yesno "$desktop_cancel_msg" 10 60) then	
-					install_software
-				fi
-			else
-				de_set=true
+	if [ "$?" -gt "0" ]; then 
+		if ! "$menu_enter" ; then
+			if (whiptail --title "$title" --yes-button "$yes" --no-button "$no" --yesno "$desktop_cancel_msg" 10 60) then	
+				install_software
 			fi
+		else
+			reboot_system
+		fi
+	else
+		de_set=true
+	fi
 
-			case "$DE" in
-				"xfce4") start_term="exec startxfce4" 
-
-						if (whiptail --title "$title" --yes-button "$yes" --no-button "$no" --yesno "$extra_msg0" 10 60) then
-							DE="xfce4 xfce4-goodies"
-						fi
-				;;
-				"gnome") start_term="exec gnome-session"
-
-					if (whiptail --title "$title" --yes-button "$yes" --no-button "$no" --yesno "$extra_msg1" 10 60) then
+	case "$DE" in
+		"xfce4") 	if (whiptail --title "$title" --yes-button "$yes" --no-button "$no" --yesno "$extra_msg0" 10 60) then
+						DE="xfce4 xfce4-goodies"
+					fi
+					start_term="exec startxfce4"
+		;;
+		"gnome")	if (whiptail --title "$title" --yes-button "$yes" --no-button "$no" --yesno "$extra_msg1" 10 60) then
 						DE="gnome gnome-extra"
-					fi 
-				;;
-				"mate") start_term="exec mate-session"
-
-					if (whiptail --title "$title" --yes-button "$yes" --no-button "$no" --yesno "$extra_msg2" 10 60) then
+					fi
+					 start_term="exec gnome-session"
+		;;
+		"mate")		if (whiptail --title "$title" --yes-button "$yes" --no-button "$no" --yesno "$extra_msg2" 10 60) then
 						DE="mate mate-extra"
 					fi
-				;;
-				"KDE plasma") start_term="exec startkde" dm_set=true
+					 start_term="exec mate-session"
+		;;
+		"KDE plasma")	if (whiptail --title "$title" --defaultno --yes-button "$yes" --no-button "$no" --yesno "$extra_msg3" 10 60) then
+							DE="kde-applications plasma-desktop"
+						else
+							DE="kde-applications plasma"
+						fi 
+						 start_term="exec startkde" dm_set=true
+		;;
+		"cinnamon") 
+			start_term="exec cinnamon-session" ;;
+		"lxde") 
+			start_term="exec startlxde" ;;
+		"lxqt") 
+			start_term="exec startlxqt" 
+			DE="lxqt oxygen-icons" ;;
+		"enlightenment") 
+			start_term="exec enlightenment_start"
+			DE="enlightenment terminology" ;;
+		"fluxbox") 
+			start_term="exec startfluxbox" ;;
+		"openbox") 
+			start_term="exec openbox-session" ;;
+		"awesome") 
+			start_term="exec awesome" ;;	
+		"dwm") 
+			start_term="exec dwm" ;;
+		"i3") 
+			start_term="exec i3" ;;
+		esac
 
-					if (whiptail --title "$title" --defaultno --yes-button "$yes" --no-button "$no" --yesno "$extra_msg3" 10 60) then
-						DE="kde-applications plasma-desktop"
-					else
-						DE="kde-applications plasma"
-					fi 
-				;;
-				"cinnamon") 
-					start_term="exec cinnamon-session" ;;
-				"lxde") 
-					start_term="exec startlxde" ;;
-				"lxqt") 
-					start_term="exec startlxqt" 
-					DE="lxqt oxygen-icons" ;;
-				"enlightenment") 
-					start_term="exec enlightenment_start"
-					DE="enlightenment terminology" ;;
-				"fluxbox") 
-					start_term="exec startfluxbox" ;;
-				"openbox") 
-					start_term="exec openbox-session" ;;
-				"awesome") 
-					start_term="exec awesome" ;;	
-				"dwm") 
-					start_term="exec dwm" ;;
-				
-				"i3") 
-					start_term="exec i3" ;;
-			esac
+	if ! $desktop ; then
+		until "$gpu_set"
+		  do
+			GPU=$(whiptail --title "$title" --ok-button "$ok" --cancel-button "$cancel" --menu "$graphics_msg" 17 60 6 \
+				"$default"			"$gr0" \
+				"mesa-libgl"        "$gr1" \
+				"Nvidia"            "$gr2" \
+				"Vbox-Guest-Utils"  "$gr3" \
+				"xf86-video-ati"    "$gr4" \
+				"xf86-video-intel"  "$gr5" 3>&1 1>&2 2>&3)
 
-	else
-		if (whiptail --title "$title" --yes-button "$yes" --no-button "$no" --yesno "$desktop_cancel_msg" 10 60) then
-			install_software
-		else
-			graphics
-		fi
-	fi
-
-
-	until "$gpu_set"
-	  do
-		GPU=$(whiptail --title "$title" --ok-button "$ok" --cancel-button "$cancel" --menu "$graphics_msg" 17 60 6 \
-			"$default"			"$gr0" \
-			"mesa-libgl"        "$gr1" \
-			"Nvidia"            "$gr2" \
-			"Vbox-Guest-Utils"  "$gr3" \
-			"xf86-video-ati"    "$gr4" \
-			"xf86-video-intel"  "$gr5" 3>&1 1>&2 2>&3)
-
-		if [ "$?" -gt "0" ]; then
-			graphics
+			if [ "$?" -gt "0" ]; then
+				graphics
 			
-		elif [ "$GPU" == "Nvidia" ]; then
-			GPU=$(whiptail --title "$title" --ok-button "$ok" --cancel-button "$cancel" --menu "$nvidia_msg" 15 60 4 \
-				"nvidia"       "$gr6" \
-				"nvidia-340xx" "$gr7" \
-				"nvidia-304xx" "$gr8" 3>&1 1>&2 2>&3)
+			elif [ "$GPU" == "Nvidia" ]; then
+				GPU=$(whiptail --title "$title" --ok-button "$ok" --cancel-button "$cancel" --menu "$nvidia_msg" 15 60 4 \
+					"nvidia"       "$gr6" \
+					"nvidia-340xx" "$gr7" \
+					"nvidia-304xx" "$gr8" 3>&1 1>&2 2>&3)
 
-			if [ "$?" -eq "0" ]; then
+				if [ "$?" -eq "0" ]; then
+					gpu_set=true
+					GPU="$GPU ${GPU}-libgl"
+				fi 
+			else
 				gpu_set=true
-				GPU="$GPU ${GPU}-libgl"
-			fi 
-		else
-			gpu_set=true
-		fi
-	done
+			fi
+		done
 			
-	if [ "$GPU" == "Vbox-Guest-Utils" ]; then
-		GPU="virtualbox-guest-utils mesa-libgl"
-		echo -e "vboxguest\nvboxsf\nvboxvideo" > "$ARCH"/etc/modules-load.d/virtualbox.conf
-	elif [ "$GPU" == "$default" ]; then
-		unset GPU
-	fi
+		if [ "$GPU" == "Vbox-Guest-Utils" ]; then
+			GPU="virtualbox-guest-utils mesa-libgl"
+			echo -e "vboxguest\nvboxsf\nvboxvideo" > "$ARCH"/etc/modules-load.d/virtualbox.conf
+		elif [ "$GPU" == "$default" ]; then
+			unset GPU
+		fi
 
-	if (whiptail --title "$title" --defaultno --yes-button "$yes" --no-button "$no" --yesno "$touchpad_msg" 10 60) then
-		GPU="xf86-input-synaptics $GPU"
+		if (whiptail --title "$title" --defaultno --yes-button "$yes" --no-button "$no" --yesno "$touchpad_msg" 10 60) then
+			GPU="xf86-input-synaptics $GPU"
+		fi
 	fi
-
+	
 	if ! "$dm_set" ; then
 		if (whiptail --title "$title" --yes-button "$yes" --no-button "$no" --yesno "$lightdm_msg" 10 60) then
 			DE="$DE lightdm lightdm-gtk-greeter"
+			dm_set=true
 			enable_dm=true
 		else
 			whiptail --title "$title" --ok-button "$ok" --msgbox "$startx_msg" 10 60
 		fi
 	fi
-				
-	DE="$DE xorg-server xorg-server-utils xorg-xinit xterm $GPU"
+
+	if ! "$menu_enter" ; then
+		DE="$DE xorg-server xorg-server-utils xorg-xinit xterm $GPU"
+	fi
+	
 	pacstrap "$ARCH" --print-format='%s' $(echo "$DE") | sed '1,6d' | awk '{s+=$1} END {print s/1024/1024}' &> /tmp/size.var &
 	pid=$! pri=0.1 msg="$wait_load" load
 	download_size=$(</tmp/size.var)
-	export add_int=$(echo "$download_size" | sed 's/\..*$//')
 	export software_size=$(echo "$download_size Mib")
 	cal_rate
 
@@ -1357,7 +1593,7 @@ graphics() {
 			
 		if "$enable_dm" ; then
 			arch-chroot "$ARCH" systemctl enable lightdm.service &> /dev/null &
-			pid=$! pri="0.1" msg="$wait_load" load
+			pid=$! pri="0.1" msg="\n$dm_load" load
 		fi
 
 		if "$user_added" ; then
@@ -1366,12 +1602,21 @@ graphics() {
 				
 		echo "$start_term" > "$ARCH"/root/.xinitrc
 	else
-		if ! (whiptail --title "$title" --yes-button "$yes" --no-button "$no" --default-no --yesno "$desktop_cancel_msg" 10 60) then
-			graphics
+		if ! "$menu_enter" ; then
+			if ! (whiptail --title "$title" --yes-button "$yes" --no-button "$no" --default-no --yesno "$desktop_cancel_msg" 10 60) then
+				graphics
+			fi
+		else
+			reboot_system
 		fi
 	fi
 
-	install_software
+	if ! "$menu_enter" ; then
+		install_software
+	else
+		menu_enter=false
+		reboot_system
+	fi
 
 }
 
@@ -1589,7 +1834,6 @@ install_software() {
 						pacstrap "$ARCH" --print-format='%s' $(echo "$download") | sed '1,6d' | awk '{s+=$1} END {print s/1024/1024}' &> /tmp/size.var &
 						pid=$! pri=0.1 msg="$wait_load" load
 						download_size=$(</tmp/size.var)
-						export add_int=$(echo "$download_size" | sed 's/\..*$//')
 						
 					# Total sum displayed to user and total number of packages to install
 						export software_size=$(echo "$download_size Mib")
@@ -1674,6 +1918,7 @@ install_software() {
 	arch-chroot "$ARCH" pacman -Sy &> /dev/null &
 	pid=$! pri=1 msg="\n$pacman_load" load
 
+	software_selected=false
 	reboot_system
 
 }
@@ -1689,18 +1934,50 @@ reboot_system() {
 			fi
 		fi
 
-		if (whiptail --title "$title" --yes-button "$yes" --no-button "$no" --yesno "$complete_msg0" 10 60) then
-			umount -R $ARCH
-			clear ; reboot ; exit
-		else
-
-			if (whiptail --title "$title" --yes-button "$yes" --no-button "$no" --yesno "$complete_msg1" 10 60) then
+		reboot_menu=$(whiptail --nocancel --title "$title" --ok-button "$ok" --menu "$complete_msg" 16 60 6 \
+			"$reboot0" "-" \
+			"$reboot1" "-" \
+			"$reboot2" "-" \
+			"$reboot3" "-" \
+			"$reboot4" "-" \
+			"$reboot5" "-" 3>&1 1>&2 2>&3)
+		
+		case "$reboot_menu" in
+			"$reboot0")
 				umount -R "$ARCH"
-				clear ; exit
-			else
-				clear ; exit
-			fi
-		fi
+				clear ; reboot ; exit
+			;;
+			"$reboot1")		umount -R "$ARCH"
+							clear ; exit
+			;;
+			"$reboot2")		echo -e "alias arch-anywhere=exit ; echo -e '$arch_chroot_msg'" > "$ARCH"/root/session.conf
+							arch-chroot "$ARCH" /bin/bash --rcfile /root/session.conf
+							rm "$ARCH"/root/session.conf
+							reboot_system
+			;;
+			"$reboot3")		if (whiptail --title "$title" --yes-button "$yes" --no-button "$no" --yesno "$user_exists_msg" 10 60); then
+								menu_enter=true
+								add_user	
+							else
+								reboot_system
+							fi
+			;;
+			"$reboot4")		if "$desktop" ; then
+								if (whiptail --title "$title" --yes-button "$yes" --no-button "$no" --yesno "$desktop_exists_msg" 10 60); then
+									menu_enter=true
+									graphics
+								else
+									reboot_system
+								fi
+							else
+								if (whiptail --title "$title" --yes-button "$yes" --no-button "$no" --yesno "$desktop_exists_msg" 10 60); then
+									graphics
+								fi
+							fi
+			;;
+			"$reboot5")		install_software
+			;;
+		esac
 
 	else
 
@@ -1714,16 +1991,79 @@ reboot_system() {
 
 }
 
+main_menu() {
+
+	menu_item=$(whiptail --nocancel --title "$title" --ok-button "$ok" --menu "$menu" 22 60 10 \
+		"$menu13" "-" \
+		"$menu0"  "-" \
+		"$menu1"  "-" \
+		"$menu2"  "-" \
+		"$menu3"  "-" \
+		"$menu4"  "-" \
+		"$menu5"  "-" \
+		"$menu11" "-" \
+		"$menu12" "-" 3>&1 1>&2 2>&3)
+
+	case "$menu_item" in
+		"$menu0")	set_locale
+		;;
+		"$menu1")	set_zone
+		;;
+		"$menu2")	set_keys
+		;;
+		"$menu3")	if "$mounted" ; then 
+						if (whiptail --title "$title" --yes-button "$yes" --no-button --default-no --yesno "$menu_err_msg3" 10 60); then
+							prepare_drives
+						else
+							main_menu
+						fi
+					fi
+ 					prepare_drives 
+		;;
+		"$menu4") 	update_mirrors
+		;;
+		"$menu5")	install_base
+		;;
+		"$menu11") 	reboot_system
+		;;
+		"$menu12") 	if "$INSTALLED" ; then
+						whiptail --title "$title" --ok-button "$ok" --msgbox "$menu_err_msg4" 10 60
+						clear ; exit
+					else
+
+						if (whiptail --title "$title" --yes-button "$yes" --no-button "$no" --yesno "$menu_exit_msg" 10 60) then
+							clear ; exit
+						else
+							main_menu
+						fi
+					fi
+		;;
+		"$menu13")	echo -e "alias arch-anywhere=exit ; echo -e '$return_msg'" > /tmp/.zshrc
+					ZDOTDIR=/tmp/ zsh
+					rm /tmp/.zshrc
+					main_menu
+		;;
+	esac
+
+}
+
 cal_rate() {
 			
 	case "$connection_rate" in
-		KB/s) down_sec=$((add_int*1024/connection_speed)) ;;
-		MB/s) down_sec=$(echo "$add_int/$connection_speed" | bc) ;;
-		GB/s) down_sec="1" down_min="1" ;;
+		KB/s) 
+			down_sec=$(echo "$download_size*1024/$connection_speed" | bc)
+		;;
+		MB/s)
+			down_sec=$(echo "$download_size/$connection_speed" | bc)
+		;;
+		GB/s) 
+			down_sec=".5" 
+		;;
 	esac
         
-	export down=$((down_sec/100+cpu_sleep+1))
-	export down_min=$((down*100/60+1))
+	down=$(echo "$down_sec/100+$cpu_sleep" | bc)
+	down_min=$(echo "$down*100/60" | bc)
+	export down down_min	
 	source "$lang_file"
 
 }
@@ -1741,139 +2081,7 @@ load() {
     	        done
             echo 100
             sleep 1
-	} | whiptail --title "$title" --gauge "$msg $int" 8 72 0
-
-}
-
-main_menu() {
-
-	menu_item=$(whiptail --nocancel --title "$title" --ok-button "$ok" --menu "$menu" 18 60 10 \
-		"$menu0" "-" \
-		"$menu1" "-" \
-		"$menu2" "-" \
-		"$menu3" "-" \
-		"$menu4" "-" \
-		"$menu5" "-" \
-		"$menu6" "-" \
-		"$menu7" "-" \
-		"$menu8" "-" \
-		"$menu9" "-" \
-		"$menu10" "-" \
-		"$menu11" "-" \
-		"$menu12" "-" 3>&1 1>&2 2>&3)
-
-	case "$menu_item" in
-
-		"$menu0") 
-
-			if "$locale_set" ; then 
-				whiptail --title "$title" --ok-button "$ok" --msgbox "$menu_err_msg0" 10 60
-				main_menu
-			fi
-			set_locale 
-		;;
-
-		"$menu1")
-
-			if "$zone_set" ; then 
-				whiptail --title "$title" --ok-button "$ok" --msgbox "$menu_err_msg1" 10 60
-				main_menu
-			fi
-			set_zone 
-		;;
-
-		"$menu2")
-
-			if "$keys_set" ; then
-				whiptail --title "$title" --ok-button "$ok" --msgbox "$menu_err_msg2" 10 60
-				main_menu
-			fi
-			set_keys
-		;;
-
-		"$menu3")
-
-			if "$mounted" ; then 
-				whiptail --title "$title" --ok-button "$ok" --msgbox "$menu_err_msg3" 10 60 ; 
-				main_menu
-			fi
- 			prepare_drives 
-		;;
-
-		"$menu4") 
-			update_mirrors
-		;;
-
-		"$menu5")
-			install_base
-		;;
-
-		"$menu6")
-			
-			if "$INSTALLED" ; then 
-				configure_system
-			fi
-
-			whiptail --title "$title" --ok-button "$ok" --msgbox "$return_msg" 10 60
-		;;
-		
-		"$menu7")
-			
-			if "$INSTALLED" ; then 
-				set_hostname
-			fi
-
-			whiptail --title "$title" --ok-button "$ok" --msgbox "$return_msg" 10 60
-		;;
-		
-		"$menu8")
-			
-			if "$INSTALLED" ; then 
-				add_user
-			fi
-
-			whiptail --title "$title" --ok-button "$ok" --msgbox "$return_msg" 10 60
-		;;
-		
-		"$menu9")
-			
-			if "$INSTALLED" ; then 
-				graphics
-			fi
-
-			whiptail --title "$title" --ok-button "$ok" --msgbox "$return_msg" 10 60
-		;;
-		
-		"$menu10")
-			
-			if "$INSTALLED" ; then
-				install_software
-			fi
-
-			whiptail --title "$title" --ok-button "$ok" --msgbox "$return_msg" 10 60
-		;;
-		
-		"$menu11") 
-			reboot_system
-		;;
-		
-		"$menu12") 
-
-			if "$INSTALLED" ; then
-				whiptail --title "$title" --ok-button "$ok" --msgbox "$menu_err_msg4" 10 60
-				clear ; exit
-			else
-
-				if (whiptail --title "$title" --yes-button "$yes" --no-button "$no" --yesno "$menu_exit_msg" 10 60) then
-					clear ; exit
-				else
-					main_menu
-				fi
-			fi
-		;;
-	esac
-
-	main_menu
+	} | whiptail --title "$title" --gauge "$msg" 8 76 0
 
 }
 
