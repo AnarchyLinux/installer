@@ -116,12 +116,12 @@ check_connection() {
 		else
 		
 		### Test connection speed with 10mb file output into /dev/null
-		#	wget --append-output=/tmp/wget.log -O /dev/null "http://speedtest.wdc01.softlayer.com/downloads/test10.zip" &
-	#		pid=$! pri=1 msg="\n$connection_load" load
+			wget --append-output=/tmp/wget.log -O /dev/null "http://speedtest.wdc01.softlayer.com/downloads/test10.zip" &
+			pid=$! pri=1 msg="\n$connection_load" load
 
 		### For testing purpose only - leave this line commented 
-			wget --append-output=/tmp/wget.log -O /dev/null "ftp://192.168.1.68/dh-repo/x86_64/lib32-gcc-libs-5.3.0-3-x86_64.pkg.tar.xz" &
-			pid=$! pri=1 msg="\n$connection_load" load
+#			wget --append-output=/tmp/wget.log -O /dev/null "ftp://192.168.1.68/dh-repo/x86_64/lib32-gcc-libs-5.3.0-3-x86_64.pkg.tar.xz" &
+#			pid=$! pri=1 msg="\n$connection_load" load
 
 		### Define network connection speed variables from data in wget.log
 			connection_speed=$(tail -n 2 /tmp/wget.log | grep -oP '(?<=\().*(?=\))' | awk '{print $1}')
@@ -1936,24 +1936,22 @@ reboot_system() {
 
 		reboot_menu=$(whiptail --nocancel --title "$title" --ok-button "$ok" --menu "$complete_msg" 16 60 6 \
 			"$reboot0" "-" \
-			"$reboot1" "-" \
 			"$reboot2" "-" \
+			"$reboot1" "-" \
 			"$reboot3" "-" \
 			"$reboot4" "-" \
 			"$reboot5" "-" 3>&1 1>&2 2>&3)
 		
 		case "$reboot_menu" in
-			"$reboot0")
-				umount -R "$ARCH"
-				clear ; reboot ; exit
+			"$reboot0")		umount -R "$ARCH"
+							clear ; reboot ; exit
 			;;
 			"$reboot1")		umount -R "$ARCH"
 							clear ; exit
 			;;
-			"$reboot2")		echo -e "alias arch-anywhere=exit ; echo -e '$arch_chroot_msg'" > "$ARCH"/root/session.conf
-							arch-chroot "$ARCH" /bin/bash --rcfile /root/session.conf
-							rm "$ARCH"/root/session.conf
-							reboot_system
+			"$reboot2")		echo -e "$arch_chroot_msg" 
+							echo "/root" > /tmp/chroot_dir.var
+							arch_anywhere_chroot
 			;;
 			"$reboot3")		if (whiptail --title "$title" --yes-button "$yes" --no-button "$no" --yesno "$user_exists_msg" 10 60); then
 								menu_enter=true
@@ -2041,9 +2039,97 @@ main_menu() {
 		"$menu13")	echo -e "alias arch-anywhere=exit ; echo -e '$return_msg'" > /tmp/.zshrc
 					ZDOTDIR=/tmp/ zsh
 					rm /tmp/.zshrc
+					clear
 					main_menu
 		;;
 	esac
+
+}
+
+arch_anywhere_chroot() {
+
+	trap ctrl_c INT
+	
+	until [ "$input" == "arch-anywhere" ] || [ "$input" == "exit" ]
+	  do
+	    working_dir=$(</tmp/chroot_dir.var)
+	    echo -n "${Yellow}<${Red}root${Yellow}@${Green}${hostname}-chroot${Yellow}>: $working_dir>${Red}# ${ColorOff}" ; read input
+
+    	if [ "$input" != "arch-anywhere" ] || [ "$input" != "exit" ]; then
+             
+			if (<<<$input grep "vim\|nano" &> /dev/null); then 
+                edit=$(<<<$input cut -d' ' -f2-)
+            	editor=$(<<<$input awk '{print $1}')
+            	cur_dir=$(<<<$edit grep -v "^/")
+                 
+            	if (<<<$edit grep -v "^/"); then 
+            	    $editor "$ARCH"/"$working_dir"/"$edit" ; arch_anywhere_chroot
+            	else 
+            	    $editor "$ARCH"/"$edit" ; arch_anywhere_chroot
+        		fi      
+
+	        elif (<<<$input grep "^cd " &> /dev/null); then 
+	            ch_dir=$(<<<$input cut -c4-)
+	            arch-chroot "$ARCH" /bin/bash -c "cd $working_dir ; cd $ch_dir ; pwd > /etc/chroot_dir.var" &> /tmp/chroot.log 2>&1
+	            pid=$!
+	            mv "$ARCH"/etc/chroot_dir.var /tmp/
+                cat /tmp/chroot.log
+	        
+	        elif (<<<$input grep "^pacman"); then
+				
+				case "$(<<<$input awk '{print $2}')" in
+					"-S")	input=$(<<<$input cut -d' ' -f3-)
+							pacstrap "$ARCH" $(echo "$input") &> /tmp/chroot.log &
+							pid=$!
+					;;
+					"-Ss")	input=$(<<<$input cut -d' ' -f3- | awk '{print $1}')
+							pacstrap "$ARCH" -s $(echo "$input") &> /tmp/chroot.log &
+							pid=$!
+					;;
+				esac
+			
+			elif  (<<<$input grep "^help" &> /dev/null); then
+				echo -e "$arch_chroot_msg" &
+				pid=$!
+				touch /tmp/chroot.log
+			
+			else
+	            arch-chroot "$ARCH" /bin/bash -c "cd $working_dir ; $input" &> /tmp/chroot.log 2>&1 &
+	            pid=$!
+	            sleep 0.5
+	            cat /tmp/chroot.log
+	        fi   
+             
+	        while (true)
+	          do
+	            proc=$(ps | grep "$pid")
+	            if [ "$?" -gt "0" ]; then break; fi
+	            start=$(</tmp/chroot.log wc -l)
+	            sleep 0.5
+	            end=$(</tmp/chroot.log wc -l)
+	            if [ "$end" -gt "$start" ]; then
+	                diff=$((end-start))
+	                tail -n "$diff" /tmp/chroot.log
+	            fi
+	        done
+    	fi
+	done
+
+	clear
+	unset input
+	rm /tmp/{chroot.log,chroot_dir.var}
+	reboot_system
+
+}
+
+ctrl_c() {
+
+	echo "${Red} Exiting and cleaning up..."
+	sleep 0.5
+	clear
+	unset input
+	rm /tmp/{chroot.log,chroot_dir.var}
+	reboot_system
 
 }
 
