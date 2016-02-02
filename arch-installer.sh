@@ -31,15 +31,15 @@ init() {
 
 ### First we set the desired install language
 	clear
-	ILANG=$(whiptail --nocancel --title "Arch Linux Anywhere" --menu "\nArch Anywhere Installer\n\n * Select your install language:" 19 60 8 \
+	ILANG=$(whiptail --nocancel --title "Arch Linux Anywhere" --menu "\nArch Anywhere Installer\n\n * Select your install language:" 14 60 3 \
 		"English" "-" \
 		"French" "Français" \
-		"German" "Deutsch" \
-		"Portuguese" "Português" \
-		"Romanian" "Română" \
-		"Russian" "Русский" \
-		"Spanish" "Español" \
-		"Swedish" "Svenska" 3>&1 1>&2 2>&3)
+#		"German" "Deutsch" \
+#		"Portuguese" "Português" \
+		"Romanian" "Română" 3>&1 1>&2 2>&3)
+#		"Russian" "Русский" \
+#		"Spanish" "Español" \
+#		"Swedish" "Svenska" 3>&1 1>&2 2>&3)
 
 	case "$ILANG" in
 		"English") export lang_file=/usr/share/arch-anywhere/lang/arch-installer-english.conf ;;
@@ -528,24 +528,22 @@ prepare_drives() {
 		### End partitioning
 			fi
 
-		### Wipe the filesystems on the new boot and root partitions
-			(wipefs -a /dev/"$BOOT"
-			wipefs -a /dev/"$ROOT") &> /dev/null &
-			pid=$! pri=0.1 msg="\n$frmt_load" load
-
 		### If uefi boot is set to true create new boot filesystem type of 'vfat'
 			if "$UEFI" ; then
-				mkfs.vfat -F32 /dev/"$BOOT" &> /dev/null &
+				(wipefs -a /dev/"$BOOT"
+				mkfs.vfat -F32 /dev/"$BOOT") &> /dev/null &
 				pid=$! pri=0.1 msg="\n$efi_load" load
 			
 		### Else create new boot filesystem using selected filesystem type
 			else
-				mkfs -F -t "$FS" /dev/"$BOOT" &> /dev/null &
+				(wipefs -a /dev/"$BOOT"
+				mkfs -F -t "$FS" /dev/"$BOOT)" &> /dev/null &
 				pid=$! pri=0.1 msg="\n$boot_load" load
 			fi
 
 		### Create root filesystem using desired filesystem type
-			mkfs -F -t "$FS" /dev/"$ROOT" &> /dev/null &
+			(wipefs -a /dev/"$ROOT"
+			mkfs -F -t "$FS" /dev/"$ROOT") &> /dev/null &
 			pid=$! pri=1 msg="\n$load_var1" load
 
 		### Mount root partition at arch mountpoint
@@ -799,7 +797,7 @@ manual_partition() {
 							pid=$! pri=0.1 msg="\n$mnt_load" load
 
 						### If exit status is equal to '0' set mounted, root, and drive variables
-							if [ $(</tmp/ex_status) -eq "0" ]; then
+							if [ $(</tmp/ex_status.var) -eq "0" ]; then
 								mounted=true
 								ROOT="$part"
 								DRIVE=$(<<<$part sed 's/[0-9]//')
@@ -1071,36 +1069,25 @@ install_base() {
 			else
 				install_base
 			fi
-
-	### If user is not using wifi prompt to install netctl wireless tools and wpa supplicant
-		elif ! "$wifi" ; then
-			if (whiptail --title "$title" --defaultno --yes-button "$yes" --no-button "$no" --yesno "$wifi_option_msg" 11 60) then
-				wifi=true
-			fi
 		fi
 
 	### Begin setting base install variable based on the users install type selection
 		case "$install_menu" in
 			"Arch-Linux-Base")
-				base_install="base libnewt sudo"
+				base_install="base sudo"
 			;;
 			"Arch-Linux-Base-Devel") 
-				base_install="base base-devel libnewt"
+				base_install="base base-devel"
 			;;
 			"Arch-Linux-LTS-Base")
-				base_install="base linux-lts libnewt sudo"
+				base_install="base linux-lts sudo"
 			;;
 			"Arch-Linux-LTS-Base-Devel")
-				base_install="base base-devel linux-lts libnewt"
+				base_install="base base-devel linux-lts"
 			;;
 		esac
 
-	### If user is using wifi or selected to install wifi tools add to base install variable
-		if "$wifi" ; then
-			base_install="$base_install wireless_tools wpa_supplicant wpa_actiond netctl dialog"
-		fi
-
-	### Prompt user to install grub bootloader and add to base install variable
+		### Prompt user to install grub bootloader and add to base install variable
 		if (whiptail --title "$title" --yes-button "$yes" --no-button "$no" --yesno "$grub_msg0" 10 60) then	
 			base_install="$base_install grub"
 			bootloader=true
@@ -1112,6 +1099,17 @@ install_base() {
 				base_install="$base_install grub"
 				bootloader=true
 			fi
+		fi
+
+	
+	### If user is using wifi or selected to install wifi tools add to base install variable
+	### If user is not using wifi prompt to install netctl wireless tools and wpa supplicant
+		if ! "$wifi" ; then
+			if (whiptail --title "$title" --defaultno --yes-button "$yes" --no-button "$no" --yesno "$wifi_option_msg" 11 60) then
+				base_install="$base_install wireless_tools wpa_supplicant wpa_actiond netctl dialog"
+			fi
+		else
+			base_install="$base_install wireless_tools wpa_supplicant wpa_actiond netctl dialog"
 		fi
 
 	### Prompt user to install os-prober and add to install variable
@@ -1381,7 +1379,7 @@ add_user() {
 		whiptail --title "$title" --ok-button "$ok" --msgbox "$user_err_msg" 10 60
 		add_user
 	
-	elif (<<<$user grep "$created_users" &> /dev/null); then
+	elif (<<<$user grep "$created_user" &> /dev/null); then
 		whiptail --title "$title" --ok-button "$ok" --msgbox "$user_err_msg1" 10 60
 		add_user
 	fi
@@ -1401,12 +1399,12 @@ add_user() {
 		 
 	### If no password entered display error and return to beginning of loop
 		if [ -z "$input" ]; then
-			whiptail --title "$title" --ok-button "$ok" --msgbox "$passwd_msg0" 11 55
+			whiptail --title "$title" --ok-button "$ok" --msgbox "$passwd_msg0" 10 55
 			input_chk=default
 		 
 	### else if passwords do not match display error and return to beginning of loop
 		elif [ "$input" != "$input_chk" ]; then
-			whiptail --title "$title" --ok-button "$ok" --msgbox "$passwd_msg1" 11 55
+			whiptail --title "$title" --ok-button "$ok" --msgbox "$passwd_msg1" 10 55
 		fi
 	done
 
@@ -1415,7 +1413,7 @@ add_user() {
 	unset input ; input_chk=default
 
 ### Prompt user to enable sudo for new user account
-	if [ -n "$created_users" ]; then
+	if [ -n "$sudo_user" ]; then
 		if (whiptail --title "$title" --yes-button "$yes" --no-button "$no" --yesno "$sudo_var" 10 60) then
 			(arch-chroot "$ARCH" usermod -a -G wheel "$user") &> /dev/null &
 			pid=$! pri=0.1 msg="$wait_load" load
@@ -1425,15 +1423,13 @@ add_user() {
 			(sed -i '/%wheel ALL=(ALL) ALL/s/^#//' $ARCH/etc/sudoers
 			arch-chroot "$ARCH" usermod -a -G wheel "$user") &> /dev/null &
 			pid=$! pri=0.1 msg="$wait_load" load
+			sudo_user="$user"
 		fi
 	fi
 
-	created_users="$user"
-	export user
-	export user_added=true 
+	user_added=true 
 	
 	if "$menu_enter" ; then
-		menu_enter=false
 		reboot_system
 	else	
 		graphics
@@ -1606,17 +1602,14 @@ graphics() {
 			if ! (whiptail --title "$title" --yes-button "$yes" --no-button "$no" --default-no --yesno "$desktop_cancel_msg" 10 60) then
 				graphics
 			fi
-		else
-			reboot_system
 		fi
 	fi
 
-	if ! "$menu_enter" ; then
-		install_software
-	else
-		menu_enter=false
+	if "$menu_enter" ; then
 		reboot_system
 	fi
+
+	install_software
 
 }
 
@@ -1701,7 +1694,7 @@ install_software() {
 						"gnuchess"      "$game4" OFF \
 						"supertux"		"$game5" OFF \
 						"supertuxkart"	"$game6" OFF \
-						"urbanterror"	"$game7" OFF\
+						"urbanterror"	"$game7" OFF \
 						"warsow"		"$game8" OFF \
 						"xonotic"		"$game9" OFF 3>&1 1>&2 2>&3)
 					if [ "$?" -gt "0" ]; then
@@ -2075,24 +2068,78 @@ arch_anywhere_chroot() {
 	            mv "$ARCH"/etc/chroot_dir.var /tmp/
                 cat /tmp/chroot.log
 	        
-	        elif (<<<$input grep "^pacman"); then
+	        elif (<<<$input grep "^pacman " &> /dev/null); then
 				
 				case "$(<<<$input awk '{print $2}')" in
 					"-S")	input=$(<<<$input cut -d' ' -f3-)
-							pacstrap "$ARCH" $(echo "$input") &> /tmp/chroot.log &
+							arch-chroot "$ARCH" /bin/bash -c "pacman -S $input"
 							pid=$!
 					;;
-					"-Ss")	input=$(<<<$input cut -d' ' -f3- | awk '{print $1}')
-							pacstrap "$ARCH" -s $(echo "$input") &> /tmp/chroot.log &
+					"-Ss")	input=$(<<<$input cut -d' ' -f3-)
+							arch-chroot "$ARCH" /bin/bash -c "pacman -Ss $input"
+							pid=$!
+					;;
+					"*")	input=$(<<<$input cut -d' ' -f2-)
+							arch-chroot "$ARCH" /bin/bash -c "pacman $input"
 							pid=$!
 					;;
 				esac
 			
 			elif  (<<<$input grep "^help" &> /dev/null); then
-				echo -e "$arch_chroot_msg" &
+				echo -e "$arch_chroot_msg"
 				pid=$!
-				touch /tmp/chroot.log
 			
+			elif (<<<$input grep "^passwd" &> /dev/null); then
+				user=$(<<<$input awk '{print $2}')
+				arch-chroot "$ARCH" /bin/bash -c "passwd $user"
+				pid=$!
+			
+			elif (<<<$input grep "^yaourt" &> /dev/null); then
+			
+				if [ -z "$yaourt_usr" ]; then
+					if [ -n "$sudo_user" ]; then
+						yaourt_user="$sudo_user"
+					else
+						arch-chroot "$ARCH" /bin/bash -c "useradd -m compile-user"
+						yaourt_user="compile-user"
+					fi
+				
+					echo "$yaourt_user ALL = NOPASSWD: /usr/bin/makepkg, /usr/bin/pacman" >> "$ARCH"/etc/sudoers
+				fi
+
+				if [ ! -f "$ARCH"/usr/bin/yaourt ]; then
+					echo
+					echo -n " ${Yellow}Would you like to install yaourt on your system? [y/N]: ${ColorOff}"
+					read input
+					echo
+
+					case "$input" in
+						y|Y|yes|Yes|yY|Yy|yy|YY)
+							echo -e "\n[archlinuxfr]\nServer = http://repo.archlinux.fr/\$arch\nSigLevel = Never" >> "$ARCH"/etc/pacman.conf
+							arch-chroot "$ARCH" /bin/bash -c "pacman -Sy yaourt"
+							cd "$ARCH"/home/"$yaourt_user"
+							wget https://aur.archlinux.org/cgit/aur.git/snapshot/package-query.tar.gz
+							wget https://aur.archlinux.org/cgit/aur.git/snapshot/yaourt.tar.gz
+							tar zxvf package-query.tar.gz
+							tar zxvf yaourt.tar.gz
+							arch-chroot "$ARCH" /bin/bash -c "chown --recursive $yaourt_user /home/$yaourt_user ; cd /home/$yaourt_user/package-query ; su -c 'makepkg -si' -m $yaourt_user"
+							arch-chroot "$ARCH" /bin/bash -c "cd /home/$yaourt_user/yaourt ; su -c 'makepkg -si' -m $yaourt_user"
+							rm -r "$ARCH"/home/"$yaourt_user"/{yaourt,yaourt.tar.gz,package-query,package-query.tar.gz}
+							cd ~/
+
+							if [ "$?" -eq "0" ]; then 
+								echo -e "\n ${Green}Yaourt installed successfully!\n You may now install AUR packages with: yaourt <package> ${ColorOff}\n"
+							fi
+							
+							pid=$!
+						;;
+					esac
+				else
+					input=$(<<<$input cut -d' ' -f2-)
+					arch-chroot "$ARCH" /bin/bash -c "su -c 'yaourt $input' -m $yaourt_user"
+					pid=$!
+				fi
+
 			else
 	            arch-chroot "$ARCH" /bin/bash -c "cd $working_dir ; $input" &> /tmp/chroot.log 2>&1 &
 	            pid=$!
@@ -2115,9 +2162,14 @@ arch_anywhere_chroot() {
     	fi
 	done
 
-	clear
 	unset input
 	rm /tmp/{chroot.log,chroot_dir.var}
+	if [ -n "$yaourt_usr" ]; then
+		sed -i '$ d' "$ARCH"/etc/sudoers
+		arch-chroot "$ARCH" /bin/bash -c "userdel -r $yaourt_user"
+	fi
+
+	clear
 	reboot_system
 
 }
@@ -2126,6 +2178,10 @@ ctrl_c() {
 
 	echo "${Red} Exiting and cleaning up..."
 	sleep 0.5
+	if [ -n "$yaourt_usr" ]; then
+		sed -i '$ d' "$ARCH"/etc/sudoers
+		arch-chroot "$ARCH" /bin/bash -c "userdel -r $yaourt_user"
+	fi
 	clear
 	unset input
 	rm /tmp/{chroot.log,chroot_dir.var}
