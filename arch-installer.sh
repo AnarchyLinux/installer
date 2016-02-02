@@ -2097,13 +2097,8 @@ arch_anywhere_chroot() {
 			elif (<<<$input grep "^yaourt" &> /dev/null); then
 			
 				if [ -z "$yaourt_usr" ]; then
-					if [ -n "$sudo_user" ]; then
-						yaourt_user="$sudo_user"
-					else
-						arch-chroot "$ARCH" /bin/bash -c "useradd -m compile-user"
-						yaourt_user="compile-user"
-					fi
-				
+					arch-chroot "$ARCH" /bin/bash -c "useradd -m compile-user"
+					yaourt_user="compile-user"
 					echo "$yaourt_user ALL = NOPASSWD: /usr/bin/makepkg, /usr/bin/pacman" >> "$ARCH"/etc/sudoers
 				fi
 
@@ -2116,7 +2111,6 @@ arch_anywhere_chroot() {
 					case "$input" in
 						y|Y|yes|Yes|yY|Yy|yy|YY)
 							echo -e "\n[archlinuxfr]\nServer = http://repo.archlinux.fr/\$arch\nSigLevel = Never" >> "$ARCH"/etc/pacman.conf
-							arch-chroot "$ARCH" /bin/bash -c "pacman -Sy yaourt"
 							cd "$ARCH"/home/"$yaourt_user"
 							wget https://aur.archlinux.org/cgit/aur.git/snapshot/package-query.tar.gz
 							wget https://aur.archlinux.org/cgit/aur.git/snapshot/yaourt.tar.gz
@@ -2165,7 +2159,7 @@ arch_anywhere_chroot() {
 	unset input
 	rm /tmp/{chroot.log,chroot_dir.var}
 	if [ -n "$yaourt_usr" ]; then
-		sed -i '$ d' "$ARCH"/etc/sudoers
+		sed -i 's!'$yaourt_user' ALL = NOPASSWD: /usr/bin/makepkg, /usr/bin/pacman!!' "$ARCH"/etc/sudoers
 		arch-chroot "$ARCH" /bin/bash -c "userdel -r $yaourt_user"
 	fi
 
@@ -2179,7 +2173,7 @@ ctrl_c() {
 	echo "${Red} Exiting and cleaning up..."
 	sleep 0.5
 	if [ -n "$yaourt_usr" ]; then
-		sed -i '$ d' "$ARCH"/etc/sudoers
+		sed -i 's!'$yaourt_user' ALL = NOPASSWD: /usr/bin/makepkg, /usr/bin/pacman!!' "$ARCH"/etc/sudoers
 		arch-chroot "$ARCH" /bin/bash -c "userdel -r $yaourt_user"
 	fi
 	clear
