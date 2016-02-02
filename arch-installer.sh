@@ -34,12 +34,12 @@ init() {
 	ILANG=$(whiptail --nocancel --title "Arch Linux Anywhere" --menu "\nArch Anywhere Installer\n\n * Select your install language:" 14 60 3 \
 		"English" "-" \
 		"French" "Français" \
-#		"German" "Deutsch" \
-#		"Portuguese" "Português" \
-		"Romanian" "Română" 3>&1 1>&2 2>&3)
-#		"Russian" "Русский" \
-#		"Spanish" "Español" \
-#		"Swedish" "Svenska" 3>&1 1>&2 2>&3)
+		"German" "Deutsch" \
+		"Portuguese" "Português" \
+		"Romanian" "Română" \
+		"Russian" "Русский" \
+		"Spanish" "Español" \
+		"Swedish" "Svenska" 3>&1 1>&2 2>&3)
 
 	case "$ILANG" in
 		"English") export lang_file=/usr/share/arch-anywhere/lang/arch-installer-english.conf ;;
@@ -118,10 +118,6 @@ check_connection() {
 		### Test connection speed with 10mb file output into /dev/null
 			wget --append-output=/tmp/wget.log -O /dev/null "http://speedtest.wdc01.softlayer.com/downloads/test10.zip" &
 			pid=$! pri=1 msg="\n$connection_load" load
-
-		### For testing purpose only - leave this line commented 
-#			wget --append-output=/tmp/wget.log -O /dev/null "ftp://192.168.1.68/dh-repo/x86_64/lib32-gcc-libs-5.3.0-3-x86_64.pkg.tar.xz" &
-#			pid=$! pri=1 msg="\n$connection_load" load
 
 		### Define network connection speed variables from data in wget.log
 			connection_speed=$(tail -n 2 /tmp/wget.log | grep -oP '(?<=\().*(?=\))' | awk '{print $1}')
@@ -537,7 +533,7 @@ prepare_drives() {
 		### Else create new boot filesystem using selected filesystem type
 			else
 				(wipefs -a /dev/"$BOOT"
-				mkfs -F -t "$FS" /dev/"$BOOT)" &> /dev/null &
+				mkfs -F -t "$FS" /dev/"$BOOT") &> /dev/null &
 				pid=$! pri=0.1 msg="\n$boot_load" load
 			fi
 
