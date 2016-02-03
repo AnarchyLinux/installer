@@ -31,7 +31,7 @@ init() {
 
 ### First we set the desired install language
 	clear
-	ILANG=$(whiptail --nocancel --title "Arch Linux Anywhere" --menu "\nArch Anywhere Installer\n\n * Select your install language:" 14 60 3 \
+	ILANG=$(whiptail --nocancel --title "Arch Linux Anywhere" --menu "\nArch Anywhere Installer\n\n * Select your install language:" 19 60 8 \
 		"English" "-" \
 		"French" "Français" \
 		"German" "Deutsch" \
@@ -67,91 +67,79 @@ init() {
 check_connection() {
 
 ### Display into message
+	
 	if ! (whiptail --title "$title" --yes-button "$yes" --no-button "$no" --yesno "$intro_msg" 10 60) then
 		clear ; exit
 	fi
-
-### Ping google to check status of internet connection
-	(ping -w 2.5 google.com
+	
+### Test connection speed with 10mb file output into /dev/null
+	(wget --append-output=/tmp/wget.log -O /dev/null "http://speedtest.wdc01.softlayer.com/downloads/test10.zip"
 	echo "$?" > /tmp/ex_status.var) &> /dev/null &
-	pid=$! pri=0.1 msg="$wait_load" load
+	pid=$! pri=1 msg="\n$connection_load" load
 
 ### Begin connection test and error check
-	until "$connection"
+	while [ "$(</tmp/ex_status.var)" -gt "0" ]
 	  do
-	
-	### If ping exited with error
-		if [ "$(</tmp/ex_status.var)" -gt "0" ]; then
     	
-		### If connection error check for wifi network
-			if [ -n "$wifi_network" ]; then
+	### If connection error check for wifi network
+		if [ -n "$wifi_network" ]; then
     		
-			### If wifi network found prompt user to attempt connection with 'wifi-menu' command
-				if (whiptail --title "$title" --yes-button "$yes" --no-button "$no" --yesno "$wifi_msg0" 10 60) then
-					wifi-menu "$wifi_network"
+		### If wifi network found prompt user to attempt connection with 'wifi-menu' command
+			if (whiptail --title "$title" --yes-button "$yes" --no-button "$no" --yesno "$wifi_msg0" 10 60) then
+				wifi-menu "$wifi_network"
     			
-				### If wifi-menu returns error print error message and exit
-					if [ "$?" -gt "0" ]; then
-						whiptail --title "$title" --ok-button "$ok" --msgbox "$wifi_msg1" 10 60
-						clear ; echo "$connect_err1" ; exit 1
+			### If wifi-menu returns error print error message and exit
+				if [ "$?" -gt "0" ]; then
+					whiptail --title "$title" --ok-button "$ok" --msgbox "$wifi_msg1" 10 60
+					clear ; echo "$connect_err1" ; exit 1
 				
-				### Else set wifi to true and error to false
-					else
-						wifi=true
-						echo "0" > /tmp/ex_status.var
-					fi
+			### Else set wifi to true and error to false
+				else
+					wifi=true
+					echo "0" > /tmp/ex_status.var
+				fi
 			
 			### Else if user would not like to connect unset wifi network	
 				else
 					unset wifi_network
 				fi
 		
-		### Else if connection error and no wifi network found print error message and exit
-			else
-				whiptail --title "$title" --ok-button "$ok" --msgbox "$connect_err0" 10 60
-				clear ; echo -e "$connect_err1" ;  exit 1
-			fi
-	
-	### Else ping did not exit with error
+	### Else if connection error and no wifi network found print error message and exit
 		else
-		
-		### Test connection speed with 10mb file output into /dev/null
-			wget --append-output=/tmp/wget.log -O /dev/null "http://speedtest.wdc01.softlayer.com/downloads/test10.zip" &
-			pid=$! pri=1 msg="\n$connection_load" load
-
-		### Define network connection speed variables from data in wget.log
-			connection_speed=$(tail -n 2 /tmp/wget.log | grep -oP '(?<=\().*(?=\))' | awk '{print $1}')
-			connection_rate=$(tail -n 2 /tmp/wget.log | grep -oP '(?<=\().*(?=\))' | awk '{print $2}')
-        
-    	### Define cpu frequency variables
-        	cpu_mhz=$(lscpu | grep "CPU max MHz" | awk '{print $4}' | sed 's/\..*//')
-        
-			if [ "$?" -gt "0" ]; then
-				cpu_mhz=$(lscpu | grep "CPU MHz" | awk '{print $3}' | sed 's/\..*//')
-			fi
-        
-       ### Define cpu sleep variable based on total cpu frequency
-			case "$cpu_mhz" in
-				[0-9][0-9][0-9]) 
-					cpu_sleep=5
-				;;
-				[1][0-9][0-9][0-9])
-					cpu_sleep=4
-				;;
-				[2][0-9][0-9][0-9])
-					cpu_sleep=2.5
-				;;
-				*)
-					cpu_sleep=2
-				;;
-			esac
-        		
-			export connection_speed connection_rate cpu_sleep
-			connection=true
+			whiptail --title "$title" --ok-button "$ok" --msgbox "$connect_err0" 10 60
+			clear ; echo -e "$connect_err1" ;  exit 1
 		fi
 	done
+		
+### Define network connection speed variables from data in wget.log
+	connection_speed=$(tail -n 2 /tmp/wget.log | grep -oP '(?<=\().*(?=\))' | awk '{print $1}')
+	connection_rate=$(tail -n 2 /tmp/wget.log | grep -oP '(?<=\().*(?=\))' | awk '{print $2}')
 
-	rm /tmp/ex_status.var
+### Define cpu frequency variables
+    cpu_mhz=$(lscpu | grep "CPU max MHz" | awk '{print $4}' | sed 's/\..*//')
+
+	if [ "$?" -gt "0" ]; then
+		cpu_mhz=$(lscpu | grep "CPU MHz" | awk '{print $3}' | sed 's/\..*//')
+	fi
+        
+ ### Define cpu sleep variable based on total cpu frequency
+	case "$cpu_mhz" in
+		[0-9][0-9][0-9]) 
+			cpu_sleep=4
+		;;
+		[1][0-9][0-9][0-9])
+			cpu_sleep=3.5
+		;;
+		[2][0-9][0-9][0-9])
+			cpu_sleep=2.5
+		;;
+		*)
+			cpu_sleep=1.5
+		;;
+	esac
+        		
+	export connection_speed connection_rate cpu_sleep
+	rm /tmp/{ex_status.var} &> /dev/null
 	set_locale
 
 }
@@ -409,7 +397,7 @@ prepare_drives() {
 	### Prompt user to format selected drive
 		if (whiptail --title "$title" --defaultno --yes-button "$write" --no-button "$cancel" --yesno "$drive_var" "$height" 60) then
 			sgdisk --zap-all /dev/"$DRIVE" &> /dev/null &
-			pid=$! pri=0.1 msg="$frmt_load" load
+			pid=$! pri=0.1 msg="\n$frmt_load" load
 	
 	### Else reset back to beginning of prepare drives function
 		else
@@ -528,7 +516,7 @@ prepare_drives() {
 			if "$UEFI" ; then
 				(wipefs -a /dev/"$BOOT"
 				mkfs.vfat -F32 /dev/"$BOOT") &> /dev/null &
-				pid=$! pri=0.1 msg="\n$efi_load" load
+				pid=$! pri=0.1 msg="\n$efi_load1" load
 			
 		### Else create new boot filesystem using selected filesystem type
 			else
@@ -649,7 +637,7 @@ prepare_drives() {
 		### If efi is true create new boot filesystem using 'vfat'
 			if "$UEFI" ; then
 				mkfs.vfat -F32 /dev/"$BOOT" &> /dev/null &
-				pid=$! pri=0.2 msg="\n$efi_load" load
+				pid=$! pri=0.2 msg="\n$efi_load1" load
 			
 		### Else create new boot filesystem using selected filesystem type
 			else
@@ -781,7 +769,7 @@ manual_partition() {
 						
 						### Wipe root filesystem on selected partition
 							wipefs -a -q /dev/"$part" &> /dev/null &
-							pid=$! pri=0.1 msg="$frmt_load" load
+							pid=$! pri=0.1 msg="\n$frmt_load" load
 
 						### Create new filesystem on root partition
 							mkfs -F -t "$FS" /dev/"$part" &> /dev/null &
@@ -1155,10 +1143,9 @@ install_base() {
 			### If user selected efi boot
 				if "$UEFI" ; then
 					
-				### Install efibootmgr
-					pacstrap "$ARCH" efibootmgr &> /dev/null &
-					pid="\n$efi_load" load
-					
+				pacstrap "$ARCH" efibootmgr &> /dev/null &
+				pid=$! pri=1 msg="\n$efi_load" load
+
 				### Chroot into system and install grub with efi options enabled
 				### Rename the grubx64.efi boot file
 					arch-chroot "$ARCH" grub-install --efi-directory=/boot --target=x86_64-efi --bootloader-id=boot &> /dev/null &
@@ -1561,7 +1548,6 @@ graphics() {
 	if ! "$dm_set" ; then
 		if (whiptail --title "$title" --yes-button "$yes" --no-button "$no" --yesno "$lightdm_msg" 10 60) then
 			DE="$DE lightdm lightdm-gtk-greeter"
-			dm_set=true
 			enable_dm=true
 		else
 			whiptail --title "$title" --ok-button "$ok" --msgbox "$startx_msg" 10 60
@@ -1584,8 +1570,11 @@ graphics() {
 		desktop=true
 			
 		if "$enable_dm" ; then
-			arch-chroot "$ARCH" systemctl enable lightdm.service &> /dev/null &
-			pid=$! pri="0.1" msg="\n$dm_load" load
+			if ! "$dm_set" ; then
+				arch-chroot "$ARCH" systemctl enable lightdm.service &> /dev/null &
+				pid=$! pri="0.1" msg="\n$dm_load" load
+				dm_set=true
+			fi
 		fi
 
 		if "$user_added" ; then
@@ -2037,144 +2026,144 @@ main_menu() {
 
 arch_anywhere_chroot() {
 
+	local char=
+    local input=
+    local -a history=( )
+    local -i histindex=0
 	trap ctrl_c INT
+	working_dir=$(</tmp/chroot_dir.var)
 	
-	until [ "$input" == "arch-anywhere" ] || [ "$input" == "exit" ]
+	while (true)
 	  do
-	    working_dir=$(</tmp/chroot_dir.var)
-	    echo -n "${Yellow}<${Red}root${Yellow}@${Green}${hostname}-chroot${Yellow}>: $working_dir>${Red}# ${ColorOff}" ; read input
+		echo -n "${Yellow}<${Red}root${Yellow}@${Green}${hostname}-chroot${Yellow}>: $working_dir>${Red}# ${ColorOff}" ; while IFS= read -r -n 1 -s char
+		  do
+			if [ "$char" == $'\x1b' ]; then
+				while IFS= read -r -n 2 -s rest
+          		  do
+                	char+="$rest"
+                	break
+            	done
+        	fi
 
-    	if [ "$input" != "arch-anywhere" ] || [ "$input" != "exit" ]; then
-             
-			if (<<<$input grep "vim\|nano" &> /dev/null); then 
-                edit=$(<<<$input cut -d' ' -f2-)
-            	editor=$(<<<$input awk '{print $1}')
-            	cur_dir=$(<<<$edit grep -v "^/")
-                 
-            	if (<<<$edit grep -v "^/"); then 
-            	    $editor "$ARCH"/"$working_dir"/"$edit" ; arch_anywhere_chroot
-            	else 
-            	    $editor "$ARCH"/"$edit" ; arch_anywhere_chroot
-        		fi      
+			if [ "$char" == $'\x1b[D' ]; then
+				pos=-1
 
-	        elif (<<<$input grep "^cd " &> /dev/null); then 
-	            ch_dir=$(<<<$input cut -c4-)
-	            arch-chroot "$ARCH" /bin/bash -c "cd $working_dir ; cd $ch_dir ; pwd > /etc/chroot_dir.var" &> /tmp/chroot.log 2>&1
-	            pid=$!
-	            mv "$ARCH"/etc/chroot_dir.var /tmp/
-                cat /tmp/chroot.log
+			elif [ "$char" == $'\x1b[C' ]; then
+				pos=1
+
+			elif [[ $char == $'\177' ]];  then
+				input="${input%?}"
+				echo -ne "\r\033[K${Yellow}<${Red}root${Yellow}@${Green}${hostname}-chroot${Yellow}>: $working_dir>${Red}# ${ColorOff}${input}"
+			
+			elif [ "$char" == $'\x1b[A' ]; then
+            # Up
+            	if [ $histindex -gt 0 ]; then
+                	histindex+=-1
+                	input=$(echo -ne "${history[$histindex]}")
+					echo -ne "\r\033[K${Yellow}<${Red}root${Yellow}@${Green}${hostname}-chroot${Yellow}>: $working_dir>${Red}# ${ColorOff}${history[$histindex]}"
+				fi  
+        	elif [ "$char" == $'\x1b[B' ]; then
+            # Down
+            	if [ $histindex -lt $((${#history[@]} - 1)) ]; then
+                	histindex+=1
+                	input=$(echo -ne "${history[$histindex]}")
+                	echo -ne "\r\033[K${Yellow}<${Red}root${Yellow}@${Green}${hostname}-chroot${Yellow}>: $working_dir>${Red}# ${ColorOff}${history[$histindex]}"
+				fi  
+        	elif [ -z "$char" ]; then
+            # Newline
+				echo
+            	history+=( "$input" )
+            	histindex=${#history[@]}
+				break
+        	else
+            	echo -n "$char"
+            	input+="$char"
+        	fi  
+		done
+    	
+		if [ "$input" == "arch-anywhere" ] || [ "$input" == "exit" ]; then
+        	
+        	if [ -n "$yaourt_user" ]; then
+				sed -i 's!'$yaourt_user' ALL = NOPASSWD: /usr/bin/makepkg, /usr/bin/pacman!!' "$ARCH"/etc/sudoers
+				arch-chroot "$ARCH" /bin/bash -c "userdel -r $yaourt_user" &> /dev/null
+			fi
+
+			rm /tmp/chroot_dir.var &> /dev/null
+			clear
+			break
+
+	    elif (<<<"$input" grep "^cd " &> /dev/null); then 
+	    	ch_dir=$(<<<$input cut -c4-)
+	        arch-chroot "$ARCH" /bin/bash -c "cd $working_dir ; cd $ch_dir ; pwd > /etc/chroot_dir.var"
+	        mv "$ARCH"/etc/chroot_dir.var /tmp/
+			working_dir=$(</tmp/chroot_dir.var)
 	        
-	        elif (<<<$input grep "^pacman " &> /dev/null); then
-				
-				case "$(<<<$input awk '{print $2}')" in
-					"-S")	input=$(<<<$input cut -d' ' -f3-)
-							arch-chroot "$ARCH" /bin/bash -c "pacman -S $input"
-							pid=$!
-					;;
-					"-Ss")	input=$(<<<$input cut -d' ' -f3-)
-							arch-chroot "$ARCH" /bin/bash -c "pacman -Ss $input"
-							pid=$!
-					;;
-					"*")	input=$(<<<$input cut -d' ' -f2-)
-							arch-chroot "$ARCH" /bin/bash -c "pacman $input"
-							pid=$!
+		elif  (<<<"$input" grep "^help" &> /dev/null); then
+			echo -e "$arch_chroot_msg"
+			
+		elif (<<<"$input" grep "^yaourt" &> /dev/null); then
+			
+			if [ ! -f "$ARCH"/usr/bin/yaourt ]; then
+				echo
+				echo -n " ${Yellow}Would you like to install yaourt on your system? [y/N]: ${ColorOff}"
+				read input
+				echo
+
+				case "$input" in
+					y|Y|yes|Yes|yY|Yy|yy|YY)
+						if [ -z "$yaourt_user" ]; then
+							arch-chroot "$ARCH" /bin/bash -c "useradd -m compile-user"
+							yaourt_user="compile-user"
+							echo "$yaourt_user ALL = NOPASSWD: /usr/bin/makepkg, /usr/bin/pacman" >> "$ARCH"/etc/sudoers
+						fi
+						
+						cd "$ARCH"/home/"$yaourt_user"
+						wget https://aur.archlinux.org/cgit/aur.git/snapshot/package-query.tar.gz
+						wget https://aur.archlinux.org/cgit/aur.git/snapshot/yaourt.tar.gz
+						tar zxvf package-query.tar.gz
+						tar zxvf yaourt.tar.gz
+						arch-chroot "$ARCH" /bin/bash -c "chown --recursive $yaourt_user /home/$yaourt_user ; pacman -Sy --no-confirm --needed base-devel ; cd /home/$yaourt_user/package-query ; su -c 'makepkg -si' -m $yaourt_user"
+						arch-chroot "$ARCH" /bin/bash -c "cd /home/$yaourt_user/yaourt ; su -c 'makepkg -si' -m $yaourt_user"
+
+						if [ "$?" -eq "0" ]; then
+							echo -e "\n ${Green}Yaourt installed successfully!\n You may now install AUR packages with: yaourt <package> ${ColorOff}\n"
+						else
+							echo -e "\n ${Red}Error: yaourt failed to install...${ColorOff}\n"
+						fi
+						
+						rm -r "$ARCH"/home/"$yaourt_user"/{yaourt,yaourt.tar.gz,package-query,package-query.tar.gz}
+						cd ~/
 					;;
 				esac
-			
-			elif  (<<<$input grep "^help" &> /dev/null); then
-				echo -e "$arch_chroot_msg"
-				pid=$!
-			
-			elif (<<<$input grep "^passwd" &> /dev/null); then
-				user=$(<<<$input awk '{print $2}')
-				arch-chroot "$ARCH" /bin/bash -c "passwd $user"
-				pid=$!
-			
-			elif (<<<$input grep "^yaourt" &> /dev/null); then
-			
-				if [ -z "$yaourt_usr" ]; then
-					arch-chroot "$ARCH" /bin/bash -c "useradd -m compile-user"
-					yaourt_user="compile-user"
-					echo "$yaourt_user ALL = NOPASSWD: /usr/bin/makepkg, /usr/bin/pacman" >> "$ARCH"/etc/sudoers
-				fi
-
-				if [ ! -f "$ARCH"/usr/bin/yaourt ]; then
-					echo
-					echo -n " ${Yellow}Would you like to install yaourt on your system? [y/N]: ${ColorOff}"
-					read input
-					echo
-
-					case "$input" in
-						y|Y|yes|Yes|yY|Yy|yy|YY)
-							echo -e "\n[archlinuxfr]\nServer = http://repo.archlinux.fr/\$arch\nSigLevel = Never" >> "$ARCH"/etc/pacman.conf
-							cd "$ARCH"/home/"$yaourt_user"
-							wget https://aur.archlinux.org/cgit/aur.git/snapshot/package-query.tar.gz
-							wget https://aur.archlinux.org/cgit/aur.git/snapshot/yaourt.tar.gz
-							tar zxvf package-query.tar.gz
-							tar zxvf yaourt.tar.gz
-							arch-chroot "$ARCH" /bin/bash -c "chown --recursive $yaourt_user /home/$yaourt_user ; cd /home/$yaourt_user/package-query ; su -c 'makepkg -si' -m $yaourt_user"
-							arch-chroot "$ARCH" /bin/bash -c "cd /home/$yaourt_user/yaourt ; su -c 'makepkg -si' -m $yaourt_user"
-							rm -r "$ARCH"/home/"$yaourt_user"/{yaourt,yaourt.tar.gz,package-query,package-query.tar.gz}
-							cd ~/
-
-							if [ "$?" -eq "0" ]; then 
-								echo -e "\n ${Green}Yaourt installed successfully!\n You may now install AUR packages with: yaourt <package> ${ColorOff}\n"
-							fi
-							
-							pid=$!
-						;;
-					esac
-				else
-					input=$(<<<$input cut -d' ' -f2-)
-					arch-chroot "$ARCH" /bin/bash -c "su -c 'yaourt $input' -m $yaourt_user"
-					pid=$!
-				fi
-
 			else
-	            arch-chroot "$ARCH" /bin/bash -c "cd $working_dir ; $input" &> /tmp/chroot.log 2>&1 &
-	            pid=$!
-	            sleep 0.5
-	            cat /tmp/chroot.log
-	        fi   
-             
-	        while (true)
-	          do
-	            proc=$(ps | grep "$pid")
-	            if [ "$?" -gt "0" ]; then break; fi
-	            start=$(</tmp/chroot.log wc -l)
-	            sleep 0.5
-	            end=$(</tmp/chroot.log wc -l)
-	            if [ "$end" -gt "$start" ]; then
-	                diff=$((end-start))
-	                tail -n "$diff" /tmp/chroot.log
-	            fi
-	        done
-    	fi
+				input=$(<<<"$input" cut -d' ' -f2-)
+				arch-chroot "$ARCH" /bin/bash -c "su -c 'yaourt $input' -m $yaourt_user"
+			fi
+
+		else
+	    	arch-chroot "$ARCH" /bin/bash -c "cd $working_dir ; $input"
+	    fi   
+	input=
 	done
 
-	unset input
-	rm /tmp/{chroot.log,chroot_dir.var}
-	if [ -n "$yaourt_usr" ]; then
-		sed -i 's!'$yaourt_user' ALL = NOPASSWD: /usr/bin/makepkg, /usr/bin/pacman!!' "$ARCH"/etc/sudoers
-		arch-chroot "$ARCH" /bin/bash -c "userdel -r $yaourt_user"
-	fi
-
-	clear
 	reboot_system
 
 }
 
 ctrl_c() {
 
+	echo
 	echo "${Red} Exiting and cleaning up..."
 	sleep 0.5
-	if [ -n "$yaourt_usr" ]; then
+	
+	if [ -n "$yaourt_user" ]; then
 		sed -i 's!'$yaourt_user' ALL = NOPASSWD: /usr/bin/makepkg, /usr/bin/pacman!!' "$ARCH"/etc/sudoers
-		arch-chroot "$ARCH" /bin/bash -c "userdel -r $yaourt_user"
+		arch-chroot "$ARCH" /bin/bash -c "userdel -r $yaourt_user" &> /dev/null
 	fi
-	clear
+	
 	unset input
-	rm /tmp/{chroot.log,chroot_dir.var}
+	rm /tmp/chroot_dir.var &> /dev/null
+	clear
 	reboot_system
 
 }
