@@ -74,7 +74,7 @@ check_connection() {
 	
 ### Test connection speed with 10mb file output into /dev/null
 	(wget --append-output=/tmp/wget.log -O /dev/null "http://speedtest.wdc01.softlayer.com/downloads/test10.zip"
-	echo "$?" > /tmp/ex_status.var) &> /dev/null &
+	echo "$?" > /tmp/ex_status.var ; sleep 0.5) &> /dev/null &
 	pid=$! pri=1 msg="\n$connection_load" load
 
 ### Begin connection test and error check
@@ -112,8 +112,8 @@ check_connection() {
 	done
 		
 ### Define network connection speed variables from data in wget.log
-	connection_speed=$(tail -n 2 /tmp/wget.log | grep -oP '(?<=\().*(?=\))' | awk '{print $1}')
-	connection_rate=$(tail -n 2 /tmp/wget.log | grep -oP '(?<=\().*(?=\))' | awk '{print $2}')
+	connection_speed=$(tail /tmp/wget.log | grep -oP '(?<=\().*(?=\))' | awk '{print $1}')
+	connection_rate=$(tail /tmp/wget.log | grep -oP '(?<=\().*(?=\))' | awk '{print $2}')
 
 ### Define cpu frequency variables
     cpu_mhz=$(lscpu | grep "CPU max MHz" | awk '{print $4}' | sed 's/\..*//')
@@ -276,7 +276,7 @@ prepare_drives() {
 				# simple script used to generate block device menu
 				whiptail --title "$title" --ok-button "$ok" --cancel-button "$cancel" --menu "$drive_msg" 15 60 4 \\
 				$(lsblk | grep "disk" | awk '{print "\""$1"\"""    ""\"""Type: "$6"    ""'$size': "$4"\""" \\"}' |
-				sed "s/\.[0-9]*//;s/ [0-9][G,M]/&   /;s/ [0-9][0-9][G,M]/&  /;s/ [0-9][0-9][0-9][G,M]/& /")
+				sed "s/\.[0-9]*//;s/\,[0-9]*//;s/ [0-9][G,M]/&   /;s/ [0-9][0-9][G,M]/&  /;s/ [0-9][0-9][0-9][G,M]/& /")
 				3>&1 1>&2 2>&3
 			EOF
 		
@@ -711,7 +711,7 @@ manual_partition() {
 			# simple script used to generate block device menu
 			whiptail --title "$title" --ok-button "$ok" --cancel-button "$cancel" --menu "$manual_part_msg" "$height" 70 "$menu_height" \\
 			$(lsblk | grep -v "K" | grep "disk\|part" | sed 's/\/mnt/\//;s/\/\//\//' | awk '{print "\""$1"\"""    ""\"""Type: "$6"    ""'$size': "$4"    '$mountpoint': "$7"\""" \\"}' |
-			sed "s/\.[0-9]*//;s/ [0-9][G,M]/&   /;s/ [0-9][0-9][G,M]/&  /;s/ [0-9][0-9][0-9][G,M]/& /;s/\(^\"sd.*Size:......\).*/\1\" \\\/")
+			sed "s/\.[0-9]*//;s/\,[0-9]*//;s/ [0-9][G,M]/&   /;s/ [0-9][0-9][G,M]/&  /;s/ [0-9][0-9][0-9][G,M]/& /;s/\(^\"sd.*Size:......\).*/\1\" \\\/")
 			"$done_msg" "$write>" 3>&1 1>&2 2>&3
 		EOF
 
@@ -2177,13 +2177,19 @@ cal_rate() {
 		MB/s)
 			down_sec=$(echo "$download_size/$connection_speed" | bc)
 		;;
-		GB/s) 
-			down_sec=".5" 
+		*) 
+			down_sec="1" 
 		;;
 	esac
         
 	down=$(echo "$down_sec/100+$cpu_sleep" | bc)
 	down_min=$(echo "$down*100/60" | bc)
+	
+	if ! [ "$down" -eq "$down" ] || [ -z "$down" ] || [ "$down" -eq "0" ]; then
+		down=3
+		down_min=5
+	fi
+	
 	export down down_min	
 	source "$lang_file"
 
