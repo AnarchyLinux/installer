@@ -731,7 +731,7 @@ manual_partition() {
 	### set the size of the selected partition
 	### specify the existing mountpoint (if any)
 		part=$(<<<$manual_part sed 's/├─//;s/└─//')
-		part_size=$(lsblk | grep "$part" | awk '{print $4}')
+		part_size=$(lsblk | grep "$part" | awk '{print $4}' | sed 's/\,/\./')
 		part_mount=$(lsblk | grep "$part" | awk '{print $7}' | sed 's/\/mnt/\//;s/\/\//\//')
 		source "$lang_file"
 
