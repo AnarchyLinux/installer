@@ -953,7 +953,7 @@ manual_partition() {
 		
 	### Else partition is mounted, create a list and count of final partitions
 		else
-			final_part=$(lsblk | grep "/\|[SWAP]" | grep "part" | awk '{print $1"      "$4"       "$7}' | sed 's/\/mnt/\//;s/\/\//\//;1i'$partition': '$size':       '$mountpoint': ' | sed "s/\.[0-9]*//;s/ [0-9][G,M]/&   /;s/ [0-9][0-9][G,M]/&  /;s/ [0-9][0-9][0-9][G,M]/& /")
+			final_part=$(lsblk | grep "/\|[SWAP]" | grep "part" | awk '{print $1"      "$4"       "$7}' | sed 's/\/mnt/\//;s/\/\//\//;1i'$partition': '$size':       '$mountpoint': ' | sed "s/\,/\./;s/\.[0-9]*//;s/ [0-9][G,M]/&   /;s/ [0-9][0-9][G,M]/&  /;s/ [0-9][0-9][0-9][G,M]/& /")
 			final_count=$(lsblk | grep "/\|[SWAP]" | grep "part"  | wc -l)
 
 			
@@ -971,6 +971,8 @@ manual_partition() {
 		### Confirm writing changes to partition table and continue with install
 			if (whiptail --title "$title" --yes-button "$write" --no-button "$cancel" --defaultno --yesno "$write_confirm_msg \n\n $final_part \n\n $write_confirm" "$height" 50) then
 				update_mirrors
+			else
+				manual_partition
 			fi
 		fi
 	
@@ -2122,7 +2124,7 @@ arch_anywhere_chroot() {
 						wget https://aur.archlinux.org/cgit/aur.git/snapshot/yaourt.tar.gz
 						tar zxvf package-query.tar.gz
 						tar zxvf yaourt.tar.gz
-						arch-chroot "$ARCH" /bin/bash -c "chown --recursive $yaourt_user /home/$yaourt_user ; pacman -Sy --no-confirm --needed base-devel ; cd /home/$yaourt_user/package-query ; su -c 'makepkg -si' -m $yaourt_user"
+						arch-chroot "$ARCH" /bin/bash -c "chown --recursive $yaourt_user /home/$yaourt_user ; pacman -Sy --noconfirm --needed base-devel ; cd /home/$yaourt_user/package-query ; su -c 'makepkg -si' -m $yaourt_user"
 						arch-chroot "$ARCH" /bin/bash -c "cd /home/$yaourt_user/yaourt ; su -c 'makepkg -si' -m $yaourt_user"
 
 						if [ "$?" -eq "0" ]; then
@@ -2185,12 +2187,12 @@ cal_rate() {
 	down=$(echo "$down_sec/100+$cpu_sleep" | bc)
 	down_min=$(echo "$down*100/60" | bc)
 	
-	if ! [ "$down" -eq "$down" ] || [ -z "$down" ] || [ "$down" -eq "0" ]; then
+	if ! (<<<$down grep "^[1-9]" &> /dev/null); then
 		down=3
 		down_min=5
 	fi
 	
-	export down down_min	
+	export down down_min
 	source "$lang_file"
 
 }
