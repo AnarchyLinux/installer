@@ -76,6 +76,7 @@ check_connection() {
 	(wget --append-output=/tmp/wget.log -O /dev/null "http://speedtest.wdc01.softlayer.com/downloads/test10.zip"
 	echo "$?" > /tmp/ex_status.var ; sleep 0.5) &> /dev/null &
 	pid=$! pri=1 msg="\n$connection_load" load
+	sed -i 's/\,/\./' /tmp/wget.log
 
 ### Begin connection test and error check
 	while [ "$(</tmp/ex_status.var)" -gt "0" ]
