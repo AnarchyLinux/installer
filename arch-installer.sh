@@ -1508,39 +1508,41 @@ graphics() {
 		esac
 
 	if ! $desktop ; then
-		until "$gpu_set"
-		  do
-			GPU=$(whiptail --title "$title" --ok-button "$ok" --cancel-button "$cancel" --menu "$graphics_msg" 17 60 6 \
-				"$default"			"$gr0" \
-				"mesa-libgl"        "$gr1" \
-				"Nvidia"            "$gr2" \
-				"Vbox-Guest-Utils"  "$gr3" \
-				"xf86-video-ati"    "$gr4" \
-				"xf86-video-intel"  "$gr5" 3>&1 1>&2 2>&3)
-
-			if [ "$?" -gt "0" ]; then
-				graphics
-			
-			elif [ "$GPU" == "Nvidia" ]; then
-				GPU=$(whiptail --title "$title" --ok-button "$ok" --cancel-button "$cancel" --menu "$nvidia_msg" 15 60 4 \
-					"nvidia"       "$gr6" \
-					"nvidia-340xx" "$gr7" \
-					"nvidia-304xx" "$gr8" 3>&1 1>&2 2>&3)
-
-				if [ "$?" -eq "0" ]; then
-					gpu_set=true
-					GPU="$GPU ${GPU}-libgl"
-				fi 
-			else
-				gpu_set=true
-			fi
-		done
-			
-		if [ "$GPU" == "Vbox-Guest-Utils" ]; then
+		
+		if "$VBOX" ; then
 			GPU="virtualbox-guest-utils mesa-libgl"
 			echo -e "vboxguest\nvboxsf\nvboxvideo" > "$ARCH"/etc/modules-load.d/virtualbox.conf
-		elif [ "$GPU" == "$default" ]; then
-			unset GPU
+		else
+
+			until "$gpu_set"
+			  do
+				GPU=$(whiptail --title "$title" --ok-button "$ok" --cancel-button "$cancel" --menu "$graphics_msg" 16 60 5 \
+					"$default"			"$gr0" \
+					"mesa-libgl"        "$gr1" \
+					"Nvidia"            "$gr2" \
+					"xf86-video-ati"    "$gr4" \
+					"xf86-video-intel"  "$gr5" 3>&1 1>&2 2>&3)
+
+				if [ "$?" -gt "0" ]; then
+					graphics
+			
+				elif [ "$GPU" == "Nvidia" ]; then
+					GPU=$(whiptail --title "$title" --ok-button "$ok" --cancel-button "$cancel" --menu "$nvidia_msg" 15 60 4 \
+						"nvidia"       "$gr6" \
+						"nvidia-340xx" "$gr7" \
+						"nvidia-304xx" "$gr8" 3>&1 1>&2 2>&3)
+
+					if [ "$?" -eq "0" ]; then
+						gpu_set=true
+						GPU="$GPU ${GPU}-libgl"
+					fi 
+				elif [ "$GPU" == "$default" ]; then
+					unset GPU
+					gpu_set=true
+				else
+					gpu_set=true
+				fi
+			done
 		fi
 
 		if (whiptail --title "$title" --defaultno --yes-button "$yes" --no-button "$no" --yesno "$touchpad_msg" 10 60) then
