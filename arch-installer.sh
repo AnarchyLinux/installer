@@ -711,7 +711,7 @@ manual_partition() {
 			#!/bin/bash
 			# simple script used to generate block device menu
 			whiptail --title "$title" --ok-button "$ok" --cancel-button "$cancel" --menu "$manual_part_msg" "$height" 70 "$menu_height" \\
-			$(lsblk | grep -v "K" | grep "sd." | sed 's/\/mnt/\//;s/\/\//\//' | awk '{print "\""$1"\"""    ""\"""Type: "$6"    ""'$size': "$4"    ""'$mountpoint': "$7"\""" \\"}' |
+			$(lsblk | grep -v "K" | grep "sd." | sed 's/\/mnt/\//;s/\/\//\//' | awk '{print "\""$1"\"""   ""\"""Type: "$6"   '$size': "$4"   '$mountpoint': "$7"\""" \\"}' |
 			sed "s/\.[0-9]*//;s/\,[0-9]*//;s/ [0-9][G,M]/&   /;s/ [0-9][0-9][G,M]/&  /;s/ [0-9][0-9][0-9][G,M]/& /;s/\(^\"sd.*$size:......\).*/\1\" \\\/")
 			"$done_msg" "$write>" 3>&1 1>&2 2>&3
 		EOF
