@@ -1589,13 +1589,19 @@ graphics() {
 		if [ -n "$de_config" ]; then
 			
 			if "$user_added" ; then
-				mkdir "$ARCH"/home/"$user"/.config &> /dev/null 
+				
+				if [ ! -d "$ARCH"/home/"$user"/.config ]; then
+					mkdir "$ARCH"/home/"$user"/.config &> /dev/null 
+				fi
 				cp -r /usr/share/arch-anywhere/desktop/.config/"$de_config" "$ARCH"/home/"$user"/.config/
 				cp /usr/share/arch-anywhere/desktop/arch-anywhere-icon.png "$ARCH"/home/"$user"/.face
-				arch-chroot "$ARCH" /bin/bash -c "chown -R $user $ARCH/home/$user"
+				arch-chroot "$ARCH" /bin/bash -c "chown -R $user /home/$user"
 			fi
 
-			mkdir "$ARCH"/etc/skel/.config &> /dev/null
+			if [ ! -d "$ARCH"/etc/slel/.config ]; then
+				mkdir "$ARCH"/etc/skel/.config &> /dev/null
+			fi
+			
 			cp -r /usr/share/arch-anywhere/desktop/.config/"$de_config" "$ARCH"/etc/skel/.config/
 			cp -r "/usr/share/arch-anywhere/desktop/AshOS-Dark-2.0" "$ARCH"/usr/share/themes/
 			cp /usr/share/arch-anywhere/desktop/{arch-anywhere-wallpaper.png,arch-anywhere-icon.png} "$ARCH"/"$wallpaper"
@@ -1607,6 +1613,7 @@ graphics() {
 			echo "$start_term" > "$ARCH"/home/"$user"/.xinitrc
 		fi
 				
+		echo "$start_term" > "$ARCH"/etc/skel/.xinitrc
 		echo "$start_term" > "$ARCH"/root/.xinitrc
 	else
 		if ! "$menu_enter" ; then
@@ -1862,6 +1869,7 @@ install_software() {
 						# Install additional software
 						    pacstrap "$ARCH" $(echo "$download") &> /dev/null &
 						    pid=$! pri="$down" msg="\n$software_load" load
+	  					    unset final_software
 	  					    software_selected=true
 							err=true
 						else
