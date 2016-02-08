@@ -1311,6 +1311,10 @@ set_hostname() {
 ### Echo new hostname into newly installed system
 	echo "$hostname" > "$ARCH"/etc/hostname
 	
+### Copy default root .bashrc file
+	cp /usr/share/arch-anywhere/.bashrc-root "$ARCH"/root/.bashrc
+	cp /usr/share/arch-anywhere/.bashrc "$ARCH"/etc/skel/
+
 ### Begin set root password loop until new password is equal to new password check
 	while [ "$input" != "$input_chk" ]
 	  do
@@ -1463,10 +1467,10 @@ graphics() {
 	fi
 
 	case "$DE" in
-		"xfce4") 	if (whiptail --title "$title" --yes-button "$yes" --no-button "$no" --yesno "$extra_msg0" 10 60) then
-						DE="xfce4 xfce4-goodies"
-					fi
+		"xfce4") 	DE="xfce4 xfce4-goodies"
 					start_term="exec startxfce4"
+					de_config="xfce4"
+					wallpaper="usr/share/backgrounds/xfce"
 		;;
 		"gnome")	if (whiptail --title "$title" --yes-button "$yes" --no-button "$no" --yesno "$extra_msg1" 10 60) then
 						DE="gnome gnome-extra"
@@ -1582,6 +1586,23 @@ graphics() {
 			fi
 		fi
 
+		if [ -n "$de_config" ]; then
+			
+			if "$user_added" ; then
+				mkdir "$ARCH"/home/"$user"/.config &> /dev/null 
+				cp -r /usr/share/arch-anywhere/desktop/.config/"$de_config" "$ARCH"/home/"$user"/.config/
+				cp /usr/share/arch-anywhere/desktop/arch-anywhere-icon.png "$ARCH"/home/"$user"/.face
+				arch-chroot "$ARCH" /bin/bash -c "chown -R $user $ARCH/home/$user"
+			fi
+
+			mkdir "$ARCH"/etc/skel/.config &> /dev/null
+			cp -r /usr/share/arch-anywhere/desktop/.config/"$de_config" "$ARCH"/etc/skel/.config/
+			cp -r "/usr/share/arch-anywhere/desktop/AshOS-Dark-2.0" "$ARCH"/usr/share/themes/
+			cp /usr/share/arch-anywhere/desktop/{arch-anywhere-wallpaper.png,arch-anywhere-icon.png} "$ARCH"/"$wallpaper"
+			cp -r /usr/share/arch-anywhere/desktop/.config/"$de_config" "$ARCH"/root/.config/
+			unset de_config wallpaper
+		fi
+		
 		if "$user_added" ; then
 			echo "$start_term" > "$ARCH"/home/"$user"/.xinitrc
 		fi
