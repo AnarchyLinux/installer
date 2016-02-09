@@ -1,6 +1,6 @@
 [Configuration]
 ColorForeground=#839496
-ColorBackground=#0b1f07f20f5c
+ColorBackground=#12120e0e1414
 ColorCursor=#93a1a1
 ColorBold=#93a1a1
 ColorBoldUseDefault=FALSE
@@ -12,7 +12,7 @@ MiscCursorBlinks=FALSE
 MiscCursorShape=TERMINAL_CURSOR_SHAPE_BLOCK
 MiscDefaultGeometry=80x24
 MiscInheritGeometry=FALSE
-MiscMenubarDefault=TRUE
+MiscMenubarDefault=FALSE
 MiscMouseAutohide=FALSE
 MiscToolbarDefault=FALSE
 MiscConfirmClose=TRUE

@@ -9,23 +9,24 @@
       <property name="position" type="string" value="p=6;x=0;y=0"/>
       <property name="length" type="uint" value="100"/>
       <property name="position-locked" type="bool" value="true"/>
-      <property name="size" type="uint" value="24"/>
+      <property name="size" type="uint" value="30"/>
       <property name="plugin-ids" type="array">
         <value type="int" value="1"/>
         <value type="int" value="3"/>
-        <value type="int" value="4"/>
-        <value type="int" value="6"/>
+        <value type="int" value="11"/>
+        <value type="int" value="12"/>
+        <value type="int" value="14"/>
         <value type="int" value="16"/>
-        <value type="int" value="17"/>
         <value type="int" value="15"/>
+        <value type="int" value="17"/>
         <value type="int" value="2"/>
         <value type="int" value="5"/>
       </property>
       <property name="background-style" type="uint" value="1"/>
       <property name="background-color" type="array">
-        <value type="uint" value="5397"/>
-        <value type="uint" value="3855"/>
-        <value type="uint" value="7453"/>
+        <value type="uint" value="4626"/>
+        <value type="uint" value="3598"/>
+        <value type="uint" value="5140"/>
         <value type="uint" value="65535"/>
       </property>
       <property name="background-alpha" type="uint" value="92"/>
@@ -36,19 +37,19 @@
       <property name="plugin-ids" type="array">
         <value type="int" value="7"/>
         <value type="int" value="8"/>
-        <value type="int" value="18"/>
+        <value type="int" value="4"/>
         <value type="int" value="13"/>
-        <value type="int" value="21"/>
-        <value type="int" value="20"/>
-        <value type="int" value="19"/>
+        <value type="int" value="10"/>
+        <value type="int" value="9"/>
+        <value type="int" value="6"/>
       </property>
       <property name="length" type="uint" value="100"/>
-      <property name="size" type="uint" value="24"/>
+      <property name="size" type="uint" value="26"/>
       <property name="background-style" type="uint" value="1"/>
       <property name="background-color" type="array">
-        <value type="uint" value="5397"/>
-        <value type="uint" value="3855"/>
-        <value type="uint" value="7453"/>
+        <value type="uint" value="4626"/>
+        <value type="uint" value="3598"/>
+        <value type="uint" value="5140"/>
         <value type="uint" value="65535"/>
       </property>
       <property name="background-alpha" type="uint" value="92"/>
@@ -73,38 +74,37 @@
     <property name="plugin-3" type="string" value="separator">
       <property name="style" type="uint" value="1"/>
     </property>
-    <property name="plugin-4" type="string" value="launcher">
-      <property name="items" type="array">
-        <value type="string" value="14548953325.desktop"/>
-      </property>
-    </property>
-    <property name="plugin-6" type="string" value="launcher">
-      <property name="items" type="array">
-        <value type="string" value="14548953396.desktop"/>
-      </property>
-    </property>
-    <property name="plugin-16" type="string" value="launcher">
-      <property name="items" type="array">
-        <value type="string" value="14548953557.desktop"/>
-      </property>
-    </property>
-    <property name="plugin-17" type="string" value="launcher">
-      <property name="items" type="array">
-        <value type="string" value="14548953768.desktop"/>
-      </property>
-    </property>
-    <property name="plugin-18" type="string" value="tasklist">
+    <property name="plugin-4" type="string" value="tasklist">
       <property name="show-handle" type="bool" value="false"/>
     </property>
-    <property name="plugin-19" type="string" value="pager">
-      <property name="rows" type="uint" value="1"/>
-    </property>
-    <property name="plugin-20" type="string" value="systray"/>
-    <property name="plugin-21" type="string" value="mixer">
+    <property name="plugin-6" type="string" value="pager"/>
+    <property name="plugin-9" type="string" value="systray"/>
+    <property name="plugin-10" type="string" value="mixer">
       <property name="sound-card" type="string" value="Intel82801AAICHAlsamixer"/>
       <property name="track" type="string" value="Master"/>
       <property name="command" type="string" value="xfce4-mixer"/>
       <property name="enable-keyboard-shortcuts" type="bool" value="true"/>
     </property>
+    <property name="plugin-11" type="string" value="launcher">
+      <property name="items" type="array">
+        <value type="string" value="14549724235.desktop"/>
+      </property>
+    </property>
+    <property name="plugin-12" type="string" value="launcher">
+      <property name="items" type="array">
+        <value type="string" value="14549724406.desktop"/>
+      </property>
+    </property>
+    <property name="plugin-14" type="string" value="launcher">
+      <property name="items" type="array">
+        <value type="string" value="14549724517.desktop"/>
+      </property>
+    </property>
+    <property name="plugin-16" type="string" value="launcher">
+      <property name="items" type="array">
+        <value type="string" value="14549724788.desktop"/>
+      </property>
+    </property>
+    <property name="plugin-17" type="string" value="cpugraph"/>
   </property>
 </channel>
