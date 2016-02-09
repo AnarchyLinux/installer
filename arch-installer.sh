@@ -1582,6 +1582,8 @@ graphics() {
 			if ! "$dm_set" ; then
 				arch-chroot "$ARCH" systemctl enable lightdm.service &> /dev/null &
 				pid=$! pri="0.1" msg="\n$dm_load" load
+#				cp /usr/share/arch-anywhere/desktop/arch-anywhere-wallpaper.png "$ARCH"/usr/share/pixmaps
+#				sed -i 's!#background=!background=/usr/share/pixmaps/arch-anywhere-wallpaper.png/' "$ARCH"/etc/lightdm/lightdm-gtk-greeter.conf
 				dm_set=true
 			fi
 		fi
@@ -1604,7 +1606,8 @@ graphics() {
 			
 			cp -r /usr/share/arch-anywhere/desktop/.config/"$de_config" "$ARCH"/etc/skel/.config/
 			cp -r "/usr/share/arch-anywhere/desktop/AshOS-Dark-2.0" "$ARCH"/usr/share/themes/
-			cp /usr/share/arch-anywhere/desktop/{arch-anywhere-wallpaper.png,arch-anywhere-icon.png} "$ARCH"/"$wallpaper"
+			cp /usr/share/arch-anywhere/desktop/arch-anywhere-wallpaper.png "$ARCH"/"$wallpaper"
+			cp /usr/share/arch-anywhere/desktop/arch-anywhere-icon.png "$ARCH"/usr/share/pixmaps/
 			cp -r /usr/share/arch-anywhere/desktop/.config/"$de_config" "$ARCH"/root/.config/
 			unset de_config wallpaper
 		fi

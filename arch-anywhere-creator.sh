@@ -110,24 +110,36 @@ init() {
 
 prepare_x86_64() {
 	
+### Change directory into the ISO where the filesystem is stored.
+### Unsquash root filesystem 'airootfs.sfs' this creates a directory 'squashfs-root' containing the entire system
 	echo "Preparing x86_64..."
 	cd "$customiso"/arch/x86_64
 	sudo unsquashfs airootfs.sfs
+	
+### Install fonts onto system and cleanup
 	sudo pacman --root squashfs-root --cachedir squashfs-root/var/cache/pacman/pkg  --config squashfs-root/etc/pacman.conf --noconfirm -Syyy terminus-font
 	sudo pacman --root squashfs-root --cachedir squashfs-root/var/cache/pacman/pkg  --config squashfs-root/etc/pacman.conf -Sl | awk '/\[installed\]$/ {print $1 "/" $2 "-" $3}' > "$customiso"/arch/pkglist.x86_64.txt
 	sudo pacman --root squashfs-root --cachedir squashfs-root/var/cache/pacman/pkg  --config squashfs-root/etc/pacman.conf --noconfirm -Scc
-	sudo rm -f "$customiso"/arch/x86_64/squashfs-root//var/cache/pacman/pkg/*
-	sudo cp "$aa"/etc/arch-anywhere.conf "$customiso"/arch/x86_64/squashfs-root/etc/
+	sudo rm -f "$customiso"/arch/x86_64/squashfs-root/var/cache/pacman/pkg/*
+	
+### Copy over vconsole.conf (sets font at boot) & locale.gen (enables locale(s) for font)
+	sudo cp "$aa"/etc/vconsole.conf "$customiso"/arch/x86_64/squashfs-root/etc
 	sudo cp "$aa"/etc/locale.gen "$customiso"/arch/x86_64/squashfs-root/etc
 	sudo arch-chroot squashfs-root /bin/bash locale-gen
-	sudo cp "$aa"/etc/vconsole.conf "$customiso"/arch/x86_64/squashfs-root/etc
+	
+### Copy over main arch anywhere config, installer script, and arch-wiki,  make executeable
+	sudo cp "$aa"/etc/arch-anywhere.conf "$customiso"/arch/x86_64/squashfs-root/etc/
 	sudo cp "$aa"/arch-installer.sh "$customiso"/arch/x86_64/squashfs-root/usr/bin/arch-anywhere
+	sudo cp "$aa"/extra/arch-wiki "$customiso"/arch/x86_64/squashfs-root/usr/bin/arch-wiki
+	sudo chmod +x "$customiso"/arch/x86_64/squashfs-root/usr/bin/arch-anywhere
+	sudo chmod +x "$customiso"/arch/x86_64/squashfs-root/usr/bin/arch-wiki
+
+### Create arch-anywhere directory and lang directory copy over all lang files
 	sudo mkdir "$customiso"/arch/x86_64/squashfs-root/usr/share/arch-anywhere
 	sudo mkdir "$customiso"/arch/x86_64/squashfs-root/usr/share/arch-anywhere/lang
 	sudo cp "$aa"/lang/* "$customiso"/arch/x86_64/squashfs-root/usr/share/arch-anywhere/lang
-	sudo chmod +x "$customiso"/arch/x86_64/squashfs-root/usr/bin/arch-anywhere
-	sudo cp "$aa"/extra/arch-wiki "$customiso"/arch/x86_64/squashfs-root/usr/bin/arch-wiki
-	sudo chmod +x "$customiso"/arch/x86_64/squashfs-root/usr/bin/arch-wiki
+	
+### Copy over extra files (dot files, desktop configurations, help file, issue file, hostname file)
 	sudo cp "$aa"/extra/.zshrc "$customiso"/arch/x86_64/squashfs-root/root/
 	sudo cp "$aa"/extra/.help "$customiso"/arch/x86_64/squashfs-root/root/
 	sudo cp "$aa"/extra/.bashrc "$customiso"/arch/x86_64/squashfs-root/usr/share/arch-anywhere
@@ -135,8 +147,12 @@ prepare_x86_64() {
 	sudo cp -r "$aa"/extra/desktop "$customiso"/arch/x86_64/squashfs-root/usr/share/arch-anywhere/
 	sudo cp "$aa"/boot/issue "$customiso"/arch/x86_64/squashfs-root/etc/
 	sudo cp "$aa"/boot/hostname "$customiso"/arch/x86_64/squashfs-root/etc/
-	cd "$customiso"/arch/x86_64	
+	
+### cd back into root system directory, remove old system
+	cd "$customiso"/arch/x86_64
 	rm airootfs.sfs
+
+### Recreate the ISO using compression remove unsquashed system generate checksums and continue to i686
 	echo "Recreating x86_64..."
 	sudo mksquashfs squashfs-root airootfs.sfs -b 1024k -comp xz
 	sudo rm -r squashfs-root
@@ -170,7 +186,7 @@ prepare_i686() {
 	sudo cp "$aa"/extra/.zshrc "$customiso"/arch/i686/squashfs-root/root/
 	sudo cp "$aa"/extra/.help "$customiso"/arch/i686/squashfs-root/root/
 	sudo cp "$aa"/extra/.bashrc "$customiso"/arch/i686/squashfs-root/usr/share/arch-anywhere
-	sudo cp "$aa"/extra/.bashrc-root "$customiso"/arch/x86_64/squashfs-root/usr/share/arch-anywhere
+	sudo cp "$aa"/extra/.bashrc-root "$customiso"/arch/i686/squashfs-root/usr/share/arch-anywhere
 	sudo cp -r "$aa"/extra/desktop "$customiso"/arch/i686/squashfs-root/usr/share/arch-anywhere/
 	sudo cp "$aa"/boot/issue "$customiso"/arch/i686/squashfs-root/etc/
 	sudo cp "$aa"/boot/hostname "$customiso"/arch/i686/squashfs-root/etc/
