@@ -1556,7 +1556,10 @@ graphics() {
 	
 	if ! "$dm_set" ; then
 		if (whiptail --title "$title" --yes-button "$yes" --no-button "$no" --yesno "$lightdm_msg" 10 60) then
-			DE="$DE lightdm lightdm-gtk-greeter"
+			# KDE Plasma packages automatically pull in SDDM without us having to explicitly install them
+			if [ "$DE" != "KDE plasma" ]; then
+				DE="$DE lightdm lightdm-gtk-greeter"
+			fi
 			enable_dm=true
 		else
 			whiptail --title "$title" --ok-button "$ok" --msgbox "$startx_msg" 10 60
@@ -1580,7 +1583,11 @@ graphics() {
 			
 		if "$enable_dm" ; then
 			if ! "$dm_set" ; then
-				arch-chroot "$ARCH" systemctl enable lightdm.service &> /dev/null &
+				if [ "$DE" == "KDE plasma" ]; then
+					arch-chroot "$ARCH" systemctl enable sddm.service &> /dev/null &
+				else
+					arch-chroot "$ARCH" systemctl enable lightdm.service &> /dev/null &
+				fi
 				pid=$! pri="0.1" msg="\n$dm_load" load
 #				cp /usr/share/arch-anywhere/desktop/arch-anywhere-wallpaper.png "$ARCH"/usr/share/pixmaps
 #				sed -i 's!#background=!background=/usr/share/pixmaps/arch-anywhere-wallpaper.png/' "$ARCH"/etc/lightdm/lightdm-gtk-greeter.conf
