@@ -1,10 +1,10 @@
 #!/bin/bash
 
 # Set the version here
-export version="arch-anywhere-2.1.3-dual.iso"
+export version="arch-anywhere-2.1.4-dual.iso"
 
 # Set the ISO label here
-export iso_label="ARCH_ANYWHERE_2.1.3"
+export iso_label="ARCH_ANYWHERE_2.1.4"
 
 # Location variables all directories must exist
 export aa=~/arch-linux-anywhere
