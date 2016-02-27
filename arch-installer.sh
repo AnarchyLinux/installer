@@ -1630,10 +1630,7 @@ graphics() {
 	### Prompt user to install lightdm
 	### Set "DE" variable to selected DE and lightdm
 		if (whiptail --title "$title" --yes-button "$yes" --no-button "$no" --yesno "$lightdm_msg" 10 60) then
-			# KDE Plasma packages automatically pull in SDDM without us having to explicitly install them
-			if [ "$DE" != "KDE plasma" ]; then
-				DE="$DE lightdm lightdm-gtk-greeter"
-			fi
+			DE="$DE lightdm lightdm-gtk-greeter"
 			enable_dm=true
 			
 		### If user does not want to install display manager display "startx" message
@@ -1679,7 +1676,6 @@ graphics() {
 			
 			### If dm_set variable is NOT set to true then enable dm
 			if ! "$dm_set" ; then
-<<<<<<< HEAD
 
 				if [ "$DE" == "KDE plasma" ]; then
 					arch-chroot "$ARCH" systemctl enable sddm.service &> /dev/null &
@@ -1689,13 +1685,6 @@ graphics() {
 					dm_set=true
 				fi
 			
-=======
-				if [ "$DE" == "KDE plasma" ]; then
-					arch-chroot "$ARCH" systemctl enable sddm.service &> /dev/null &
-				else
-					arch-chroot "$ARCH" systemctl enable lightdm.service &> /dev/null &
-				fi
->>>>>>> 36a441950d25f31364dc7533be22476ea96d4745
 				pid=$! pri="0.1" msg="\n$dm_load" load
 			fi
 		fi
