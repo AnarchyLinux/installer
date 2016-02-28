@@ -107,6 +107,18 @@ init() {
 
 }
 
+#mk_oh-my-zsh() {
+
+#	cd /tmp
+#	wget "https://aur.archlinux.org/cgit/aur.git/snapshot/oh-my-zsh-git.tar.gz"
+#	tar xf oh-my-zsh-git.tar.gz
+#	cd oh-my-zsh-git/
+#	makepkg -s
+#	mv *.pkg.tar.xz /tmp
+#	cd /tmp
+#	rm -r oh-my-zsh-git
+
+#}
 
 prepare_x86_64() {
 	
@@ -143,7 +155,10 @@ prepare_x86_64() {
 	sudo cp "$aa"/extra/.zshrc "$customiso"/arch/x86_64/squashfs-root/root/
 	sudo cp "$aa"/extra/.help "$customiso"/arch/x86_64/squashfs-root/root/
 	sudo cp "$aa"/extra/.bashrc "$customiso"/arch/x86_64/squashfs-root/usr/share/arch-anywhere
+	sudo cp "$aa"/extra/.zshrc-sys "$customiso"/arch/x86_64/squashfs-root/usr/share/arch-anywhere/.zshrc
 	sudo cp "$aa"/extra/.bashrc-root "$customiso"/arch/x86_64/squashfs-root/usr/share/arch-anywhere
+#	sudo mkdir "$customiso"/arch/x86_64/squashfs-root/usr/share/arch-anywhere/pkg
+#	sudo mv /tmp/*.pkg.tar.xz "$customiso"/arch/x86_64/squashfs-root/usr/share/arch-anywhere/pkg
 	sudo cp -r "$aa"/extra/desktop "$customiso"/arch/x86_64/squashfs-root/usr/share/arch-anywhere/
 	sudo cp "$aa"/boot/issue "$customiso"/arch/x86_64/squashfs-root/etc/
 	sudo cp "$aa"/boot/hostname "$customiso"/arch/x86_64/squashfs-root/etc/
@@ -186,6 +201,7 @@ prepare_i686() {
 	sudo cp "$aa"/extra/.zshrc "$customiso"/arch/i686/squashfs-root/root/
 	sudo cp "$aa"/extra/.help "$customiso"/arch/i686/squashfs-root/root/
 	sudo cp "$aa"/extra/.bashrc "$customiso"/arch/i686/squashfs-root/usr/share/arch-anywhere
+	sudo cp "$aa"/extra/.zshrc "$customiso"/arch/i686/squashfs-root/usr/share/arch-anywhere
 	sudo cp "$aa"/extra/.bashrc-root "$customiso"/arch/i686/squashfs-root/usr/share/arch-anywhere
 	sudo cp -r "$aa"/extra/desktop "$customiso"/arch/i686/squashfs-root/usr/share/arch-anywhere/
 	sudo cp "$aa"/boot/issue "$customiso"/arch/i686/squashfs-root/etc/

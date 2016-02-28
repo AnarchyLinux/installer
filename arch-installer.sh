@@ -1151,13 +1151,12 @@ install_base() {
 			genfstab -U -p "$ARCH" >> "$ARCH"/etc/fstab
 			echo "$?" > /tmp/ex_status.var) &> /dev/null &
 			pid=$! pri="$down" msg="$install_load" load
-			pacload=false
 
 			if [ $(</tmp/ex_status.var) -eq "0" ]; then
 				INSTALLED=true
 			fi
 			
-			rm /tmp/{ex_status.var,pacload.log}
+			rm /tmp/ex_status.var
 
 			### Check if bootloader was installed
 			if "$bootloader" ; then
@@ -1404,9 +1403,15 @@ add_user() {
 		add_user
 	fi
 
-	### Chroot into system and create new user account
-	(arch-chroot "$ARCH" useradd -m -g users -G audio,network,power,storage,optical -s /bin/bash "$user") &>/dev/null &
-	pid=$! pri=0.1 msg="$wait_load" load
+	if [ "$shell" == "zsh" ]; then
+		(arch-chroot "$ARCH" useradd -m -g users -G audio,network,power,storage,optical -s /usr/bin/zsh "$user") &>/dev/null &
+		pid=$! pri=0.1 msg="$wait_load" load
+	else
+		### Chroot into system and create new user account
+		(arch-chroot "$ARCH" useradd -m -g users -G audio,network,power,storage,optical -s /bin/bash "$user") &>/dev/null &
+		pid=$! pri=0.1 msg="$wait_load" load
+	fi
+
 	source "$lang_file"
 	
 	### Begin user password while loop
@@ -1474,7 +1479,7 @@ graphics() {
 	### Display a list of desktops for the user to select
 	### Set the variable "DE" equal to the selected desktop
 	DE=$(whiptail --title "$title" --ok-button "$ok" --cancel-button "$cancel" --menu "$enviornment_msg" 18 60 10 \
-		"Arch-Anywhere-Xfce" "Default Arch-Anywhere Desktop" \
+		"Arch-Anywhere-Xfce" "Arch-Anywhere Desktop" \
 		"cinnamon"      "$de5" \
 		"gnome"         "$de4" \
 		"KDE plasma"    "$de6" \
@@ -1514,10 +1519,9 @@ graphics() {
 	### The "de_config" directory is copied over to /root/.config/ and ~/.config on the new system
 	### "wallpaper" variable is set to the location for the wallpaper in /usr/share/arch-anywhere/desktop to be copied to
 	case "$DE" in
-		"Arch-Anywhere-Xfce") 	DE="xfce4 xfce4-goodies"
+		"Arch-Anywhere-Xfce") 	DE="xfce4 xfce4-goodies xdg-user-dirs gvfs"
 								start_term="exec startxfce4"
-								de_config="xfce4"
-								wallpaper="usr/share/backgrounds/xfce"
+								de_config=true
 		;;
 		"xfce4") 	if (whiptail --title "$title" --yes-button "$yes" --no-button "$no" --yesno "$extra_msg0" 10 60) then
 						DE="xfce4 xfce4-goodies"
@@ -1624,7 +1628,7 @@ graphics() {
 		fi
 	fi
 	
-	### If "dm_set" variable is not set to true prompt user to install display manager
+	### If "enable_dm" variable is not set to true prompt user to install display manager
 	if ! "$enable_dm" ; then
 		
 	### Prompt user to install lightdm
@@ -1677,43 +1681,52 @@ graphics() {
 			### If dm_set variable is NOT set to true then enable dm
 			if ! "$dm_set" ; then
 
-				if [ "$DE" == "KDE plasma" ]; then
+				if (<<<"$DE" grep "kde" &> /dev/null) then
 					arch-chroot "$ARCH" systemctl enable sddm.service &> /dev/null &
+					pid=$! pri="0.1" msg="$wait_load" load
 					dm_set=true
 				else
 					arch-chroot "$ARCH" systemctl enable lightdm.service &> /dev/null &
+					pid=$! pri="0.1" msg="\n$dm_load" load
 					dm_set=true
 				fi
-			
-				pid=$! pri="0.1" msg="\n$dm_load" load
 			fi
 		fi
 
 		### If de_config variable is defined copy over files for custom desktop config
 		### Copy "de_config" directory from /usr/share/arch-anwhere/desktop/.config/$de_config
 		### Copy over desktop wallpaper and icon
-		if [ -n "$de_config" ]; then
+		if "$de_config" ; then
 			
+			pacstrap "$ARCH" zsh zsh-syntax-highlighting &> /dev/null &
+			pid=$! pri="1" msg="\nInstalling Z-Shell..." load
+			shell="zsh"
+
 			if "$user_added" ; then
 				
 				if [ ! -d "$ARCH"/home/"$user"/.config ]; then
-					mkdir "$ARCH"/home/"$user"/.config &> /dev/null 
+					mkdir "$ARCH"/home/"$user"/.config &> /dev/null
+					arch-chroot "$ARCH" chsh -s /usr/bin/zsh "$user" &> /dev/null
 				fi
-				cp -r /usr/share/arch-anywhere/desktop/.config/"$de_config" "$ARCH"/home/"$user"/.config/
+				
+				cp /usr/share/arch-anywhere/.zshrc "$ARCH"/home/"$user"/
+				cp -r /usr/share/arch-anywhere/desktop/.config/{xfce4,Thunar} "$ARCH"/home/"$user"/.config/
 				cp /usr/share/arch-anywhere/desktop/arch-anywhere-icon.png "$ARCH"/home/"$user"/.face
 				arch-chroot "$ARCH" /bin/bash -c "chown -R $user /home/$user"
 			fi
-
-			if [ ! -d "$ARCH"/etc/slel/.config ]; then
-				mkdir "$ARCH"/etc/skel/.config &> /dev/null
-			fi
 			
-			cp -r /usr/share/arch-anywhere/desktop/.config/"$de_config" "$ARCH"/etc/skel/.config/
+			cp -r /usr/share/arch-anywhere/{.zshrc,desktop/.config/} "$ARCH"/etc/skel/
+			cp /usr/share/arch-anywhere/desktop/arch-anywhere-icon.png "$ARCH"/etc/skel/.face
 			cp -r "/usr/share/arch-anywhere/desktop/AshOS-Dark-2.0" "$ARCH"/usr/share/themes/
-			cp /usr/share/arch-anywhere/desktop/arch-anywhere-wallpaper.png "$ARCH"/"$wallpaper"
+			cp /usr/share/arch-anywhere/desktop/arch-anywhere-wallpaper.png "$ARCH"/usr/share/backgrounds/xfce
+			rm "$ARCH"/usr/share/backgrounds/xfce/xfce-teal.jpg
+			arch-chroot "$ARCH" ln -s /usr/share/backgrounds/xfce/arch-anywhere-wallpaper.png /usr/share/backgrounds/xfce/xfce-teal.jpg
 			cp /usr/share/arch-anywhere/desktop/arch-anywhere-icon.png "$ARCH"/usr/share/pixmaps/
-			cp -r /usr/share/arch-anywhere/desktop/.config/"$de_config" "$ARCH"/root/.config/
-			unset de_config wallpaper
+			arch-chroot "$ARCH" chsh -s /usr/bin/zsh &> /dev/null
+			cp /usr/share/arch-anywhere/.zshrc "$ARCH"/root/
+			mkdir "$ARCH"/root/.config/ &> /dev/null
+			cp -r /usr/share/arch-anywhere/desktop/.config/{xfce4,Thunar} "$ARCH"/root/.config/
+			de_config=false
 		fi
 		
 		### If a user has been added create the .xinitrc file in users home directory
@@ -1729,6 +1742,7 @@ graphics() {
 	else
 		if ! "$menu_enter" ; then
 			if ! (whiptail --title "$title" --yes-button "$yes" --no-button "$no" --default-no --yesno "$desktop_cancel_msg" 10 60) then
+				de_config=false
 				graphics
 			fi
 		fi
@@ -1809,7 +1823,6 @@ install_software() {
 						"firefox"			"$net2" OFF \
 						"lynx"				"$net3" OFF \
 						"minitube"			"$net4" OFF \
-#						"networkmanager"    "$net5" ON \
 						"thunderbird"		"$net6" OFF \
 						"transmission-cli" 	"$net7" OFF \
 						"transmission-gtk"	"$net8" OFF 3>&1 1>&2 2>&3)
@@ -1907,7 +1920,7 @@ install_software() {
 						"fish"	"$shell1" OFF \
 						"mksh"	"$shell2" OFF \
 						"tcsh"	"$shell3" OFF \
-						"zsh"	"$shell4" ON 3>&1 1>&2 2>&3)
+						"zsh"	"$shell4" OFF 3>&1 1>&2 2>&3)
 					if [ "$?" -gt "0" ]; then
 						err=true
 					fi
@@ -1987,11 +2000,9 @@ install_software() {
 						# Install additional software
 						    pacstrap "$ARCH" $(echo "$download") &> /dev/null &
 						    pid=$! pri="$down" msg="$software_load" load
-	  					    pacload=false
 	  					    unset final_software
 	  					    software_selected=true
 							err=true
-							rm /tmp/pacload.log
 						else
 							unset final_software
 							err=true
@@ -2164,6 +2175,7 @@ main_menu() {
 					fi
 		;;
 		"$menu13")	echo -e "alias arch-anywhere=exit ; echo -e '$return_msg'" > /tmp/.zshrc
+					clear
 					ZDOTDIR=/tmp/ zsh
 					rm /tmp/.zshrc
 					clear
