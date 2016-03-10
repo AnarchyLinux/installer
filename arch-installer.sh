@@ -31,14 +31,15 @@ init() {
 
 	### First we set the desired install language
 	clear
-	ILANG=$(whiptail --nocancel --title "Arch Linux Anywhere" --menu "\nArch Anywhere Installer\n\n * Select your install language:" 19 60 8 \
+	ILANG=$(whiptail --nocancel --title "Arch Linux Anywhere" --menu "\nArch Anywhere Installer\n\n * Select your install language:" 21 60 10 \
 		"English" "-" \
 		"French" "Français" \
 		"German" "Deutsch" \
 		"Indonesian" "bahasa Indonesia" \
 		"Portuguese" "Português" \
-		"Romanian" "Română" \
-		"Russian" "Русский" \
+		"Portuguese-Brazilian" "Português do Brasil" \
+		"Romanian" "Român�" \
+		"Russian" "Russian" \
 		"Spanish" "Español" \
 		"Swedish" "Svenska" 3>&1 1>&2 2>&3)
 
@@ -48,6 +49,7 @@ init() {
 		"German") export lang_file=/usr/share/arch-anywhere/lang/arch-installer-german.conf ;;
 		"Indonesian") export lang_file=/usr/share/arch-anywhere/lang/arch-installer-indonesia.conf ;;
 		"Portuguese") export lang_file=/usr/share/arch-anywhere/lang/arch-installer-portuguese.conf ;;
+		"Portuguese-Brazilian") export lang_file=/usr/share/arch-anywhere/lang/arch-installer-portuguese-br.conf ;;
 		"Romanian") export lang_file=/usr/share/arch-anywhere/lang/arch-installer-romanian.conf ;;
 		"Russian") export lang_file=/usr/share/arch-anywhere/lang/arch-installer-russian.conf ;;
 		"Spanish") export lang_file=/usr/share/arch-anywhere/lang/arch-installer-spanish.conf ;;
@@ -705,9 +707,14 @@ manual_partition() {
 	fi
 	
 	### Create manual partition menu
+	### Set int variable to 1
+	### Set count to total number of devices / partitions
 	int=1
 	count=$(lsblk | grep "sd." | grep -v " 1 \|1K" | wc -l)
 	
+	### Until int is greater than count loop create partition menu
+	### Device info defined with device dev_size dev_type mnt_point
+	### awk is used with the int variable to print next line each time it loops
 	until [ "$int" -gt "$count" ]
 	  do
 		device=$(lsblk | grep "sd." | grep -v " 1 \|1K" | awk "NR==$int {print \$1}")
@@ -715,6 +722,8 @@ manual_partition() {
 		dev_type=$(lsblk | grep "sd." | grep -v " 1 \|1K" | awk "NR==$int {print \$6}")
 		mnt_point=$(lsblk | grep "sd." | grep -v " 1 \|1K" | awk "NR==$int {print \$7}" | sed 's/\/mnt/\//;s/\/\//\//')
 		
+		### if int equals 1 output whiptail command into /tmp/part.list
+		### each time loop runs append new device info to /tmp/part.list
 		if [ "$int" -eq "1" ]; then
 			echo "whiptail --title \"$title\" --ok-button \"$ok\" --cancel-button \"$cancel\" --menu \"$manual_part_msg\" $height 65 $menu_height \\" > /tmp/part.list
 			echo "\"$device   \" \"$dev_type    $size: $dev_size    $mnt_point\" \\" >> /tmp/part.list
@@ -722,9 +731,13 @@ manual_partition() {
 			echo "\"$device   \" \"$dev_type    $size: $dev_size   $mnt_point\" \\" >> /tmp/part.list
 		fi
 
+		### Increase int variable by 1 at bottom of loop
 		int=$((int+1))
 	done
 
+	### Append final line to /tmp/part.list
+	### Set manual_part variable to the output of running /tmp/part.list with bash
+	### Cleanup
 	echo "\"$done_msg\" \"$write\" 3>&1 1>&2 2>&3" >> /tmp/part.list
 	manual_part=$(column -t /tmp/part.list | bash | sed 's/ //g')
 	rm /tmp/part.list
@@ -756,7 +769,7 @@ manual_partition() {
 					### If partition is in the correct size range prompt user to create new root partition
 					if (whiptail --title "$title" --yes-button "$yes" --no-button "$cancel" --defaultno --yesno "$root_var" 13 60) then
 						
-					### Prompt user for new root partition filesystem type
+						### Prompt user for new root partition filesystem type
 						FS=$(whiptail --title "$title" --ok-button "$ok" --cancel-button "$cancel" --menu "$fs_msg" 16 65 6 \
 							"ext4"      "$fs0" \
 							"ext3"      "$fs1" \
@@ -1025,12 +1038,14 @@ manual_partition() {
 				unset DRIVE
 				cfdisk /dev/"$manual_part"
 				sleep 0.5
+				clear
 			fi
 		
 		### Else block device does not contain any mounted partitions prompt user to edit partition scheme with cfdisk
 		elif (whiptail --title "$title" --yes-button "$edit" --no-button "$cancel" --yesno "$manual_part_var3" 12 60) then
 			cfdisk /dev/"$manual_part"
 			sleep 0.5
+			clear
 		fi
 
 		manual_partition
@@ -1067,10 +1082,11 @@ install_base() {
 	### if system is not installed but drive is mounted begin install process
 	if "$mounted" ; then	
 
-		### Display install menu prompting user to install base, base-devel, or linuxLTS
-		install_menu=$(whiptail --title "$title" --ok-button "$ok" --cancel-button "$cancel" --menu "$install_type_msg" 14 64 4 \
+		### Display install menu prompting user to install base, base-devel, linux grsec, or linuxLTS
+		install_menu=$(whiptail --title "$title" --ok-button "$ok" --cancel-button "$cancel" --menu "$install_type_msg" 15 64 5 \
 			"Arch-Linux-Base" 			"$base_msg0" \
 			"Arch-Linux-Base-Devel" 	"$base_msg1" \
+			"Arch-Linux-GrSec"			"$grsec_msg" \
 			"Arch-Linux-LTS-Base" 		"$LTS_msg0" \
 			"Arch-Linux-LTS-Base-Devel" "$LTS_msg1" 3>&1 1>&2 2>&3)
 		
@@ -1092,6 +1108,9 @@ install_base() {
 			;;
 			"Arch-Linux-Base-Devel") 
 				base_install="base base-devel"
+			;;
+			"Arch-Linux-GrSec")
+				base_install="base linux-grsec sudo"
 			;;
 			"Arch-Linux-LTS-Base")
 				base_install="base linux-lts sudo"
@@ -1175,8 +1194,8 @@ install_base() {
 				### If user selected efi boot
 				if "$UEFI" ; then
 					
-				pacstrap "$ARCH" efibootmgr &> /dev/null &
-				pid=$! pri=1 msg="\n$efi_load" load
+					pacstrap "$ARCH" efibootmgr &> /dev/null &
+					pid=$! pri=1 msg="\n$efi_load" load
 
 					### Chroot into system and install grub with efi options enabled
 					### Rename the grubx64.efi boot file
@@ -1403,7 +1422,7 @@ add_user() {
 		add_user
 	fi
 
-	if [ "$shell" == "zsh" ]; then
+	if [ "$she" == "zsh" ]; then
 		(arch-chroot "$ARCH" useradd -m -g users -G audio,network,power,storage,optical -s /usr/bin/zsh "$user") &>/dev/null &
 		pid=$! pri=0.1 msg="$wait_load" load
 	else
@@ -1463,6 +1482,7 @@ add_user() {
 }
 	
 ### This function is responsible for installing xorg server a dektop or window manager and graphics drivers
+### Also contains desktop extras like lightdm and xf86-input-synaptics
 
 graphics() {
 
@@ -1511,13 +1531,11 @@ graphics() {
 	fi
 
 	### Case statement used to configure desktop settings
-	### Custom configurations can be specified here
 	### User is prompted to install desktop extras if available
 	### "DE" variable is set to the packages to be installed in pacstrap command
 	### "start_term" variable is set to the contents of the automatically created .xinitrc file
 	### "de_config" variable is set to the name of the directory under "/usr/share/arch-anywhere/desktop/.config/"
 	### The "de_config" directory is copied over to /root/.config/ and ~/.config on the new system
-	### "wallpaper" variable is set to the location for the wallpaper in /usr/share/arch-anywhere/desktop to be copied to
 	case "$DE" in
 		"Arch-Anywhere-Xfce") 	DE="xfce4 xfce4-goodies xdg-user-dirs gvfs"
 								start_term="exec startxfce4"
@@ -1679,6 +1697,8 @@ graphics() {
 		if "$enable_dm" ; then
 			
 			### If dm_set variable is NOT set to true then enable dm
+			### Check if DE is set to kde/plasma and enable sddm if so
+			### Otherwise enable lightdm
 			if ! "$dm_set" ; then
 
 				if (<<<"$DE" grep "kde" &> /dev/null) then
@@ -1700,15 +1720,15 @@ graphics() {
 			
 			pacstrap "$ARCH" zsh zsh-syntax-highlighting &> /dev/null &
 			pid=$! pri="1" msg="\nInstalling Z-Shell..." load
-			shell="zsh"
+			she="zsh"
 
 			if "$user_added" ; then
 				
 				if [ ! -d "$ARCH"/home/"$user"/.config ]; then
 					mkdir "$ARCH"/home/"$user"/.config &> /dev/null
-					arch-chroot "$ARCH" chsh -s /usr/bin/zsh "$user" &> /dev/null
 				fi
 				
+				arch-chroot "$ARCH" chsh -s /usr/bin/zsh "$user" &> /dev/null
 				cp /usr/share/arch-anywhere/.zshrc "$ARCH"/home/"$user"/
 				cp -r /usr/share/arch-anywhere/desktop/.config/{xfce4,Thunar} "$ARCH"/home/"$user"/.config/
 				cp /usr/share/arch-anywhere/desktop/arch-anywhere-icon.png "$ARCH"/home/"$user"/.face
@@ -1718,9 +1738,8 @@ graphics() {
 			cp -r /usr/share/arch-anywhere/{.zshrc,desktop/.config/} "$ARCH"/etc/skel/
 			cp /usr/share/arch-anywhere/desktop/arch-anywhere-icon.png "$ARCH"/etc/skel/.face
 			cp -r "/usr/share/arch-anywhere/desktop/AshOS-Dark-2.0" "$ARCH"/usr/share/themes/
-			cp /usr/share/arch-anywhere/desktop/arch-anywhere-wallpaper.png "$ARCH"/usr/share/backgrounds/xfce
-			rm "$ARCH"/usr/share/backgrounds/xfce/xfce-teal.jpg
-			arch-chroot "$ARCH" ln -s /usr/share/backgrounds/xfce/arch-anywhere-wallpaper.png /usr/share/backgrounds/xfce/xfce-teal.jpg
+			cp /usr/share/arch-anywhere/desktop/arch-anywhere-wallpaper.png "$ARCH"/usr/share/backgrounds/xfce/arch-anywhere-wallpaper.png
+			cp "$ARCH"/usr/share/backgrounds/xfce/arch-anywhere-wallpaper.png "$ARCH"/usr/share/backgrounds/xfce/xfce-teal.jpg
 			cp /usr/share/arch-anywhere/desktop/arch-anywhere-icon.png "$ARCH"/usr/share/pixmaps/
 			arch-chroot "$ARCH" chsh -s /usr/bin/zsh &> /dev/null
 			cp /usr/share/arch-anywhere/.zshrc "$ARCH"/root/
@@ -1763,8 +1782,13 @@ graphics() {
 
 }
 
+### This function is responsible for installing new software on the users system
+### New software from the official repos may be added to the list
+### Added software should only be from core, community, and extra repos (no multilib or testing)
+
 install_software() {
 
+	### Prompt user to install additional software on their system
 	if (whiptail --title "$title" --yes-button "$yes" --no-button "$no" --yesno "$software_msg0" 10 60) then
 		
 		until "$software_selected"
