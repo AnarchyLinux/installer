@@ -1,21 +1,24 @@
 # arch-linux-anywhere
 
-The Arch Anywhere ISO contains an automated install script, write the ISO to a CD or USB, boot it up, and simply type 'arch-anywhere'. This will invoke the built-in whiptail installer allowing you to install Arch Linux in minutes with a simple menu system. The installer also has support for multiple languages, install Arch Linux in the language you feel most comfortable with. Every asbect of the install from partitioning the drive, to installing a desktop is taken into consideration, leaving you with a fully bootable Arch Linux system, fully configured with your favorite desktop in minutes. Install Arch Linux Anywhere, regardless of your level of experience. 
+The Arch Anywhere ISO is a modifyed version of the official archiso containing some added features and enhancements, as well as a whiptail automated install script. Simply write the the ISO to a CD or USB, boot it up, and type 'arch-anywhere' to begin the install process. This will allow you to install a fully custom Arch Linux system in minutes with a simple menu system. The installer script makes Arch simple for Linux beginners, while offering many options to allow advanced users to install Arch just how they like it. The installer also has support for multiple languages, every asbect of the install from partitioning the drive, to installing a desktop is taken into consideration, leaving you with a fully bootable Arch Linux system, fully configured with your favorite desktop in minutes. Install Arch Linux Anywhere, anytime, with the system configured just for you.. 
 
 ### Official Arch Linux Anywhere ISO:
 
 	https://arch-anywhere.org
-	
+
+![alt tag](http://arch-anywhere.org/images/installer/issue.png)
+
 ### Features:
 
 * Supported partitioning methods include:
 
     Full drive automatic partitioning with optional SWAP partition
     Full drive automatic partitioning full luks on LVM encryption for root and tmp partition with optional enctypted SWAP partition
-    Manual partition (advanced users) with your choice of partitioning tool: cfdisk, fdisk, gdisk, parted
+    Manual partition (advanced users) uses cfdisk for partitioning, or you may partition your drive before the install and simply select all your mountpoints
 
 * Supported Desktop Environments + Window Managers:
 
+    Arch Anywhere XFCE4 (developers custom xfce4 desktop)
     AwesomeWM
     Cinnamon Desktop
     DWM DynamicWM
@@ -28,7 +31,7 @@ The Arch Anywhere ISO contains an automated install script, write the ISO to a C
     LXQT Desktop
     Mate Desktop
     OpenboxWM
-    XFCE4 Desktop (#1 developers choice)
+    XFCE4 Desktop
 
 * Supported Graphics Drivers:
 
@@ -45,14 +48,20 @@ The Arch Anywhere ISO contains an automated install script, write the ISO to a C
 
 * Network Utilities:
 
-    Netctl
-    NetworkManager (Recommended for desktop)
+    NetworkManager + applet
     WPA Supplicant
     WPA ActionD
     Wireless Tools
 
-Also contains a long list of optional additional software all from the Official Arch repos. This inculdes web browsers, text editors, media players, servers, managment utilities, editing software, and many other programs you may find useful on your new system.
+Also contains a long list of optional additional software (games, browsers, media players, cli utils, text editors, servers, etc...) all from the Official Arch repos.
 
 Arch Linux, quick, easy, and straight forward, "Keep it simple stupid".
+
 You can find the latest version of Arch Anywhere on the Download page.
 (This is a dual Arch Linux installer ISO, containing both i686 (32 bit), and x86_64 (64 bit) architectures.)
+
+![alt tag](http://arch-anywhere.org/images/arch-anywhere-splash.png)
+
+![alt tag](http://arch-anywhere.org/images/installer/install2.png)
+
+![alt tag](http://arch-anywhere.org/images/installer/chroot.png)
