@@ -279,7 +279,7 @@ prepare_drives() {
 				#!/bin/bash
 				# simple script used to generate block device menu
 				whiptail --title "$title" --ok-button "$ok" --cancel-button "$cancel" --menu "$drive_msg" 15 60 4 \\
-				$(lsblk | grep "disk" | grep -v " 1 " | awk '{print "\""$1"\"""    ""\"""Type: "$6"    ""'$size': "$4"\""" \\"}' |
+				$(lsblk | grep "disk" | grep -v "$USB\|loop" | awk '{print "\""$1"\"""    ""\"""Type: "$6"    ""'$size': "$4"\""" \\"}' |
 				sed "s/\.[0-9]*//;s/\,[0-9]*//;s/ [0-9][G,M]/&   /;s/ [0-9][0-9][G,M]/&  /;s/ [0-9][0-9][0-9][G,M]/& /")
 				3>&1 1>&2 2>&3
 			EOF
@@ -717,10 +717,10 @@ manual_partition() {
 	### awk is used with the int variable to print next line each time it loops
 	until [ "$int" -gt "$count" ]
 	  do
-		device=$(lsblk | grep "sd." | grep -v " 1 \|1K" | awk "NR==$int {print \$1}")
-		dev_size=$(lsblk | grep "sd." | grep -v " 1 \|1K" | awk "NR==$int {print \$4}" | sed 's/\,/\./')
-		dev_type=$(lsblk | grep "sd." | grep -v " 1 \|1K" | awk "NR==$int {print \$6}")
-		mnt_point=$(lsblk | grep "sd." | grep -v " 1 \|1K" | awk "NR==$int {print \$7}" | sed 's/\/mnt/\//;s/\/\//\//')
+		device=$(lsblk | grep "sd." | grep -v "$USB\|loop\|1k" | awk "NR==$int {print \$1}")
+		dev_size=$(lsblk | grep "sd." | grep -v "$USB\|loop\|1k" | awk "NR==$int {print \$4}" | sed 's/\,/\./')
+		dev_type=$(lsblk | grep "sd." | grep -v "$USB\|loop\|1k" | awk "NR==$int {print \$6}")
+		mnt_point=$(lsblk | grep "sd." | grep -v "$USB\|loop\|1k" | awk "NR==$int {print \$7}" | sed 's/\/mnt/\//;s/\/\//\//')
 		
 		### if int equals 1 output whiptail command into /tmp/part.list
 		### each time loop runs append new device info to /tmp/part.list
