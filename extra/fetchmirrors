@@ -77,11 +77,13 @@ get_opts() {
 				break
 			;;
 			-c|--country)
-				if (<<<$countries grep -w "$2" &> /dev/null); then
+				if [ -z "$2" ]; then
+					echo "${Red}Error: ${Yellow}You must enter a country code."
+					echo
+				elif (<<<$countries grep -w "$2" &> /dev/null); then
 					country_code="$2"
 					get_list
 				else
-					echo
 					echo "${Red}Error: ${Yellow}country code: $2 not found."
 					echo "To view a list of country codes run:${Green} fetchmirrors -l${ColorOff}"
 					echo
