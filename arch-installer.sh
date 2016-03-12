@@ -362,9 +362,7 @@ prepare_drives() {
 		fi
 			
 		### Run efivar to check if efi support is enabled
-		efivar -l &> /dev/null
-
-		if [ "$?" -eq "0" ]; then
+		if (efivar -l &> /dev/null); then
 
 			### If no error is returned prompt user to install with efi
 			if (whiptail --title "$title" --yes-button "$yes" --no-button "$no" --yesno "$efi_msg0" 10 60) then
@@ -710,7 +708,7 @@ manual_partition() {
 	### Set int variable to 1
 	### Set count to total number of devices / partitions
 	int=1
-	count=$(lsblk | grep "sd." | grep -v " 1 \|1K" | wc -l)
+	count=$(lsblk | grep "sd." | grep -v "$USB\|loop\|1k" | wc -l)
 	
 	### Until int is greater than count loop create partition menu
 	### Device info defined with device dev_size dev_type mnt_point
@@ -1009,6 +1007,42 @@ manual_partition() {
 
 			### Confirm writing changes to partition table and continue with install
 			if (whiptail --title "$title" --yes-button "$write" --no-button "$cancel" --defaultno --yesno "$write_confirm_msg \n\n $final_part \n\n $write_confirm" "$height" 50) then
+				if (efivar -l &>/dev/null); then
+					if (fdisk -l | grep "EFI" &>/dev/null); then
+						while (true)
+						  do
+							while (true)
+							  do
+								efint=1
+								efiboot=$(fdisk -l | grep "EFI" | awk "NR==$efint {print \$1}")
+								efimnt=$(df -T | grep "$efiboot" | awk '{print $7}')
+								if [ -n "$efimnt" ]; then
+									break
+								else
+									efint=$((efint+1))
+								fi
+							done
+							source "$lang_file"
+							if (whiptail --title "$title" --yes-button "$yes" --no-button "$no" --yesno "$efi_var" 11 60) then	
+								if [ $(df -T | grep "$efiboot" | awk '{print $2}') != "vfat" ]; then
+									if (whiptail --title "$title" --yes-button "$yes" --no-button "$no" --yesno "$vfat_var" 11 60) then
+											(umount -R "$efimnt"
+											mkfs.vfat -F32 "$efiboot"
+											mount "$efiboot" "$efimnt") &> /dev/null &
+											pid=$! pri=0.2 msg="\n$efi_load1" load
+											UEFI=true
+											break
+									fi
+								else
+									UEFI=true
+									break
+								fi
+							else
+								break
+							fi
+						done
+					fi
+				fi
 				update_mirrors
 			else
 				manual_partition
@@ -1507,11 +1541,12 @@ graphics() {
 		"lxqt"          "$de3" \
 		"mate"          "$de1" \
 		"xfce4"         "$de0" \
-		"enlightenment" "$de7" \
 		"awesome"       "$de9" \
-		"i3"            "$de10" \
+		"bspwm"			"$de" \
 		"dwm"           "$de12" \
+		"enlightenment" "$de7" \
 		"fluxbox"       "$de11" \
+		"i3"            "$de10" \
 		"openbox"       "$de8" 3>&1 1>&2 2>&3)
 	
 	### If user selects cancel and didn't enter from menu ask to confirm not installing desktop
@@ -1575,6 +1610,9 @@ graphics() {
 		"enlightenment") 	start_term="exec enlightenment_start"
 							DE="enlightenment terminology"
 		;;
+		"bspwm")	start_term="sxhkd & ; exec bspwm"
+					DE="bspwm sxhkd"
+		;;
 		"fluxbox")	start_term="exec startfluxbox" 
 		;;
 		"openbox")	start_term="exec openbox-session"
@@ -1589,56 +1627,54 @@ graphics() {
 
 	### If no desktop has been installed yet install graphics drivers
 	if ! $desktop ; then
-		
-		### Auto detect virtualbox system and set GPU variable to virtualbox-guest-utils
-		### echo modules to be loaded at boot into /etc/modules-load.d/virtualbox.conf
-		if "$VBOX" ; then
-			GPU="virtualbox-guest-utils mesa-libgl"
-			echo -e "vboxguest\nvboxsf\nvboxvideo" > "$ARCH"/etc/modules-load.d/virtualbox.conf
-		else
 
-			### While loop to select GPU
-			while (true)
-			  do
-			  	### Prompt user to select their desired graphics drivers
-			  	### Set "GPU" variable to output of users selected driver
-				GPU=$(whiptail --title "$title" --ok-button "$ok" --cancel-button "$cancel" --menu "$graphics_msg" 16 60 5 \
-					"$default"			"$gr0" \
-					"mesa-libgl"        "$gr1" \
-					"Nvidia"            "$gr2" \
-					"xf86-video-ati"    "$gr4" \
-					"xf86-video-intel"  "$gr5" 3>&1 1>&2 2>&3)
-				
-				### If user selects cancel ask to confirm not installing desktop
-				if [ "$?" -gt "0" ]; then
-					if (whiptail --title "$title" --yes-button "$yes" --no-button "$no" --yesno "$desktop_cancel_msg" 10 60) then
-						install_software
-					fi
-				
-				### If GPU variable set to "nvidia" prompt user to select version of nvidia drivers
-				elif [ "$GPU" == "Nvidia" ]; then
-					GPU=$(whiptail --title "$title" --ok-button "$ok" --cancel-button "$cancel" --menu "$nvidia_msg" 15 60 4 \
-						"nvidia"       "$gr6" \
-						"nvidia-340xx" "$gr7" \
-						"nvidia-304xx" "$gr8" 3>&1 1>&2 2>&3)
+		### While loop to select GPU
+		while (true)
+		  do
+			### Auto detect virtualbox system and set GPU variable to virtualbox-guest-utils
+		  	if "$VBOX" ; then
+		  		whiptail --title "$title" --ok-button "$ok" --msgbox "$vbox_msg" 10 60
+				GPU="virtualbox-guest-utils mesa-libgl"
+		  		break
+		  	fi
+			### Prompt user to select their desired graphics drivers
+		  	### Set "GPU" variable to output of users selected driver
+			GPU=$(whiptail --title "$title" --ok-button "$ok" --cancel-button "$cancel" --menu "$graphics_msg" 16 60 5 \
+				"$default"			"$gr0" \
+				"mesa-libgl"        "$gr1" \
+				"Nvidia"            "$gr2" \
+				"xf86-video-ati"    "$gr4" \
+				"xf86-video-intel"  "$gr5" 3>&1 1>&2 2>&3)
+			
+			### If user selects cancel ask to confirm not installing desktop
+			if [ "$?" -gt "0" ]; then
+				if (whiptail --title "$title" --yes-button "$yes" --no-button "$no" --yesno "$desktop_cancel_msg" 10 60) then
+					install_software
+				fi
+			
+			### If GPU variable set to "nvidia" prompt user to select version of nvidia drivers
+			elif [ "$GPU" == "Nvidia" ]; then
+				GPU=$(whiptail --title "$title" --ok-button "$ok" --cancel-button "$cancel" --menu "$nvidia_msg" 15 60 4 \
+					"nvidia"       "$gr6" \
+					"nvidia-340xx" "$gr7" \
+					"nvidia-304xx" "$gr8" 3>&1 1>&2 2>&3)
 
-					### If user does not cancel set GPU variable to include nvidia-libgl else return to top of while loop
-					if [ "$?" -eq "0" ]; then
-						GPU="$GPU ${GPU}-libgl"
-						break
-					fi
-
-				### If GPU variable is set to "default" unset GPU variable and break loop
-				elif [ "$GPU" == "$default" ]; then
-					unset GPU
-					break
-				
-				### Else GPU variable has been set break loop
-				else
+				### If user does not cancel set GPU variable to include nvidia-libgl else return to top of while loop
+				if [ "$?" -eq "0" ]; then
+					GPU="$GPU ${GPU}-libgl"
 					break
 				fi
-			done
-		fi
+
+			### If GPU variable is set to "default" unset GPU variable and break loop
+			elif [ "$GPU" == "$default" ]; then
+				unset GPU
+				break
+			
+			### Else GPU variable has been set break loop
+			else
+				break
+			fi
+		done
 
 		### Prompt user to install xf86-input-synaptics for laptop touchpad support
 		if (whiptail --title "$title" --defaultno --yes-button "$yes" --no-button "$no" --yesno "$touchpad_msg" 10 60) then
@@ -1689,7 +1725,7 @@ graphics() {
 	### Set "desktop" to true to confirm new desktop has been installed
 	if (whiptail --title "$title" --yes-button "$install" --no-button "$cancel" --yesno "$desktop_confirm_var" 18 60) then
 		pacstrap "$ARCH" $(echo "$DE") &> /dev/null &
-		pid=$! pri="$down" msg="$desktop_load" load
+		pid=$! pri="$down" msg="\n$desktop_load" load
 		desktop=true
 
 		
@@ -1772,6 +1808,11 @@ graphics() {
 		pid=$! pri=0.1 msg="$wait_load" load
 	fi
 	
+	if "$VBOX" ; then
+		arch-chroot "$ARCH" systemctl enable vboxservice &>/dev/null &
+		pid=$! pri=0.1 msg="$wait_load" load
+	fi
+
 	### If user entered from menu return to reboot_system menu function
 	if "$menu_enter" ; then
 		reboot_system
@@ -1845,11 +1886,13 @@ install_software() {
 						"elinks"			"$net3" OFF \
 						"filezilla"			"$net1" OFF \
 						"firefox"			"$net2" OFF \
+						"irssi"				"$net9" OFF \
 						"lynx"				"$net3" OFF \
 						"minitube"			"$net4" OFF \
 						"thunderbird"		"$net6" OFF \
 						"transmission-cli" 	"$net7" OFF \
-						"transmission-gtk"	"$net8" OFF 3>&1 1>&2 2>&3)
+						"transmission-gtk"	"$net8" OFF \
+						"xchat"				"$net10" OFF 3>&1 1>&2 2>&3)
 					if [ "$?" -gt "0" ]; then
 						err=true
 					elif "$desktop" ; then
@@ -1875,9 +1918,10 @@ install_software() {
 					fi
 				;;
 				"$graphic")
-					software=$(whiptail --title "$title" --ok-button "$ok" --cancel-button "$cancel" --checklist "$software_msg1" 16 63 6 \
+					software=$(whiptail --title "$title" --ok-button "$ok" --cancel-button "$cancel" --checklist "$software_msg1" 17 63 7 \
 						"blender"		"$graphic0" OFF \
 						"darktable"		"$graphic1" OFF \
+						"feh"			"$graphic6" OFF \
 						"gimp"			"$graphic2" OFF \
 						"graphviz"		"$graphic3" OFF \
 						"imagemagick"	"$graphic4" OFF \
@@ -1954,6 +1998,8 @@ install_software() {
 						"arch-wiki"		"$sys0" ON \
 						"apache"		"$sys1" OFF \
 						"conky"			"$sys2" OFF \
+						"dmenu"			"$sys19" OFF \
+						"fetchmirrors"	"$sys22" ON \
 						"git"			"$sys3" OFF \
 						"gparted"		"$sys4" OFF \
 						"gpm"			"$sys5" OFF \
@@ -1962,6 +2008,8 @@ install_software() {
 						"k3b"			"$sys8" OFF \
 						"nmap"			"$sys9" OFF \
 						"openssh"		"$sys10" OFF \
+						"pcmanfm"		"$sys21" OFF \
+						"ranger"		"$sys20" OFF \
 						"screen"		"$sys11" OFF \
 						"screenfetch"	"$sys12" ON \
 						"scrot"			"$sys13" OFF \
@@ -1974,12 +2022,16 @@ install_software() {
 						err=true
 					fi
 
-					wiki=$(<<<$software grep "arch-wiki")
-
-					if [ -n "$wiki" ]; then
-						cp /usr/bin/arch-wiki "$ARCH"/usr/bin
+					if (<<<$software grep "arch-wiki"); then
+						cp /usr/bin/arch-wiki "$ARCH"/usr/bin/
 						software=$(<<<$software sed 's/arch-wiki/lynx/')
 					fi
+
+					if (<<<$software grep "fetchmirrors"); then
+						cp /usr/bin/fetchmirrors "$ARCH"/usr/bin/
+						software=$(<<<$software sed 's/fetchmirrors//')
+					fi
+
 				;;
 				"$done_msg")
 				# Check if user selected any additional software
