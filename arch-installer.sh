@@ -2022,12 +2022,12 @@ install_software() {
 						err=true
 					fi
 
-					if (<<<$software grep "arch-wiki"); then
+					if (<<<$software grep "arch-wiki" &> /dev/null); then
 						cp /usr/bin/arch-wiki "$ARCH"/usr/bin/
 						software=$(<<<$software sed 's/arch-wiki/lynx/')
 					fi
 
-					if (<<<$software grep "fetchmirrors"); then
+					if (<<<$software grep "fetchmirrors" &> /dev/null); then
 						cp /usr/bin/fetchmirrors "$ARCH"/usr/bin/
 						software=$(<<<$software sed 's/fetchmirrors//')
 					fi
