@@ -1,4 +1,4 @@
-[4;32m--------------------------------------------------------------------------------[0m
+[0;32m--------------------------------------------------------------------------------[0m
 [0;32m                            Arch Linux Anywhere
 [0;33m  Arch Anywhere contains the resources you need to learn about installing Arch.
 [0;33m  This ISO contains a built in Arch Wiki, as well as an automated installer.
@@ -23,4 +23,4 @@
 
 [0;33m  Example:[0;32m  arch-wiki bootloader
           [0;32m  arch-wiki network configuration
-[4;32m--------------------------------------------------------------------------------[0m
+[0;32m--------------------------------------------------------------------------------[0m
