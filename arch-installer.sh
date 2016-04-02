@@ -2077,11 +2077,6 @@ install_software() {
 						
 						if (whiptail --title "$title" --yes-button "$install" --no-button "$cancel" --yesno "$software_confirm_var1" "$height" 65) then
 							
-						# Check for program requirements	
-							if (<<<download grep "virtualbox"); then
-								echo -e "vboxdrv\nvboxnetflt\nvboxnetadp\nvboxpci" > "$ARCH"/etc/modules-load.d/virtualbox.conf
-							fi
-
 						# Install additional software
 						    pacstrap "$ARCH" $(echo "$download") &> /dev/null &
 						    pid=$! pri="$down" msg="$software_load" load
@@ -2134,17 +2129,17 @@ install_software() {
 	
 	if "$enable_nm" ; then
 		arch-chroot "$ARCH" systemctl enable NetworkManager &>/dev/null &
-		pid=$! pri=0.1 msg="Enabling networkmanager..." load
+		pid=$! pri=0.1 msg="\nEnabling networkmanager..." load
 	fi
 
 	if "$enable_bt" ; then
 		arch-chroot "$ARCH" systemctl enable bluetooth &>/dev/null &
-		pid=$! pri=0.1 msg="Enabling bluetooth..." load
+		pid=$! pri=0.1 msg="\nEnabling bluetooth..." load
 	fi
 
 	if "$VBOX" ; then
 		arch-chroot "$ARCH" systemctl enable vboxservice &>/dev/null &
-		pid=$! pri=0.1 msg="Enabling virtualbox guest utils..." load
+		pid=$! pri=0.1 msg="\nEnabling virtualbox guest utils..." load
 	fi
 
 	
