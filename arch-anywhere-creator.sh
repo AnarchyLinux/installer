@@ -103,22 +103,32 @@ init() {
 			esac
 		done
 	fi
-	prepare_x86_64
+	builds
 
 }
 
-#mk_oh-my-zsh() {
+builds() {
 
-#	cd /tmp
-#	wget "https://aur.archlinux.org/cgit/aur.git/snapshot/oh-my-zsh-git.tar.gz"
-#	tar xf oh-my-zsh-git.tar.gz
-#	cd oh-my-zsh-git/
-#	makepkg -s
-#	mv *.pkg.tar.xz /tmp
-#	cd /tmp
-#	rm -r oh-my-zsh-git
+	if [ ! -d /tmp/fetchmirrors ]; then
+		### Build fetchmirrors
+		wget -O /tmp "https://aur.archlinux.org/cgit/aur.git/snapshot/fetchmirrors.tar.gz"
+		cd /tmp
+		tar -xf fetchmirrors.tar.gz
+		cd fetchmirrors
+		makepkg -s
+	fi
 
-#}
+	if [ -d /tmp/arch-wiki-cli ]; then
+		### Build arch-wiki
+		wget -O /tmp "https://aur.archlinux.org/cgit/aur.git/snapshot/arch-wiki-cli.tar.gz"
+		cd /tmp
+		tar -xf arch-wiki-cli.tar.gz
+		cd arch-wiki-cli
+		makepkg -s
+	fi
+	prepare_x86_64
+
+}
 
 prepare_x86_64() {
 	
@@ -147,12 +157,14 @@ prepare_x86_64() {
 	sudo chmod +x "$customiso"/arch/x86_64/squashfs-root/usr/bin/arch-anywhere
 	sudo chmod +x "$customiso"/arch/x86_64/squashfs-root/usr/bin/arch-wiki
 	sudo chmod +x "$customiso"/arch/x86_64/squashfs-root/usr/bin/fetchmirrors
-
+	
 ### Create arch-anywhere directory and lang directory copy over all lang files
 	sudo mkdir "$customiso"/arch/x86_64/squashfs-root/usr/share/arch-anywhere
-	sudo mkdir "$customiso"/arch/x86_64/squashfs-root/usr/share/arch-anywhere/lang
+	sudo mkdir "$customiso"/arch/x86_64/squashfs-root/usr/share/arch-anywhere/{lang,pkg}
 	sudo cp "$aa"/lang/* "$customiso"/arch/x86_64/squashfs-root/usr/share/arch-anywhere/lang
-	
+	sudo cp /tmp/fetchmirrors/*.pkg.tar.xz "$customiso"/arch/x86_64/squashfs-root/usr/share/arch-anywhere/pkg
+	sudo cp /tmp/arch-wiki-cli/*.pkg.tar.xz "$customiso"/arch/x86_64/squashfs-root/usr/share/arch-anywhere/pkg
+
 ### Copy over extra files (dot files, desktop configurations, help file, issue file, hostname file)
 	sudo cp "$aa"/extra/.zshrc "$customiso"/arch/x86_64/squashfs-root/root/
 	sudo cp "$aa"/extra/.help "$customiso"/arch/x86_64/squashfs-root/root/
@@ -196,7 +208,9 @@ prepare_i686() {
 	sudo cp "$aa"/arch-installer.sh "$customiso"/arch/i686/squashfs-root/usr/bin/arch-anywhere
 	sudo mkdir "$customiso"/arch/i686/squashfs-root/usr/share/arch-anywhere
 	sudo mkdir "$customiso"/arch/i686/squashfs-root/usr/share/arch-anywhere/lang
-	sudo cp "$aa"/lang/* "$customiso"/arch/i686/squashfs-root/usr/share/arch-anywhere/lang
+	sudo cp "$aa"/lang/* "$customiso"/arch/i686/squashfs-root/usr/share/arch-anywhere/{lang,pkg}
+	sudo cp /tmp/fetchmirrors/*.pkg.tar.xz "$customiso"/arch/i686/squashfs-root/usr/share/arch-anywhere/pkg
+	sudo cp /tmp/arch-wiki-cli/*.pkg.tar.xz "$customiso"/arch/i686/squashfs-root/usr/share/arch-anywhere/pkg
 	sudo chmod +x "$customiso"/arch/i686/squashfs-root/usr/bin/arch-anywhere
 	sudo cp "$aa"/extra/arch-wiki "$customiso"/arch/i686/squashfs-root/usr/bin/arch-wiki
 	sudo chmod +x "$customiso"/arch/i686/squashfs-root/usr/bin/arch-wiki	

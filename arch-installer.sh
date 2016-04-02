@@ -1181,6 +1181,13 @@ install_base() {
 			enable_nm=true
 		fi
 
+		if "$bluetooth" ; then
+			if (whiptail --title "$title" --defaultno --yes-button "$yes" --no-button "$no" --yesno "$bluetooth_msg" 11 60) then
+				base_install="$base_install bluez bluez-utils"
+				enable_bt=true
+			fi
+		fi
+		
 		### Prompt user to install os-prober and add to install variable
 		if (whiptail --title "$title" --defaultno --yes-button "$yes" --no-button "$no" --yesno "$os_prober_msg" 10 60) then
 			base_install="$base_install os-prober"
@@ -1542,7 +1549,7 @@ graphics() {
 		"mate"          "$de1" \
 		"xfce4"         "$de0" \
 		"awesome"       "$de9" \
-		"bspwm"			"$de" \
+		"bspwm"			"$de13" \
 		"dwm"           "$de12" \
 		"enlightenment" "$de7" \
 		"fluxbox"       "$de11" \
@@ -1706,6 +1713,12 @@ graphics() {
 			DE="$DE xorg-server xorg-server-utils xorg-xinit xterm networkmanager network-manager-applet wpa_supplicant wpa_actiond $GPU"
 			enable_nm=true
 		fi
+
+		if "$enable_bt" ; then
+			if (whiptail --title "$title" --yes-button "$yes" --no-button "$no" --yesno "$blueman_msg" 10 60) then
+				DE="$DE blueman"
+			fi
+		fi
 	fi
 	
 	### pacstrap command to print the total size of the packages
@@ -1801,16 +1814,6 @@ graphics() {
 				graphics
 			fi
 		fi
-	fi
-
-	if "$enable_nm" ; then
-		arch-chroot "$ARCH" systemctl enable NetworkManager &>/dev/null &
-		pid=$! pri=0.1 msg="$wait_load" load
-	fi
-	
-	if "$VBOX" ; then
-		arch-chroot "$ARCH" systemctl enable vboxservice &>/dev/null &
-		pid=$! pri=0.1 msg="$wait_load" load
 	fi
 
 	### If user entered from menu return to reboot_system menu function
@@ -2023,12 +2026,16 @@ install_software() {
 					fi
 
 					if (<<<$software grep "arch-wiki" &> /dev/null); then
-						cp /usr/bin/arch-wiki "$ARCH"/usr/bin/
-						software=$(<<<$software sed 's/arch-wiki/lynx/')
+						cp /usr/share/arch-anywhere/pkg/arch-wiki*.pkg.tar.xz "$ARCH"/var/cache/pacman/pkg
+						arch-chroot "$ARCH" pacman -U /var/cache/pacman/pkg/arch-wiki*.pkg.tar.xz &> /dev/null &
+						pid=$! pri=0.1 msg="Installing arch-wiki..." load
+						software=$(<<<$software sed 's/arch-wiki//')
 					fi
 
 					if (<<<$software grep "fetchmirrors" &> /dev/null); then
-						cp /usr/bin/fetchmirrors "$ARCH"/usr/bin/
+						cp /usr/share/arch-anywhere/pkg/fetchmirrors*.pkg.tar.xz "$ARCH"/var/cache/pacman/pkg
+						arch-chroot "$ARCH" pacman -U /var/cache/pacman/pkg/fetchmirrors*.pkg.tar.xz &> /dev/null &
+						pid=$! pri=0.1 msg="Installing fetchmirrors..." load
 						software=$(<<<$software sed 's/fetchmirrors//')
 					fi
 
@@ -2122,6 +2129,22 @@ install_software() {
 		done
 		err=false
 	fi
+	
+	if "$enable_nm" ; then
+		arch-chroot "$ARCH" systemctl enable NetworkManager &>/dev/null &
+		pid=$! pri=0.1 msg="Enabling networkmanager..." load
+	fi
+
+	if "$enable_bt" ; then
+		arch-chroot "$ARCH" systemctl enable bluetooth &>/dev/null &
+		pid=$! pri=0.1 msg="Enabling bluetooth..." load
+	fi
+
+	if "$VBOX" ; then
+		arch-chroot "$ARCH" systemctl enable vboxservice &>/dev/null &
+		pid=$! pri=0.1 msg="Enabling virtualbox guest utils..." load
+	fi
+
 	
 	if [ -f "$ARCH"/var/lib/pacman/db.lck ]; then
 		rm "$ARCH"/var/lib/pacman/db.lck &> /dev/null
