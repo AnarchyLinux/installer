@@ -111,17 +111,17 @@ builds() {
 
 	if [ ! -d /tmp/fetchmirrors ]; then
 		### Build fetchmirrors
-		wget -O /tmp "https://aur.archlinux.org/cgit/aur.git/snapshot/fetchmirrors.tar.gz"
 		cd /tmp
+		wget "https://aur.archlinux.org/cgit/aur.git/snapshot/fetchmirrors.tar.gz"
 		tar -xf fetchmirrors.tar.gz
 		cd fetchmirrors
 		makepkg -s
 	fi
 
-	if [ -d /tmp/arch-wiki-cli ]; then
+	if [ ! -d /tmp/arch-wiki-cli ]; then
 		### Build arch-wiki
-		wget -O /tmp "https://aur.archlinux.org/cgit/aur.git/snapshot/arch-wiki-cli.tar.gz"
 		cd /tmp
+		wget "https://aur.archlinux.org/cgit/aur.git/snapshot/arch-wiki-cli.tar.gz"
 		tar -xf arch-wiki-cli.tar.gz
 		cd arch-wiki-cli
 		makepkg -s
