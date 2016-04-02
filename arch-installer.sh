@@ -2026,15 +2026,17 @@ install_software() {
 					fi
 
 					if (<<<$software grep "arch-wiki" &> /dev/null); then
-						cp /usr/share/arch-anywhere/pkg/arch-wiki*.pkg.tar.xz "$ARCH"/var/cache/pacman/pkg
-						arch-chroot "$ARCH" pacman -U /var/cache/pacman/pkg/arch-wiki*.pkg.tar.xz &> /dev/null &
+						pkg=$(ls /usr/share/arch-anywhere/pkg | grep arch-wiki)
+						cp /usr/share/arch-anywhere/pkg/"$pkg" "$ARCH"/var/cache/pacman/pkg
+						arch-chroot "$ARCH" pacman -U --noconfirm /var/cache/pacman/pkg/"$pkg" &> /dev/null &
 						pid=$! pri=0.1 msg="Installing arch-wiki..." load
 						software=$(<<<$software sed 's/arch-wiki//')
 					fi
 
 					if (<<<$software grep "fetchmirrors" &> /dev/null); then
-						cp /usr/share/arch-anywhere/pkg/fetchmirrors*.pkg.tar.xz "$ARCH"/var/cache/pacman/pkg
-						arch-chroot "$ARCH" pacman -U /var/cache/pacman/pkg/fetchmirrors*.pkg.tar.xz &> /dev/null &
+						pkg="$(ls /usr/share/arch-anywhere/pkg | grep fetchmirrors)"
+						cp /usr/share/arch-anywhere/pkg/"$pkg" "$ARCH"/var/cache/pacman/pkg
+						arch-chroot "$ARCH" pacman -U --noconfirm /var/cache/pacman/pkg/"$pkg" &> /dev/null &
 						pid=$! pri=0.1 msg="Installing fetchmirrors..." load
 						software=$(<<<$software sed 's/fetchmirrors//')
 					fi
@@ -2468,7 +2470,7 @@ load() {
     	        done
             echo 100
             sleep 1
-	} | whiptail --title "$title" --gauge "$msg" 8 76 0
+	} | whiptail --title "$title" --gauge "$msg" 8 78 0
 
 }
 
