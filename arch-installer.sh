@@ -38,7 +38,7 @@ init() {
 		"Indonesian" "bahasa Indonesia" \
 		"Portuguese" "Português" \
 		"Portuguese-Brazilian" "Português do Brasil" \
-		"Romanian" "Român?" \
+		"Romanian" "Română" \
 		"Russian" "Russian" \
 		"Spanish" "Español" \
 		"Swedish" "Svenska" 3>&1 1>&2 2>&3)
