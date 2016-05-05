@@ -1,4 +1,4 @@
-#!/bin/bash
+﻿#!/bin/bash
 
 # Set the version here
 export version="arch-anywhere-2.1.6-dual.iso"
