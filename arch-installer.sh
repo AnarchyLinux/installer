@@ -38,7 +38,7 @@ init() {
 		"Indonesian" "bahasa Indonesia" \
 		"Portuguese" "Português" \
 		"Portuguese-Brazilian" "Português do Brasil" \
-		"Romanian" "Român�" \
+		"Romanian" "Român?" \
 		"Russian" "Russian" \
 		"Spanish" "Español" \
 		"Swedish" "Svenska" 3>&1 1>&2 2>&3)
@@ -751,7 +751,7 @@ manual_partition() {
 		### Remove the line output so you're left with only device location eg 'sda1'
 		### set the size of the selected partition
 		### specify the existing mountpoint (if any)
-		part=$(<<<$manual_part sed 's/├─//;s/└─//')
+		part=$(<<<$manual_part sed 's/ââ//;s/ââ//')
 		part_size=$(lsblk | grep "$part" | awk '{print $4}' | sed 's/\,/\./')
 		part_mount=$(lsblk | grep "$part" | awk '{print $7}' | sed 's/\/mnt/\//;s/\/\//\//')
 		source "$lang_file"
