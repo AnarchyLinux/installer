@@ -91,7 +91,7 @@ check_connection() {
     		
 			### If wifi network found prompt user to attempt connection with 'wifi-menu' command
 			if (whiptail --title "$title" --yes-button "$yes" --no-button "$no" --yesno "$wifi_msg0" 10 60) then
-				wifi-menu "$wifi_network"
+				wifi-menu
     			
 				### If wifi-menu returns error print error message and exit
 				if [ "$?" -gt "0" ]; then
@@ -191,8 +191,8 @@ set_zone() {
 
 		### If selected zone is a directory set with subzone inside selected directory
 		if (find /usr/share/zoneinfo -maxdepth 1 -type d | sed -n -e 's!^.*/!!p' | grep "$ZONE" &> /dev/null); then
-			sublist=$(find /usr/share/zoneinfo/"$ZONE" -maxdepth 1 | sed -n -e 's!^.*/!!p' | sort | sed 's/$/ -/g')
-			SUBZONE=$(whiptail --title "$title" --ok-button "$ok" --cancel-button "$cancel" --menu "$zone_msg1" 18 60 10 $sublist 3>&1 1>&2 2>&3)
+			sublist=$(find /usr/share/zoneinfo/"$ZONE" -maxdepth 1 | sed -n -e 's!^.*/!!p' | sort | sed 's/$/ -/g' | grep -v "$ZONE")
+			SUBZONE=$(whiptail --title "$title" --ok-button "$ok" --cancel-button "$back" --menu "$zone_msg1" 18 60 10 $sublist 3>&1 1>&2 2>&3)
 
 			if [ "$?" -gt "0" ]; then 
 				set_zone 
@@ -200,8 +200,8 @@ set_zone() {
 
 			### If subzone is a directory set again inside selected directory
 			if (find /usr/share/zoneinfo/"$ZONE" -maxdepth 1 -type  d | sed -n -e 's!^.*/!!p' | grep "$SUBZONE" &> /dev/null); then
-				sublist=$(find /usr/share/zoneinfo/"$ZONE"/"$SUBZONE" -maxdepth 1 | sed -n -e 's!^.*/!!p' | sort | sed 's/$/ -/g')
-				SUB_SUBZONE=$(whiptail --title "$title" --ok-button "$ok" --cancel-button "$cancel" --menu "$zone_msg1" 15 60 6 $sublist 3>&1 1>&2 2>&3)
+				sublist=$(find /usr/share/zoneinfo/"$ZONE"/"$SUBZONE" -maxdepth 1 | sed -n -e 's!^.*/!!p' | sort | sed 's/$/ -/g' | grep -v "$SUBZONE")
+				SUB_SUBZONE=$(whiptail --title "$title" --ok-button "$ok" --cancel-button "$back" --menu "$zone_msg1" 15 60 6 $sublist 3>&1 1>&2 2>&3)
 
 				if [ "$?" -gt "0" ]; then 
 					set_zone 
@@ -522,14 +522,28 @@ prepare_drives() {
 			
 			### Else create new boot filesystem using selected filesystem type
 			else
-				(wipefs -a /dev/"$BOOT"
-				mkfs -F -t "$FS" /dev/"$BOOT") &> /dev/null &
+				wipefs -a /dev/"$BOOT"
+				case "$FS" in
+					jfs|reiserfs)
+						echo -e "y" | mkfs."$FS" /dev/"$BOOT" &> /dev/null &
+					;;
+					*)
+						mkfs."$FS" /dev/"$BOOT" &> /dev/null &
+					;;
+				esac
 				pid=$! pri=0.1 msg="\n$boot_load" load
 			fi
 
 			### Create root filesystem using desired filesystem type
-			(wipefs -a /dev/"$ROOT"
-			mkfs -F -t "$FS" /dev/"$ROOT") &> /dev/null &
+			wipefs -a /dev/"$ROOT"
+			case "$FS" in
+				jfs|reiserfs)
+					echo -e "y" | mkfs."$FS" /dev/"$ROOT" &> /dev/null &
+				;;
+				*)
+					mkfs."$FS" /dev/"$ROOT" &> /dev/null &
+				;;
+			esac
 			pid=$! pri=1 msg="\n$load_var1" load
 
 			### Mount root partition at arch mountpoint
@@ -633,7 +647,15 @@ prepare_drives() {
 			unset input ; input_chk=default
 
 			### Create and mount root filesystem on new encrypted volume
-			mkfs -F -t "$FS" /dev/mapper/root &> /dev/null &
+			wipefs -a /dev/mapper/root
+			case "$FS" in
+				jfs|reiserfs)
+					echo -e "y" | mkfs."$FS" /dev/mapper/root &> /dev/null &
+				;;
+				*)
+					mkfs."$FS" /dev/mapper/root &> /dev/null &
+				;;
+			esac
 			pid=$! pri=1 msg="\n$load_var1" load
 			
 			### If efi is true create new boot filesystem using 'vfat'
@@ -643,7 +665,15 @@ prepare_drives() {
 			
 			### Else create new boot filesystem using selected filesystem type
 			else
-				mkfs -F -t "$FS" /dev/"$BOOT" &> /dev/null &
+				wipefs -a /dev/"$BOOT"
+				case "$FS" in
+					jfs|reiserfs)
+						echo -e "y" | mkfs."$FS" /dev/"$BOOT" &> /dev/null &
+					;;
+					*)
+						mkfs."$FS" /dev/"$BOOT" &> /dev/null &
+					;;
+				esac
 				pid=$! pri=0.2 msg="\n$boot_load" load
 			fi
 
@@ -789,11 +819,18 @@ manual_partition() {
 						if (whiptail --title "$title" --yes-button "$write" --no-button "$cancel" --defaultno --yesno "$root_confirm_var" 14 50) then
 						
 							### Wipe root filesystem on selected partition
-							wipefs -a -q /dev/"$part" &> /dev/null &
+							wipefs -a /dev/"$part" &> /dev/null &
 							pid=$! pri=0.1 msg="\n$frmt_load" load
 
 							### Create new filesystem on root partition
-							mkfs -F -t "$FS" /dev/"$part" &> /dev/null &
+							case "$FS" in
+								jfs|reiserfs)
+									echo -e "y" | mkfs."$FS" /dev/"$part" &> /dev/null &
+								;;
+								*)
+									mkfs."$FS" /dev/"$part" &> /dev/null &
+								;;
+							esac
 							pid=$! pri=1 msg="\n$load_var1" load
 
 							### Mount new root partition at arch mountpoint
@@ -958,11 +995,18 @@ manual_partition() {
 				if "$frmt" ; then
 					if (whiptail --title "$title" --yes-button "$write" --no-button "$cancel" --defaultno --yesno "$part_confirm_var" 12 50) then
 						### Wipe filesystem on selected partition
-						wipefs -a -q /dev/"$part" &> /dev/null &
+						wipefs -a /dev/"$part" &> /dev/null &
 						pid=$! pri=0.1 msg="\n$frmt_load" load
 			
 						### Create new filesystem on selected partition
-						mkfs -F -t "$FS" /dev/"$part" &> /dev/null &
+						case "$FS" in
+							jfs|reiserfs)
+								echo -e "y" | mkfs."$FS" /dev/"$part" &> /dev/null &
+							;;
+							*)
+								mkfs."$FS" /dev/"$part" &> /dev/null &
+							;;
+						esac
 						pid=$! pri=1 msg="\n$load_var1" load
 					fi
 				fi
@@ -1641,7 +1685,7 @@ graphics() {
 			### Auto detect virtualbox system and set GPU variable to virtualbox-guest-utils
 		  	if "$VBOX" ; then
 		  		whiptail --title "$title" --ok-button "$ok" --msgbox "$vbox_msg" 10 60
-				GPU="virtualbox-guest-utils mesa-libgl"
+				GPU="virtualbox-guest-utils linux-headers mesa-libgl"
 		  		break
 		  	fi
 			### Prompt user to select their desired graphics drivers
