@@ -9,6 +9,7 @@ The installer includes options for automatic or manual partitioning, partition e
 	https://arch-anywhere.org
 
 <p>
+  <img src="http://arch-anywhere.org/images/arch-anywhere-splash.png" width="350"/>
   <img src="http://arch-anywhere.org/images/installer/issue.png" width="350"/>
 </p>
 
@@ -64,7 +65,8 @@ Arch Linux, quick, easy, and straight forward, "Keep it simple stupid".
 You can find the latest version of Arch Anywhere on the Download page.
 
 <p>
-  <img src="http://arch-anywhere.org/images/arch-anywhere-splash.png" width="350"/>
+  <img src="http://arch-anywhere.org/images/installer/lang.png" width="350"/>
+  <img src="http://arch-anywhere.org/images/installer/manual_menu.png" width="350">
   <img src="http://arch-anywhere.org/images/installer/install2.png" width="350"/>
   <img src="http://arch-anywhere.org/images/installer/chroot.png" width="350"/>
 </p>
