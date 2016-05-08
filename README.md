@@ -10,7 +10,7 @@ This is a dual ISO containing support for both i686 (32 bit) and x86_64 (64 bit)
 
 ### Official Arch Linux Anywhere ISO:
 
-	https://arch-anywhere.org
+	http://arch-anywhere.org/
 
 <p>
   <img src="http://arch-anywhere.org/images/arch-anywhere-splash.png" width="350"/>
@@ -73,6 +73,7 @@ Also contains a long list of optional additional software (audio, games, browser
 Arch Anywhere, quick, easy, and straight forward, "Keep it simple stupid".
 
 You can find the latest version of Arch Anywhere on the Download page:
+
 http://arch-anywhere.org/download.html
 
 
