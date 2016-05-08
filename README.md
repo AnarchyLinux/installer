@@ -4,7 +4,9 @@ Arch Anywhere is a modified version of the official archiso providing users with
 
 The Arch Anywhere installer is intended to allow novice Linux users a simple and pain free way to install Arch Linux regardless of their previous experience. It is also intended to allow advanced users with a way to deploy an Arch system while still providing the flexibility and freedom of choice of a traditional Arch Linux install. Install Arch Linux when you want it, where you want it, how you want it, that is the Arch Anywhere philosophy.
 
-The installer includes options for automatic or manual partitioning, partition encryption (lukas on LVM), latest Arch Linux kernel, Linux GreSec security hardened kernel, Linux LTS kernel, choose from 14 different default desktop/window manager options and 1 custom Arch Anywhere XFCE4 desktop (install as many as you desire), over 70 options for additional software (audio, games, multimedia, web, office, system...), support for all graphics cards (amd, intel, nvidia), virtualbox support, support for UEFI and dual booting, support for laptop touchpads, support for wifi and bluetooth, 10 different installer languages to choose from. This is a dual ISO containing support for both 32 bit and 64 bit systems.
+The Arch Anywhere ISO also contains a built in Arch Wiki allowing users to browse the official Arch Linux Wiki from the cli. Simply invoke the 'arch-wiki' command at anytime to search the arch wiki (search args may be passed ex: 'arch-wiki beginners guide'). A utility to update and rank the latest Arch Linux mirrorlist is also inluded in the ISO it can be invoked by running 'fetchmirrors'. These included utilities make it easy for new users to install Arch from the command line without using the installer and provide a way to learn how Arch really works by learning the install process. Arch Anywhere aims to provide a polished Arch Linux install experience while leaving open every possible install avenue for the user to choose from.
+
+This is a dual ISO containing support for both i686 (32 bit) and x86_64 (64 bit) systems.
 
 ### Official Arch Linux Anywhere ISO:
 
@@ -17,11 +19,17 @@ The installer includes options for automatic or manual partitioning, partition e
 
 ### Features:
 
+* Supported Linux installs:
+	Choose from base or base-devel Arch Linux install <br />
+	Latest Arch Linux kernel <br />
+	LTS Linux kernel (long term support) <br />
+	GreSec Linux kernel (security hardened Linux) <br />
+
 * Supported partitioning methods include:
 
     Full drive automatic partitioning with optional SWAP partition <br />
     Full drive automatic partitioning with luks on LVM encryption for root and tmp partition with optional enctypted SWAP partition <br />
-    Manual partition (advanced users) uses cfdisk for partitioning, or you may partition your drive before the install and simply select all your mountpoints <br />
+    Manual partition (advanced users) uses cfdisk for partitioning select custom mountpoints <br />
 
 * Supported Desktop Environments + Window Managers:
 
@@ -60,11 +68,13 @@ The installer includes options for automatic or manual partitioning, partition e
     WPA ActionD <br />
     Wireless Tools <br />
 
-Also contains a long list of optional additional software (games, browsers, media players, cli utils, text editors, servers, etc...) all from the Official Arch repos.
+Also contains a long list of optional additional software (audio, games, browsers, media players, cli utils, text editors, servers, etc...) from the Official Arch repos.
 
-Arch Linux, quick, easy, and straight forward, "Keep it simple stupid".
+Arch Anywhere, quick, easy, and straight forward, "Keep it simple stupid".
 
-You can find the latest version of Arch Anywhere on the Download page.
+You can find the latest version of Arch Anywhere on the Download page:
+http://arch-anywhere.org/download.html
+
 
 <p>
   <img src="http://arch-anywhere.org/images/installer/lang.png" width="350"/>
