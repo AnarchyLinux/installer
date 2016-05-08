@@ -30,8 +30,6 @@ if [ -r ~/.zshrc -a -r ~/.zshrc.global -a ! -r ~/.zshrc.local ] ; then
     printf '-!-\n'
 fi
 
-alias arch-wiki-guide="elinks ~/.guide.html"
-alias arch-wiki-simple="elinks ~/.simple-guide.html"
 alias help="cat ~/.help"
 alias start="cat /etc/issue"
 

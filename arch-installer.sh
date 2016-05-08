@@ -171,7 +171,7 @@ set_locale() {
 
 	### If user selects 'other' locale display full list
 	if [ "$LOCALE" = "$other" ]; then
-		LOCALE=$(whiptail --title "$title" --ok-button "$ok" --cancel-button "$cancel" --menu "$locale_msg" 15 60 6 $localelist 3>&1 1>&2 2>&3)
+		LOCALE=$(whiptail --title "$title" --ok-button "$ok" --cancel-button "$cancel" --menu "$locale_msg" 18 60 10 $localelist 3>&1 1>&2 2>&3)
 
 		if [ "$?" -gt "0" ]; then 
 			set_locale
@@ -514,28 +514,20 @@ prepare_drives() {
 			### End partitioning
 			fi
 
+			wipefs -a /dev/"$BOOT" &> /dev/null
 			### If uefi boot is set to true create new boot filesystem type of 'vfat'
 			if "$UEFI" ; then
-				(wipefs -a /dev/"$BOOT"
-				mkfs.vfat -F32 /dev/"$BOOT") &> /dev/null &
+				mkfs.vfat -F32 /dev/"$BOOT" &> /dev/null &
 				pid=$! pri=0.1 msg="\n$efi_load1" load
 			
 			### Else create new boot filesystem using selected filesystem type
 			else
-				wipefs -a /dev/"$BOOT"
-				case "$FS" in
-					jfs|reiserfs)
-						echo -e "y" | mkfs."$FS" /dev/"$BOOT" &> /dev/null &
-					;;
-					*)
-						mkfs."$FS" /dev/"$BOOT" &> /dev/null &
-					;;
-				esac
+				mkfs.ext4 /dev/"$BOOT" &> /dev/null &
 				pid=$! pri=0.1 msg="\n$boot_load" load
 			fi
 
 			### Create root filesystem using desired filesystem type
-			wipefs -a /dev/"$ROOT"
+			wipefs -a /dev/"$ROOT" &> /dev/null
 			case "$FS" in
 				jfs|reiserfs)
 					echo -e "y" | mkfs."$FS" /dev/"$ROOT" &> /dev/null &
@@ -647,7 +639,7 @@ prepare_drives() {
 			unset input ; input_chk=default
 
 			### Create and mount root filesystem on new encrypted volume
-			wipefs -a /dev/mapper/root
+			wipefs -a /dev/mapper/root &> /dev/null
 			case "$FS" in
 				jfs|reiserfs)
 					echo -e "y" | mkfs."$FS" /dev/mapper/root &> /dev/null &
@@ -665,15 +657,8 @@ prepare_drives() {
 			
 			### Else create new boot filesystem using selected filesystem type
 			else
-				wipefs -a /dev/"$BOOT"
-				case "$FS" in
-					jfs|reiserfs)
-						echo -e "y" | mkfs."$FS" /dev/"$BOOT" &> /dev/null &
-					;;
-					*)
-						mkfs."$FS" /dev/"$BOOT" &> /dev/null &
-					;;
-				esac
+				wipefs -a /dev/"$BOOT" &> /dev/null
+				mkfs.ext4 /dev/"$BOOT" &> /dev/null &
 				pid=$! pri=0.2 msg="\n$boot_load" load
 			fi
 
@@ -781,10 +766,10 @@ manual_partition() {
 		### Remove the line output so you're left with only device location eg 'sda1'
 		### set the size of the selected partition
 		### specify the existing mountpoint (if any)
-		part=$(<<<$manual_part sed 's/ââ//;s/ââ//')
+		part=$(<<<$manual_part sed 's/├─//;s/└─//')
 		part_size=$(lsblk | grep "$part" | awk '{print $4}' | sed 's/\,/\./')
 		part_mount=$(lsblk | grep "$part" | awk '{print $7}' | sed 's/\/mnt/\//;s/\/\//\//')
-		source "$lang_file"
+		source "$lang_file"  &> /dev/null
 
 		### If no partitions are mounted user must create root partition first
 		if ! (lsblk | grep "part" | grep "$ARCH" &> /dev/null); then
