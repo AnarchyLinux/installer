@@ -144,6 +144,12 @@ prepare_x86_64() {
 	sudo pacman --root squashfs-root --cachedir squashfs-root/var/cache/pacman/pkg  --config squashfs-root/etc/pacman.conf --noconfirm -Scc
 	sudo rm -f "$customiso"/arch/x86_64/squashfs-root/var/cache/pacman/pkg/*
 	
+### Install f2fs tools and clean up
+	sudo pacman --root squashfs-root --cachedir squashfs-root/var/cache/pacman/pkg  --config squashfs-root/etc/pacman.conf --noconfirm -Syyy f2fs-tools
+	sudo pacman --root squashfs-root --cachedir squashfs-root/var/cache/pacman/pkg  --config squashfs-root/etc/pacman.conf -Sl | awk '/\[installed\]$/ {print $1 "/" $2 "-" $3}' > "$customiso"/arch/pkglist.x86_64.txt
+	sudo pacman --root squashfs-root --cachedir squashfs-root/var/cache/pacman/pkg  --config squashfs-root/etc/pacman.conf --noconfirm -Scc
+	sudo rm -f "$customiso"/arch/x86_64/squashfs-root/var/cache/pacman/pkg/*
+	
 ### Copy over vconsole.conf (sets font at boot) & locale.gen (enables locale(s) for font)
 	sudo cp "$aa"/etc/vconsole.conf "$customiso"/arch/x86_64/squashfs-root/etc
 	sudo cp "$aa"/etc/locale.gen "$customiso"/arch/x86_64/squashfs-root/etc
@@ -198,6 +204,7 @@ prepare_i686() {
 	sudo sed -i 's/\$arch/i686/g' squashfs-root/etc/pacman.d/mirrorlist
 	sudo sed -i 's/auto/i686/' squashfs-root/etc/pacman.conf
 	sudo setarch i686 pacman --root squashfs-root --cachedir squashfs-root/var/cache/pacman/pkg  --config squashfs-root/etc/pacman.conf --noconfirm -Syyy terminus-font
+	sudo setarch i686 pacman --root squashfs-root --cachedir squashfs-root/var/cache/pacman/pkg  --config squashfs-root/etc/pacman.conf --noconfirm -Syyy f2fs-tools
 	sudo setarch i686 pacman --root squashfs-root --cachedir squashfs-root/var/cache/pacman/pkg  --config squashfs-root/etc/pacman.conf -Sl | awk '/\[installed\]$/ {print $1 "/" $2 "-" $3}' > "$customiso"/arch/pkglist.i686.txt
 	sudo setarch i686 pacman --root squashfs-root --cachedir squashfs-root/var/cache/pacman/pkg  --config squashfs-root/etc/pacman.conf --noconfirm -Scc
 	sudo rm -f "$customiso"/arch/i686/squashfs-root//var/cache/pacman/pkg/*
