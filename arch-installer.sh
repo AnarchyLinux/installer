@@ -303,7 +303,8 @@ prepare_drives() {
 			"ext2"      "$fs2" \
 			"btrfs"     "$fs3" \
 			"jfs"       "$fs4" \
-			"reiserfs"  "$fs5" 3>&1 1>&2 2>&3)
+			"reiserfs"  "$fs5" \
+			"f2fs"      "$fs6" 3>&1 1>&2 2>&3)
 
 		### Prompt user to create new swap space
 		if (whiptail --title "$title" --yes-button "$yes" --no-button "$no" --yesno "$swap_msg0" 10 60) then
@@ -789,7 +790,8 @@ manual_partition() {
 							"ext2"      "$fs2" \
 							"btrfs"     "$fs3" \
 							"jfs"       "$fs4" \
-							"reiserfs"  "$fs5" 3>&1 1>&2 2>&3)
+							"reiserfs"  "$fs5" \
+							"f2fs"      "$fs6" 3>&1 1>&2 2>&3)
 
 						### If exit status greater than '0' user selected cancel
 						### return to beginning for manual partition function
@@ -942,7 +944,8 @@ manual_partition() {
 						"ext2"      "$fs2" \
 						"btrfs"     "$fs3" \
 						"jfs"       "$fs4" \
-						"reiserfs"  "$fs5" 3>&1 1>&2 2>&3)
+						"reiserfs"  "$fs5" \
+						"f2fs"      "$fs6" 3>&1 1>&2 2>&3)
 					
 					if [ "$?" -gt "0" ]; then
 						manual_partition
