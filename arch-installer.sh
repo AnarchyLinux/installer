@@ -295,15 +295,8 @@ prepare_drives() {
 		
 		### Read total gigabytes of selected drive and source language file variables
 		drive_gigs=$(lsblk | grep -w "$DRIVE" | awk '{print $4}' | grep -o '[0-9]*' | awk 'NR==1') 
-
-		### Prompt user to select new filesystem type
-		FS=$(whiptail --title "$title" --nocancel --menu "$fs_msg" 16 65 6 \
-			"ext4"      "$fs0" \
-			"ext3"      "$fs1" \
-			"ext2"      "$fs2" \
-			"btrfs"     "$fs3" \
-			"jfs"       "$fs4" \
-			"reiserfs"  "$fs5" 3>&1 1>&2 2>&3)
+		f2fs=$(cat /sys/block/"$DRIVE"/queue/rotational)
+		fs_select
 
 		### Prompt user to create new swap space
 		if (whiptail --title "$title" --yes-button "$yes" --no-button "$no" --yesno "$swap_msg0" 10 60) then
@@ -781,15 +774,8 @@ manual_partition() {
 				
 					### If partition is in the correct size range prompt user to create new root partition
 					if (whiptail --title "$title" --yes-button "$yes" --no-button "$cancel" --defaultno --yesno "$root_var" 13 60) then
-						
-						### Prompt user for new root partition filesystem type
-						FS=$(whiptail --title "$title" --ok-button "$ok" --cancel-button "$cancel" --menu "$fs_msg" 16 65 6 \
-							"ext4"      "$fs0" \
-							"ext3"      "$fs1" \
-							"ext2"      "$fs2" \
-							"btrfs"     "$fs3" \
-							"jfs"       "$fs4" \
-							"reiserfs"  "$fs5" 3>&1 1>&2 2>&3)
+						f2fs=$(cat /sys/block/$(echo $part | sed 's/[0-9]//g')/queue/rotational)
+						fs_select
 
 						### If exit status greater than '0' user selected cancel
 						### return to beginning for manual partition function
@@ -936,14 +922,14 @@ manual_partition() {
 			### Else prompt user to select filesystem type for selected partition
 			if [ "$mnt" != "SWAP" ]; then
 				if (whiptail --title "$title" --yes-button "$yes" --no-button "$no" --yesno "$part_frmt_msg" 11 50) then
-					FS=$(whiptail --title "$title" --ok-button "$ok" --cancel-button "$cancel" --menu "$fs_msg" 16 65 6 \
-						"ext4"      "$fs0" \
-						"ext3"      "$fs1" \
-						"ext2"      "$fs2" \
-						"btrfs"     "$fs3" \
-						"jfs"       "$fs4" \
-						"reiserfs"  "$fs5" 3>&1 1>&2 2>&3)
+					f2fs=$(cat /sys/block/$(echo $part | sed 's/[0-9]//g')/queue/rotational)
 					
+					if [ "$mnt" == "/boot" ]; then
+						f2fs="1"
+					fi
+					
+					fs_select
+
 					if [ "$?" -gt "0" ]; then
 						manual_partition
 					fi
@@ -1116,6 +1102,34 @@ manual_partition() {
 
 }
 
+fs_select() {
+
+	### Prompt user to select new filesystem type
+	if [ "$f2fs" -eq "0" ]; then
+		FS=$(whiptail --title "$title" --nocancel --menu "$fs_msg" 16 65 6 \
+			"ext4"      "$fs0" \
+			"ext3"      "$fs1" \
+			"ext2"      "$fs2" \
+			"btrfs"     "$fs3" \
+			"f2fs"		"$fs6" \
+			"jfs"       "$fs4" \
+			"reiserfs"  "$fs5" 3>&1 1>&2 2>&3)
+		
+		if [ "$FS" == "f2fs" ]; then
+			enable_f2fs=true
+		fi
+	else
+		FS=$(whiptail --title "$title" --nocancel --menu "$fs_msg" 16 65 6 \
+			"ext4"      "$fs0" \
+			"ext3"      "$fs1" \
+			"ext2"      "$fs2" \
+			"btrfs"     "$fs3" \
+			"jfs"       "$fs4" \
+			"reiserfs"  "$fs5" 3>&1 1>&2 2>&3)
+	fi
+
+}
+
 update_mirrors() {
 
 	### Prompt user to update pacman mirrorlist
@@ -1196,7 +1210,6 @@ install_base() {
 				bootloader=true
 			fi
 		fi
-
 	
 		### If user is using wifi or selected to install wifi tools add to base install variable
 		### If user is not using wifi prompt to install netctl wireless tools and wpa supplicant
@@ -1220,6 +1233,10 @@ install_base() {
 		### Prompt user to install os-prober and add to install variable
 		if (whiptail --title "$title" --defaultno --yes-button "$yes" --no-button "$no" --yesno "$os_prober_msg" 10 60) then
 			base_install="$base_install os-prober"
+		fi
+
+		if "$enable_f2fs" ; then
+			base_install="$base_install f2fs-tools"
 		fi
 
 		### Use pacstrap to print the total size of all packages selected in the base install variable
@@ -1246,6 +1263,15 @@ install_base() {
 			fi
 			
 			rm /tmp/ex_status.var
+
+			if "$enable_f2fs" ; then
+				if ! "$crypted" ; then
+					if ! "$UEFI" ; then
+						arch-chroot "$ARCH" mkinitcpio -p linux &> /dev/null &
+						pid=$! pri=1 msg="\n$f2fs_config_load" load
+					fi
+				fi
+			fi
 
 			### Check if bootloader was installed
 			if "$bootloader" ; then
