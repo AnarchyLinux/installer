@@ -24,8 +24,7 @@
 ### GNU General Public License version 2 for more details.
 ###############################################################
 
-### the initial function is responsible for setting install language
-### also responsible for reading configuration file
+### the initial function is responsible for setting install language & config
 
 init() {
 
@@ -1058,6 +1057,14 @@ manual_partition() {
 						done
 					fi
 				fi
+
+				if "$enable_f2fs" ; then
+					if ! (lsblk | grep "$ARCH/boot" &> /dev/null) then
+						whiptail --title "$title" --ok-button "$ok" --msgbox "$f2fs_error_msg" 10 60
+						manual_partition
+					fi
+				fi
+				
 				update_mirrors
 			else
 				manual_partition
@@ -1106,7 +1113,7 @@ fs_select() {
 
 	### Prompt user to select new filesystem type
 	if [ "$f2fs" -eq "0" ]; then
-		FS=$(whiptail --title "$title" --nocancel --menu "$fs_msg" 16 65 6 \
+		FS=$(whiptail --title "$title" --nocancel --menu "$fs_msg" 17 65 7 \
 			"ext4"      "$fs0" \
 			"ext3"      "$fs1" \
 			"ext2"      "$fs2" \
@@ -1595,8 +1602,9 @@ graphics() {
 	### Display a list of desktops for the user to select
 	### Set the variable "DE" equal to the selected desktop
 	DE=$(whiptail --title "$title" --ok-button "$ok" --cancel-button "$cancel" --menu "$enviornment_msg" 18 60 10 \
-		"Arch-Anywhere-Xfce" "Arch-Anywhere Desktop" \
+		"Arch-Anywhere-Xfce" "$de15" \
 		"cinnamon"      "$de5" \
+		"deepin"		"$de14" \
 		"gnome"         "$de4" \
 		"KDE plasma"    "$de6" \
 		"lxde"          "$de2" \
@@ -1662,6 +1670,11 @@ graphics() {
 						enable_dm=true
 						start_term="exec startkde"
 		;;
+		"deepin")	if (whiptail --title "$title" --yes-button "$yes" --no-button "$no" --yesno "$extra_msg4" 10 60) then
+						DE="deepin deepin-extra"
+					fi
+ 					start_term="exec startdde"
+ 		;;
 		"cinnamon") start_term="exec cinnamon-session" 
 		;;
 		"lxde") 	start_term="exec startlxde" 
@@ -2149,7 +2162,7 @@ install_software() {
 			if ! "$err" ; then
 			# If software not defined when leaving menu ask to confirm
 				if [ -z "$software" ]; then
-					if ! (whiptail --title "$title" --yes-button "$ok" --no-button "$no" --defaultno --yesno "$software_noconfirm_msg ${software_menu}?" 10 60) then
+					if ! (whiptail --title "$title" --yes-button "$yes" --no-button "$no" --defaultno --yesno "$software_noconfirm_msg ${software_menu}?" 10 60) then
 						skip=true
 					fi
 				else
@@ -2184,17 +2197,17 @@ install_software() {
 	
 	if "$enable_nm" ; then
 		arch-chroot "$ARCH" systemctl enable NetworkManager &>/dev/null &
-		pid=$! pri=0.1 msg="\nEnabling networkmanager..." load
+		pid=$! pri=0.1 msg="\n$nwmanager_msg" load
 	fi
 
 	if "$enable_bt" ; then
 		arch-chroot "$ARCH" systemctl enable bluetooth &>/dev/null &
-		pid=$! pri=0.1 msg="\nEnabling bluetooth..." load
+		pid=$! pri=0.1 msg="\n$btenable_msg" load
 	fi
 
 	if "$VBOX" ; then
 		arch-chroot "$ARCH" systemctl enable vboxservice &>/dev/null &
-		pid=$! pri=0.1 msg="\nEnabling virtualbox guest utils..." load
+		pid=$! pri=0.1 msg="\n$vbox_enable_msg" load
 	fi
 
 	
@@ -2520,7 +2533,7 @@ load() {
     	        done
             echo 100
             sleep 1
-	} | whiptail --title "$title" --gauge "$msg" 8 78 0
+	} | whiptail --title "$title" --gauge "$msg" 8 79 0
 
 }
 
