@@ -1,10 +1,10 @@
 #!/bin/bash
 
 # Set the version here
-export version="arch-anywhere-2.2.0-dual.iso"
+export version="arch-anywhere-2.2.1-dual.iso"
 
 # Set the ISO label here
-export iso_label="ARCH_ANYWHERE_2.2.0"
+export iso_label="ARCH_ANYWHERE_2.2.1"
 
 # Location variables all directories must exist
 export aa=~/arch-linux-anywhere
@@ -139,7 +139,7 @@ prepare_x86_64() {
 	sudo unsquashfs airootfs.sfs
 	
 ### Install fonts onto system and cleanup
-	sudo pacman --root squashfs-root --cachedir squashfs-root/var/cache/pacman/pkg  --config squashfs-root/etc/pacman.conf --noconfirm -Syyy terminus-font
+	sudo pacman --root squashfs-root --cachedir squashfs-root/var/cache/pacman/pkg  --config squashfs-root/etc/pacman.conf --noconfirm -Syyy terminus-font f2fs-tools
 	sudo pacman --root squashfs-root --cachedir squashfs-root/var/cache/pacman/pkg  --config squashfs-root/etc/pacman.conf -Sl | awk '/\[installed\]$/ {print $1 "/" $2 "-" $3}' > "$customiso"/arch/pkglist.x86_64.txt
 	sudo pacman --root squashfs-root --cachedir squashfs-root/var/cache/pacman/pkg  --config squashfs-root/etc/pacman.conf --noconfirm -Scc
 	sudo rm -f "$customiso"/arch/x86_64/squashfs-root/var/cache/pacman/pkg/*
@@ -197,7 +197,7 @@ prepare_i686() {
 	sudo unsquashfs airootfs.sfs
 	sudo sed -i 's/\$arch/i686/g' squashfs-root/etc/pacman.d/mirrorlist
 	sudo sed -i 's/auto/i686/' squashfs-root/etc/pacman.conf
-	sudo setarch i686 pacman --root squashfs-root --cachedir squashfs-root/var/cache/pacman/pkg  --config squashfs-root/etc/pacman.conf --noconfirm -Syyy terminus-font
+	sudo setarch i686 pacman --root squashfs-root --cachedir squashfs-root/var/cache/pacman/pkg  --config squashfs-root/etc/pacman.conf --noconfirm -Syyy terminus-font f2fs-tools
 	sudo setarch i686 pacman --root squashfs-root --cachedir squashfs-root/var/cache/pacman/pkg  --config squashfs-root/etc/pacman.conf -Sl | awk '/\[installed\]$/ {print $1 "/" $2 "-" $3}' > "$customiso"/arch/pkglist.i686.txt
 	sudo setarch i686 pacman --root squashfs-root --cachedir squashfs-root/var/cache/pacman/pkg  --config squashfs-root/etc/pacman.conf --noconfirm -Scc
 	sudo rm -f "$customiso"/arch/i686/squashfs-root//var/cache/pacman/pkg/*
