@@ -1,0 +1,45 @@
+#!/bin/bash
+
+ColorOff=$'\e[0m';
+Green=$'\e[0;32m';
+Yellow=$'\e[0;33m';
+Red=$'\e[0;31m';
+inet_dev=$(echo -e "${Yellow}IP Configuration: \n${Green}$(ip addr | grep -w inet | sed "s/inet/${Red}> ${Green}inet/")")
+
+if (ip addr | grep "wlp") then
+	wifi=true
+else
+	wifi=false
+fi
+
+echo -e " $inet_dev \n ${Yellow}Connection check: \n    1.${Red}) ${Green}Connection Test \n    ${Yellow}2.${Red}) ${Green}Connection Speed Test \n    ${Yellow}3.${Red}) ${Green}Connect To Wifi Network"
+echo -n " ${Yellow}Select an option ${Green}[1,2]: "
+read input
+
+case "$input" in
+	1)	echo " ${Yellow}Please wait while testing internet connection..."
+		if ! (ping google.com -W 4 -c 4 &> /dev/null) then
+			echo " ${Red}Fail: ${Yellow}No active internet connection detected"
+		else
+			echo " ${Green}Pass: ${Yellow}Active internet connection detected"
+		fi
+	;;
+	2)	echo -e " ${Yellow}Please wait while testing connection speed. \n This may take a minute..."
+		wget --no-check-certificate --append-output=/tmp/wget.log -O /dev/null "http://speedtest.wdc01.softlayer.com/downloads/test10.zip" &> /dev/null
+		if [ "$?" -gt "0" ]; then
+			echo " ${Red}Error: ${Yellow}No active internet connection found"
+		else
+			sed -i 's/\,/\./' /tmp/wget.log
+			### Define network connection speed variables from data in wget.log
+			connection_speed=$(tail /tmp/wget.log | grep -oP '(?<=\().*(?=\))' | awk '{print $1}')
+			connection_rate=$(tail /tmp/wget.log | grep -oP '(?<=\().*(?=\))' | awk '{print $2}')
+			echo -e " ${Yellow}Connection Speed: ${Green}$connection_speed $connection_rate DOWN"
+		fi
+	;;
+	3)	if "$wifi" ; then
+			wifi-menu
+		else
+			echo " ${Red}Error: ${Yellow}No wifi interface detected"
+		fi
+	;;
+esac

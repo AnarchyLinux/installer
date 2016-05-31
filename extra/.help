@@ -1,26 +1,20 @@
-[0;32m--------------------------------------------------------------------------------[0m
+[0;31m--------------------------------------------------------------------------------[0m
 [0;32m                            Arch Linux Anywhere
 [0;33m  Arch Anywhere contains the resources you need to learn about installing Arch.
 [0;33m  This ISO contains a built in Arch Wiki, as well as an automated installer.
 
-[0;33m  Arch Anywhere provides quick and easy install regardless of experence.
-[0;33m  If you are new to Linux, or an advanced user, this ISO will allow you to
-[0;33m  deploy a working and configured Arch Linux system without much thought at all
-[0;33m  To begin the automated installer simply type at any time and press enter:
-[0;32m  	arch-anywhere
-
-[0;33m  Installing Arch Linux requires an active internet connection.
-[0;33m  You can check the status of your connection with the 'ping' command:
-[0;32m  	ping -c 3 google.com
-
-[0;33m  If using a wifi connection you may connect using the command:[0;32m wifi-menu
-
+[0;33m  To begin the automated installer simply type and press enter:[0;32m arch-anywhere
+[0;33m  You can check the status of your connection with the command:[0;32m inetchk
 [0;33m  If you wish to update your mirrorlist you may do so with:[0;32m fetchmirrors
+[0;33m  View a detailed list of system info with the command:[0;32m sysinfo
 
 [0;33m  If you'd like you can install arch by hand and learn the whole process.
-[0;33m  You can view any official Arch Linux Wiki page by running the command:
-[0;32m  	arch-wiki[0;33m OR:[0;32m arch-wiki  <search args> 
+[0;33m  You can view any Arch Linux Wiki page by running the command:[0;32m arch-wiki
 
-[0;33m  Example:[0;32m  arch-wiki bootloader
-          [0;32m  arch-wiki network configuration
-[0;32m--------------------------------------------------------------------------------[0m
+[0;33m  Example:[0;32m  arch-wiki 
+          [0;32m  arch-wiki beginners guide
+	  [0;32m  arch-wiki bootloader
+
+[0;33m  Any questions, comments, suggestions, or bug reports may be sent to the developer:
+[0;32m  Dylan Schacht (deadhead) - deadhead3492@gmail.com
+[0;31m--------------------------------------------------------------------------------[0m
