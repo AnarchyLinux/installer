@@ -702,7 +702,7 @@ manual_partition() {
 	### Set menu height variable based on the number of listed partitions
 	if [ "$lang_file" == "/usr/share/arch-anywhere/lang/arch-installer-romanian.conf" ] || [ "$lang_file" == "/usr/share/arch-anywhere/lang/arch-installer-portuguese-br.conf" ]; then
 		if [ "$part_count" -lt "6" ]; then
-			height=16
+			height=18
 			menu_height=5
 		elif [ "$part_count" -lt "16" ]; then
 			height=21
