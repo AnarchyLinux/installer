@@ -700,17 +700,30 @@ manual_partition() {
 	part_count=$(lsblk | grep "sd." | wc -l)
 	
 	### Set menu height variable based on the number of listed partitions
-	if [ "$part_count" -lt "6" ]; then
-		height=16
-		menu_height=5
-	elif [ "$part_count" -lt "16" ]; then
-		height=21
-		menu_height=10
+	if [ "$lang_file" == "/usr/share/arch-anywhere/lang/arch-installer-romanian.conf" ] || [ "$lang_file" == "/usr/share/arch-anywhere/lang/arch-installer-portuguese-br.conf" ]; then
+		if [ "$part_count" -lt "6" ]; then
+			height=16
+			menu_height=5
+		elif [ "$part_count" -lt "16" ]; then
+			height=21
+			menu_height=10
+		else
+			height=25
+			menu_height=14
+		fi	
 	else
-		height=25
-		menu_height=14
+		if [ "$part_count" -lt "6" ]; then
+			height=16
+			menu_height=5
+		elif [ "$part_count" -lt "16" ]; then
+			height=21
+			menu_height=10
+		else
+			height=25
+			menu_height=14
+		fi
 	fi
-	
+
 	### Create manual partition menu
 	### Set int variable to 1
 	### Set count to total number of devices / partitions
