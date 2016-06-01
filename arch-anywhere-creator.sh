@@ -12,7 +12,7 @@ export customiso=~/arch-linux-anywhere/customiso
 export mntdir=~/arch-linux-anywhere/mnt
 
 # Link to the iso used to create Arch Anywhere
-export archiso_link="http://arch.localmsp.org/arch/iso/2016.05.01/archlinux-2016.05.01-dual.iso"
+export archiso_link="http://arch.localmsp.org/arch/iso/2016.06.01/archlinux-2016.06.01-dual.iso"
 
 init() {
 	
