@@ -13,7 +13,7 @@
 [0;31m |			    	                                              |
 [0;31m |[0;33m 	1.[0;31m) [0;32mArch Anywhere Installer - arch-anywhere			      [0;31m|
 [0;31m |[0;33m 	2.[0;31m) [0;32mArch Linux Wiki	    - arch-wiki				      [0;31m|
-[0;31m |[0;33m 	3.[0;31m) [0;32mConnection Test	    - inetchk				      [0;31m|
+[0;31m |[0;33m 	3.[0;31m) [0;32mConnection Test	    - iptest				      [0;31m|
 [0;31m |[0;33m 	4.[0;31m) [0;32mSystem Information      - sysinfo				      [0;31m|
 [0;31m |[0;33m 	5.[0;31m) [0;32mUpdate Mirrorlist       - fetchmirrors		      	      [0;31m|
 [0;31m |[0;33m 	6.[0;31m) [0;32mReboot System           - reboot			      	      [0;31m|

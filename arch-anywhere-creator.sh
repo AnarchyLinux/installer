@@ -155,12 +155,12 @@ prepare_x86_64() {
 	sudo cp "$aa"/extra/arch-wiki "$customiso"/arch/x86_64/squashfs-root/usr/bin/arch-wiki
 	sudo cp "$aa"/extra/fetchmirrors "$customiso"/arch/x86_64/squashfs-root/usr/bin/fetchmirrors
 	sudo cp "$aa"/extra/sysinfo "$customiso"/arch/x86_64/squashfs-root/usr/bin/sysinfo
-	sudo cp "$aa"/extra/inetchk "$customiso"/arch/x86_64/squashfs-root/usr/bin/inetchk
+	sudo cp "$aa"/extra/iptest "$customiso"/arch/x86_64/squashfs-root/usr/bin/iptest
 	sudo chmod +x "$customiso"/arch/x86_64/squashfs-root/usr/bin/arch-anywhere
 	sudo chmod +x "$customiso"/arch/x86_64/squashfs-root/usr/bin/arch-wiki
 	sudo chmod +x "$customiso"/arch/x86_64/squashfs-root/usr/bin/fetchmirrors
 	sudo chmod +x "$customiso"/arch/x86_64/squashfs-root/usr/bin/sysinfo
-	sudo chmod +x "$customiso"/arch/x86_64/squashfs-root/usr/bin/inetchk
+	sudo chmod +x "$customiso"/arch/x86_64/squashfs-root/usr/bin/iptest
 
 ### Create arch-anywhere directory and lang directory copy over all lang files
 	sudo mkdir "$customiso"/arch/x86_64/squashfs-root/usr/share/arch-anywhere
@@ -222,8 +222,8 @@ prepare_i686() {
 	sudo chmod +x "$customiso"/arch/i686/squashfs-root/usr/bin/fetchmirrors
 	sudo cp "$aa"/extra/sysinfo "$customiso"/arch/i686/squashfs-root/usr/bin/sysinfo
 	sudo chmod +x "$customiso"/arch/i686/squashfs-root/usr/bin/sysinfo
-	sudo cp "$aa"/extra/inetchk "$customiso"/arch/i686/squashfs-root/usr/bin/inetchk
-	sudo chmod +x "$customiso"/arch/i686/squashfs-root/usr/bin/inetchk
+	sudo cp "$aa"/extra/iptest "$customiso"/arch/i686/squashfs-root/usr/bin/iptest
+	sudo chmod +x "$customiso"/arch/i686/squashfs-root/usr/bin/iptest
 	sudo cp "$aa"/extra/.zshrc "$customiso"/arch/i686/squashfs-root/root/
 	sudo cp "$aa"/extra/.help "$customiso"/arch/i686/squashfs-root/root/
 	sudo cp "$aa"/extra/.bashrc "$customiso"/arch/i686/squashfs-root/usr/share/arch-anywhere
