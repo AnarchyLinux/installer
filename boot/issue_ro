@@ -8,16 +8,16 @@
   [0;32m/#.--   --.#\[0;33m   O simplă, elegantă, și ușoară distribuție linux.
  [0;32m/`           `\[0m
 [0;31m--------------------------------------------------------------------------------[0m
-[0;31m |[0;33m Selectați o opțiune sau tastați '[0;32march-anywhere[0;33m' pentru a începe instalarea automată.     [0;31m|
+[0;31m |[0;33m Selectați o opțiune sau tastați '[0;32march-anywhere[0;33m' pentru a începe instalarea.     [0;31m|
 [0;31m |[0;33m Opțiuni:                                                                   [0;31m|
 [0;31m |			    	                                              |
 [0;31m |[0;33m 	1.[0;31m) [0;32mInstalator Arch Anywhere - arch-anywhere			      [0;31m|
 [0;31m |[0;33m 	2.[0;31m) [0;32mArch Linux Wiki	    - arch-wiki				      [0;31m|
-[0;31m |[0;33m 	3.[0;31m) [0;32mTestare conexiune           - iptest				      [0;31m|
+[0;31m |[0;33m 	3.[0;31m) [0;32mTestare conexiune           - iptest			      [0;31m|
 [0;31m |[0;33m 	4.[0;31m) [0;32mInformații sistem      - sysinfo				      [0;31m|
-[0;31m |[0;33m 	5.[0;31m) [0;32mActualizare listă mirror       - fetchmirrors		      	      [0;31m|
+[0;31m |[0;33m 	5.[0;31m) [0;32mActualizare listă mirror       - fetchmirrors	      	      [0;31m|
 [0;31m |[0;33m 	6.[0;31m) [0;32mRepornire sistem           - reboot			      	      [0;31m|
 [0;31m |			    	                                              |
-[0;33m [0;31m|[0;33m Pentru mai multe informații pe Arch Anywhere tastați:[0;32m help				      [0;31m|
-[0;33m [0;31m|[0;33m Pentru a afișa acest ecran oricând tastați:[0;32m start[0m		                    [0;31m|
+[0;33m [0;31m|[0;33m Pentru mai multe informații pe Arch Anywhere tastați:[0;32m help		      [0;31m|
+[0;33m [0;31m|[0;33m Pentru a afișa acest ecran oricând tastați:[0;32m start[0m	                    [0;31m|
 [0;31m--------------------------------------------------------------------------------[0m
