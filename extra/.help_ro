@@ -5,7 +5,7 @@
 
 [0;33m  Pentru a porni instalarea automată simplu scrieți și apăsați Enter:[0;32m arch-anywhere
 [0;33m  Puteți verifica starea conexiunii cu comanda:[0;32m iptest
-[0;33m  Dacă doriți să actualizați lista mirror puteți face acet lucru cu:[0;32m fetchmirrors
+[0;33m  Dacă doriți să actualizați lista mirror puteți face acest lucru cu:[0;32m fetchmirrors
 [0;33m  Vizualizați o listă detaliată cu informații din sistem cu comanda:[0;32m sysinfo
 
 [0;33m  Dacă doriți puteți instala arch manual și să învățați întregul proces.
