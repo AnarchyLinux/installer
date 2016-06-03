@@ -2019,10 +2019,11 @@ install_software() {
 						"handbrake"				"$media0" OFF \
 						"mplayer"				"$media1" OFF \
 						"pitivi"				"$media2" OFF \
-						"simplescreenrecorder"	"$media3" OFF \
+						"simplescreenrecorder"	                "$media3" OFF \
 						"smplayer"				"$media4" OFF \
 						"totem"					"$media5" OFF \
-						"vlc"         	   		"$media6" OFF 3>&1 1>&2 2>&3)
+						"vlc"					"$media6" OFF \
+						"mpv"         	   		        "$media7" OFF 3>&1 1>&2 2>&3)
 					if [ "$?" -gt "0" ]; then
 						err=true
 					fi
