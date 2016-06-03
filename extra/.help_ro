@@ -1,7 +1,8 @@
 [0;31m--------------------------------------------------------------------------------[0m
 [0;32m                            Arch Linux Anywhere
 [0;33m  Arch Anywhere contains the resources you need to learn about installing Arch.
-[0;33m  This ISO contains a built in Arch Wiki, as well as an automated installer.
+[0;33m  Arch Anywhere conține resursele necesare contains the resources you need to learn about installing Arch.
+[0;33m  Această imagine ISO conține un Arch Wiki integrat, precum și un program de instalare automată.
 
 [0;33m  To begin the automated installer simply type and press enter:[0;32m arch-anywhere
 [0;33m  You can check the status of your connection with the command:[0;32m iptest
