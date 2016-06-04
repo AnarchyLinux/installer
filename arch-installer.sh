@@ -1643,7 +1643,7 @@ graphics() {
 		"fluxbox"       "$de11" \
 		"i3"            "$de10" \
 		"openbox"       "$de8" \
-		"xmonad"		"$de15"  3>&1 1>&2 2>&3)
+		"xmonad"		"$de16"  3>&1 1>&2 2>&3)
 
 
 	### If user selects cancel and didn't enter from menu ask to confirm not installing desktop
