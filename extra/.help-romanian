@@ -1,0 +1,20 @@
+[0;31m--------------------------------------------------------------------------------[0m
+[0;32m                            Arch Linux Anywhere
+[0;33m  Arch Anywhere conține resursele necesare pentru a învăța despre instalarea Arch.
+[0;33m  Această imagine ISO conține un Arch Wiki integrat, precum și un program de instalare automată.
+
+[0;33m  Pentru a porni instalarea automată simplu scrieți și apăsați Enter:[0;32m arch-anywhere
+[0;33m  Puteți verifica starea conexiunii cu comanda:[0;32m iptest
+[0;33m  Dacă doriți să actualizați lista mirror puteți face acest lucru cu:[0;32m fetchmirrors
+[0;33m  Vizualizați o listă detaliată cu informații din sistem cu comanda:[0;32m sysinfo
+
+[0;33m  Dacă doriți puteți instala arch manual și să învățați întregul proces.
+[0;33m  Puteți vizualiza orice pagină Arch Linux Wiki rulând comanda:[0;32m arch-wiki
+
+[0;33m  Exemplu:[0;32m  arch-wiki 
+          [0;32m  arch-wiki beginners guide
+	  [0;32m  arch-wiki bootloader
+
+[0;33m  Orice întrebări, comentarii, sugestii sau bug-uri pot fi trimise la dezvoltator:
+[0;32m  Dylan Schacht (deadhead) - deadhead3492@gmail.com
+[0;31m--------------------------------------------------------------------------------[0m
