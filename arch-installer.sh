@@ -1036,11 +1036,14 @@ manual_partition() {
 			if (whiptail --title "$title" --yes-button "$write" --no-button "$cancel" --defaultno --yesno "$write_confirm_msg \n\n $final_part \n\n $write_confirm" "$height" 50) then
 				if (efivar -l &>/dev/null); then
 					if (fdisk -l | grep "EFI" &>/dev/null); then
-						while (true)
-						  do
+						if [ $(fdisk -l | grep "EFI" | wc -l &>/dev/null) -gt "2" ]; then
+							efint=1
 							while (true)
 							  do
-								efint=1
+								if [ $(fdisk -l | grep "EFI" | awk "NR==$efint {print \$1}" | wc -l) -eq "0" ]; then
+									whiptail --title "$title" --ok-button "$ok" --msgbox "$efi_err_msg1" 10 60
+									manual_partition
+								fi
 								efiboot=$(fdisk -l | grep "EFI" | awk "NR==$efint {print \$1}")
 								efimnt=$(df -T | grep "$efiboot" | awk '{print $7}')
 								if [ -n "$efimnt" ]; then
@@ -1049,25 +1052,34 @@ manual_partition() {
 									efint=$((efint+1))
 								fi
 							done
-							source "$lang_file"
-							if (whiptail --title "$title" --yes-button "$yes" --no-button "$no" --yesno "$efi_var" 11 60) then	
-								if [ $(df -T | grep "$efiboot" | awk '{print $2}') != "vfat" ]; then
-									if (whiptail --title "$title" --yes-button "$yes" --no-button "$no" --yesno "$vfat_var" 11 60) then
-											(umount -R "$efimnt"
-											mkfs.vfat -F32 "$efiboot"
-											mount "$efiboot" "$efimnt") &> /dev/null &
-											pid=$! pri=0.2 msg="\n$efi_load1" load
-											UEFI=true
-											break
+						else
+							efiboot=$(fdisk -l | grep "EFI" | awk '{print $1}')
+							if ! (df -T | grep "$efiboot" | awk '{print $7}'); then
+								source "$lang_file"
+								if (whiptail --title "$title" --yes-button "$yes" --no-button "$no" --yesno "$efi_mnt_var" 11 60) then
+									if ! (mountpoint /boot); then
+										mkdir "$ARCH"/boot &> /dev/null
+										mount "$efiboot" "$ARCH"/boot
+									else
+										whiptail --title "$title" --ok-button "$ok" --msgbox "$efi_err_msg" 10 60
+										manual_partition
 									fi
-								else
-									UEFI=true
-									break
 								fi
-							else
-								break
 							fi
-						done
+						fi
+												
+						source "$lang_file"
+						if [ $(df -T | grep "$efiboot" | awk '{print $2}') != "vfat" ]; then
+							if (whiptail --title "$title" --yes-button "$yes" --no-button "$no" --yesno "$vfat_var" 11 60) then
+									(umount -R "$efimnt"
+									mkfs.vfat -F32 "$efiboot"
+									mount "$efiboot" "$efimnt") &> /dev/null &
+									pid=$! pri=0.2 msg="\n$efi_load1" load
+									UEFI=true
+							fi
+						else
+							UEFI=true
+						fi
 					fi
 				fi
 
@@ -1630,8 +1642,10 @@ graphics() {
 		"enlightenment" "$de7" \
 		"fluxbox"       "$de11" \
 		"i3"            "$de10" \
-		"openbox"       "$de8" 3>&1 1>&2 2>&3)
-	
+		"openbox"       "$de8" \
+		"xmonad"		"$de15"  3>&1 1>&2 2>&3)
+
+
 	### If user selects cancel and didn't enter from menu ask to confirm not installing desktop
 	### Else user canceled selecting desktop return to reboot menu
 	if [ "$?" -gt "0" ]; then 
@@ -1688,6 +1702,11 @@ graphics() {
 					fi
  					start_term="exec startdde"
  		;;
+ 		"xmonad")	if (whiptail --title "$title" --yes-button "$yes" --no-button "$no" --yesno "$extra_msg5" 10 60) then 
+                        DE="xmonad xmonad-contrib"
+                    fi
+                    start_term="exec xmonad"
+		;;	
 		"cinnamon") start_term="exec cinnamon-session" 
 		;;
 		"lxde") 	start_term="exec startlxde" 
@@ -2018,12 +2037,12 @@ install_software() {
 					software=$(whiptail --title "$title" --ok-button "$ok" --cancel-button "$cancel" --checklist "$software_msg1" 17 63 7 \
 						"handbrake"				"$media0" OFF \
 						"mplayer"				"$media1" OFF \
+						"mpv"					"$media7" OFF \
 						"pitivi"				"$media2" OFF \
-						"simplescreenrecorder"	                "$media3" OFF \
+						"simplescreenrecorder"	"$media3" OFF \
 						"smplayer"				"$media4" OFF \
 						"totem"					"$media5" OFF \
-						"vlc"					"$media6" OFF \
-						"mpv"         	   		        "$media7" OFF 3>&1 1>&2 2>&3)
+						"vlc"         	   		"$media6" OFF 3>&1 1>&2 2>&3)
 					if [ "$?" -gt "0" ]; then
 						err=true
 					fi
