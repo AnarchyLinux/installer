@@ -75,9 +75,7 @@ check_connection() {
 	fi
 	
 	op_title="$connection_op_msg"
-#	(wget --no-check-certificate --append-output=/tmp/wget.log -O /dev/null "$test_link"
-#	echo "$?" > /tmp/ex_status.var ; sleep 0.5) &> /dev/null &
-	(wget --no-check-certificate --append-output=/tmp/wget.log -O /dev/null "ftp://192.168.1.124/dh-repo/i686/gettext-0.19.7-1-i686.pkg.tar.xz"
+	(wget --no-check-certificate --append-output=/tmp/wget.log -O /dev/null "$test_link"
 	echo "$?" > /tmp/ex_status.var ; sleep 0.5) &> /dev/null &
 	pid=$! pri=0.3 msg="\n$connection_load \n \Z1> \Z2wget -O /dev/null test_link/test1Mb.db\Zn" load
 	sed -i 's/\,/\./' /tmp/wget.log
