@@ -509,8 +509,8 @@ auto_part() {
 	if "$UEFI" ; then
 		mkfs.vfat -F32 /dev/"$BOOT" &> /dev/null &
 		pid=$! pri=0.1 msg="\n$efi_load1 \n \Z1> \Z2mkfs.vfat -F32 /dev/$BOOT\Zn" load
-	
-	### Else create new boot filesystem using selected filesystem type
+		esp_part="/dev/$BOOT"
+		esp_mnt=/boot
 	else
 		mkfs.ext4 /dev/"$BOOT" &> /dev/null &
 		pid=$! pri=0.1 msg="\n$boot_load \n \Z1> \Z2mkfs.ext4 /dev/$BOOT\Zn" load
@@ -553,17 +553,17 @@ auto_encrypt() {
     	  do
     		
         	### Set password for drive encryption and check if it matches
-    		input=$(dialog --nocancel --clear --passwordbox "$encrypt_var1" 12 55 --stdout)
-    		input_chk=$(dialog --nocancel --clear --passwordbox "$encrypt_var2" 12 55 --stdout)
+    		input=$(dialog --nocancel --clear --insecure --passwordbox "$encrypt_var1" 12 55 --stdout)
+    		input_chk=$(dialog --nocancel --clear --insecure --passwordbox "$encrypt_var2" 12 55 --stdout)
 
         	### If no password entered display error message and try again
     	    if [ -z "$input" ]; then
-       			dialog --ok-button "$ok" --msgbox "$passwd_msg0" 10 60
+       			dialog --ok-button "$ok" --msgbox "\n$passwd_msg0" 10 60
 		 		input_chk=default
 		 	
    			### Else if passwords not equal display error and try again
 		 	elif [ "$input" != "$input_chk" ]; then
-          		dialog --ok-button "$ok" --msgbox "$passwd_msg1" 10 60
+          		dialog --ok-button "$ok" --msgbox "\n$passwd_msg1" 10 60
          	fi
     	 
 	    ### End password check loop
@@ -626,7 +626,7 @@ auto_encrypt() {
 	(printf "$input" | cryptsetup luksFormat -c aes-xts-plain64 -s 512 /dev/lvm/lvroot -
 	printf "$input" | cryptsetup open --type luks /dev/lvm/lvroot root -) &> /dev/null &
 	pid=$! pri=0.2 msg="\n$encrypt_load \n \Z1> \Z2cryptsetup luksFormat -c aes-xts-plain64 -s 512 /dev/lvm/lvroot\Zn" load
-	unset input ; input_chk=default
+	unset input input_chk ; input_chk=default
 
 	### Create and mount root filesystem on new encrypted volume
 	wipefs -a /dev/mapper/root &> /dev/null
@@ -644,8 +644,8 @@ auto_encrypt() {
 	if "$UEFI" ; then
 		mkfs.vfat -F32 /dev/"$BOOT" &> /dev/null &
 		pid=$! pri=0.2 msg="\n$efi_load1 \n \Z1> \Z2mkfs.vfat -F32 /dev/$BOOT\Zn" load
-	
-	### Else create new boot filesystem using selected filesystem type
+		esp_part="/dev/$BOOT"
+		esp_mnt=/boot
 	else
 		wipefs -a /dev/"$BOOT" &> /dev/null
 		mkfs.ext4 /dev/"$BOOT" &> /dev/null &
@@ -1040,13 +1040,13 @@ part_class() {
 								efint=1
 								while (true)
 								  do
-									if [ "$(fdisk -l | grep "EFI" | awk "NR==$efint {print \$1}" | wc -l)" -eq "0" ]; then
+									if [ "$(fdisk -l | grep "EFI" | awk "NR==$efint {print \$1}")" == "" ]; then
 										dialog --ok-button "$ok" --msgbox "$efi_err_msg1" 10 60
 										part_menu
 									fi
 									esp_part=$(fdisk -l | grep "EFI" | awk "NR==$efint {print \$1}")
 									esp_mnt=$(df -T | grep "$esp_part" | awk '{print $7}')
-									if (df -T | grep "$efiboot" &> /dev/null); then
+									if (df -T | grep "$esp_part" &> /dev/null); then
 										break
 									else
 										efint=$((efint+1))
@@ -1057,7 +1057,7 @@ part_class() {
 								if ! (df -T | grep "$esp_part" &> /dev/null); then
 									source "$lang_file"
 									if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$efi_mnt_var" 11 60) then
-										if ! (mountpoint /boot &> /dev/null); then
+										if ! (mountpoint "$ARCH"/boot &> /dev/null); then
 											mkdir "$ARCH"/boot &> /dev/null
 											mount "$esp_part" "$ARCH"/boot
 										else
@@ -1091,13 +1091,13 @@ part_class() {
 				fi
 
 				if "$enable_f2fs" ; then
-					if ! (lsblk | grep "$ARCH/boot" &> /dev/null) then
+					if ! (lsblk | grep "$ARCH/boot\|$ARCH/boot/efi" &> /dev/null) then
 						FS="f2fs" source "$lang_file"
 						dialog --ok-button "$ok" --msgbox "\n$fs_err_var" 10 60
 						part_menu
 					fi
 				elif "$enable_btrfs" ; then
-					if ! (lsblk | grep "$ARCH/boot" &> /dev/null) then
+					if ! (lsblk | grep "$ARCH/boot\|$ARCH/boot/efi" &> /dev/null) then
 						FS="btrfs" source "$lang_file"
 						dialog --ok-button "$ok" --msgbox "\n$fs_err_var" 10 60
 						part_menu
@@ -1376,13 +1376,7 @@ install_base() {
 				fi
 			fi
 		fi
-		
-		if [ -z "$esp_mnt" ]; then
-			esp_mnt="/boot"
-		else
-			esp_mnt=$(<<<"$esp_mnt" sed "s!$ARCH!!")
-		fi
-
+			
 		if "$enable_nm" ; then
 			case "$net_util" in
 				networkmanager)	arch-chroot "$ARCH" systemctl enable NetworkManager.service &>/dev/null
@@ -1398,7 +1392,7 @@ install_base() {
     	    arch-chroot "$ARCH" systemctl enable bluetooth &>/dev/null &
     	    pid=$! pri=0.1 msg="\n$btenable_msg \n \Z1> \Z2systemctl enable bluetooth\Zn" load
     	fi
-		
+	
 		case "$bootloader" in
 			grub) grub_config ;;
 			syslinux) syslinux_config ;;
@@ -1446,6 +1440,7 @@ syslinux_config() {
 	if "$UEFI" ; then
 		esp_part_int=$(<<<"$esp_part" grep -o "[0-9]")
 		esp_part=$(<<<"$esp_part" grep -o "sd[a-z]")
+		esp_mnt=$(<<<$esp_mnt sed "s!$ARCH!!")
 		(mkdir -p ${ARCH}${esp_mnt}/EFI/syslinux
 		cp -r "$ARCH"/usr/lib/syslinux/efi64/* ${ARCH}${esp_mnt}/EFI/syslinux/
 		cp /usr/share/arch-anywhere/syslinux/syslinux_efi.cfg ${ARCH}${esp_mnt}/EFI/syslinux/syslinux.cfg
@@ -1561,21 +1556,21 @@ set_hostname() {
 	op_title="$passwd_op_msg"
 	while [ "$input" != "$input_chk" ]
 	  do
-		input=$(dialog --nocancel --clear --passwordbox "$root_passwd_msg0" 11 55 --stdout)
-    	input_chk=$(dialog --nocancel --clear --passwordbox "$root_passwd_msg1" 11 55 --stdout)
+		input=$(dialog --nocancel --clear --insecure --passwordbox "$root_passwd_msg0" 11 55 --stdout)
+    	input_chk=$(dialog --nocancel --clear --insecure --passwordbox "$root_passwd_msg1" 11 55 --stdout)
 	 	
 	 	if [ -z "$input" ]; then
-	 		dialog --ok-button "$ok" --msgbox "$passwd_msg0" 10 55
+	 		dialog --ok-button "$ok" --msgbox "\n$passwd_msg0" 10 55
 	 		input_chk=default
 	 	
 	 	elif [ "$input" != "$input_chk" ]; then
-	 	     dialog --ok-button "$ok" --msgbox "$passwd_msg1" 10 55
+	 	     dialog --ok-button "$ok" --msgbox "\n$passwd_msg1" 10 55
 	 	fi
 	done
 
 	(printf "$input\n$input" | arch-chroot "$ARCH" passwd) &> /dev/null &
 	pid=$! pri=0.1 msg="$wait_load \n \Z1> \Z2passwd root\Zn" load
-	unset input ; input_chk=default
+	unset input input_chk ; input_chk=default
 
 	hostname_set=true
 	add_user
@@ -1617,20 +1612,20 @@ add_user() {
 	op_title="$passwd_op_msg"
 	while [ "$input" != "$input_chk" ]
 	  do
-		input=$(dialog --nocancel --clear --passwordbox "$user_var0" 11 55 --stdout)
-    	input_chk=$(dialog --nocancel --clear --passwordbox "$user_var1" 11 55 --stdout)
+		input=$(dialog --nocancel --clear --insecure --passwordbox "$user_var0" 11 55 --stdout)
+    	input_chk=$(dialog --nocancel --clear --insecure --passwordbox "$user_var1" 11 55 --stdout)
 		 
 		if [ -z "$input" ]; then
-			dialog --ok-button "$ok" --msgbox "$passwd_msg0" 10 55
+			dialog --ok-button "$ok" --msgbox "\n$passwd_msg0" 10 55
 			input_chk=default
 		elif [ "$input" != "$input_chk" ]; then
-			dialog --ok-button "$ok" --msgbox "$passwd_msg1" 10 55
+			dialog --ok-button "$ok" --msgbox "\n$passwd_msg1" 10 55
 		fi
 	done
 
 	(printf "$input\n$input" | arch-chroot "$ARCH" passwd "$user") &> /dev/null &
 	pid=$! pri=0.1 msg="$wait_load \n \Z1> \Z2passwd $user\Zn" load
-	unset input ; input_chk=default
+	unset input input_chk ; input_chk=default
 	op_title="$user_op_msg"
 	if [ -n "$sudo_user" ]; then
 		if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$sudo_var" 10 60) then
@@ -2126,7 +2121,7 @@ install_software() {
 				# Check if user selected any additional software
 					if [ -z "$final_software" ]; then
 					# If no software selected ask to confirm
-						if (dialog --yes-button "$yes" --no-button "$no" --defaultno --yesno "$software_warn_msg" 10 60) then
+						if (dialog --yes-button "$yes" --no-button "$no" --defaultno --yesno "\n$software_warn_msg" 10 60) then
 							software_selected=true
 							err=true
 						fi
@@ -2207,12 +2202,15 @@ install_software() {
 		err=false
 	fi
 	
-	if [ -f "$ARCH"/var/lib/pacman/db.lck ]; then
-		rm "$ARCH"/var/lib/pacman/db.lck &> /dev/null
-	fi
+	if ! "$pac_update" ; then
+		if [ -f "$ARCH"/var/lib/pacman/db.lck ]; then
+			rm "$ARCH"/var/lib/pacman/db.lck &> /dev/null
+		fi
 
-	arch-chroot "$ARCH" pacman -Sy &> /dev/null &
-	pid=$! pri=0.8 msg="\n$pacman_load \n \Z1> \Z2pacman -Sy\Zn" load
+		arch-chroot "$ARCH" pacman -Sy &> /dev/null &
+		pid=$! pri=0.8 msg="\n$pacman_load \n \Z1> \Z2pacman -Sy\Zn" load
+		pac_update=true
+	fi
 
 	software_selected=false
 	reboot_system
@@ -2231,6 +2229,7 @@ reboot_system() {
 
 		reboot_menu=$(dialog --nocancel --ok-button "$ok" --menu "$complete_msg" 15 60 6 \
 			"$reboot0" "-" \
+			"$reboot6" "-" \
 			"$reboot2" "-" \
 			"$reboot1" "-" \
 			"$reboot3" "-" \
@@ -2240,6 +2239,9 @@ reboot_system() {
 		case "$reboot_menu" in
 			"$reboot0")		umount -R "$ARCH"
 							reset ; reboot ; exit
+			;;
+			"$reboot6")		umount -R "$ARCH"
+							reset ; poweroff ; exit
 			;;
 			"$reboot1")		umount -R "$ARCH"
 							reset ; exit
