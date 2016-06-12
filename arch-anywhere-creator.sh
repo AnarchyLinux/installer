@@ -1,10 +1,10 @@
 #!/bin/bash
 
 # Set the version here
-export version="arch-anywhere-2.2.1-dual.iso"
+export version="arch-anywhere-2.2.2-dual.iso"
 
 # Set the ISO label here
-export iso_label="ARCH_ANYWHERE_2.2.1"
+export iso_label="ARCH_ANYWHERE_2.2.2"
 
 # Location variables all directories must exist
 export aa=~/arch-linux-anywhere
@@ -12,7 +12,7 @@ export customiso=~/arch-linux-anywhere/customiso
 export mntdir=~/arch-linux-anywhere/mnt
 
 # Link to the iso used to create Arch Anywhere
-export archiso_link="http://arch.localmsp.org/arch/iso/2016.05.01/archlinux-2016.05.01-dual.iso"
+export archiso_link="http://arch.localmsp.org/arch/iso/2016.06.01/archlinux-2016.06.01-dual.iso"
 
 init() {
 	
@@ -163,15 +163,13 @@ prepare_x86_64() {
 	sudo chmod +x "$customiso"/arch/x86_64/squashfs-root/usr/bin/iptest
 
 ### Create arch-anywhere directory and lang directory copy over all lang files
-	sudo mkdir "$customiso"/arch/x86_64/squashfs-root/usr/share/arch-anywhere
-	sudo mkdir "$customiso"/arch/x86_64/squashfs-root/usr/share/arch-anywhere/{lang,pkg}
+	sudo mkdir -p "$customiso"/arch/x86_64/squashfs-root/usr/share/arch-anywhere/{lang,pkg}
 	sudo cp "$aa"/lang/* "$customiso"/arch/x86_64/squashfs-root/usr/share/arch-anywhere/lang
 	sudo cp /tmp/fetchmirrors/*.pkg.tar.xz "$customiso"/arch/x86_64/squashfs-root/usr/share/arch-anywhere/pkg
 	sudo cp /tmp/arch-wiki-cli/*.pkg.tar.xz "$customiso"/arch/x86_64/squashfs-root/usr/share/arch-anywhere/pkg
 
 ### Copy over extra files (dot files, desktop configurations, help file, issue file, hostname file)
-	sudo cp "$aa"/extra/.zshrc "$customiso"/arch/x86_64/squashfs-root/root/
-	sudo cp "$aa"/extra/.help "$customiso"/arch/x86_64/squashfs-root/root/
+	sudo cp "$aa"/extra/{.zshrc,.help,.dialogrc} "$customiso"/arch/x86_64/squashfs-root/root/
 	sudo cp "$aa"/extra/.bashrc "$customiso"/arch/x86_64/squashfs-root/usr/share/arch-anywhere
 	sudo cp "$aa"/extra/.zshrc-sys "$customiso"/arch/x86_64/squashfs-root/usr/share/arch-anywhere/.zshrc
 	sudo cp "$aa"/extra/.bashrc-root "$customiso"/arch/x86_64/squashfs-root/usr/share/arch-anywhere
@@ -180,6 +178,8 @@ prepare_x86_64() {
 	sudo cp -r "$aa"/extra/desktop "$customiso"/arch/x86_64/squashfs-root/usr/share/arch-anywhere/
 	sudo cp "$aa"/boot/issue "$customiso"/arch/x86_64/squashfs-root/etc/
 	sudo cp "$aa"/boot/hostname "$customiso"/arch/x86_64/squashfs-root/etc/
+	sudo cp -r "$aa"/boot/loader/syslinux "$customiso"/arch/x86_64/squashfs-root/usr/share/arch-anywhere/
+	sudo cp "$aa"/boot/splash.png "$customiso"/arch/x86_64/squashfs-root/usr/share/arch-anywhere/syslinux
 	
 ### cd back into root system directory, remove old system
 	cd "$customiso"/arch/x86_64
@@ -224,14 +224,15 @@ prepare_i686() {
 	sudo chmod +x "$customiso"/arch/i686/squashfs-root/usr/bin/sysinfo
 	sudo cp "$aa"/extra/iptest "$customiso"/arch/i686/squashfs-root/usr/bin/iptest
 	sudo chmod +x "$customiso"/arch/i686/squashfs-root/usr/bin/iptest
-	sudo cp "$aa"/extra/.zshrc "$customiso"/arch/i686/squashfs-root/root/
-	sudo cp "$aa"/extra/.help "$customiso"/arch/i686/squashfs-root/root/
+	sudo cp "$aa"/extra/{.zshrc,.help,.dialogrc} "$customiso"/arch/i686/squashfs-root/root/
 	sudo cp "$aa"/extra/.bashrc "$customiso"/arch/i686/squashfs-root/usr/share/arch-anywhere
 	sudo cp "$aa"/extra/.zshrc "$customiso"/arch/i686/squashfs-root/usr/share/arch-anywhere
 	sudo cp "$aa"/extra/.bashrc-root "$customiso"/arch/i686/squashfs-root/usr/share/arch-anywhere
 	sudo cp -r "$aa"/extra/desktop "$customiso"/arch/i686/squashfs-root/usr/share/arch-anywhere/
 	sudo cp "$aa"/boot/issue "$customiso"/arch/i686/squashfs-root/etc/
 	sudo cp "$aa"/boot/hostname "$customiso"/arch/i686/squashfs-root/etc/
+	sudo cp -r "$aa"/boot/loader/syslinux "$customiso"/arch/i686/squashfs-root/usr/share/arch-anywhere/
+	sudo cp "$aa"/boot/splash.png "$customiso"/arch/i686/squashfs-root/usr/share/arch-anywhere/syslinux
 	cd "$customiso"/arch/i686
 	rm airootfs.sfs
 	echo "Recreating i686..."
@@ -246,18 +247,18 @@ configure_boot() {
 	
 	sudo mkdir "$customiso"/EFI/archiso/mnt
 	sudo mount -o loop "$customiso"/EFI/archiso/efiboot.img "$customiso"/EFI/archiso/mnt
-	sed -i "s/archisolabel=.*/archisolabel=$iso_label/" "$aa"/boot/archiso-x86_64.CD.conf
-	sed -i "s/archisolabel=.*/archisolabel=$iso_label/" "$aa"/boot/archiso-x86_64.conf
-	sed -i "s/archisolabel=.*/archisolabel=$iso_label/" "$aa"/boot/archiso_sys64.cfg 
-	sed -i "s/archisolabel=.*/archisolabel=$iso_label/" "$aa"/boot/archiso_sys32.cfg
-	sudo cp "$aa"/boot/archiso-x86_64.CD.conf "$customiso"/EFI/archiso/mnt/loader/entries/archiso-x86_64.conf
+	sed -i "s/archisolabel=.*/archisolabel=$iso_label/" "$aa"/boot/iso/archiso-x86_64.CD.conf
+	sed -i "s/archisolabel=.*/archisolabel=$iso_label/" "$aa"/boot/iso/archiso-x86_64.conf
+	sed -i "s/archisolabel=.*/archisolabel=$iso_label/" "$aa"/boot/iso/archiso_sys64.cfg 
+	sed -i "s/archisolabel=.*/archisolabel=$iso_label/" "$aa"/boot/iso/archiso_sys32.cfg
+	sudo cp "$aa"/boot/iso/archiso-x86_64.CD.conf "$customiso"/EFI/archiso/mnt/loader/entries/archiso-x86_64.conf
 	sudo umount "$customiso"/EFI/archiso/mnt
 	sudo rmdir "$customiso"/EFI/archiso/mnt
-	cp "$aa"/boot/archiso-x86_64.conf "$customiso"/loader/entries/
+	cp "$aa"/boot/iso/archiso-x86_64.conf "$customiso"/loader/entries/
 	cp "$aa"/boot/splash.png "$customiso"/arch/boot/syslinux
-	cp "$aa"/boot/archiso_head.cfg "$customiso"/arch/boot/syslinux
-	cp "$aa"/boot/archiso_sys64.cfg "$customiso"/arch/boot/syslinux
-	cp "$aa"/boot/archiso_sys32.cfg "$customiso"/arch/boot/syslinux
+	cp "$aa"/boot/iso/archiso_head.cfg "$customiso"/arch/boot/syslinux
+	cp "$aa"/boot/iso/archiso_sys64.cfg "$customiso"/arch/boot/syslinux
+	cp "$aa"/boot/iso/archiso_sys32.cfg "$customiso"/arch/boot/syslinux
 	create_iso
 
 }
