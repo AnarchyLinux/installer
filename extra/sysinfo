@@ -17,12 +17,12 @@ fi
 mem_total=$(free -m | awk 'NR==2 {print $2}')
 mem_used=$(free -m | awk 'NR==2 {print $3}')
 gpu_type=$(lspci | grep VGA | cut -c 36- | awk 'NR==1')
-block_dev=$(echo -e "${Yellow}Block Devices: \n${Green}$(lsblk | grep "sd." | awk '{print "'${Red}'> '${Green}'"$1" '${Yellow}'Type: '${Green}'"$6" '${Yellow}'Size: '${Green}'"$4}' | column -t | sed 's/>/    >/')")
+block_dev=$(echo -e "${Yellow}Block Devices: \n${Green}$(lsblk | grep "sd." | awk '{print "'${Red}'> '${Green}'"$1" '${Yellow}'Type: '${Green}'"$6" '${Yellow}'Size: '${Green}'"$4" '${Green}'"$7}' | column -t | sed 's/>/    >/')")
 inet_dev=$(echo -e "${Yellow}IP Configuration: \n${Green}$(ip addr | grep -w inet | sed "s/inet/${Red}> ${Green}inet/")")
 kversion=$(uname -srm)
 shell="$SHELL"
 
-echo "  ${Red}|${Red}$(whoami)${Green}@${Yellow}$(</etc/hostname) ${Red}------------------------------------------"
+echo "  ${Red}|${Red}$(whoami)${Green}@${Yellow}$(</etc/hostname) ${Red}------------------------------------------------>"
 echo "  ${Red}|${Yellow}System Uptime: ${Green}$(uptime -p)"
 echo "  ${Red}|${Yellow}Kernel Version: ${Green}$kversion"
 echo "  ${Red}|${Yellow}Command Shell: ${Green}$shell"
