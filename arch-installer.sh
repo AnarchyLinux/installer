@@ -24,8 +24,6 @@
 ### GNU General Public License version 2 for more details.
 ###############################################################
 
-### the initial function is responsible for setting install language & config
-
 init() {
 
 	source /etc/arch-anywhere.conf
@@ -63,10 +61,6 @@ init() {
 
 }
 
-### This is the check connection function
-### this function is responisble for checking the connection speed
-### also responsible for checking max cpu frequency
-
 check_connection() {
 
 	op_title="$welcome_op_msg"
@@ -80,34 +74,21 @@ check_connection() {
 	pid=$! pri=0.3 msg="\n$connection_load \n\n \Z1> \Z2wget -O /dev/null test_link/test1Mb.db\Zn" load
 	sed -i 's/\,/\./' /tmp/wget.log
 
-	### Begin connection test and error check
 	while [ "$(</tmp/ex_status.var)" -gt "0" ]
 	  do
-    	
-		### If connection error check for wifi network
 		if [ -n "$wifi_network" ]; then
-    		
-			### If wifi network found prompt user to attempt connection with 'wifi-menu' command
 			if (dialog --yes-button "$yes" --no-button "$no" --yesno "$wifi_msg0" 10 60) then
 				wifi-menu
-    			
-				### If wifi-menu returns error print error message and exit
 				if [ "$?" -gt "0" ]; then
 					dialog --ok-button "$ok" --msgbox "$wifi_msg1" 10 60
 					setterm -background black -store ; reset ; echo "$connect_err1" ; exit 1
-				
-				### Else set wifi to true and error to false
 				else
 					wifi=true
 					echo "0" > /tmp/ex_status.var
 				fi
-			
-				### Else if user would not like to connect unset wifi network	
-				else
-					unset wifi_network
-				fi
-		
-		### Else if connection error and no wifi network found print error message and exit
+			else
+				unset wifi_network
+			fi
 		else
 			dialog --ok-button "$ok" --msgbox "$connect_err0" 10 60
 			setterm -background black -store ; reset ; echo -e "$connect_err1" ;  exit 1
@@ -143,11 +124,39 @@ check_connection() {
         		
 	export connection_speed connection_rate cpu_sleep
 	rm /tmp/{ex_status.var,wget.log} &> /dev/null
-	set_locale
+	set_keys
 
 }
 
-### This function is responsible for setting the system locale
+set_keys() {
+	
+	op_title="$key_op_msg"
+	keyboard=$(dialog --nocancel --ok-button "$ok" --menu "$keys_msg" 18 60 10 \
+	"$default" "$default Keymap" \
+	"us" "United States" \
+	"de" "German" \
+	"es" "Spanish" \
+	"fr" "French" \
+	"pt-latin9" "Portugal" \
+	"ro" "Romanian" \
+	"ru" "Russian" \
+	"uk" "United Kingdom" \
+	"$other"       "$other-keymaps"		 3>&1 1>&2 2>&3)
+	source "$lang_file"
+
+	### If user selects 'other' display full list of keymaps
+	if [ "$keyboard" = "$other" ]; then
+		keyboard=$(dialog --ok-button "$ok" --cancel-button "$cancel" --menu "$keys_msg" 19 60 10  $key_maps 3>&1 1>&2 2>&3)
+		if [ "$?" -gt "0" ]; then
+			set_keys
+		fi
+	fi
+	
+	export keyboard
+	localectl set-keymap "$keyboard"
+	set_locale
+
+}
 
 set_locale() {
 
@@ -197,34 +206,6 @@ set_zone() {
 			if [ "$?" -gt "0" ]; then 
 				set_zone 
 			fi
-		fi
-	fi
-
-	set_keys
-
-}
-
-set_keys() {
-	
-	op_title="$key_op_msg"
-	keyboard=$(dialog --nocancel --ok-button "$ok" --menu "$keys_msg" 18 60 10 \
-	"$default" "$default Keymap" \
-	"us" "United States" \
-	"de" "German" \
-	"es" "Spanish" \
-	"fr" "French" \
-	"pt-latin9" "Portugal" \
-	"ro" "Romanian" \
-	"ru" "Russian" \
-	"uk" "United Kingdom" \
-	"$other"       "$other-keymaps"		 3>&1 1>&2 2>&3)
-	source "$lang_file"
-
-	### If user selects 'other' display full list of keymaps
-	if [ "$keyboard" = "$other" ]; then
-		keyboard=$(dialog --ok-button "$ok" --cancel-button "$cancel" --menu "$keys_msg" 19 60 10  $key_maps 3>&1 1>&2 2>&3)
-		if [ "$?" -gt "0" ]; then
-			set_keys
 		fi
 	fi
 
@@ -2241,7 +2222,7 @@ reboot_system() {
 			fi
 		fi
 
-		reboot_menu=$(dialog --nocancel --ok-button "$ok" --menu "$complete_msg" 15 60 6 \
+		reboot_menu=$(dialog --nocancel --ok-button "$ok" --menu "$complete_msg" 16 60 7 \
 			"$reboot0" "-" \
 			"$reboot6" "-" \
 			"$reboot2" "-" \
