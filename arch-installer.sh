@@ -26,9 +26,9 @@
 
 init() {
 
+	trap '' 2
 	source /etc/arch-anywhere.conf
 	op_title=" -| Language Select |- "
-	clear
 	ILANG=$(dialog --nocancel --menu "\nArch Anywhere Installer\n\n \Z2*\Zn Select your install language:" 20 60 10 \
 		"English" "-" \
 		"French" "Français" \
@@ -206,6 +206,9 @@ set_zone() {
 			if [ "$?" -gt "0" ]; then 
 				set_zone 
 			fi
+			ZONE="${ZONE}/${SUBZONE}/${SUB_SUBZONE}"
+		else
+			ZONE="${ZONE}/${SUBZONE}"
 		fi
 	fi
 
@@ -1335,57 +1338,43 @@ prepare_base() {
 
 install_base() {
 
-	pacstrap "$ARCH" --print-format='%s' $(echo "$base_install") | sed '1,6d' | awk '{s+=$1} END {print s/1024/1024}' &> /tmp/size.var &
+	pacstrap "$ARCH" --print-format='%s' $(echo "$base_install") | sed '1,6d' | awk '{s+=$1} END {print s/1024/1024}' &> /tmp/size.tmp &
 	pid=$! pri=0.8 msg="\n$pacman_load \n\n \Z1> \Z2pacman -Sy\Zn" load
-	download_size=$(</tmp/size.var) ; rm /tmp/size.var
+	download_size=$(</tmp/size.tmp) ; rm /tmp/size.tmp
 	export software_size=$(echo "$download_size Mib")
 	cal_rate
 
-	if (dialog --yes-button "$install" --no-button "$cancel" --yesno "\n$install_var" 15 60) then
+	if (dialog --yes-button "$install" --no-button "$cancel" --yesno "\n$install_var" 15 60); then
 		tmpfile=$(mktemp)
-		(LANG=C pacstrap "$ARCH" $(echo "$base_install") &> "$tmpfile"
-		echo "$?" > /tmp/ex_status.var
-		genfstab -U -p "$ARCH" >> "$ARCH"/etc/fstab) &> /dev/null &
-		pid=$! pri=$(echo "$down+1" | bc) msg="\n$install_load_var" load_log
+		(LANG=C pacstrap "$ARCH" $(echo "$base_install") ; echo "$?" > /tmp/ex_status) &> "$tmpfile" &
+		pid=$! pri=$(echo "$down+1" | bc | sed 's/\..*$//') msg="\n$install_load_var" load_log
+		genfstab -U -p "$ARCH" >> "$ARCH"/etc/fstab
 
-		if [ "$(</tmp/ex_status.var)" -eq "0" ]; then
+		if [ $(</tmp/ex_status) -eq "0" ]; then
 			INSTALLED=true
-			rm "$tmpfile"
 		else
 			mv "$tmpfile" /tmp/arch-anywhere.log
-			rm /tmp/ex_status.var
 			dialog --ok-button "$ok" --msgbox "\n$failed_msg" 10 60
-			reset
-			tail /tmp/arch-anywhere.log
-			echo "${Red}Error: ${Yellow}Installer failed to install packages to new root.${ColorOff}"
-			exit 1
+			reset ; tail /tmp/arch-anywhere.log ; exit 1
 		fi
 		
-		rm /tmp/ex_status.var
-
-		if "$enable_f2fs" ; then
-			if ! "$crypted" ; then
-				if ! "$UEFI" ; then
-					arch-chroot "$ARCH" mkinitcpio -p linux &> /dev/null &
-					pid=$! pri=1 msg="\n$f2fs_config_load \n\n \Z1> \Z2mkinitcpio -p linux\Zn" load
-				fi
-			fi
+		if "$enable_f2fs" && ! "$crypted" && ! "$UEFI" ; then
+			arch-chroot "$ARCH" mkinitcpio -p linux &> /dev/null &
+			pid=$! pri=1 msg="\n$f2fs_config_load \n\n \Z1> \Z2mkinitcpio -p linux\Zn" load
 		fi
 			
-		if "$enable_nm" ; then
-			case "$net_util" in
-				networkmanager)	arch-chroot "$ARCH" systemctl enable NetworkManager.service &>/dev/null
-        						pid=$! pri=0.1 msg="\n$nwmanager_msg0 \n\n \Z1> \Z2systemctl enable NetworkManager\Zn" load
-				;;
-				netctl)	arch-chroot "$ARCH" systemctl enable netctl.service &>/dev/null &
-        				pid=$! pri=0.1 msg="\n$nwmanager_msg1 \n\n \Z1> \Z2systemctl enable netctl\Zn" load
-				;;
-			esac
-    	fi
+		case "$net_util" in
+			networkmanager)	arch-chroot "$ARCH" systemctl enable NetworkManager.service &>/dev/null
+        					pid=$! pri=0.1 msg="\n$nwmanager_msg0 \n\n \Z1> \Z2systemctl enable NetworkManager.service\Zn" load
+			;;
+			netctl)	arch-chroot "$ARCH" systemctl enable netctl.service &>/dev/null &
+        			pid=$! pri=0.1 msg="\n$nwmanager_msg1 \n\n \Z1> \Z2systemctl enable netctl.service\Zn" load
+			;;
+		esac
 
     	if "$enable_bt" ; then
     	    arch-chroot "$ARCH" systemctl enable bluetooth &>/dev/null &
-    	    pid=$! pri=0.1 msg="\n$btenable_msg \n\n \Z1> \Z2systemctl enable bluetooth\Zn" load
+    	    pid=$! pri=0.1 msg="\n$btenable_msg \n\n \Z1> \Z2systemctl enable bluetooth.service\Zn" load
     	fi
 	
 		case "$bootloader" in
@@ -1452,17 +1441,14 @@ syslinux_config() {
 	else
 		(syslinux-install_update -i -a -m -c "$ARCH"
 		cp "$ARCH"/usr/lib/syslinux/bios/vesamenu.c32 "$ARCH"/boot/syslinux/
-		cp /usr/share/arch-anywhere/syslinux/syslinux.cfg "$ARCH"/boot/syslinux
-		cp /usr/share/arch-anywhere/syslinux/splash.png "$ARCH"/boot/syslinux) &> /dev/null &
+		cp /usr/share/arch-anywhere/syslinux/{syslinux.cfg,splash.png} "$ARCH"/boot/syslinux) &> /dev/null &
 		pid=$! pri=0.1 msg="\n$syslinux_load \n\n \Z1> \Z2syslinux-install_update -i -a -m -c $ARCH\Zn" load
 	fi
 
-	if "$crypted" ; then
-		if "$UEFI" ; then
+	if "$crypted" && "$UEFI"; then
 			sed -i "s|APPEND.*$|APPEND root=/dev/mapper/root cryptdevice=/dev/lvm/lvroot:root rw|" ${ARCH}${esp_mnt}/EFI/syslinux/syslinux.cfg
-		else
+	elif "$crypted" ; then
 			sed -i "s|APPEND.*$|APPEND root=/dev/mapper/root cryptdevice=/dev/lvm/lvroot:root rw|" "$ARCH"/boot/syslinux/syslinux.cfg
-		fi
 	elif "$UEFI" ; then
 		sed -i "s|APPEND.*$|APPEND root=/dev/$ROOT|" ${ARCH}${esp_mnt}/EFI/syslinux/syslinux.cfg
 	else
@@ -1474,17 +1460,13 @@ syslinux_config() {
 configure_system() {
 
 	op_title="$config_op_msg"
-	if ! "$INSTALLED" ; then
-		dialog --ok-button "$ok" --msgbox "$install_err_msg3" 10 60
-		main_menu
+	if "$crypted" && "$UEFI" ; then
+		echo "/dev/$BOOT              $esp           vfat         rw,relatime,fmask=0022,dmask=0022,codepage=437,iocharset=iso8859-1,shortname=mixed,errors=remount-ro        0       2" > "$ARCH"/etc/fstab
+	elif "$crypted" ; then
+		echo "/dev/$BOOT              /boot           $FS         defaults        0       2" > "$ARCH"/etc/fstab
 	fi
-
+		
 	if "$crypted" ; then
-		if "$UEFI" ; then 
-			echo "/dev/$BOOT              $esp           vfat         rw,relatime,fmask=0022,dmask=0022,codepage=437,iocharset=iso8859-1,shortname=mixed,errors=remount-ro        0       2" > "$ARCH"/etc/fstab
-		else 
-			echo "/dev/$BOOT              /boot           $FS         defaults        0       2" > "$ARCH"/etc/fstab
-		fi
 		echo "/dev/mapper/root        /               $FS         defaults        0       1" >> "$ARCH"/etc/fstab
 		echo "/dev/mapper/tmp         /tmp            tmpfs        defaults        0       0" >> "$ARCH"/etc/fstab
 		echo "tmp	       /dev/lvm/tmp	       /dev/urandom	tmp,cipher=aes-xts-plain64,size=256" >> "$ARCH"/etc/crypttab
@@ -1507,14 +1489,8 @@ configure_system() {
 	fi
 
 	if [ -n "$SUB_SUBZONE" ]; then
-		arch-chroot "$ARCH" ln -s /usr/share/zoneinfo/"$ZONE"/"$SUBZONE"/"$SUB_SUBZONE" /etc/localtime &
-		pid=$! pri=0.1 msg="\n$zone_load_var0 \n\n \Z1> \Z2ln -s $ZONE /etc/localtime\Zn" load
-	elif [ -n "$SUBZONE" ]; then
-		arch-chroot "$ARCH" ln -s /usr/share/zoneinfo/"$ZONE"/"$SUBZONE" /etc/localtime &
-		pid=$! pri=0.1 msg="\n$zone_load_var1 \n\n \Z1> \Z2ln -s $ZONE /etc/localtime\Zn" load
-	else
 		arch-chroot "$ARCH" ln -s /usr/share/zoneinfo/"$ZONE" /etc/localtime &
-		pid=$! pri=0.1 msg="\n$zone_load_var2 \n\n \Z1> \Z2ln -s $ZONE /etc/localtime\Zn" load	
+		pid=$! pri=0.1 msg="\n$zone_load_var \n\n \Z1> \Z2ln -s $ZONE /etc/localtime\Zn" load
 	fi
 
 	if [ "$arch" == "x86_64" ]; then
@@ -1540,7 +1516,7 @@ set_hostname() {
 	hostname=$(dialog --ok-button "$ok" --nocancel --inputbox "\n$host_msg" 12 55 "arch-anywhere" 3>&1 1>&2 2>&3 | sed 's/ //g')
 	
 	if (<<<$hostname grep "^[0-9]\|[\[\$\!\'\"\`\\|%&#@()+=<>~;:/?.,^{}]\|]" &> /dev/null); then
-		dialog --ok-button "$ok" --msgbox "$host_err_msg" 10 60
+		dialog --ok-button "$ok" --msgbox "\n$host_err_msg" 10 60
 		set_hostname
 	fi
 	
@@ -1566,8 +1542,6 @@ set_hostname() {
 	(printf "$input\n$input" | arch-chroot "$ARCH" passwd) &> /dev/null &
 	pid=$! pri=0.1 msg="$wait_load \n\n \Z1> \Z2passwd root\Zn" load
 	unset input input_chk ; input_chk=default
-
-	hostname_set=true
 	add_user
 
 }
@@ -1585,23 +1559,13 @@ add_user() {
 	if [ -z "$user" ]; then
 		dialog --ok-button "$ok" --msgbox "\n$user_err_msg" 10 60
 		add_user
-
 	elif (<<<$user grep "^[0-9]\|[ABCDEFGHIJKLMNOPQRSTUVWXYZ\[\$\!\'\"\`\\|%&#@()_-+=<>~;:/?.,^{}]\|]" &> /dev/null); then
 		dialog --ok-button "$ok" --msgbox "\n$user_err_msg" 10 60
 		add_user
-	
-	elif (<<<$user grep "$created_user" &> /dev/null); then
-		dialog --ok-button "$ok" --msgbox "\n$user_err_msg1" 10 60
-		add_user
 	fi
 
-	if [ "$she" == "zsh" ]; then
-		(arch-chroot "$ARCH" useradd -m -g users -G audio,network,power,storage,optical -s /usr/bin/zsh "$user") &>/dev/null &
-		pid=$! pri=0.1 msg="$wait_load \n\n \Z1> \Z2useradd -m -g users -G ... -s /usr/bin/zsh $user\Zn" load
-	else
-		(arch-chroot "$ARCH" useradd -m -g users -G audio,network,power,storage,optical -s /bin/bash "$user") &>/dev/null &
-		pid=$! pri=0.1 msg="$wait_load \n\n \Z1> \Z2useradd -m -g users -G ... -s /bin/bash $user\Zn" load
-	fi
+	(arch-chroot "$ARCH" useradd -m -g users -G audio,network,power,storage,optical -s "$sh" "$user") &>/dev/null &
+	pid=$! pri=0.1 msg="$wait_load \n\n \Z1> \Z2useradd -m -g users -G ... -s /usr/bin/zsh $user\Zn" load
 
 	source "$lang_file"
 	op_title="$passwd_op_msg"
@@ -1622,22 +1586,13 @@ add_user() {
 	pid=$! pri=0.1 msg="$wait_load \n\n \Z1> \Z2passwd $user\Zn" load
 	unset input input_chk ; input_chk=default
 	op_title="$user_op_msg"
-	if [ -n "$sudo_user" ]; then
-		if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$sudo_var" 10 60) then
-			(arch-chroot "$ARCH" usermod -a -G wheel "$user") &> /dev/null &
-			pid=$! pri=0.1 msg="$wait_load \n\n \Z1> \Z2usermod -a -G wheel $user\Zn" load
-		fi
-	else
-		if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$sudo_var" 10 60) then
-			(sed -i '/%wheel ALL=(ALL) ALL/s/^#//' $ARCH/etc/sudoers
-			arch-chroot "$ARCH" usermod -a -G wheel "$user") &> /dev/null &
-			pid=$! pri=0.1 msg="$wait_load \n\n \Z1> \Z2usermod -a -G wheel $user\Zn" load
-			sudo_user="$user"
-		fi
+	
+	if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$sudo_var" 10 60) then
+		(sed -i '/%wheel ALL=(ALL) ALL/s/^#//' $ARCH/etc/sudoers
+		arch-chroot "$ARCH" usermod -a -G wheel "$user") &> /dev/null &
+		pid=$! pri=0.1 msg="$wait_load \n\n \Z1> \Z2usermod -a -G wheel $user\Zn" load
 	fi
 
-	user_added=true 
-	
 	if "$menu_enter" ; then
 		reboot_system
 	else	
@@ -1683,14 +1638,11 @@ graphics() {
 		else
 			reboot_system
 		fi
-	else
-		de_set=true
 	fi
 
 	case "$DE" in
 		"Arch-Anywhere-Xfce") 	DE="xfce4 xfce4-goodies xdg-user-dirs gvfs zsh zsh-syntax-highlighting"
-								start_term="exec startxfce4"
-								de_config=true
+								start_term="exec startxfce4" de_config=true
 		;;
 		"xfce4") 	if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$extra_msg0" 10 60) then
 						DE="xfce4 xfce4-goodies"
@@ -1787,9 +1739,21 @@ graphics() {
 				break
 			fi
 		done
+				
+		DE="$DE xorg-server xorg-server-utils xorg-xinit xterm $GPU"
 		
+		if [ "$net_util" == "networkmanager" ] ; then
+			DE="$DE network-manager-applet"
+		fi
+
 		if (dialog --defaultno --yes-button "$yes" --no-button "$no" --yesno "\n$touchpad_msg" 10 60) then
-			GPU="xf86-input-synaptics $GPU"
+			GPU="$DE xf86-input-synaptics"
+		fi
+
+		if "$enable_bt" ; then
+			if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$blueman_msg" 10 60) then
+				DE="$DE blueman"
+			fi
 		fi
 	fi
 	
@@ -1801,49 +1765,28 @@ graphics() {
 			dialog --ok-button "$ok" --msgbox "\n$startx_msg" 10 60
 		fi
 	fi
-
-	if ! "$desktop" ; then
-		if [ "$net_util" == "NetworkManager" ] ; then
-			DE="$DE xorg-server xorg-server-utils xorg-xinit xterm network-manager-applet $GPU"
-		else
-			DE="$DE xorg-server xorg-server-utils xorg-xinit xterm $GPU"
-		fi
-
-		if "$enable_bt" ; then
-			if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$blueman_msg" 10 60) then
-				DE="$DE blueman"
-			fi
-		fi
-	fi
 	
-	pacstrap "$ARCH" --print-format='%s' $(echo "$DE") | sed '1,6d' | awk '{s+=$1} END {print s/1024/1024}' &> /tmp/size.var &
+	pacstrap "$ARCH" --print-format='%s' $(echo "$DE") | sed '1,6d' | awk '{s+=$1} END {print s/1024/1024}' &> /tmp/size.tmp &
 	pid=$! pri=0.1 msg="$wait_load \n\n \Z1> \Z2pacman -Sy\Zn" load
-	
-	download_size=$(</tmp/size.var)
+	download_size=$(</tmp/size.tmp) ; rm /tmp/size.tmp
 	export software_size=$(echo "$download_size Mib")
 	cal_rate
 
 	if (dialog --yes-button "$install" --no-button "$cancel" --yesno "\n$desktop_confirm_var" 18 60) then
 		tmpfile=$(mktemp)
 		pacstrap "$ARCH" $(echo "$DE") &> "$tmpfile" &
-		pid=$! pri="$down" msg="\n$desktop_load_var" load_log
+		pid=$! pri="<<<$down sed 's/\..*$//" msg="\n$desktop_load_var" load_log
 		rm "$tmpfile"
 		desktop=true
 
-		
-		### If "enable_dm" variable is set to true
-		if "$enable_dm" ; then
-			if ! "$dm_set" ; then
-				if (<<<"$DE" grep "kde" &> /dev/null) then
-					arch-chroot "$ARCH" systemctl enable sddm.service &> /dev/null &
-					pid=$! pri="0.1" msg="$wait_load \n\n \Z1> \Z2systemctl enable sddm\Zn" load
-					dm_set=true
-				else
-					arch-chroot "$ARCH" systemctl enable lightdm.service &> /dev/null &
-					pid=$! pri="0.1" msg="\n$dm_load \n\n \Z1> \Z2systemctl enable lightdm\Zn" load
-					dm_set=true
-				fi
-			fi
+		if "$enable_dm" && ! "$dm_set" && (<<<"$DE" grep "kde" &> /dev/null); then
+			arch-chroot "$ARCH" systemctl enable sddm.service &> /dev/null &
+			pid=$! pri="0.1" msg="$wait_load \n\n \Z1> \Z2systemctl enable sddm\Zn" load
+			dm_set=true
+		elif "$enable_dm" && ! "$dm_set" ; then
+			arch-chroot "$ARCH" systemctl enable lightdm.service &> /dev/null &
+			pid=$! pri="0.1" msg="\n$dm_load \n\n \Z1> \Z2systemctl enable lightdm\Zn" load
+			dm_set=true
 		fi
 		
 		if "$VBOX" ; then
@@ -1852,31 +1795,11 @@ graphics() {
 		fi
 
 		if "$de_config" ; then	
-			she="zsh"
-			if "$user_added" ; then
-				if [ ! -d "$ARCH"/home/"$user"/.config ]; then
-					mkdir "$ARCH"/home/"$user"/.config &> /dev/null
-				fi
-				arch-chroot "$ARCH" chsh -s /usr/bin/zsh "$user" &> /dev/null
-				cp /usr/share/arch-anywhere/.zshrc "$ARCH"/home/"$user"/
-				cp -r /usr/share/arch-anywhere/desktop/.config/{xfce4,Thunar} "$ARCH"/home/"$user"/.config/
-				cp /usr/share/arch-anywhere/desktop/arch-anywhere-icon.png "$ARCH"/home/"$user"/.face
-				arch-chroot "$ARCH" /bin/bash -c "chown -R $user /home/$user"
-			fi
-			cp -r /usr/share/arch-anywhere/{.zshrc,desktop/.config/} "$ARCH"/etc/skel/
-			cp /usr/share/arch-anywhere/desktop/arch-anywhere-icon.png "$ARCH"/etc/skel/.face
-			cp -r "/usr/share/arch-anywhere/desktop/AshOS-Dark-2.0" "$ARCH"/usr/share/themes/
-			cp /usr/share/arch-anywhere/desktop/arch-anywhere-wallpaper.png "$ARCH"/usr/share/backgrounds/xfce/arch-anywhere-wallpaper.png
-			cp "$ARCH"/usr/share/backgrounds/xfce/arch-anywhere-wallpaper.png "$ARCH"/usr/share/backgrounds/xfce/xfce-teal.jpg
-			cp /usr/share/arch-anywhere/desktop/arch-anywhere-icon.png "$ARCH"/usr/share/pixmaps/
-			arch-chroot "$ARCH" chsh -s /usr/bin/zsh &> /dev/null
-			cp /usr/share/arch-anywhere/.zshrc "$ARCH"/root/
-			mkdir "$ARCH"/root/.config/ &> /dev/null
-			cp -r /usr/share/arch-anywhere/desktop/.config/{xfce4,Thunar} "$ARCH"/root/.config/
-			de_config=false
+			config_env &
+			pid=$! pri="0.1" msg="$wait_load \n\n \Z1> \Z2arch-anywhere config_env\Zn" load
 		fi
 		
-		if "$user_added" ; then
+		if [ -n "$user" ]; then
 			echo "$start_term" > "$ARCH"/home/"$user"/.xinitrc
 		fi
 				
@@ -1896,6 +1819,33 @@ graphics() {
 	fi
 
 	install_software
+
+}
+
+config_env() {
+
+	sh="/usr/bin/zsh"
+	
+	if [ -n "$user" ]; then
+		mkdir "$ARCH"/home/"$user"/.config &> /dev/null
+		arch-chroot "$ARCH" chsh -s /usr/bin/zsh "$user" &> /dev/null
+		cp /usr/share/arch-anywhere/.zshrc "$ARCH"/home/"$user"/
+		cp -r /usr/share/arch-anywhere/desktop/.config/{xfce4,Thunar} "$ARCH"/home/"$user"/.config/
+		cp /usr/share/arch-anywhere/desktop/arch-anywhere-icon.png "$ARCH"/home/"$user"/.face
+		arch-chroot "$ARCH" /bin/bash -c "chown -R $user /home/$user"
+	fi
+
+	arch-chroot "$ARCH" chsh -s /usr/bin/zsh &> /dev/null
+	cp /usr/share/arch-anywhere/.zshrc "$ARCH"/root/
+	mkdir "$ARCH"/root/.config/ &> /dev/null
+	cp -r /usr/share/arch-anywhere/desktop/.config/{xfce4,Thunar} "$ARCH"/root/.config/
+	cp -r /usr/share/arch-anywhere/{.zshrc,desktop/.config/} "$ARCH"/etc/skel/
+	cp /usr/share/arch-anywhere/desktop/arch-anywhere-icon.png "$ARCH"/etc/skel/.face
+	cp -r "/usr/share/arch-anywhere/desktop/AshOS-Dark-2.0" "$ARCH"/usr/share/themes/
+	cp /usr/share/arch-anywhere/desktop/arch-anywhere-wallpaper.png "$ARCH"/usr/share/backgrounds/xfce/{arch-anywhere-wallpaper.png,xfce-teal.jpg}
+	cp /usr/share/arch-anywhere/desktop/arch-anywhere-icon.png "$ARCH"/usr/share/pixmaps/
+	de_config=false
+
 
 }
 
@@ -2113,26 +2063,17 @@ install_software() {
 
 				;;
 				"$done_msg")
-				# Check if user selected any additional software
 					if [ -z "$final_software" ]; then
-					# If no software selected ask to confirm
 						if (dialog --yes-button "$yes" --no-button "$no" --defaultno --yesno "\n$software_warn_msg" 10 60) then
 							software_selected=true
 							err=true
 						fi
 					else
-					# List of packages for pacstrap command
 						download=$(echo "$final_software" | sed 's/\"//g' | tr ' ' '\n' | nl | sort -u -k2 | sort -n | cut -f2- | sed 's/$/ /g' | tr -d '\n')
-						
-					# List of packages displayed for user
 						export download_list=$(echo "$download" |  sed -e 's/^[ \t]*//')
-						
-					# Total sum of all packages
-						pacstrap "$ARCH" --print-format='%s' $(echo "$download") | sed '1,6d' | awk '{s+=$1} END {print s/1024/1024}' &> /tmp/size.var &
+						pacstrap "$ARCH" --print-format='%s' $(echo "$download") | sed '1,6d' | awk '{s+=$1} END {print s/1024/1024}' &> /tmp/size.tmp &
 						pid=$! pri=0.1 msg="$wait_load \n\n \Z1> \Z2pacman -S --print-format=%s\Zn" load
-						download_size=$(</tmp/size.var) ; rm /tmp/size.var
-						
-					# Total sum displayed to user and total number of packages to install
+						download_size=$(</tmp/size.tmp) ; rm /tmp/size.tmp
 						export software_size=$(echo "$download_size Mib")
 						export software_int=$(echo "$download" | wc -w)
 						cal_rate
@@ -2144,15 +2085,12 @@ install_software() {
 						fi
 						
 						if (dialog --yes-button "$install" --no-button "$cancel" --yesno "\n$software_confirm_var1" "$height" 65) then
-							
-						# Install additional software
 							tmpfile=$(mktemp)
 						    pacstrap "$ARCH" $(echo "$download") &> "$tmpfile" &
-						    pid=$! pri="$down" msg="\n$software_load_var" load_log
+						    pid=$! pri="<<<$down sed 's/\..*$//" msg="\n$software_load_var" load_log
 	  					    rm "$tmpfile"
 	  					    unset final_software
-	  					    software_selected=true
-							err=true
+	  					    software_selected=true err=true
 						else
 							unset final_software
 							err=true
@@ -2162,21 +2100,17 @@ install_software() {
 			esac
 			
 			if ! "$err" ; then
-			# If software not defined when leaving menu ask to confirm
 				if [ -z "$software" ]; then
 					if ! (dialog --yes-button "$yes" --no-button "$no" --defaultno --yesno "$software_noconfirm_msg ${software_menu}?" 10 60) then
 						skip=true
 					fi
 				else
-				# Add software from menu list
 					add_software=$(echo "$software" | sed 's/\"//g')
 					software_list=$(echo "$add_software" | sed -e 's/^[ \t]*//')
 					
-				# Total sum of all packages
-					pacstrap "$ARCH" --print-format='%s' $(echo "$add_software") | sed '1,6d' | awk '{s+=$1} END {print s/1024/1024}' &> /tmp/size.var &
+					pacstrap "$ARCH" --print-format='%s' $(echo "$add_software") | sed '1,6d' | awk '{s+=$1} END {print s/1024/1024}' &> /tmp/size.tmp &
 					pid=$! pri=0.1 msg="$wait_load \n\n \Z1> \Z2pacman -S --print-format=%s\Zn" load
-					download_size=$(</tmp/size.var)	; rm /tmp/size.var
-				# Total sum displayed to user and total number of packages to install
+					download_size=$(</tmp/size.tmp) ; rm /tmp/size.tmp
 					software_size=$(echo "$download_size Mib")
 					software_int=$(echo "$add_software" | wc -w)
 					source "$lang_file"
@@ -2187,7 +2121,6 @@ install_software() {
 						height=16
 					fi
 
-				# Confirm adding software message:
 					if (dialog --yes-button "$add" --no-button "$cancel" --yesno "\n$software_confirm_var0" "$height" 60) then
 						final_software="$software $final_software"
 					fi
@@ -2400,64 +2333,16 @@ arch_anywhere_chroot() {
 		done
     	
 		if [ "$input" == "arch-anywhere" ] || [ "$input" == "exit" ]; then
-        	
-        	if [ -n "$yaourt_user" ]; then
-				sed -i 's!'$yaourt_user' ALL = NOPASSWD: /usr/bin/makepkg, /usr/bin/pacman!!' "$ARCH"/etc/sudoers
-				arch-chroot "$ARCH" /bin/bash -c "userdel -r $yaourt_user" &> /dev/null
-			fi
-
-			rm /tmp/chroot_dir.var &> /dev/null
+        	rm /tmp/chroot_dir.var &> /dev/null
 			clear
 			break
-
 	    elif (<<<"$input" grep "^cd " &> /dev/null); then 
 	    	ch_dir=$(<<<$input cut -c4-)
 	        arch-chroot "$ARCH" /bin/bash -c "cd $working_dir ; cd $ch_dir ; pwd > /etc/chroot_dir.var"
 	        mv "$ARCH"/etc/chroot_dir.var /tmp/
 			working_dir=$(</tmp/chroot_dir.var)
-	        
 		elif  (<<<"$input" grep "^help" &> /dev/null); then
 			echo -e "$arch_chroot_msg"
-			
-		elif (<<<"$input" grep "^yaourt" &> /dev/null); then
-			
-			if [ ! -f "$ARCH"/usr/bin/yaourt ]; then
-				echo
-				echo -n " ${Yellow}Would you like to install yaourt on your system? [y/N]: ${ColorOff}"
-				read input
-				echo
-
-				case "$input" in
-					y|Y|yes|Yes|yY|Yy|yy|YY)
-						if [ -z "$yaourt_user" ]; then
-							arch-chroot "$ARCH" /bin/bash -c "useradd -m compile-user"
-							yaourt_user="compile-user"
-							echo "$yaourt_user ALL = NOPASSWD: /usr/bin/makepkg, /usr/bin/pacman" >> "$ARCH"/etc/sudoers
-						fi
-						
-						cd "$ARCH"/home/"$yaourt_user"
-						wget --no-check-certificate https://aur.archlinux.org/cgit/aur.git/snapshot/package-query.tar.gz
-						wget --no-check-certificate https://aur.archlinux.org/cgit/aur.git/snapshot/yaourt.tar.gz
-						tar zxvf package-query.tar.gz
-						tar zxvf yaourt.tar.gz
-						arch-chroot "$ARCH" /bin/bash -c "chown --recursive $yaourt_user /home/$yaourt_user ; pacman -Sy --noconfirm --needed base-devel ; cd /home/$yaourt_user/package-query ; su -c 'makepkg -si' -m $yaourt_user"
-						arch-chroot "$ARCH" /bin/bash -c "cd /home/$yaourt_user/yaourt ; su -c 'makepkg -si' -m $yaourt_user"
-
-						if [ "$?" -eq "0" ]; then
-							echo -e "\n ${Green}Yaourt installed successfully!\n You may now install AUR packages with: yaourt <package> ${ColorOff}\n"
-						else
-							echo -e "\n ${Red}Error: yaourt failed to install...${ColorOff}\n"
-						fi
-						
-						rm -r "$ARCH"/home/"$yaourt_user"/{yaourt,yaourt.tar.gz,package-query,package-query.tar.gz}
-						cd ~/
-					;;
-				esac
-			else
-				input=$(<<<"$input" cut -d' ' -f2-)
-				arch-chroot "$ARCH" /bin/bash -c "su -c 'yaourt $input' -m $yaourt_user"
-			fi
-
 		else
 	    	arch-chroot "$ARCH" /bin/bash -c "cd $working_dir ; $input"
 	    fi   
@@ -2473,12 +2358,6 @@ ctrl_c() {
 	echo
 	echo "${Red} Exiting and cleaning up..."
 	sleep 0.5
-	
-	if [ -n "$yaourt_user" ]; then
-		sed -i 's!'$yaourt_user' ALL = NOPASSWD: /usr/bin/makepkg, /usr/bin/pacman!!' "$ARCH"/etc/sudoers
-		arch-chroot "$ARCH" /bin/bash -c "userdel -r $yaourt_user" &> /dev/null
-	fi
-	
 	unset input
 	rm /tmp/chroot_dir.var &> /dev/null
 	clear
@@ -2500,14 +2379,11 @@ cal_rate() {
 			
 	case "$connection_rate" in
 		KB/s) 
-			down_sec=$(echo "$download_size*1024/$connection_speed" | bc)
-		;;
+			down_sec=$(echo "$download_size*1024/$connection_speed" | bc) ;;
 		MB/s)
-			down_sec=$(echo "$download_size/$connection_speed" | bc)
-		;;
+			down_sec=$(echo "$download_size/$connection_speed" | bc) ;;
 		*) 
-			down_sec="1" 
-		;;
+			down_sec="1" ;;
 	esac
         
 	down=$(echo "$down_sec/100+$cpu_sleep" | bc)
@@ -2526,10 +2402,8 @@ cal_rate() {
 load() {
 
 	{	int="1"
-        	while (true)
+        	while ps | grep "$pid" &> /dev/null
     	    	do
-    	            proc=$(ps | grep "$pid")
-    	            if [ "$?" -gt "0" ]; then break; fi
     	            sleep $pri
     	            echo $int
     	        	if [ "$int" -lt "100" ]; then
@@ -2546,18 +2420,13 @@ load_log() {
 	
 	{	int=1
 		pos=1
-		pri=$(<<<"$pri" sed 's/\..*$//')
 		pri=$((pri*2))
-		while (true)
+		while ps | grep "$pid" &> /dev/null
     	    do
-    	        proc=$(ps | grep "$pid")
-    	        if [ "$?" -gt "0" ]; then break; fi
     	        sleep 0.5
-    	        if [ "$pos" -eq "$pri" ]; then
+    	        if [ "$pos" -eq "$pri" ] && [ "$int" -lt "100" ]; then
     	        	pos=0
-    	        	if [ "$int" -lt "100" ]; then
-    	        		int=$((int+1))
-    	        	fi
+    	        	int=$((int+1))
     	        fi
     	        log=$(tail -n 1 "$tmpfile" | sed 's/.pkg.tar.xz//')
     	        echo "$int"
