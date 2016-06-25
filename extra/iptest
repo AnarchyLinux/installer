@@ -41,7 +41,7 @@ main() {
 			  stty "$old_settings"
 			fi
 	
-			(wget --no-check-certificate --append-output=/tmp/wget.log -O /dev/null "http://speedtest.wdc01.softlayer.com/downloads/test10.zip" ; echo $? > /tmp/ex_status) &
+			(wget --no-check-certificate --append-output=/tmp/wget.log -O /dev/null "http://web4host.net/5MB.zip" ; echo $? > /tmp/ex_status) &
 			pid=$!
 			tput civis
 

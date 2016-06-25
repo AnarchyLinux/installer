@@ -1,10 +1,12 @@
 # arch-linux-anywhere
 
-Arch Anywhere is a modified version of the official archiso providing users with a hassle free pure Arch Linux install from start to finish. Arch Anywhere contains a set of shell scripts intended to simplify the install process. This includes a whiptail automated installer enabling you to install Arch Linux from the cli in semi graphical install mode. Simply boot up and type 'arch-anywhere' to invoke the installer script, every aspect of the install is taken into account from partitioning and general system configuration, to installing your favorite desktop/wm and additional software from the official Arch Linux repos.
+Arch Anywhere is a modified version of the official archiso providing a hassle free pure Arch Linux install from start to finish. Arch Anywhere contains a set of shell scripts intended to simplify the install process. This includes a dialog automated installer enabling you to install Arch Linux from the cli in semi graphical install mode. Simply boot up and type 'arch-anywhere' to invoke the installer script, every aspect of the install is taken into account from partitioning and general system configuration, to installing your favorite desktop/wm and additional software from the official Arch Linux repos.
 
 The Arch Anywhere installer is intended to allow novice Linux users a simple and pain free way to install Arch Linux regardless of their previous experience. It is also intended to allow advanced users with a way to deploy an Arch system while still providing the flexibility and freedom of choice of a traditional Arch Linux install. Install Arch Linux when you want it, where you want it, how you want it, that is the Arch Anywhere philosophy.
 
-The Arch Anywhere ISO also contains a built in Arch Wiki allowing users to browse the official Arch Linux Wiki from the cli. Simply invoke the 'arch-wiki' command at anytime to search the arch wiki (search args may be passed ex: 'arch-wiki beginners guide'). A utility to update and rank the latest Arch Linux mirrorlist is also inluded in the ISO it can be invoked by running 'fetchmirrors'. These included utilities make it easy for new users to install Arch from the command line without using the installer and provide a way to learn how Arch really works by learning the install process. Arch Anywhere aims to provide a polished Arch Linux install experience while leaving open every possible install avenue for the user to choose from.
+The Arch Anywhere ISO also contains a built in Arch Wiki allowing users to browse the official Arch Linux Wiki from the cli. Simply invoke the 'arch-wiki' command at anytime to search the arch wiki (search args may be passed ex: 'arch-wiki beginners guide'). A utility to update and rank the latest Arch Linux mirrorlist is also inluded in the ISO it can be invoked by running 'fetchmirrors'. These included utilities make it easy for new users to install Arch from the command line without using the installer and provide a way to learn how Arch really works by learning the install process. 
+
+Arch Anywhere aims to provide a polished Arch Linux install experience while leaving open every possible install avenue for the user to choose from.
 
 This is a dual ISO containing support for both i686 (32 bit) and x86_64 (64 bit) systems.
 
@@ -14,7 +16,7 @@ http://arch-anywhere.org/
 
 <p>
   <img src="http://arch-anywhere.org/images/arch-anywhere-splash.png" width="350"/>
-  <img src="http://arch-anywhere.org/images/installer/issue.png" width="350"/>
+  <img src="http://arch-anywhere.org/images/installer/1-issue.png" width="350"/>
 </p>
 
 ### Features:
@@ -58,11 +60,13 @@ http://arch-anywhere.org/
 * Bootloader support:
 
     Grub (Grand Unified Bootloader) <br />
+    Syslinux (SysLinux Bootloader) <br />
     Support for UEFI boot <br />
     OsProber (Dual-Boot Support) <br />
 
 * Network Utilities:
 
+    Netctl <br />
     NetworkManager + applet <br />
     WPA Supplicant <br />
     WPA ActionD <br />
@@ -78,8 +82,8 @@ http://arch-anywhere.org/download.html
 
 
 <p>
-  <img src="http://arch-anywhere.org/images/installer/lang.png" width="350"/>
-  <img src="http://arch-anywhere.org/images/installer/manual_menu.png" width="350">
-  <img src="http://arch-anywhere.org/images/installer/install2.png" width="350"/>
-  <img src="http://arch-anywhere.org/images/installer/chroot.png" width="350"/>
+  <img src="http://arch-anywhere.org/images/installer/2-languages.png" width="350"/>
+  <img src="http://arch-anywhere.org/images/installer/7-partition.png" width="350">
+  <img src="http://arch-anywhere.org/images/installer/18-base_install.png" width="350"/>
+  <img src="http://arch-anywhere.org/images/installer/25-install2.png" width="350"/>
 </p>
