@@ -1,25 +1,23 @@
 [H[2J
-        [1;36m,
-       [1;36m/#\
-      [1;36m/###\  [0;36mWelcome to the Arch Linux Anywhere ISO![0m
-     [1;36m/#####\[0;37m  Bringing you Arch Linux, whenever and wherever you need it.
-    [1;36m/##[0;36m,-,##\
-   [0;36m/##(   )##\   [0;36mArch Linux[0m
-  [0;36m/#.--   --.#\[0;37m   A simple, elegant, and lightweight linux distrobution.
- [0;36m/`           `\[0m
-[4;36m--------------------------------------------------------------------------------[0m
-[0;37m  Simplifying the Arch Linux install process anywhere you'd like.
-  Any questions, comments, or bug reports can be sent to the developer:
-[0;36m     Dylan Schacht (deadhead) - [4;36mdeadhead3492@gmail.com[0m
-
-[0;37m   Installing Arch Linux requires an active network connection
-   If you need to connect to wifi use the command:[0;36m wifi-menu
-[0;37m   For more info on Arch Anywhere type:[0;36m help
-[0;37m   To show this screen at any time type:[0;36m start
-
- [0;37m  You can view the Arch Wiki from anywhere on the command line by running:
-[0;36m     arch-wiki[0;37m Also to search:[0;36m arch-wiki search args
- 
-[0;37m   To begin the automated installer simply type:
-[0;36m   	arch-anywhere
-[4;36m--------------------------------------------------------------------------------[0m
+[0;31m--------------------------------------------------------------------------------[0m
+       [1;32m/#\
+      [1;32m/###\  [0;32mWelcome to Arch Linux Anywhere![0m
+     [1;32m/#####\[0;33m  Bringing you Arch Linux, whenever and wherever you need it.
+    [1;32m/##[0;32m,-,##\
+   [0;32m/##(   )##\   [0;32mArch Linux[0m
+  [0;32m/#.--   --.#\[0;33m   A simple, elegant, and lightweight linux distribution.
+ [0;32m/`           `\[0m
+[0;31m--------------------------------------------------------------------------------[0m
+[0;31m |[0;33m Select an option or type '[0;32march-anywhere[0;33m' to begin automated installer.     [0;31m|
+[0;31m |[0;33m Options:                                                                   [0;31m|
+[0;31m |			    	                                              |
+[0;31m |[0;33m 	1.[0;31m) [0;32mArch Anywhere Installer - arch-anywhere			      [0;31m|
+[0;31m |[0;33m 	2.[0;31m) [0;32mArch Linux Wiki	    - arch-wiki				      [0;31m|
+[0;31m |[0;33m 	3.[0;31m) [0;32mConnection Test	    - iptest				      [0;31m|
+[0;31m |[0;33m 	4.[0;31m) [0;32mSystem Information      - sysinfo				      [0;31m|
+[0;31m |[0;33m 	5.[0;31m) [0;32mUpdate Mirrorlist       - fetchmirrors		      	      [0;31m|
+[0;31m |[0;33m 	6.[0;31m) [0;32mReboot System           - reboot			      	      [0;31m|
+[0;31m |			    	                                              |
+[0;33m [0;31m|[0;33m For more info on Arch Anywhere type:[0;32m help				      [0;31m|
+[0;33m [0;31m|[0;33m To show this screen at any time type:[0;32m start[0m		                      [0;31m|
+[0;31m--------------------------------------------------------------------------------[0m

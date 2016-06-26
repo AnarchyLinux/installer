@@ -1,109 +1,89 @@
 # arch-linux-anywhere
 
-Arch Linux Anywhere is an Arch Linux ISO, and installer, which allows you to install Arch regardless of the status of your network connection. I have remastered the official archiso to include local package repos for both respective arcitectures (x86_64 and i686).
+Arch Anywhere is a modified version of the official archiso providing a hassle free pure Arch Linux install from start to finish. Arch Anywhere contains a set of shell scripts intended to simplify the install process. This includes a dialog automated installer enabling you to install Arch Linux from the cli in semi graphical install mode. Simply boot up and type 'arch-anywhere' to invoke the installer script, every aspect of the install is taken into account from partitioning and general system configuration, to installing your favorite desktop/wm and additional software from the official Arch Linux repos.
 
-All packages needed for a full Arch Linux install are contained within the ISO, effectively allowing you to install Arch Linux Anywhere.
+The Arch Anywhere installer is intended to allow novice Linux users a simple and pain free way to install Arch Linux regardless of their previous experience. It is also intended to allow advanced users with a way to deploy an Arch system while still providing the flexibility and freedom of choice of a traditional Arch Linux install. Install Arch Linux when you want it, where you want it, how you want it, that is the Arch Anywhere philosophy.
 
-My ISO also contains a built in installer script I've written in shell. This sctipt can be invoked by simply typing:
+The Arch Anywhere ISO also contains a built in Arch Wiki allowing users to browse the official Arch Linux Wiki from the cli. Simply invoke the 'arch-wiki' command at anytime to search the arch wiki (search args may be passed ex: 'arch-wiki beginners guide'). A utility to update and rank the latest Arch Linux mirrorlist is also inluded in the ISO it can be invoked by running 'fetchmirrors'. These included utilities make it easy for new users to install Arch from the command line without using the installer and provide a way to learn how Arch really works by learning the install process. 
 
-	arch-anywhere
+Arch Anywhere aims to provide a polished Arch Linux install experience while leaving open every possible install avenue for the user to choose from.
 
-My script determines the status of your network connection. If you do not have an active connection to the interent it will automatically install the packages from the local repo. However if you do have an active connection it asks to download all the packages from the official repos, while still giving you the choice of downloading locally.
-
-The local package repos allow you to proform a full base / base-devel install directly from the ISO. Not only that but it allows you the option to install a list of additional software and desktops for both arcitectures. More software options and desktops are available if you select the online install. All packages are from the official arch sync repos.
+This is a dual ISO containing support for both i686 (32 bit) and x86_64 (64 bit) systems.
 
 ### Official Arch Linux Anywhere ISO:
 
-	https://sourceforge.net/projects/arch-anywhere/
-	
-### Included software:
+http://arch-anywhere.org/
 
-- All base / base-devel packages
+<p>
+  <img src="http://arch-anywhere.org/images/arch-anywhere-splash.png" width="350"/>
+  <img src="http://arch-anywhere.org/images/installer/1-issue.png" width="350"/>
+</p>
 
-- Graphics and desktops / window managers:
+### Features:
 
-	xorg-server xorg-server-utils xorg-xinit xterm
+* Supported Linux installs:
+	Choose from base or base-devel Arch Linux install <br />
+	Latest Arch Linux kernel <br />
+	LTS Linux kernel (long term support) <br />
+	GreSec Linux kernel (security hardened Linux) <br />
 
-	xfce4
+* Supported partitioning methods include:
 
-	awesome
+    Full drive automatic partitioning with optional SWAP partition <br />
+    Full drive automatic partitioning with luks on LVM encryption for root and tmp partition with optional enctypted SWAP partition <br />
+    Manual partition (advanced users) uses cfdisk for partitioning select custom mountpoints <br />
 
-	openbox
+* Supported Desktop Environments + Window Managers:
 
-	i3
+    Arch Anywhere XFCE4 (developers custom xfce4 desktop) <br />
+    AwesomeWM <br />
+    Cinnamon Desktop <br />
+    DWM DynamicWM <br />
+    EnlightenmentWM <br />
+    FluxboxWM <br />
+    Gnome Desktop <br />
+    I3 i3WM <br />
+    KDE/Plasma Desktop <br />
+    LXDE Desktop <br />
+    LXQT Desktop <br />
+    Mate Desktop <br />
+    OpenboxWM <br />
+    XFCE4 Desktop <br />
 
-	dwm
+* Supported Graphics Drivers:
 
-	xf86-video-ati
+    ATI/AMD xf86-video-ati open source drivers <br />
+    Intel xf86-video-intel open source drivers <br />
+    NVIDIA: Stable, 340xx, 304xx closed source drivers <br />
+    VirtualBox Guest Utilities Drivers <br />
 
-	nvidia nvidia-340xx nvidia-304xx
+* Bootloader support:
 
-	xf86-video-intel
+    Grub (Grand Unified Bootloader) <br />
+    Syslinux (SysLinux Bootloader) <br />
+    Support for UEFI boot <br />
+    OsProber (Dual-Boot Support) <br />
 
-	virtualbox-guest-utils
+* Network Utilities:
 
-	lightdm
+    Netctl <br />
+    NetworkManager + applet <br />
+    WPA Supplicant <br />
+    WPA ActionD <br />
+    Wireless Tools <br />
 
-	lightdm-gtk-greeter
+Also contains a long list of optional additional software (audio, games, browsers, media players, cli utils, text editors, servers, etc...) from the Official Arch repos.
 
+Arch Anywhere, quick, easy, and straight forward, "Keep it simple stupid".
 
-- Bootloader:
+You can find the latest version of Arch Anywhere on the Download page:
 
-	grub
-
-	os-prober
-
-
-- Network Utils:
-
-	wireless_tools
-
-	wpa_supplicant
-	
-	netctl
-
-	wpa_actiond
-
-
-- Additional optional programs:
-
-	arch-wiki
-
-	screenfetch
-
-	openssh
-
-	firefox
-
-	htop
-
-	zsh
-
-	conky
-
-	htop
-
-	lynx
-
-	pulseaudio
-
-	cmus
+http://arch-anywhere.org/download.html
 
 
-- Online only desktops:
-
-	mate
-
-	lxde
-
-	lxqt
-
-	cinnamon
-
-	gnome
-
-	kde plasma
-
-	enlightenment
-
-	fluxbox
+<p>
+  <img src="http://arch-anywhere.org/images/installer/2-languages.png" width="350"/>
+  <img src="http://arch-anywhere.org/images/installer/7-partition.png" width="350">
+  <img src="http://arch-anywhere.org/images/installer/18-base_install.png" width="350"/>
+  <img src="http://arch-anywhere.org/images/installer/25-install2.png" width="350"/>
+</p>
