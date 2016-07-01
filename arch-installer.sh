@@ -1343,10 +1343,23 @@ install_base() {
 	download_size=$(</tmp/size.tmp) ; rm /tmp/size.tmp
 	export software_size=$(echo "$download_size Mib")
 	cal_rate
-
+	
 	if (dialog --yes-button "$install" --no-button "$cancel" --yesno "\n$install_var" 15 60); then
 		tmpfile=$(mktemp)
-		(LANG=C pacstrap "$ARCH" $(echo "$base_install") ; echo "$?" > /tmp/ex_status) &> "$tmpfile" &
+		
+		if "$exclude_man" ; then
+			man_db=$(echo -e "0" | pacstrap -i $ARCH base | grep -o "....man-db" | awk '{print $1}' | sed 's/)//') &> /dev/null
+			man_pages=$(echo -e "0" | pacstrap -i $ARCH base | grep -o "....man-pages" | awk '{print $1}' | sed 's/)//') &> /dev/null
+			base_int=$(echo -e "0" | pacstrap -i $ARCH base | grep -o "...members" | awk '{print $1}') &> /dev/null
+
+			if (<<<"$base_install" grep "base-devel" &> /dev/null); then
+				(echo -e "1-$((man_db-1)) $((man_pages+1))-$base_int\n\ny" | pacstrap -i "$ARCH" $(echo "$base_install") ; echo "$?" > /tmp/ex_status) &> "$tmpfile" &
+			else
+				(echo -e "1-$((man_db-1)) $((man_pages+1))-$base_int\ny" | pacstrap -i "$ARCH" $(echo "$base_install") ; echo "$?" > /tmp/ex_status) &> "$tmpfile" &
+			fi
+		else
+			(LANG=C pacstrap "$ARCH" $(echo "$base_install") ; echo "$?" > /tmp/ex_status) &> "$tmpfile" &
+		fi
 		pid=$! pri=$(echo "$down+1" | bc | sed 's/\..*$//') msg="\n$install_load_var" load_log
 		genfstab -U -p "$ARCH" >> "$ARCH"/etc/fstab
 
@@ -1404,7 +1417,7 @@ grub_config() {
 	if "$UEFI" ; then
 		arch-chroot "$ARCH" grub-install --efi-directory="$esp_mnt" --target=x86_64-efi --bootloader-id=boot &> /dev/null &
 		pid=$! pri=0.1 msg="\n$grub_load1 \n\n \Z1> \Z2grub-install --efi-directory="$esp_mnt"\Zn" load
-#		mv "$ARCH"/"$esp"/EFI/boot/grubx64.efi "$ARCH"/"$esp"/EFI/boot/bootx64.efi
+		mv "$ARCH"/"$esp"/EFI/boot/grubx64.efi "$ARCH"/"$esp"/EFI/boot/bootx64.efi
 				
 		if ! "$crypted" ; then
 			arch-chroot "$ARCH" mkinitcpio -p linux &> /dev/null &
@@ -1775,18 +1788,22 @@ graphics() {
 	if (dialog --yes-button "$install" --no-button "$cancel" --yesno "\n$desktop_confirm_var" 18 60) then
 		tmpfile=$(mktemp)
 		pacstrap "$ARCH" $(echo "$DE") &> "$tmpfile" &
-		pid=$! pri="<<<$down sed 's/\..*$//" msg="\n$desktop_load_var" load_log
+		pid=$! pri=$(<<<"$down" sed 's/\..*$//') msg="\n$desktop_load_var" load_log
 		rm "$tmpfile"
 		desktop=true
 
-		if "$enable_dm" && ! "$dm_set" && (<<<"$DE" grep "kde" &> /dev/null); then
-			arch-chroot "$ARCH" systemctl enable sddm.service &> /dev/null &
-			pid=$! pri="0.1" msg="$wait_load \n\n \Z1> \Z2systemctl enable sddm\Zn" load
-			dm_set=true
-		elif "$enable_dm" && ! "$dm_set" ; then
-			arch-chroot "$ARCH" systemctl enable lightdm.service &> /dev/null &
-			pid=$! pri="0.1" msg="\n$dm_load \n\n \Z1> \Z2systemctl enable lightdm\Zn" load
-			dm_set=true
+		if "$enable_dm" ; then 
+			if ! "$dm_set" ; then
+				if (<<<"$DE" grep "kde" &> /dev/null); then
+					arch-chroot "$ARCH" systemctl enable sddm.service &> /dev/null &
+					pid=$! pri="0.1" msg="$wait_load \n\n \Z1> \Z2systemctl enable sddm\Zn" load
+					dm_set=true
+				else
+					arch-chroot "$ARCH" systemctl enable lightdm.service &> /dev/null &
+					pid=$! pri="0.1" msg="\n$dm_load \n\n \Z1> \Z2systemctl enable lightdm\Zn" load
+					dm_set=true
+				fi
+			fi
 		fi
 		
 		if "$VBOX" ; then
@@ -1842,7 +1859,8 @@ config_env() {
 	cp -r /usr/share/arch-anywhere/{.zshrc,desktop/.config/} "$ARCH"/etc/skel/
 	cp /usr/share/arch-anywhere/desktop/arch-anywhere-icon.png "$ARCH"/etc/skel/.face
 	cp -r "/usr/share/arch-anywhere/desktop/AshOS-Dark-2.0" "$ARCH"/usr/share/themes/
-	cp /usr/share/arch-anywhere/desktop/arch-anywhere-wallpaper.png "$ARCH"/usr/share/backgrounds/xfce/{arch-anywhere-wallpaper.png,xfce-teal.jpg}
+	cp /usr/share/arch-anywhere/desktop/arch-anywhere-wallpaper.png "$ARCH"/usr/share/backgrounds/xfce/
+	cp "$ARCH"/usr/share/backgrounds/xfce/arch-anywhere-wallpaper.png "$ARCH"/usr/share/backgrounds/xfce/xfce-teal.jpg
 	cp /usr/share/arch-anywhere/desktop/arch-anywhere-icon.png "$ARCH"/usr/share/pixmaps/
 	de_config=false
 
@@ -2087,7 +2105,7 @@ install_software() {
 						if (dialog --yes-button "$install" --no-button "$cancel" --yesno "\n$software_confirm_var1" "$height" 65) then
 							tmpfile=$(mktemp)
 						    pacstrap "$ARCH" $(echo "$download") &> "$tmpfile" &
-						    pid=$! pri="<<<$down sed 's/\..*$//" msg="\n$software_load_var" load_log
+						    pid=$! pri=$(<<<"$down" sed 's/\..*$//') msg="\n$software_load_var" load_log
 	  					    rm "$tmpfile"
 	  					    unset final_software
 	  					    software_selected=true err=true
@@ -2439,4 +2457,5 @@ load_log() {
 
 }
 
+opt="$1"
 init
