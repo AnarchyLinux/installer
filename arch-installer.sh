@@ -33,6 +33,7 @@ init() {
 		"English" "-" \
 		"French" "Français" \
 		"German" "Deutsch" \
+		"Greek" "Greek" \
 		"Indonesian" "bahasa Indonesia" \
 		"Portuguese" "Português" \
 		"Portuguese-Brazilian" "Português do Brasil" \
@@ -45,6 +46,7 @@ init() {
 		"English") export lang_file=/usr/share/arch-anywhere/lang/arch-installer-english.conf ;;
 		"French") export lang_file=/usr/share/arch-anywhere/lang/arch-installer-french.conf ;;
 		"German") export lang_file=/usr/share/arch-anywhere/lang/arch-installer-german.conf ;;
+		"Greek") export lang_file=/usr/share/arch-anywhere/lang/arch-installer-greek.conf ;;
 		"Indonesian") export lang_file=/usr/share/arch-anywhere/lang/arch-installer-indonesia.conf ;;
 		"Portuguese") export lang_file=/usr/share/arch-anywhere/lang/arch-installer-portuguese.conf ;;
 		"Portuguese-Brazilian") export lang_file=/usr/share/arch-anywhere/lang/arch-installer-portuguese-br.conf ;;
