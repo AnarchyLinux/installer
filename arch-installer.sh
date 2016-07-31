@@ -1933,10 +1933,11 @@ install_software() {
 						"irssi"				"$net9" OFF \
 						"lynx"				"$net3" OFF \
 						"minitube"			"$net4" OFF \
-						"thunderbird"		"$net6" OFF \
-						"transmission-cli" 	"$net7" OFF \
-						"transmission-gtk"	"$net8" OFF \
-						"xchat"				"$net10" OFF 3>&1 1>&2 2>&3)
+						"thunderbird"			"$net6" OFF \
+						"transmission-cli" 		"$net7" OFF \
+						"transmission-gtk"		"$net8" OFF \
+						"xchat"				"$net10" OFF \
+						"hexchat"			"$net11" OFF 3>&1 1>&2 2>&3)
 					if [ "$?" -gt "0" ]; then
 						err=true
 					elif "$desktop" ; then
