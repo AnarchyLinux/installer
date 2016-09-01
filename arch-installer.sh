@@ -1679,7 +1679,7 @@ graphics() {
 		"KDE plasma")	if (dialog --defaultno --yes-button "$yes" --no-button "$no" --yesno "\n$extra_msg3" 10 60) then
 							DE="plasma-desktop"
 						else
-							DE="kde-applications plasma"
+							DE="plasma kde-applications"
 						fi
 						
 						enable_dm=true
