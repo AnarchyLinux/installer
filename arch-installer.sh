@@ -1677,7 +1677,7 @@ graphics() {
 					 start_term="exec mate-session"
 		;;
 		"KDE plasma")	if (dialog --defaultno --yes-button "$yes" --no-button "$no" --yesno "\n$extra_msg3" 10 60) then
-							DE="plasma-desktop sddm"
+							DE="plasma-desktop"
 						else
 							DE="kde-applications plasma"
 						fi
@@ -1799,7 +1799,7 @@ graphics() {
 		if "$enable_dm" ; then 
 			if ! "$dm_set" ; then
 				if (<<<"$DE" grep "kde" &> /dev/null); then
-					arch-chroot "$ARCH" systemctl enable sddm.service &> /dev/null &
+					arch-chroot "$ARCH" pacman -S sddm --noconfirm && systemctl enable sddm.service &> /dev/null &
 					pid=$! pri="0.1" msg="$wait_load \n\n \Z1> \Z2systemctl enable sddm\Zn" load
 					dm_set=true
 				else
