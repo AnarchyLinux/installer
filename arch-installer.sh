@@ -1677,7 +1677,7 @@ graphics() {
 					 start_term="exec mate-session"
 		;;
 		"KDE plasma")	if (dialog --defaultno --yes-button "$yes" --no-button "$no" --yesno "\n$extra_msg3" 10 60) then
-							DE="kde-applications plasma-desktop"
+							DE="plasma-desktop"
 						else
 							DE="kde-applications plasma"
 						fi
