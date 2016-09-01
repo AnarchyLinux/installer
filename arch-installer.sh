@@ -1798,7 +1798,7 @@ graphics() {
 
 		if "$enable_dm" ; then 
 			if ! "$dm_set" ; then
-				if (<<<"$DE" grep "kde" &> /dev/null); then
+				if (<<<"$DE" grep "plasma" &> /dev/null); then
 					arch-chroot "$ARCH" systemctl enable sddm.service &> /dev/null &
 					pid=$! pri="0.1" msg="$wait_load \n\n \Z1> \Z2systemctl enable sddm\Zn" load
 					dm_set=true
