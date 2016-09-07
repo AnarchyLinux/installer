@@ -61,43 +61,60 @@ init() {
 	### Source configuration and language files
 	source "$lang_file"
 	export reload=true
-	check_connection
+	update_mirrors
 
 }
 
-check_connection() {
+update_mirrors() {
 
 	op_title="$welcome_op_msg"
 	if ! (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$intro_msg" 10 60) then
 		reset ; exit
 	fi
-	
-	op_title="$connection_op_msg"
-	(wget --no-check-certificate --append-output=/tmp/wget.log -O /dev/null "$test_link"
-	echo "$?" > /tmp/ex_status.var ; sleep 0.5) &> /dev/null &
-	pid=$! pri=0.3 msg="\n$connection_load \n\n \Z1> \Z2wget -O /dev/null test_link/test1Mb.db\Zn" load
-	sed -i 's/\,/\./' /tmp/wget.log
 
-	while [ "$(</tmp/ex_status.var)" -gt "0" ]
-	  do
-		if [ -n "$wifi_network" ]; then
-			if (dialog --yes-button "$yes" --no-button "$no" --yesno "$wifi_msg0" 10 60) then
-				wifi-menu
-				if [ "$?" -gt "0" ]; then
-					dialog --ok-button "$ok" --msgbox "$wifi_msg1" 10 60
-					setterm -background black -store ; reset ; echo "$connect_err1" ; exit 1
+	if ! (</etc/pacman.d/mirrorlist grep "rankmirrors" &>/dev/null) then
+		op_title="$mirror_op_msg"
+		code=$(dialog --nocancel --ok-button "$ok" --menu "$mirror_msg1" 17 60 10 $countries 3>&1 1>&2 2>&3)
+		(wget --no-check-certificate --append-output=/dev/null "https://www.archlinux.org/mirrorlist/?country=$code&protocol=http" -O /etc/pacman.d/mirrorlist.bak
+		echo "$?" > /tmp/ex_status.var ; sleep 0.5) &> /dev/null &
+		pid=$! pri=0.1 msg="\n$mirror_load0 \n\n \Z1> \Z2wget -O /etc/pacman.d/mirrorlist archlinux.org/mirrorlist/?country=$code\Zn" load
+		
+		while [ "$(</tmp/ex_status.var)" -gt "0" ]
+		  do
+			if [ -n "$wifi_network" ]; then
+				if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$wifi_msg0" 10 60) then
+					wifi-menu
+					if [ "$?" -gt "0" ]; then
+						dialog --ok-button "$ok" --msgbox "\n$wifi_msg1" 10 60
+						setterm -background black -store ; reset ; echo "$connect_err1" ; exit 1
+					else
+						echo "0" > /tmp/ex_status.var
+					fi
 				else
-					wifi=true
-					echo "0" > /tmp/ex_status.var
+					unset wifi_network
 				fi
 			else
-				unset wifi_network
+				dialog --ok-button "$ok" --msgbox "\n$connect_err0" 10 60
+				setterm -background black -store ; reset ; echo -e "$connect_err1" ;  exit 1
 			fi
-		else
-			dialog --ok-button "$ok" --msgbox "$connect_err0" 10 60
-			setterm -background black -store ; reset ; echo -e "$connect_err1" ;  exit 1
-		fi
-	done
+		done
+
+		sed -i 's/#//' /etc/pacman.d/mirrorlist.bak
+		rankmirrors -n 6 /etc/pacman.d/mirrorlist.bak > /etc/pacman.d/mirrorlist &
+	 	pid=$! pri=0.8 msg="\n$mirror_load1 \n\n \Z1> \Z2rankmirrors -n 6 /etc/pacman.d/mirrorlist\Zn" load
+	fi
+
+	check_connection
+
+}
+
+check_connection() {
+	
+	op_title="$connection_op_msg"
+	test_mirror=$(</etc/pacman.d/mirrorlist grep "^Server" | awk 'NR==1{print $3}' | sed 's/$.*//')
+	wget --no-check-certificate --append-output=/tmp/wget.log -O /dev/null "${test_mirror}extra/os/i686/bluez-utils-5.41-2-i686.pkg.tar.xz" &
+	pid=$! pri=0.3 msg="\n$connection_load \n\n \Z1> \Z2wget -O /dev/null test_link/test1Mb.db\Zn" load
+	sed -i 's/\,/\./' /tmp/wget.log
 		
 	### Define network connection speed variables from data in wget.log
 	connection_speed=$(tail /tmp/wget.log | grep -oP '(?<=\().*(?=\))' | awk '{print $1}')
@@ -398,9 +415,8 @@ prepare_drives() {
 		dialog --ok-button "$ok" --msgbox "\n$part_err_msg" 10 60
 		prepare_drives
 	
-	### Else continue into update mirrors function
 	else
-		update_mirrors
+		prepare_base
 	fi
 
 }
@@ -665,28 +681,11 @@ part_menu() {
 
 	op_title="$manual_op_msg"
 	unset manual_part
-	part_count=$(lsblk | grep "sd." | wc -l)
-	
-	### Set menu height variable based on the number of listed partitions
-	if [ "$part_count" -lt "6" ]; then
-		height=16
-		menu_height=5
-	else
-		height=20
-		menu_height=9
-	fi
-	
-	### Create manual partition menu
-	### Set int variable to 1
-	### Set count to total number of devices / partitions
-	int=1
-	count=$(lsblk | grep "sd." | grep -v "$USB\|loop\|1K" | wc -l)
 	tmp_menu=/tmp/part.sh tmp_list=/tmp/part.list
 	dev_menu="|  Device:  |  Size:  |  Used:  |  FS:  |  Mount:  |  Type:  |"
-	
-	### Until int is greater than count loop create partition menu
-	### Device info defined with device dev_size dev_type mnt_point
-	### awk is used with the int variable to print next line each time it loops
+	count=$(lsblk | grep "sd." | grep -v "$USB\|loop\|1K" | wc -l)
+	int=1
+
 	until [ "$int" -gt "$count" ]
 	  do
 		device=$(lsblk | grep "sd." | grep -v "$USB\|loop\|1K" | awk "NR==$int {print \$1}")
@@ -698,32 +697,32 @@ part_menu() {
 		### each time loop runs append new device info to /tmp/part.list
 		if [ "$int" -eq "1" ]; then
 			if "$screen_h" ; then
-				echo "dialog --colors --backtitle \"$backtitle\" --title \"$op_title\" --ok-button \"$ok\" --cancel-button \"$cancel\" --menu \"$manual_part_msg \n\n $dev_menu\" $height 68 $menu_height \\" > "$tmp_menu"
+				echo "dialog --colors --backtitle \"$backtitle\" --title \"$op_title\" --ok-button \"$ok\" --cancel-button \"$cancel\" --menu \"$manual_part_msg \n\n $dev_menu\" 21 68 9 \\" > "$tmp_menu"
 			else
-				echo "dialog --colors --title \"$title\" --ok-button \"$ok\" --cancel-button \"$cancel\" --menu \"$manual_part_msg \n\n $dev_menu\" $height 68 $menu_height \\" > "$tmp_menu"
+				echo "dialog --colors --title \"$title\" --ok-button \"$ok\" --cancel-button \"$cancel\" --menu \"$manual_part_msg \n\n $dev_menu\" 20 68 8 \\" > "$tmp_menu"
 			fi
 			echo "\"$device   \" \"$dev_size $dev_type ------------->\" \\" > $tmp_list
 		else
-			if (<<<"$device" grep -o "sd.." &> /dev/null) then
+			if (<<<"$device" grep "sd.[0-9]" &> /dev/null) then
 				if (<<<"$mnt_point" grep "/" &> /dev/null) then
-					fs_type="$(df -T | grep "$(<<<"$device" grep -o "sd..")" | awk '{print $2}')"
-					dev_used=$(df -T | grep "$(<<<"$device" grep -o "sd..")" | awk '{print $6}')
+					fs_type="$(df -T | grep "$(<<<"$device" sed 's/^..//')" | awk '{print $2}')"
+					dev_used=$(df -T | grep "$(<<<"$device" sed 's/^..//')" | awk '{print $6}')
 				else
 					unset fs_type dev_used
 				fi
 				
-				if (fdisk -l | grep "$(<<<"$device" grep -o "sd..")" | grep "*" &> /dev/null) then
-					part_type=$(fdisk -l | grep "$(<<<"$device" grep -o "sd..")" | awk '{print $8,$9}')
+				if (fdisk -l | grep "$(<<<"$device" sed 's/^..//')" | grep "*" &> /dev/null) then
+					part_type=$(fdisk -l | grep "$(<<<"$device" sed 's/^..//')" | awk '{print $8,$9}')
 				else
-					if (efivar -l &> /dev/null) then
-						part_type=$(fdisk -l | grep "$(<<<"$device" grep -o "sd..")" | awk '{print $6,$7}')
+					if (fdisk -l | grep "Disklabel type: gpt" &>/dev/null) then
+						part_type=$(fdisk -l | grep "$(<<<"$device" sed 's/^..//')" | awk '{print $6,$7}')
 						if [ "$part_type" == "Linux filesystem" ]; then
 							part_type="Linux"
 						elif [ "$part_type" == "EFI System" ]; then
 							part_type="EFI/ESP"
 						fi
 					else
-						part_type=$(fdisk -l | grep "$(<<<"$device" grep -o "sd..")" | awk '{print $7,$8}')
+						part_type=$(fdisk -l | grep "$(<<<"$device" sed 's/^..//')" | awk '{print $7,$8}')
 					fi
 				fi
 
@@ -755,7 +754,7 @@ part_class() {
 	if [ -z "$manual_part" ]; then
 		prepare_drives
 	elif (<<<$manual_part grep "[0-9]" &> /dev/null); then
-		part=$(<<<$manual_part grep -o "sd..")
+		part=$(<<<"$manual_part" sed 's/^..//')
 		part_size=$(lsblk | grep "$part" | awk '{print $4}' | sed 's/\,/\./')
 		part_mount=$(lsblk | grep "$part" | awk '{print $7}' | sed 's/\/mnt/\//;s/\/\//\//')
 		source "$lang_file"  &> /dev/null
@@ -860,7 +859,7 @@ part_class() {
 					### if user selects yes unmount the partition remove the created mountpoint and echo the mountpoint back into the points menu
 					elif (dialog --yes-button "$yes" --no-button "$no" --defaultno --yesno "\n$manual_part_var1" 10 60) then
 						umount  "$ARCH"/"$part_mount" &> /dev/null &
-						pid=$! pri=0.1 msg="$wait_load \n\n \Z1> \Z2umount ${ARCH}/${part_mount}\Zn" load
+						pid=$! pri=0.1 msg="$wait_load \n\n \Z1> \Z2umount ${ARCH}${part_mount}\Zn" load
 						rm -r "$ARCH"/"$part_mount"
 						points=$(echo -e "$part_mount   mountpoint>\n$points")
 					fi
@@ -989,7 +988,7 @@ part_class() {
 				### Create new mountpoint and mount selected partition
 				(mkdir -p "$ARCH"/"$mnt"
 				mount /dev/"$part" "$ARCH"/"$mnt" ; echo "$?" > /tmp/ex_status.var ; sleep 0.5) &> /dev/null &
-				pid=$! pri=0.1 msg="\n$mnt_load \n\n \Z1> \Z2mount /dev/$part ${ARCH}/${mnt}\Zn" load
+				pid=$! pri=0.1 msg="\n$mnt_load \n\n \Z1> \Z2mount /dev/$part ${ARCH}${mnt}\Zn" load
 
 				if [ "$(</tmp/ex_status.var)" -gt "0" ]; then
 					dialog --ok-button "$ok" --msgbox "\n$part_err_msg2" 10 60
@@ -1098,7 +1097,9 @@ part_class() {
 					fi
 				fi
 				
-				update_mirrors
+				sleep 1
+				pid=$! pri=0.1 msg="$wait_load \n\n \Z1> \Z2Finalize...\Zn" load
+				prepare_base
 			else
 				part_menu
 			fi
@@ -1188,28 +1189,6 @@ fs_select() {
 
 }
 
-update_mirrors() {
-
-	op_title="$mirror_op_msg"
-	if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$mirror_msg0" 10 60) then
-		
-		### Display full list of mirrorlist country codes to user
-		### use wget to fetch mirrorlist
-		code=$(dialog --nocancel --ok-button "$ok" --menu "$mirror_msg1" 17 60 10 $countries 3>&1 1>&2 2>&3)
-		wget --no-check-certificate --append-output=/dev/null "https://www.archlinux.org/mirrorlist/?country=$code&protocol=http" -O /etc/pacman.d/mirrorlist.bak &
-		pid=$! pri=0.1 msg="\n$mirror_load0 \n\n \Z1> \Z2wget -O /etc/pacman.d/mirrorlist archlinux.org/mirrorlist/?country=$code\Zn" load
-		
-		### Use sed to remove comments from mirrorlist and rank the top 6 mirrors into /etc/pacman.d/mirrorlist
-		sed -i 's/#//' /etc/pacman.d/mirrorlist.bak
-		rankmirrors -n 6 /etc/pacman.d/mirrorlist.bak > /etc/pacman.d/mirrorlist &
- 		pid=$! pri=0.8 msg="\n$mirror_load1 \n\n \Z1> \Z2rankmirrors -n 6 /etc/pacman.d/mirrorlist\Zn" load
- 		mirrors_updated=true
-	fi
-
-	prepare_base
-
-}
-
 prepare_base() {
 	
 	op_title="$install_op_msg"
@@ -1273,39 +1252,22 @@ prepare_base() {
 			base_install="$base_install efibootmgr"
 		fi
 
-		if ! "$wifi" ; then
-			if (dialog --defaultno --yes-button "$yes" --no-button "$no" --yesno "\n$wifi_option_msg" 10 60) then
-				net_menu=true
+		net_util=$(dialog --ok-button "$ok" --cancel-button "$cancel" --menu "$wifi_util_msg" 12 64 3 \
+			"netctl"			"$net_util_msg0" \
+			"networkmanager" 		"$net_util_msg1" \
+			"$none" "-" 3>&1 1>&2 2>&3)
+		
+		if [ "$?" -gt "0" ]; then
+			if (dialog --defaultno --yes-button "$yes" --no-button "$no" --yesno "\n$exit_msg" 10 60) then
+				main_menu
 			fi
 		else
-			net_menu=true
-		fi
-
-		if "$net_menu" ; then
-			while (true)
-			  do
-				net_util=$(dialog --ok-button "$ok" --cancel-button "$cancel" --menu "$wifi_util_msg" 12 64 3 \
-					"netctl"			"$net_util_msg0" \
-					"networkmanager" 		"$net_util_msg1" \
-					"$none" "-" 3>&1 1>&2 2>&3)
-		
-				if [ "$?" -gt "0" ]; then
-					if (dialog --defaultno --yes-button "$yes" --no-button "$no" --yesno "\n$exit_msg" 10 60) then
-						main_menu
-					fi
-				else
-					if [ "$net_util" == "netctl" ]; then
-						base_install="$base_install $net_util wireless_tools wpa_supplicant wpa_actiond dialog" enable_nm=true ; break
-					elif [ "$net_util" == "networkmanager" ]; then
-						base_install="$base_install $net_util wireless_tools wpa_supplicant wpa_actiond" enable_nm=true ; break
-					else
-						if (dialog --defaultno --yes-button "$yes" --no-button "$no" --yesno "$net_warn_msg" 10 60) then
-							break
-						fi
-					fi
-				fi			
-			done
-		fi
+			if [ "$net_util" == "netctl" ]; then
+				base_install="$base_install $net_util wireless_tools wpa_supplicant wpa_actiond dialog" enable_nm=true
+			elif [ "$net_util" == "networkmanager" ]; then
+				base_install="$base_install $net_util wireless_tools wpa_supplicant wpa_actiond" enable_nm=true
+			fi
+		fi			
 
 		if "$bluetooth" ; then
 			if (dialog --defaultno --yes-button "$yes" --no-button "$no" --yesno "\n$bluetooth_msg" 10 60) then
@@ -1336,34 +1298,186 @@ prepare_base() {
 		fi
 	fi
 	
+	graphics
+
+}
+
+graphics() {
+
+	op_title="$de_op_msg"
+	if ! (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$desktop_msg" 10 60) then
+		if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$desktop_cancel_msg" 10 60) then	
+			install_base
+		fi	
+	fi
+	
+	DE=$(dialog --ok-button "$ok" --cancel-button "$cancel" --menu "$enviornment_msg" 18 60 11 \
+		"Arch-Anywhere-Xfce" "$de15" \
+		"cinnamon"      "$de5" \
+		"deepin"		"$de14" \
+		"gnome"         "$de4" \
+		"KDE plasma"    "$de6" \
+		"lxde"          "$de2" \
+		"lxqt"          "$de3" \
+		"mate"          "$de1" \
+		"xfce4"         "$de0" \
+		"awesome"       "$de9" \
+		"bspwm"			"$de13" \
+		"dwm"           "$de12" \
+		"enlightenment" "$de7" \
+		"fluxbox"       "$de11" \
+		"i3"            "$de10" \
+		"openbox"       "$de8" \
+		"xmonad"		"$de16"  3>&1 1>&2 2>&3)
+	if [ "$?" -gt "0" ]; then 
+		if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$desktop_cancel_msg" 10 60) then	
+			install_base
+		fi
+	fi
+
+	case "$DE" in
+		"Arch-Anywhere-Xfce") 	DE="xfce4 xfce4-goodies xdg-user-dirs gvfs zsh zsh-syntax-highlighting"
+								start_term="exec startxfce4" de_config=true
+		;;
+		"xfce4") 	if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$extra_msg0" 10 60) then
+						DE="xfce4 xfce4-goodies"
+					fi
+					start_term="exec startxfce4"
+		;;
+		"gnome")	if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$extra_msg1" 10 60) then
+						DE="gnome gnome-extra"
+					fi
+					 start_term="exec gnome-session"
+		;;
+		"mate")		if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$extra_msg2" 10 60) then
+						DE="mate mate-extra"
+					fi
+					 start_term="exec mate-session"
+		;;
+		"KDE plasma")	if (dialog --defaultno --yes-button "$yes" --no-button "$no" --yesno "\n$extra_msg3" 10 60) then
+							DE="plasma-desktop sddm"
+						else
+							DE="plasma kde-applications"
+						fi
+						
+						enable_dm=true
+						start_term="exec startkde"
+		;;
+		"deepin")	if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$extra_msg4" 10 60) then
+						DE="deepin deepin-extra"
+					fi
+ 					start_term="exec startdde"
+ 		;;
+ 		"xmonad")	if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$extra_msg5" 10 60) then 
+                        DE="xmonad xmonad-contrib"
+                    fi
+                    start_term="exec xmonad"
+		;;	
+		"cinnamon") start_term="exec cinnamon-session" 
+		;;
+		"lxde") 	start_term="exec startlxde" 
+		;;
+		"lxqt") 	start_term="exec startlxqt" 
+					DE="lxqt oxygen-icons"
+		;;
+		"enlightenment") 	start_term="exec enlightenment_start"
+							DE="enlightenment terminology"
+		;;
+		"bspwm")	start_term="sxhkd & ; exec bspwm"
+					DE="bspwm sxhkd"
+		;;
+		"fluxbox")	start_term="exec startfluxbox" 
+		;;
+		"openbox")	start_term="exec openbox-session"
+		;;
+		"awesome") 	start_term="exec awesome" 
+		;;	
+		"dwm") 		start_term="exec dwm" 
+		;;
+		"i3") 		start_term="exec i3" 
+		;;
+	esac
+
+	env=$(<<<"$DE" awk '{print $1,$2}')
+
+	while (true)
+	  do
+	  	if "$VBOX" ; then
+	  		dialog --ok-button "$ok" --msgbox "\n$vbox_msg" 10 60
+			GPU="virtualbox-guest-utils linux-headers mesa-libgl"
+	  		break
+	  	fi
+		GPU=$(dialog --ok-button "$ok" --cancel-button "$cancel" --menu "$graphics_msg" 16 60 5 \
+			"$default"			"$gr0" \
+			"mesa-libgl"        "$gr1" \
+			"Nvidia"            "$gr2" \
+			"xf86-video-ati"    "$gr4" \
+			"xf86-video-intel"  "$gr5" 3>&1 1>&2 2>&3)
+		if [ "$?" -gt "0" ]; then
+			if (dialog --yes-button "$yes" --no-button "$no" --yesno "$desktop_cancel_msg" 10 60) then
+				install_base
+			fi
+		elif [ "$GPU" == "Nvidia" ]; then
+			GPU=$(dialog --ok-button "$ok" --cancel-button "$cancel" --menu "$nvidia_msg" 15 60 4 \
+				"nvidia"       "$gr6" \
+				"nvidia-340xx" "$gr7" \
+				"nvidia-304xx" "$gr8" 3>&1 1>&2 2>&3)
+			if [ "$?" -eq "0" ]; then
+				GPU="$GPU ${GPU}-libgl"
+				break
+			fi
+		elif [ "$GPU" == "$default" ]; then
+			unset GPU
+			break
+		else
+			break
+		fi
+	done
+				
+	DE="$DE xorg-server xorg-server-utils xorg-xinit xterm $GPU"
+		
+	if [ "$net_util" == "networkmanager" ] ; then
+		DE="$DE network-manager-applet"
+	fi
+
+	if (dialog --defaultno --yes-button "$yes" --no-button "$no" --yesno "\n$touchpad_msg" 10 60) then
+		GPU="$DE xf86-input-synaptics"
+	fi
+
+	if "$enable_bt" ; then
+		if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$blueman_msg" 10 60) then
+			DE="$DE blueman"
+		fi
+	fi
+	
+	if ! "$enable_dm" ; then
+		if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$lightdm_msg" 10 60) then
+			DE="$DE lightdm lightdm-gtk-greeter"
+			enable_dm=true
+		else
+			dialog --ok-button "$ok" --msgbox "\n$startx_msg" 10 60
+		fi
+	fi
+	
+	base_install="$base_install $DE"
+	desktop=true
 	install_base
 
 }
 
+
 install_base() {
 
+	op_title="$install_op_msg"
 	pacstrap "$ARCH" --print-format='%s' $(echo "$base_install") | sed '1,6d' | awk '{s+=$1} END {print s/1024/1024}' &> /tmp/size.tmp &
 	pid=$! pri=0.8 msg="\n$pacman_load \n\n \Z1> \Z2pacman -Sy\Zn" load
 	download_size=$(</tmp/size.tmp) ; rm /tmp/size.tmp
 	export software_size=$(echo "$download_size Mib")
 	cal_rate
 	
-	if (dialog --yes-button "$install" --no-button "$cancel" --yesno "\n$install_var" 15 60); then
+	if (dialog --yes-button "$install" --no-button "$cancel" --yesno "\n$install_var" 20 60); then
 		tmpfile=$(mktemp)
-		
-		if "$exclude_man" ; then
-			man_db=$(echo -e "0" | pacstrap -i $ARCH base | grep -o "....man-db" | awk '{print $1}' | sed 's/)//') &> /dev/null
-			man_pages=$(echo -e "0" | pacstrap -i $ARCH base | grep -o "....man-pages" | awk '{print $1}' | sed 's/)//') &> /dev/null
-			base_int=$(echo -e "0" | pacstrap -i $ARCH base | grep -o "...members" | awk '{print $1}') &> /dev/null
-
-			if (<<<"$base_install" grep "base-devel" &> /dev/null); then
-				(echo -e "1-$((man_db-1)) $((man_pages+1))-$base_int\n\ny" | pacstrap -i "$ARCH" $(echo "$base_install") ; echo "$?" > /tmp/ex_status) &> "$tmpfile" &
-			else
-				(echo -e "1-$((man_db-1)) $((man_pages+1))-$base_int\ny" | pacstrap -i "$ARCH" $(echo "$base_install") ; echo "$?" > /tmp/ex_status) &> "$tmpfile" &
-			fi
-		else
-			(LANG=C pacstrap "$ARCH" $(echo "$base_install") ; echo "$?" > /tmp/ex_status) &> "$tmpfile" &
-		fi
+		(LANG=C pacstrap "$ARCH" $(echo "$base_install") ; echo "$?" > /tmp/ex_status) &> "$tmpfile" &
 		pid=$! pri=$(echo "$down+1" | bc | sed 's/\..*$//') msg="\n$install_load_var" load_log
 		genfstab -U -p "$ARCH" >> "$ARCH"/etc/fstab
 
@@ -1379,21 +1493,7 @@ install_base() {
 			arch-chroot "$ARCH" mkinitcpio -p linux &> /dev/null &
 			pid=$! pri=1 msg="\n$f2fs_config_load \n\n \Z1> \Z2mkinitcpio -p linux\Zn" load
 		fi
-			
-		case "$net_util" in
-			networkmanager)	arch-chroot "$ARCH" systemctl enable NetworkManager.service &>/dev/null
-        					pid=$! pri=0.1 msg="\n$nwmanager_msg0 \n\n \Z1> \Z2systemctl enable NetworkManager.service\Zn" load
-			;;
-			netctl)	arch-chroot "$ARCH" systemctl enable netctl.service &>/dev/null &
-        			pid=$! pri=0.1 msg="\n$nwmanager_msg1 \n\n \Z1> \Z2systemctl enable netctl.service\Zn" load
-			;;
-		esac
-
-    	if "$enable_bt" ; then
-    	    arch-chroot "$ARCH" systemctl enable bluetooth &>/dev/null &
-    	    pid=$! pri=0.1 msg="\n$btenable_msg \n\n \Z1> \Z2systemctl enable bluetooth.service\Zn" load
-    	fi
-	
+				
 		case "$bootloader" in
 			grub) grub_config ;;
 			syslinux) syslinux_config ;;
@@ -1510,6 +1610,45 @@ configure_system() {
 		pid=$! pri=0.1 msg="\n$zone_load_var \n\n \Z1> \Z2ln -s $ZONE /etc/localtime\Zn" load
 	fi
 
+	case "$net_util" in
+		networkmanager)	arch-chroot "$ARCH" systemctl enable NetworkManager.service &>/dev/null
+			pid=$! pri=0.1 msg="\n$nwmanager_msg0 \n\n \Z1> \Z2systemctl enable NetworkManager.service\Zn" load
+		;;
+		netctl)	arch-chroot "$ARCH" systemctl enable netctl.service &>/dev/null &
+    	pid=$! pri=0.1 msg="\n$nwmanager_msg1 \n\n \Z1> \Z2systemctl enable netctl.service\Zn" load
+		;;
+	esac
+
+    if "$enable_bt" ; then
+ 	   arch-chroot "$ARCH" systemctl enable bluetooth &>/dev/null &
+        pid=$! pri=0.1 msg="\n$btenable_msg \n\n \Z1> \Z2systemctl enable bluetooth.service\Zn" load
+    fi
+	
+	if "$desktop" ; then
+		echo "$start_term" > "$ARCH"/etc/skel/.xinitrc
+		echo "$start_term" > "$ARCH"/root/.xinitrc
+	fi
+	
+	if "$enable_dm" ; then 
+		if (<<<"$DE" grep "plasma" &> /dev/null); then
+			arch-chroot "$ARCH" systemctl enable sddm.service &> /dev/null &
+			pid=$! pri="0.1" msg="$wait_load \n\n \Z1> \Z2systemctl enable sddm\Zn" load
+		else
+			arch-chroot "$ARCH" systemctl enable lightdm.service &> /dev/null &
+			pid=$! pri="0.1" msg="\n$dm_load \n\n \Z1> \Z2systemctl enable lightdm\Zn" load
+		fi
+	fi
+		
+	if "$VBOX" ; then
+		arch-chroot "$ARCH" systemctl enable vboxservice &>/dev/null &
+		pid=$! pri=0.1 msg="\n$vbox_enable_msg \n\n \Z1> \Z2systemctl enable vboxservice\Zn" load
+	fi
+
+	if "$de_config" ; then	
+		config_env &
+		pid=$! pri="0.1" msg="$wait_load \n\n \Z1> \Z2arch-anywhere config_env\Zn" load
+	fi	
+	
 	if [ "$arch" == "x86_64" ]; then
 		if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n\n$multilib_msg" 11 60) then
 			sed -i '/\[multilib]$/ {
@@ -1517,13 +1656,31 @@ configure_system() {
 			/Include/s/#//g}' /mnt/etc/pacman.conf
 		fi
 	fi
-
+	
 	if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n\n$dhcp_msg" 11 60) then
 		arch-chroot "$ARCH" systemctl enable dhcpcd.service &> /dev/null &
 		pid=$! pri=0.1 msg="\n$dhcp_load \n\n \Z1> \Z2systemctl enable dhcpcd\Zn" load
 	fi
 
+	cp /usr/share/arch-anywhere/.bashrc-root "$ARCH"/root/.bashrc
+	cp /usr/share/arch-anywhere/.bashrc "$ARCH"/etc/skel/
 	set_hostname
+
+}
+
+config_env() {
+
+	sh="/usr/bin/zsh"
+	arch-chroot "$ARCH" chsh -s /usr/bin/zsh &> /dev/null
+	cp /usr/share/arch-anywhere/.zshrc "$ARCH"/root/
+	mkdir "$ARCH"/root/.config/ &> /dev/null
+	cp -r /usr/share/arch-anywhere/desktop/.config/{xfce4,Thunar} "$ARCH"/root/.config/
+	cp -r /usr/share/arch-anywhere/{.zshrc,desktop/.config/} "$ARCH"/etc/skel/
+	cp /usr/share/arch-anywhere/desktop/arch-anywhere-icon.png "$ARCH"/etc/skel/.face
+	cp -r "/usr/share/arch-anywhere/desktop/AshOS-Dark-2.0" "$ARCH"/usr/share/themes/
+	cp /usr/share/arch-anywhere/desktop/arch-anywhere-wallpaper.png "$ARCH"/usr/share/backgrounds/xfce/
+	cp "$ARCH"/usr/share/backgrounds/xfce/arch-anywhere-wallpaper.png "$ARCH"/usr/share/backgrounds/xfce/xfce-teal.jpg
+	cp /usr/share/arch-anywhere/desktop/arch-anywhere-icon.png "$ARCH"/usr/share/pixmaps/
 
 }
 
@@ -1538,10 +1695,8 @@ set_hostname() {
 	fi
 	
 	echo "$hostname" > "$ARCH"/etc/hostname
-	cp /usr/share/arch-anywhere/.bashrc-root "$ARCH"/root/.bashrc
-	cp /usr/share/arch-anywhere/.bashrc "$ARCH"/etc/skel/
-
 	op_title="$passwd_op_msg"
+	
 	while [ "$input" != "$input_chk" ]
 	  do
 		input=$(dialog --nocancel --clear --insecure --passwordbox "$root_passwd_msg0" 11 55 --stdout)
@@ -1568,7 +1723,7 @@ add_user() {
 	op_title="$user_op_msg"
 	if ! "$menu_enter" ; then
 		if ! (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$user_msg0" 10 60) then
-			graphics
+			install_software
 		fi
 	fi
 
@@ -1582,7 +1737,7 @@ add_user() {
 	fi
 
 	(arch-chroot "$ARCH" useradd -m -g users -G audio,network,power,storage,optical -s "$sh" "$user") &>/dev/null &
-	pid=$! pri=0.1 msg="$wait_load \n\n \Z1> \Z2useradd -m -g users -G ... -s /usr/bin/zsh $user\Zn" load
+	pid=$! pri=0.1 msg="$wait_load \n\n \Z1> \Z2useradd -m -g users -G ... -s $sh $user\Zn" load
 
 	source "$lang_file"
 	op_title="$passwd_op_msg"
@@ -1613,261 +1768,8 @@ add_user() {
 	if "$menu_enter" ; then
 		reboot_system
 	else	
-		graphics
+		install_software
 	fi
-
-}
-
-graphics() {
-
-	op_title="$de_op_msg"
-	if ! "$menu_enter" ; then
-		if ! (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$desktop_msg" 10 60) then
-			if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$desktop_cancel_msg" 10 60) then	
-				install_software
-			fi	
-		fi
-	fi
-	
-	DE=$(dialog --ok-button "$ok" --cancel-button "$cancel" --menu "$enviornment_msg" 18 60 11 \
-		"Arch-Anywhere-Xfce" "$de15" \
-		"cinnamon"      "$de5" \
-		"deepin"		"$de14" \
-		"gnome"         "$de4" \
-		"KDE plasma"    "$de6" \
-		"lxde"          "$de2" \
-		"lxqt"          "$de3" \
-		"mate"          "$de1" \
-		"xfce4"         "$de0" \
-		"awesome"       "$de9" \
-		"bspwm"			"$de13" \
-		"dwm"           "$de12" \
-		"enlightenment" "$de7" \
-		"fluxbox"       "$de11" \
-		"i3"            "$de10" \
-		"openbox"       "$de8" \
-		"xmonad"		"$de16"  3>&1 1>&2 2>&3)
-	if [ "$?" -gt "0" ]; then 
-		if ! "$menu_enter" ; then
-			if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$desktop_cancel_msg" 10 60) then	
-				install_software
-			fi
-		else
-			reboot_system
-		fi
-	fi
-
-	case "$DE" in
-		"Arch-Anywhere-Xfce") 	DE="xfce4 xfce4-goodies xdg-user-dirs gvfs zsh zsh-syntax-highlighting"
-								start_term="exec startxfce4" de_config=true
-		;;
-		"xfce4") 	if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$extra_msg0" 10 60) then
-						DE="xfce4 xfce4-goodies"
-					fi
-					start_term="exec startxfce4"
-		;;
-		"gnome")	if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$extra_msg1" 10 60) then
-						DE="gnome gnome-extra"
-					fi
-					 start_term="exec gnome-session"
-		;;
-		"mate")		if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$extra_msg2" 10 60) then
-						DE="mate mate-extra"
-					fi
-					 start_term="exec mate-session"
-		;;
-		"KDE plasma")	if (dialog --defaultno --yes-button "$yes" --no-button "$no" --yesno "\n$extra_msg3" 10 60) then
-							DE="plasma-desktop sddm"
-						else
-							DE="plasma kde-applications"
-						fi
-						
-						enable_dm=true
-						start_term="exec startkde"
-		;;
-		"deepin")	if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$extra_msg4" 10 60) then
-						DE="deepin deepin-extra"
-					fi
- 					start_term="exec startdde"
- 		;;
- 		"xmonad")	if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$extra_msg5" 10 60) then 
-                        DE="xmonad xmonad-contrib"
-                    fi
-                    start_term="exec xmonad"
-		;;	
-		"cinnamon") start_term="exec cinnamon-session" 
-		;;
-		"lxde") 	start_term="exec startlxde" 
-		;;
-		"lxqt") 	start_term="exec startlxqt" 
-					DE="lxqt oxygen-icons"
-		;;
-		"enlightenment") 	start_term="exec enlightenment_start"
-							DE="enlightenment terminology"
-		;;
-		"bspwm")	start_term="sxhkd & ; exec bspwm"
-					DE="bspwm sxhkd"
-		;;
-		"fluxbox")	start_term="exec startfluxbox" 
-		;;
-		"openbox")	start_term="exec openbox-session"
-		;;
-		"awesome") 	start_term="exec awesome" 
-		;;	
-		"dwm") 		start_term="exec dwm" 
-		;;
-		"i3") 		start_term="exec i3" 
-		;;
-	esac
-
-	env=$(<<<"$DE" awk '{print $1,$2}')
-
-	if ! $desktop ; then
-		while (true)
-		  do
-		  	if "$VBOX" ; then
-		  		dialog --ok-button "$ok" --msgbox "\n$vbox_msg" 10 60
-				GPU="virtualbox-guest-utils linux-headers mesa-libgl"
-		  		break
-		  	fi
-			GPU=$(dialog --ok-button "$ok" --cancel-button "$cancel" --menu "$graphics_msg" 16 60 5 \
-				"$default"			"$gr0" \
-				"mesa-libgl"        "$gr1" \
-				"Nvidia"            "$gr2" \
-				"xf86-video-ati"    "$gr4" \
-				"xf86-video-intel"  "$gr5" 3>&1 1>&2 2>&3)
-			if [ "$?" -gt "0" ]; then
-				if (dialog --yes-button "$yes" --no-button "$no" --yesno "$desktop_cancel_msg" 10 60) then
-					install_software
-				fi
-			elif [ "$GPU" == "Nvidia" ]; then
-				GPU=$(dialog --ok-button "$ok" --cancel-button "$cancel" --menu "$nvidia_msg" 15 60 4 \
-					"nvidia"       "$gr6" \
-					"nvidia-340xx" "$gr7" \
-					"nvidia-304xx" "$gr8" 3>&1 1>&2 2>&3)
-				if [ "$?" -eq "0" ]; then
-					GPU="$GPU ${GPU}-libgl"
-					break
-				fi
-			elif [ "$GPU" == "$default" ]; then
-				unset GPU
-				break
-			else
-				break
-			fi
-		done
-				
-		DE="$DE xorg-server xorg-server-utils xorg-xinit xterm $GPU"
-		
-		if [ "$net_util" == "networkmanager" ] ; then
-			DE="$DE network-manager-applet"
-		fi
-
-		if (dialog --defaultno --yes-button "$yes" --no-button "$no" --yesno "\n$touchpad_msg" 10 60) then
-			GPU="$DE xf86-input-synaptics"
-		fi
-
-		if "$enable_bt" ; then
-			if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$blueman_msg" 10 60) then
-				DE="$DE blueman"
-			fi
-		fi
-	fi
-	
-	if ! "$enable_dm" ; then
-		if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$lightdm_msg" 10 60) then
-			DE="$DE lightdm lightdm-gtk-greeter"
-			enable_dm=true
-		else
-			dialog --ok-button "$ok" --msgbox "\n$startx_msg" 10 60
-		fi
-	fi
-	
-	pacstrap "$ARCH" --print-format='%s' $(echo "$DE") | sed '1,6d' | awk '{s+=$1} END {print s/1024/1024}' &> /tmp/size.tmp &
-	pid=$! pri=0.1 msg="$wait_load \n\n \Z1> \Z2pacman -Sy\Zn" load
-	download_size=$(</tmp/size.tmp) ; rm /tmp/size.tmp
-	export software_size=$(echo "$download_size Mib")
-	cal_rate
-
-	if (dialog --yes-button "$install" --no-button "$cancel" --yesno "\n$desktop_confirm_var" 18 60) then
-		tmpfile=$(mktemp)
-		pacstrap "$ARCH" $(echo "$DE") &> "$tmpfile" &
-		pid=$! pri=$(<<<"$down" sed 's/\..*$//') msg="\n$desktop_load_var" load_log
-		rm "$tmpfile"
-		desktop=true
-
-		if "$enable_dm" ; then 
-			if ! "$dm_set" ; then
-				if (<<<"$DE" grep "plasma" &> /dev/null); then
-					arch-chroot "$ARCH" systemctl enable sddm.service &> /dev/null &
-					pid=$! pri="0.1" msg="$wait_load \n\n \Z1> \Z2systemctl enable sddm\Zn" load
-					dm_set=true
-				else
-					arch-chroot "$ARCH" systemctl enable lightdm.service &> /dev/null &
-					pid=$! pri="0.1" msg="\n$dm_load \n\n \Z1> \Z2systemctl enable lightdm\Zn" load
-					dm_set=true
-				fi
-			fi
-		fi
-		
-		if "$VBOX" ; then
-			arch-chroot "$ARCH" systemctl enable vboxservice &>/dev/null &
-			pid=$! pri=0.1 msg="\n$vbox_enable_msg \n\n \Z1> \Z2systemctl enable vboxservice\Zn" load
-		fi
-
-		if "$de_config" ; then	
-			config_env &
-			pid=$! pri="0.1" msg="$wait_load \n\n \Z1> \Z2arch-anywhere config_env\Zn" load
-		fi
-		
-		if [ -n "$user" ]; then
-			echo "$start_term" > "$ARCH"/home/"$user"/.xinitrc
-		fi
-				
-		echo "$start_term" > "$ARCH"/etc/skel/.xinitrc
-		echo "$start_term" > "$ARCH"/root/.xinitrc
-	else
-		if ! "$menu_enter" ; then
-			if ! (dialog --yes-button "$yes" --no-button "$no" --defaultno --yesno "$desktop_cancel_msg" 10 60) then
-				de_config=false
-				graphics
-			fi
-		fi
-	fi
-
-	if "$menu_enter" ; then
-		reboot_system
-	fi
-
-	install_software
-
-}
-
-config_env() {
-
-	sh="/usr/bin/zsh"
-	
-	if [ -n "$user" ]; then
-		mkdir "$ARCH"/home/"$user"/.config &> /dev/null
-		arch-chroot "$ARCH" chsh -s /usr/bin/zsh "$user" &> /dev/null
-		cp /usr/share/arch-anywhere/.zshrc "$ARCH"/home/"$user"/
-		cp -r /usr/share/arch-anywhere/desktop/.config/{xfce4,Thunar} "$ARCH"/home/"$user"/.config/
-		cp /usr/share/arch-anywhere/desktop/arch-anywhere-icon.png "$ARCH"/home/"$user"/.face
-		arch-chroot "$ARCH" /bin/bash -c "chown -R $user /home/$user"
-	fi
-
-	arch-chroot "$ARCH" chsh -s /usr/bin/zsh &> /dev/null
-	cp /usr/share/arch-anywhere/.zshrc "$ARCH"/root/
-	mkdir "$ARCH"/root/.config/ &> /dev/null
-	cp -r /usr/share/arch-anywhere/desktop/.config/{xfce4,Thunar} "$ARCH"/root/.config/
-	cp -r /usr/share/arch-anywhere/{.zshrc,desktop/.config/} "$ARCH"/etc/skel/
-	cp /usr/share/arch-anywhere/desktop/arch-anywhere-icon.png "$ARCH"/etc/skel/.face
-	cp -r "/usr/share/arch-anywhere/desktop/AshOS-Dark-2.0" "$ARCH"/usr/share/themes/
-	cp /usr/share/arch-anywhere/desktop/arch-anywhere-wallpaper.png "$ARCH"/usr/share/backgrounds/xfce/
-	cp "$ARCH"/usr/share/backgrounds/xfce/arch-anywhere-wallpaper.png "$ARCH"/usr/share/backgrounds/xfce/xfce-teal.jpg
-	cp /usr/share/arch-anywhere/desktop/arch-anywhere-icon.png "$ARCH"/usr/share/pixmaps/
-	de_config=false
-
 
 }
 
@@ -2178,13 +2080,12 @@ reboot_system() {
 			fi
 		fi
 
-		reboot_menu=$(dialog --nocancel --ok-button "$ok" --menu "$complete_msg" 16 60 7 \
+		reboot_menu=$(dialog --nocancel --ok-button "$ok" --menu "$complete_msg" 15 60 6 \
 			"$reboot0" "-" \
 			"$reboot6" "-" \
 			"$reboot2" "-" \
 			"$reboot1" "-" \
 			"$reboot3" "-" \
-			"$reboot4" "-" \
 			"$reboot5" "-" 3>&1 1>&2 2>&3)
 		
 		case "$reboot_menu" in
@@ -2208,19 +2109,6 @@ reboot_system() {
 								add_user	
 							else
 								reboot_system
-							fi
-			;;
-			"$reboot4")		if "$desktop" ; then
-								if (dialog --yes-button "$yes" --no-button "$no" --yesno "$desktop_exists_msg" 10 60); then
-									menu_enter=true
-									graphics
-								else
-									reboot_system
-								fi
-							else
-								if (dialog --yes-button "$yes" --no-button "$no" --yesno "$desktop_exists_msg" 10 60); then
-									graphics
-								fi
 							fi
 			;;
 			"$reboot5")		install_software
@@ -2279,7 +2167,6 @@ main_menu() {
 						dialog --ok-button "$ok" --msgbox "\n$menu_err_msg4" 10 60
 						reset ; exit
 					else
-
 						if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$menu_exit_msg" 10 60) then
 							reset ; exit
 						else
