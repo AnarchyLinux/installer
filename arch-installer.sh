@@ -1946,7 +1946,7 @@ install_software() {
 						"apache"		"$sys1" OFF \
 						"conky"			"$sys2" OFF \
 						"dmenu"			"$sys19" OFF \
-						"fetchmirrors"	"$sys22" ON \
+						"fetchmirrors"		"$sys22" ON \
 						"git"			"$sys3" OFF \
 						"gparted"		"$sys4" OFF \
 						"gpm"			"$sys5" OFF \
@@ -1958,13 +1958,14 @@ install_software() {
 						"pcmanfm"		"$sys21" OFF \
 						"ranger"		"$sys20" OFF \
 						"screen"		"$sys11" OFF \
-						"screenfetch"	"$sys12" ON \
+						"screenfetch"		"$sys12" ON \
 						"scrot"			"$sys13" OFF \
 						"tmux"			"$sys14" OFF \
 						"tuxcmd"		"$sys15" OFF \
-						"virtualbox"	"$sys16" OFF \
+						"virtualbox"		"$sys16" OFF \
 						"ufw"			"$sys17" ON \
-						"wget"			"$sys18" ON 3>&1 1>&2 2>&3)
+						"wget"			"$sys18" ON \
+						"xfe"			"$sys23" OFF 3>&1 1>&2 2>&3)
 					if [ "$?" -gt "0" ]; then
 						err=true
 					fi
