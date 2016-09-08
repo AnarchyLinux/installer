@@ -1065,7 +1065,7 @@ part_class() {
 								fi
 							fi
 							source "$lang_file"
-							if [ "$(df -T | grep "$esp_part" | awk '{print $2}')" != "vfat" ]; then
+							if ! (df -T | grep "$esp_part" | grep "vfat" &>/dev/null) then
 								if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$vfat_var" 11 60) then
 										(umount -R "$esp_mnt"
 										mkfs.vfat -F32 "$esp_part"
@@ -1469,15 +1469,14 @@ graphics() {
 install_base() {
 
 	op_title="$install_op_msg"
-	pacstrap "$ARCH" --print-format='%s' $(echo "$base_install") | sed '1,6d' | awk '{s+=$1} END {print s/1024/1024}' &> /tmp/size.tmp &
-	pid=$! pri=0.8 msg="\n$pacman_load \n\n \Z1> \Z2pacman -Sy\Zn" load
-	download_size=$(</tmp/size.tmp) ; rm /tmp/size.tmp
-	export software_size=$(echo "$download_size Mib")
+	download_size=$(pacman -S --print-format='%s' $(echo "$base_install") | awk '{s+=$1} END {print s/1024/1024}' ; sleep 1) &>/dev/null &
+	pid=$! pri=0.1 msg="\n$pacman_load \n\n \Z1> \Z2pacman -S --print-format\Zn" load
+	export software_size="$download_size Mib"
 	cal_rate
 	
 	if (dialog --yes-button "$install" --no-button "$cancel" --yesno "\n$install_var" 20 60); then
 		tmpfile=$(mktemp)
-		(LANG=C pacstrap "$ARCH" $(echo "$base_install") ; echo "$?" > /tmp/ex_status) &> "$tmpfile" &
+		(pacstrap "$ARCH" $(echo "$base_install") ; echo "$?" > /tmp/ex_status) &> "$tmpfile" &
 		pid=$! pri=$(echo "$down+1" | bc | sed 's/\..*$//') msg="\n$install_load_var" load_log
 		genfstab -U -p "$ARCH" >> "$ARCH"/etc/fstab
 
@@ -1996,8 +1995,8 @@ install_software() {
 					else
 						download=$(echo "$final_software" | sed 's/\"//g' | tr ' ' '\n' | nl | sort -u -k2 | sort -n | cut -f2- | sed 's/$/ /g' | tr -d '\n')
 						export download_list=$(echo "$download" |  sed -e 's/^[ \t]*//')
-						pacstrap "$ARCH" --print-format='%s' $(echo "$download") | sed '1,6d' | awk '{s+=$1} END {print s/1024/1024}' &> /tmp/size.tmp &
-						pid=$! pri=0.1 msg="$wait_load \n\n \Z1> \Z2pacman -S --print-format=%s\Zn" load
+						download_size=$(pacman -S --print-format='%s' $(echo "$download") | awk '{s+=$1} END {print s/1024/1024}' ; sleep 1) &> /dev/null &
+						pid=$! pri=0.1 msg="$wait_load \n\n \Z1> \Z2pacman -S --print-format\Zn" load
 						download_size=$(</tmp/size.tmp) ; rm /tmp/size.tmp
 						export software_size=$(echo "$download_size Mib")
 						export software_int=$(echo "$download" | wc -w)
@@ -2033,9 +2032,8 @@ install_software() {
 					add_software=$(echo "$software" | sed 's/\"//g')
 					software_list=$(echo "$add_software" | sed -e 's/^[ \t]*//')
 					
-					pacstrap "$ARCH" --print-format='%s' $(echo "$add_software") | sed '1,6d' | awk '{s+=$1} END {print s/1024/1024}' &> /tmp/size.tmp &
-					pid=$! pri=0.1 msg="$wait_load \n\n \Z1> \Z2pacman -S --print-format=%s\Zn" load
-					download_size=$(</tmp/size.tmp) ; rm /tmp/size.tmp
+					download_size=$(pacman -S --print-format='%s' $(echo "$add_software") | awk '{s+=$1} END {print s/1024/1024}' ; sleep 1) &> /dev/null &
+					pid=$! pri=0.1 msg="$wait_load \n\n \Z1> \Z2pacman -S --print-format\Zn" load
 					software_size=$(echo "$download_size Mib")
 					software_int=$(echo "$add_software" | wc -w)
 					source "$lang_file"
