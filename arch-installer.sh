@@ -2311,7 +2311,6 @@ cal_rate() {
 
 load() {
 
-	if "$cal_load" ; then pid="pacman" cal_load=false ; fi
 	{	int="1"
         	while ps | grep "$pid" &> /dev/null
     	    	do
