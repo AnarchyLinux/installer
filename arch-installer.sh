@@ -1038,7 +1038,7 @@ part_class() {
 										part_menu
 									fi
 									esp_part=$(fdisk -l | grep "EFI" | awk "NR==$efint {print \$1}")
-									esp_mnt=$(df -T | grep "$esp_part" | awk '{print $7}')
+									esp_mnt=$(df -T | grep "$esp_part" | awk '{print $7}' | sed 's|/mnt||')
 									if (df -T | grep "$esp_part" &> /dev/null); then
 										break
 									else
@@ -1061,7 +1061,7 @@ part_class() {
 										part_menu
 									fi
 								else
-									esp_mnt=$(df -T | grep "$esp_part" | awk '{print $7}')
+									esp_mnt=$(df -T | grep "$esp_part" | awk '{print $7}' | sed 's|/mnt||')
 								fi
 							fi
 							source "$lang_file"
@@ -1521,7 +1521,6 @@ grub_config() {
 	if "$UEFI" ; then
 		arch-chroot "$ARCH" grub-install --efi-directory="$esp_mnt" --target=x86_64-efi --bootloader-id=boot &> /dev/null &
 		pid=$! pri=0.1 msg="\n$grub_load1 \n\n \Z1> \Z2grub-install --efi-directory="$esp_mnt"\Zn" load
-		mv "$ARCH"/"$esp"/EFI/boot/grubx64.efi "$ARCH"/"$esp"/EFI/boot/bootx64.efi
 				
 		if ! "$crypted" ; then
 			arch-chroot "$ARCH" mkinitcpio -p linux &> /dev/null &
