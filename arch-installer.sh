@@ -1469,8 +1469,9 @@ graphics() {
 install_base() {
 
 	op_title="$install_op_msg"
-	download_size=$(pacman -S --print-format='%s' $(echo "$base_install") | awk '{s+=$1} END {print s/1024/1024}' ; sleep 1) &>/dev/null &
-	pid=$! pri=0.1 msg="\n$pacman_load \n\n \Z1> \Z2pacman -S --print-format\Zn" load
+	pacman -Sy --print-format='%s' $(echo "$base_install") | awk '{s+=$1} END {print s/1024/1024}' >/tmp/size &
+	pid=$! pri=0.1 msg="\n$pacman_load \n\n \Z1> \Z2pacman -Sy --print-format\Zn" load
+	download_size=$(</tmp/size) ; rm /tmp/size
 	export software_size="$download_size Mib"
 	cal_rate
 	
@@ -1995,9 +1996,9 @@ install_software() {
 					else
 						download=$(echo "$final_software" | sed 's/\"//g' | tr ' ' '\n' | nl | sort -u -k2 | sort -n | cut -f2- | sed 's/$/ /g' | tr -d '\n')
 						export download_list=$(echo "$download" |  sed -e 's/^[ \t]*//')
-						download_size=$(pacman -S --print-format='%s' $(echo "$download") | awk '{s+=$1} END {print s/1024/1024}' ; sleep 1) &> /dev/null &
+						pacman -Sy --print-format='%s' $(echo "$download") | awk '{s+=$1} END {print s/1024/1024}' >/tmp/size &
 						pid=$! pri=0.1 msg="$wait_load \n\n \Z1> \Z2pacman -S --print-format\Zn" load
-						download_size=$(</tmp/size.tmp) ; rm /tmp/size.tmp
+						download_size=$(</tmp/size) ; rm /tmp/size
 						export software_size=$(echo "$download_size Mib")
 						export software_int=$(echo "$download" | wc -w)
 						cal_rate
@@ -2031,9 +2032,9 @@ install_software() {
 				else
 					add_software=$(echo "$software" | sed 's/\"//g')
 					software_list=$(echo "$add_software" | sed -e 's/^[ \t]*//')
-					
-					download_size=$(pacman -S --print-format='%s' $(echo "$add_software") | awk '{s+=$1} END {print s/1024/1024}' ; sleep 1) &> /dev/null &
-					pid=$! pri=0.1 msg="$wait_load \n\n \Z1> \Z2pacman -S --print-format\Zn" load
+					pacman -Sy --print-format='%s' $(echo "$add_software") | awk '{s+=$1} END {print s/1024/1024}' >/tmp/size &
+					pid=$! pri=0.1 msg="$wait_load \n\n \Z1> \Z2pacman -Sy --print-format\Zn" load
+					download_size=$(</tmp/size) ; rm /tmp/size
 					software_size=$(echo "$download_size Mib")
 					software_int=$(echo "$add_software" | wc -w)
 					source "$lang_file"
@@ -2309,6 +2310,7 @@ cal_rate() {
 
 load() {
 
+	if "$cal_load" ; then pid="pacman" cal_load=false ; fi
 	{	int="1"
         	while ps | grep "$pid" &> /dev/null
     	    	do
