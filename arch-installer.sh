@@ -1223,20 +1223,31 @@ prepare_base() {
 			;;
 		esac
 
-		shell=$(dialog --ok-button "$ok" --cancel-button "$cancel" --menu "$shell_msg" 16 64 6 \
-			"bash"  "$shell5" \
-			"dash"	"$shell0" \
-			"fish"	"$shell1" \
-			"mksh"	"$shell2" \
-			"tcsh"	"$shell3" \
-			"zsh"	"$shell4" 3>&1 1>&2 2>&3)
-		if [ "$?" -gt "0" ]; then
-			if (dialog --defaultno --yes-button "$yes" --no-button "$no" --yesno "\n$exit_msg" 10 60) then
-				main_menu
+		while (true)
+		  do
+			shell=$(dialog --ok-button "$ok" --cancel-button "$cancel" --menu "$shell_msg" 16 64 6 \
+				"bash"  "$shell5" \
+				"dash"	"$shell0" \
+				"fish"	"$shell1" \
+				"mksh"	"$shell2" \
+				"tcsh"	"$shell3" \
+				"zsh"	"$shell4" 3>&1 1>&2 2>&3)
+			if [ "$?" -gt "0" ]; then
+				if (dialog --defaultno --yes-button "$yes" --no-button "$no" --yesno "\n$exit_msg" 10 60) then
+					main_menu
+				fi
+			else
+				case "$shell" in
+					bash | fish) sh="/bin/bash"
+					;;
+					*) sh="/usr/bin/$shell"
+					;;
+				esac
+	
+				base_install="$base_install $shell"
+				break
 			fi
-		fi
-
-		base_install="$base_install $shell"
+		done
 
 		while (true)
 		  do
@@ -1261,22 +1272,24 @@ prepare_base() {
 			fi			
 		done
 	
-		net_util=$(dialog --ok-button "$ok" --cancel-button "$cancel" --menu "$wifi_util_msg" 12 64 3 \
-			"netctl"			"$net_util_msg0" \
-			"networkmanager" 		"$net_util_msg1" \
-			"$none" "-" 3>&1 1>&2 2>&3)
+		while (true)
+		  do
+			net_util=$(dialog --ok-button "$ok" --cancel-button "$cancel" --menu "$wifi_util_msg" 12 64 3 \
+				"netctl"			"$net_util_msg0" \
+				"networkmanager" 		"$net_util_msg1" \
+				"$none" "-" 3>&1 1>&2 2>&3)
 		
-		if [ "$?" -gt "0" ]; then
-			if (dialog --defaultno --yes-button "$yes" --no-button "$no" --yesno "\n$exit_msg" 10 60) then
-				main_menu
+			if [ "$?" -gt "0" ]; then
+				if (dialog --defaultno --yes-button "$yes" --no-button "$no" --yesno "\n$exit_msg" 10 60) then
+					main_menu
+				fi
+			else
+				if [ "$net_util" == "netctl" ] || [ "$net_util" == "networkmanager" ]; then
+					base_install="$base_install $net_util dialog" enable_nm=true
+				fi
+				break
 			fi
-		else
-			if [ "$net_util" == "netctl" ]; then
-				base_install="$base_install $net_util dialog" enable_nm=true
-			elif [ "$net_util" == "networkmanager" ]; then
-				base_install="$base_install $net_util" enable_nm=true
-			fi
-		fi			
+		done
 		
 		if "$wifi" ; then
 			base_install="$base_install wireless_tools wpa_supplicant wpa_actiond"
@@ -1691,7 +1704,10 @@ configure_system() {
 		arch-chroot "$ARCH" systemctl enable dhcpcd.service &> /dev/null &
 		pid=$! pri=0.1 msg="\n$dhcp_load \n\n \Z1> \Z2systemctl enable dhcpcd\Zn" load
 	fi
-
+	
+	if [ "$sh" == "/usr/bin/zsh" ]; them
+		cp /usr/share/arch-anywhere/.zshrc "$ARCH"/{root/,etc/skel}
+	fi
 	cp /usr/share/arch-anywhere/.bashrc-root "$ARCH"/root/.bashrc
 	cp /usr/share/arch-anywhere/.bashrc "$ARCH"/etc/skel/
 	set_hostname
@@ -1700,7 +1716,7 @@ configure_system() {
 
 config_env() {
 
-	shell="zsh"	
+	sh="/usr/bin/zsh"
 	arch-chroot "$ARCH" chsh -s /usr/bin/zsh &> /dev/null
 	cp /usr/share/arch-anywhere/.zshrc "$ARCH"/root/
 	mkdir "$ARCH"/root/.config/ &> /dev/null
@@ -1766,8 +1782,8 @@ add_user() {
 		add_user
 	fi
 
-	arch-chroot "$ARCH" useradd -m -g users -G audio,network,power,storage,optical -s /usr/bin/"$shell" "$user" &>/dev/null &
-	pid=$! pri=0.1 msg="$wait_load \n\n \Z1> \Z2useradd -m -g users -G ... -s /usr/bin/$shell $user\Zn" load
+	arch-chroot "$ARCH" useradd -m -g users -G audio,network,power,storage,optical -s "$sh" "$user" &>/dev/null &
+	pid=$! pri=0.1 msg="$wait_load \n\n \Z1> \Z2useradd -m -g users -G ... -s $sh $user\Zn" load
 
 	source "$lang_file"
 	op_title="$passwd_op_msg"
