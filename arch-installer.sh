@@ -695,9 +695,9 @@ part_menu() {
 		### each time loop runs append new device info to /tmp/part.list
 		if [ "$int" -eq "1" ]; then
 			if "$screen_h" ; then
-				echo "dialog --colors --backtitle \"$backtitle\" --title \"$op_title\" --ok-button \"$ok\" --cancel-button \"$cancel\" --menu \"$manual_part_msg \n\n $dev_menu\" 21 68 9 \\" > "$tmp_menu"
+				echo "dialog --extra-button --extra-label \"$write\" --colors --backtitle \"$backtitle\" --title \"$op_title\" --ok-button \"$edit\" --cancel-button \"$cancel\" --menu \"$manual_part_msg \n\n $dev_menu\" 21 68 9 \\" > "$tmp_menu"
 			else
-				echo "dialog --colors --title \"$title\" --ok-button \"$ok\" --cancel-button \"$cancel\" --menu \"$manual_part_msg \n\n $dev_menu\" 20 68 8 \\" > "$tmp_menu"
+				echo "dialog --extra-button --extra-label \"$write\" --colors --title \"$title\" --ok-button \"$edit\" --cancel-button \"$cancel\" --menu \"$manual_part_msg \n\n $dev_menu\" 20 68 8 \\" > "$tmp_menu"
 			fi
 			echo "\"$device   \" \"$dev_size $dev_type ------------->\" \\" > $tmp_list
 		else
@@ -740,8 +740,10 @@ part_menu() {
 
 	<"$tmp_list" column -t >> "$tmp_menu"
 	echo "\"$done_msg\" \"$write\" 3>&1 1>&2 2>&3" >> "$tmp_menu"
+	echo "if [ \"\$?\" -eq \"3\" ]; then clear ; echo \"$done_msg\" ; fi" >> "$tmp_menu"
 	manual_part=$(bash "$tmp_menu" | sed 's/ //g')
 	rm $tmp_menu $tmp_list
+	if (<<<"$manual_part" grep "$done_msg") then manual_part="$done_msg" ; fi
 	part_class
 
 }
@@ -1770,7 +1772,7 @@ set_hostname() {
 	 	fi
 	done
 
-	(printf "$input\n$input" | arch-chroot "$ARCH" passwd) &> /dev/null &
+	(printf "$input\n$input" | arch-chroot "$ARCH" passwd ; arch-chroot "$ARCH" chsh -s "$sh") &> /dev/null &
 	pid=$! pri=0.1 msg="$wait_load \n\n \Z1> \Z2passwd root\Zn" load
 	unset input input_chk ; input_chk=default
 	add_user
@@ -1842,7 +1844,7 @@ install_software() {
 			unset software
 			err=false
 			if ! "$skip" ; then
-				software_menu=$(dialog --ok-button "$ok" --cancel-button "$cancel" --menu "$software_type_msg" 20 63 11 \
+				software_menu=$(dialog --extra-button --extra-label "$install" --ok-button "$select" --cancel-button "$cancel" --menu "$software_type_msg" 20 63 11 \
 					"$aar" "$aar_msg" \
 					"$audio" "$audio_msg" \
 					"$games" "$games_msg" \
@@ -1854,8 +1856,9 @@ install_software() {
 					"$text_editor" "$text_editor_msg" \
 					"$system" "$system_msg" \
 					"$done_msg" "$install \Z2============>\Zn" 3>&1 1>&2 2>&3)
-			
-				if [ "$?" -gt "0" ]; then
+				ex="$?"
+				
+				if [ "$ex" -eq "1" ]; then
 					if (dialog --yes-button "$yes" --no-button "$no" --defaultno --yesno "\n$software_warn_msg" 10 60) then
 						software_selected=true
 						err=true
@@ -1863,12 +1866,13 @@ install_software() {
 					else
 						err=true
 					fi
+				elif [ "$ex" -eq "3" ]; then
+					software_menu="$done_msg"
+					skip=true
 				elif [ "$software_menu" == "$aar" ]; then
 					if ! (<"$ARCH"/etc/pacman.conf grep "arch-anywhere"); then
 						if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$aar_add_msg" 10 60) then
 							echo -e "\n[arch-anywhere]\nServer = $aa_repo\nSigLevel = Never" >> "$ARCH"/etc/pacman.conf
-						else
-							unset software_menu
 						fi
 					fi
 				fi

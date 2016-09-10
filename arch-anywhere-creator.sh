@@ -165,7 +165,7 @@ prepare_x86_64() {
 
 ### Copy over extra files (dot files, desktop configurations, help file, issue file, hostname file)
 	sudo cp "$aa"/extra/{.zshrc,.help,.dialogrc} "$customiso"/arch/x86_64/squashfs-root/root/
-	sudo cp "$aa"/extra/{.bashrc,.bashrc-root,.tcshrc,.tcshrc.config,.mkshrc} "$customiso"/arch/x86_64/squashfs-root/usr/share/arch-anywhere
+	sudo cp "$aa"/extra/{.bashrc,.bashrc-root,.tcshrc,.tcshrc.conf,.mkshrc} "$customiso"/arch/x86_64/squashfs-root/usr/share/arch-anywhere
 	sudo cp "$aa"/extra/.zshrc-sys "$customiso"/arch/x86_64/squashfs-root/usr/share/arch-anywhere/.zshrc
 #	sudo mkdir "$customiso"/arch/x86_64/squashfs-root/usr/share/arch-anywhere/pkg
 #	sudo mv /tmp/*.pkg.tar.xz "$customiso"/arch/x86_64/squashfs-root/usr/share/arch-anywhere/pkg
@@ -222,7 +222,7 @@ prepare_i686() {
 #	sudo chmod +x "$customiso"/arch/i686/squashfs-root/usr/bin/arch-anywhere-init
 #	sudo arch-chroot "$customiso"/arch/i686/squashfs-root /bin/bash -c "systemctl enable arch-anywhere.service"
 	sudo cp "$aa"/extra/{.zshrc,.help,.dialogrc} "$customiso"/arch/i686/squashfs-root/root/
-	sudo cp "$aa"/extra/{.bashrc,.bashrc-root,.tcshrc,.tcshrc.config,.mkshrc} "$customiso"/arch/i686/squashfs-root/usr/share/arch-anywhere
+	sudo cp "$aa"/extra/{.bashrc,.bashrc-root,.tcshrc,.tcshrc.conf,.mkshrc} "$customiso"/arch/i686/squashfs-root/usr/share/arch-anywhere
 	sudo cp "$aa"/extra/.zshrc-sys "$customiso"/arch/i686/squashfs-root/usr/share/arch-anywhere/.zshrc
 	sudo cp -r "$aa"/extra/desktop "$customiso"/arch/i686/squashfs-root/usr/share/arch-anywhere/
 	sudo cp "$aa"/boot/issue "$customiso"/arch/i686/squashfs-root/etc/
