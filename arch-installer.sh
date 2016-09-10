@@ -1240,6 +1240,8 @@ prepare_base() {
 				case "$shell" in
 					bash | fish) sh="/bin/bash"
 					;;
+					zsh) sh="/usr/bin/$shell" shell="zsh zsh-syntax-highlighting"
+					;;
 					*) sh="/usr/bin/$shell"
 					;;
 				esac
@@ -1705,9 +1707,11 @@ configure_system() {
 		pid=$! pri=0.1 msg="\n$dhcp_load \n\n \Z1> \Z2systemctl enable dhcpcd\Zn" load
 	fi
 	
-	if [ "$sh" == "/usr/bin/zsh" ]; them
-		cp /usr/share/arch-anywhere/.zshrc "$ARCH"/{root/,etc/skel}
+	if [ "$sh" == "/usr/bin/zsh" ]; then
+		cp /usr/share/arch-anywhere/.zshrc "$ARCH"/root/
+		cp /usr/share/arch-anywhere/.zshrc "$ARCH"/etc/skel/
 	fi
+
 	cp /usr/share/arch-anywhere/.bashrc-root "$ARCH"/root/.bashrc
 	cp /usr/share/arch-anywhere/.bashrc "$ARCH"/etc/skel/
 	set_hostname
