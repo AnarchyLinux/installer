@@ -1336,7 +1336,7 @@ graphics() {
 		fi	
 	fi
 	
-	DE=$(dialog --ok-button "$ok" --cancel-button "$cancel" --menu "$enviornment_msg" 18 60 11 \
+	DE=$(dialog --ok-button "$ok" --cancel-button "$cancel" --menu "$environment_msg" 18 60 11 \
 		"Arch-Anywhere-Xfce" "$de15" \
 		"cinnamon"      "$de5" \
 		"deepin"		"$de14" \
