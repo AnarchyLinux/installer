@@ -1852,8 +1852,8 @@ install_software() {
 					software=$(dialog --ok-button "$ok" --cancel-button "$cancel" --checklist "$software_msg1" 14 60 4 \
 						"arch-wiki-cli"		"$aar0" ON \
 						"fetchmirrors"	"$aar1" ON \
-						"pacaur"		"$aar3" OFF \
-						"yaourt"		"$aar4" OFF 3>&1 1>&2 2>&3)
+						"pacaur"		"$aar2" OFF \
+						"yaourt"		"$aar3" OFF 3>&1 1>&2 2>&3)
 					if [ "$?" -gt "0" ]; then
 						err=true
 					fi
