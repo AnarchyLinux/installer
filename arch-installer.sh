@@ -31,7 +31,6 @@ init() {
 	op_title=" -| Language Select |- "
 	ILANG=$(dialog --nocancel --menu "\nArch Anywhere Installer\n\n \Z2*\Zn Select your install language:" 20 60 10 \
 		"English" "-" \
-		"Chinese" "Chinese" \
 		"French" "Français" \
 		"German" "Deutsch" \
 		"Greek" "Greek" \
@@ -45,7 +44,6 @@ init() {
 
 	case "$ILANG" in
 		"English") export lang_file=/usr/share/arch-anywhere/lang/arch-installer-english.conf ;;
-		"Chinese") export lang_file=/usr/share/arch-anywhere/lang/arch-installer-chinese.conf ;;
 		"French") export lang_file=/usr/share/arch-anywhere/lang/arch-installer-french.conf ;;
 		"German") export lang_file=/usr/share/arch-anywhere/lang/arch-installer-german.conf ;;
 		"Greek") export lang_file=/usr/share/arch-anywhere/lang/arch-installer-greek.conf ;;
@@ -1025,7 +1023,7 @@ part_class() {
 			
 			part_menu="$partition: $size: $mountpoint:"
 			### Confirm writing changes to partition table and continue with install
-			if (dialog --yes-button "$write" --no-button "$cancel" --defaultno --yesno "$write_confirm_msg \n\n $part_menu \n\n$final_part \n\n $write_confirm" "$height" 50) then
+			if (dialog --yes-button "$write" --no-button "$cancel" --defaultno --yesno "\n$write_confirm_msg \n\n $part_menu \n\n$final_part \n\n $write_confirm" "$height" 50) then
 				if (efivar -l &>/dev/null); then
 					if (fdisk -l | grep "EFI" &>/dev/null); then
 						if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$efi_man_msg" 11 60) then
@@ -1117,7 +1115,7 @@ part_class() {
 		if (lsblk | grep "$manual_part" | grep "$ARCH" &> /dev/null); then	
 			
 			### If partitions are mounted display warning to user
-			if (dialog --yes-button "$edit" --no-button "$cancel" --defaultno --yesno "$mount_warn_var" 10 60) then
+			if (dialog --yes-button "$edit" --no-button "$cancel" --defaultno --yesno "\n$mount_warn_var" 10 60) then
 				
 				### If user selects to edit partition scheme anyway unmount all partitions turn off any swap and edit with cfdisk
 				points=$(echo -e "$points_orig\n$custom $custom-mountpoint")
@@ -1225,6 +1223,21 @@ prepare_base() {
 			;;
 		esac
 
+		shell=$(dialog --ok-button "$ok" --cancel-button "$cancel" --menu "$shell_msg" 16 64 6 \
+			"bash"  "$shell5" \
+			"dash"	"$shell0" \
+			"fish"	"$shell1" \
+			"mksh"	"$shell2" \
+			"tcsh"	"$shell3" \
+			"zsh"	"$shell4" 3>&1 1>&2 2>&3)
+		if [ "$?" -gt "0" ]; then
+			if (dialog --defaultno --yes-button "$yes" --no-button "$no" --yesno "\n$exit_msg" 10 60) then
+				main_menu
+			fi
+		fi
+
+		base_install="$base_install $shell"
+
 		while (true)
 		  do
 			bootloader=$(dialog --ok-button "$ok" --cancel-button "$cancel" --menu "$loader_type_msg" 12 64 3 \
@@ -1247,11 +1260,7 @@ prepare_base() {
 				fi
 			fi			
 		done
-
-		if "$UEFI" ; then
-			base_install="$base_install efibootmgr"
-		fi
-
+	
 		net_util=$(dialog --ok-button "$ok" --cancel-button "$cancel" --menu "$wifi_util_msg" 12 64 3 \
 			"netctl"			"$net_util_msg0" \
 			"networkmanager" 		"$net_util_msg1" \
@@ -1263,12 +1272,20 @@ prepare_base() {
 			fi
 		else
 			if [ "$net_util" == "netctl" ]; then
-				base_install="$base_install $net_util wireless_tools wpa_supplicant wpa_actiond dialog" enable_nm=true
+				base_install="$base_install $net_util dialog" enable_nm=true
 			elif [ "$net_util" == "networkmanager" ]; then
-				base_install="$base_install $net_util wireless_tools wpa_supplicant wpa_actiond" enable_nm=true
+				base_install="$base_install $net_util" enable_nm=true
 			fi
 		fi			
-
+		
+		if "$wifi" ; then
+			base_install="$base_install wireless_tools wpa_supplicant wpa_actiond"
+		else
+			if (dialog --defaultno --yes-button "$yes" --no-button "$no" --yesno "\n$wifi_option_msg" 10 60) then
+				base_install="$base_install wireless_tools wpa_supplicant wpa_actiond"
+			fi
+		fi
+		
 		if "$bluetooth" ; then
 			if (dialog --defaultno --yes-button "$yes" --no-button "$no" --yesno "\n$bluetooth_msg" 10 60) then
 				base_install="$base_install bluez bluez-utils"
@@ -1276,14 +1293,22 @@ prepare_base() {
 			fi
 		fi
 		
+		if (dialog --defaultno --yes-button "$yes" --no-button "$no" --yesno "\n$pppoe_msg" 10 60) then
+			base_install="$base_install rp-pppoe"
+		fi
+		
 		if (dialog --defaultno --yes-button "$yes" --no-button "$no" --yesno "\n$os_prober_msg" 10 60) then
 			base_install="$base_install os-prober"
 		fi
-
+		
 		if "$enable_f2fs" ; then
 			base_install="$base_install f2fs-tools"
 		fi
 	
+		if "$UEFI" ; then
+			base_install="$base_install efibootmgr"
+		fi
+
 	elif "$INSTALLED" ; then
 		dialog --ok-button "$ok" --msgbox "\n$install_err_msg0" 10 60
 		main_menu
@@ -1307,7 +1332,7 @@ graphics() {
 	op_title="$de_op_msg"
 	if ! (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$desktop_msg" 10 60) then
 		if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$desktop_cancel_msg" 10 60) then	
-			install_base
+			x="15" ; install_base
 		fi	
 	fi
 	
@@ -1460,7 +1485,7 @@ graphics() {
 	fi
 	
 	base_install="$base_install $DE"
-	desktop=true
+	desktop=true x=17
 	install_base
 
 }
@@ -1475,10 +1500,10 @@ install_base() {
 	export software_size="$download_size Mib"
 	cal_rate
 	
-	if (dialog --yes-button "$install" --no-button "$cancel" --yesno "\n$install_var" 20 60); then
+	if (dialog --yes-button "$install" --no-button "$cancel" --yesno "\n$install_var" "$x" 60); then
 		tmpfile=$(mktemp)
 		(pacstrap "$ARCH" $(echo "$base_install") ; echo "$?" > /tmp/ex_status) &> "$tmpfile" &
-		pid=$! pri=$(echo "$down+1" | bc | sed 's/\..*$//') msg="\n$install_load_var" load_log
+		pid=$! pri=$(echo "$down" | sed 's/\..*$//') msg="\n$install_load_var" load_log
 		genfstab -U -p "$ARCH" >> "$ARCH"/etc/fstab
 
 		if [ $(</tmp/ex_status) -eq "0" ]; then
@@ -1490,8 +1515,11 @@ install_base() {
 		fi
 		
 		if "$enable_f2fs" && ! "$crypted" && ! "$UEFI" ; then
+			sed -i 's/MODULES=""/MODULES="f2fs crc32 libcrc32c crc32c_generic crc32c-intel crc32-pclmul"/' "$ARCH"/etc/mkinitcpio.conf
 			arch-chroot "$ARCH" mkinitcpio -p linux &> /dev/null &
 			pid=$! pri=1 msg="\n$f2fs_config_load \n\n \Z1> \Z2mkinitcpio -p linux\Zn" load
+		elif "$enable_f2fs" && ! "$crypted" || ! "$UEFI" ; then
+			sed -i 's/MODULES=""/MODULES="f2fs crc32 libcrc32c crc32c_generic crc32c-intel crc32-pclmul"/' "$ARCH"/etc/mkinitcpio.conf
 		fi
 				
 		case "$bootloader" in
@@ -1602,6 +1630,9 @@ configure_system() {
 	
 	if [ "$keyboard" != "$default" ]; then
 		echo "KEYMAP=$keyboard" > "$ARCH"/etc/vconsole.conf
+		if "$desktop" ; then
+			arch-chroot "$ARCH" setxkbmap -layout "$keyboard"
+		fi
 	fi
 
 	if [ -n "$SUB_SUBZONE" ]; then
@@ -1669,7 +1700,7 @@ configure_system() {
 
 config_env() {
 
-	sh="/usr/bin/zsh"
+	shell="zsh"	
 	arch-chroot "$ARCH" chsh -s /usr/bin/zsh &> /dev/null
 	cp /usr/share/arch-anywhere/.zshrc "$ARCH"/root/
 	mkdir "$ARCH"/root/.config/ &> /dev/null
@@ -1735,8 +1766,8 @@ add_user() {
 		add_user
 	fi
 
-	(arch-chroot "$ARCH" useradd -m -g users -G audio,network,power,storage,optical -s "$sh" "$user") &>/dev/null &
-	pid=$! pri=0.1 msg="$wait_load \n\n \Z1> \Z2useradd -m -g users -G ... -s $sh $user\Zn" load
+	arch-chroot "$ARCH" useradd -m -g users -G audio,network,power,storage,optical -s /usr/bin/"$shell" "$user" &>/dev/null &
+	pid=$! pri=0.1 msg="$wait_load \n\n \Z1> \Z2useradd -m -g users -G ... -s /usr/bin/$shell $user\Zn" load
 
 	source "$lang_file"
 	op_title="$passwd_op_msg"
@@ -1783,6 +1814,7 @@ install_software() {
 			err=false
 			if ! "$skip" ; then
 				software_menu=$(dialog --ok-button "$ok" --cancel-button "$cancel" --menu "$software_type_msg" 20 63 11 \
+					"$aar" "$aar_msg" \
 					"$audio" "$audio_msg" \
 					"$games" "$games_msg" \
 					"$graphic" "$graphic_msg" \
@@ -1791,17 +1823,24 @@ install_software() {
 					"$office" "$office_msg" \
 					"$terminal" "$terminal_msg" \
 					"$text_editor" "$text_editor_msg" \
-					"$shell" "$shell_msg" \
 					"$system" "$system_msg" \
 					"$done_msg" "$install \Z2============>\Zn" 3>&1 1>&2 2>&3)
 			
 				if [ "$?" -gt "0" ]; then
-					if (dialog --yes-button "$yes" --no-button "$no" --defaultno --yesno "$software_warn_msg" 10 60) then
+					if (dialog --yes-button "$yes" --no-button "$no" --defaultno --yesno "\n$software_warn_msg" 10 60) then
 						software_selected=true
 						err=true
 						unset software_menu
 					else
 						err=true
+					fi
+				elif [ "$software_menu" == "$aar" ]; then
+					if ! (<"$ARCH"/etc/pacman.conf grep "arch-anywhere"); then
+						if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$aar_add_msg" 10 60) then
+							echo -e "\n[arch-anywhere]\nServer = $aa_repo\nSigLevel = Never" >> "$ARCH"/etc/pacman.conf
+						else
+							unset software_menu
+						fi
 					fi
 				fi
 			else
@@ -1809,6 +1848,16 @@ install_software() {
 			fi
 
 			case "$software_menu" in
+				"$aar")
+					software=$(dialog --ok-button "$ok" --cancel-button "$cancel" --checklist "$software_msg1" 14 60 4 \
+						"arch-wiki-cli"		"$aar0" ON \
+						"fetchmirrors"	"$aar1" ON \
+						"pacaur"		"$aar3" OFF \
+						"yaourt"		"$aar4" OFF 3>&1 1>&2 2>&3)
+					if [ "$?" -gt "0" ]; then
+						err=true
+					fi
+				;;
 				"$audio")
 					software=$(dialog --ok-button "$ok" --cancel-button "$cancel" --checklist "$software_msg1" 20 60 10 \
 						"audacity"		"$audio0" OFF \
@@ -1917,7 +1966,8 @@ install_software() {
 					fi
 				;;
 				"$text_editor")
-					software=$(dialog --ok-button "$ok" --cancel-button "$cancel" --checklist "$software_msg1" 17 60 7 \
+					software=$(dialog --ok-button "$ok" --cancel-button "$cancel" --checklist "$software_msg1" 18 60 8 \
+						"atom"			"$edit7" OFF \
 						"emacs"			"$edit0" OFF \
 						"geany"			"$edit1" OFF \
 						"gedit"			"$edit2" OFF \
@@ -1929,24 +1979,11 @@ install_software() {
 						err=true
 					fi
 				;;
-				"$shell")
-					software=$(dialog --ok-button "$ok" --cancel-button "$cancel" --checklist "$software_msg1" 15 50 5 \
-						"dash"	"$shell0" OFF \
-						"fish"	"$shell1" OFF \
-						"mksh"	"$shell2" OFF \
-						"tcsh"	"$shell3" OFF \
-						"zsh"	"$shell4" OFF 3>&1 1>&2 2>&3)
-					if [ "$?" -gt "0" ]; then
-						err=true
-					fi
-				;;
 				"$system")
 					software=$(dialog --ok-button "$ok" --cancel-button "$cancel" --checklist "$software_msg1" 20 65 10 \
-						"arch-wiki"		"$sys0" ON \
 						"apache"		"$sys1" OFF \
 						"conky"			"$sys2" OFF \
 						"dmenu"			"$sys19" OFF \
-						"fetchmirrors"		"$sys22" ON \
 						"git"			"$sys3" OFF \
 						"gparted"		"$sys4" OFF \
 						"gpm"			"$sys5" OFF \
@@ -1969,23 +2006,6 @@ install_software() {
 					if [ "$?" -gt "0" ]; then
 						err=true
 					fi
-
-					if (<<<$software grep "arch-wiki" &> /dev/null); then
-						pkg=$(ls /usr/share/arch-anywhere/pkg | grep arch-wiki)
-						cp /usr/share/arch-anywhere/pkg/"$pkg" "$ARCH"/var/cache/pacman/pkg
-						arch-chroot "$ARCH" pacman -U --noconfirm /var/cache/pacman/pkg/"$pkg" &> /dev/null &
-						pid=$! pri=0.1 msg="\nInstalling arch-wiki... \n\n \Z1> \Z2pacman -U $pkg\Zn" load
-						software=$(<<<$software sed 's/arch-wiki//')
-					fi
-
-					if (<<<$software grep "fetchmirrors" &> /dev/null); then
-						pkg="$(ls /usr/share/arch-anywhere/pkg | grep fetchmirrors)"
-						cp /usr/share/arch-anywhere/pkg/"$pkg" "$ARCH"/var/cache/pacman/pkg
-						arch-chroot "$ARCH" pacman -U --noconfirm /var/cache/pacman/pkg/"$pkg" &> /dev/null &
-						pid=$! pri=0.1 msg="\nInstalling fetchmirrors... \n\n \Z1> \Z2pacman -U $pkg\Zn" load
-						software=$(<<<$software sed 's/fetchmirrors//')
-					fi
-
 				;;
 				"$done_msg")
 					if [ -z "$final_software" ]; then
@@ -1996,7 +2016,7 @@ install_software() {
 					else
 						download=$(echo "$final_software" | sed 's/\"//g' | tr ' ' '\n' | nl | sort -u -k2 | sort -n | cut -f2- | sed 's/$/ /g' | tr -d '\n')
 						export download_list=$(echo "$download" |  sed -e 's/^[ \t]*//')
-						pacman -Sy --print-format='%s' $(echo "$download") | awk '{s+=$1} END {print s/1024/1024}' >/tmp/size &
+						arch-chroot "$ARCH" pacman -Sy --print-format='%s' $(echo "$download") | awk '{s+=$1} END {print s/1024/1024}' >/tmp/size &
 						pid=$! pri=0.1 msg="$wait_load \n\n \Z1> \Z2pacman -S --print-format\Zn" load
 						download_size=$(</tmp/size) ; rm /tmp/size
 						export software_size=$(echo "$download_size Mib")
@@ -2011,7 +2031,7 @@ install_software() {
 						
 						if (dialog --yes-button "$install" --no-button "$cancel" --yesno "\n$software_confirm_var1" "$height" 65) then
 							tmpfile=$(mktemp)
-						    pacstrap "$ARCH" $(echo "$download") &> "$tmpfile" &
+						    arch-chroot "$ARCH" pacman --noconfirm -Sy $(echo "$download") &> "$tmpfile" &
 						    pid=$! pri=$(<<<"$down" sed 's/\..*$//') msg="\n$software_load_var" load_log
 	  					    rm "$tmpfile"
 	  					    unset final_software
@@ -2026,13 +2046,13 @@ install_software() {
 			
 			if ! "$err" ; then
 				if [ -z "$software" ]; then
-					if ! (dialog --yes-button "$yes" --no-button "$no" --defaultno --yesno "$software_noconfirm_msg ${software_menu}?" 10 60) then
+					if ! (dialog --yes-button "$yes" --no-button "$no" --defaultno --yesno "\n$software_noconfirm_msg ${software_menu}?" 10 60) then
 						skip=true
 					fi
 				else
 					add_software=$(echo "$software" | sed 's/\"//g')
 					software_list=$(echo "$add_software" | sed -e 's/^[ \t]*//')
-					pacman -Sy --print-format='%s' $(echo "$add_software") | awk '{s+=$1} END {print s/1024/1024}' >/tmp/size &
+					arch-chroot "$ARCH" pacman -Sy --print-format='%s' $(echo "$add_software") | awk '{s+=$1} END {print s/1024/1024}' >/tmp/size &
 					pid=$! pri=0.1 msg="$wait_load \n\n \Z1> \Z2pacman -Sy --print-format\Zn" load
 					download_size=$(</tmp/size) ; rm /tmp/size
 					software_size=$(echo "$download_size Mib")
