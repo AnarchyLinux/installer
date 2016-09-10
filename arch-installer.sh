@@ -1238,11 +1238,11 @@ prepare_base() {
 				fi
 			else
 				case "$shell" in
-					bash | fish) sh="/bin/bash"
+					fish) 	sh="/bin/bash"
 					;;
 					zsh) sh="/usr/bin/$shell" shell="zsh zsh-syntax-highlighting"
 					;;
-					*) sh="/usr/bin/$shell"
+					*) sh="/bin/$shell"
 					;;
 				esac
 	
@@ -1710,6 +1710,15 @@ configure_system() {
 	if [ "$sh" == "/usr/bin/zsh" ]; then
 		cp /usr/share/arch-anywhere/.zshrc "$ARCH"/root/
 		cp /usr/share/arch-anywhere/.zshrc "$ARCH"/etc/skel/
+	elif [ "$shell" == "fish" ]; then
+		echo "fish && exit" >> /usr/share/arch-anywhere/.bashrc-root
+		echo "fish && exit" >> /usr/share/arch-anywhere/.bashrc
+	elif [ "$shell" == "tcsh" ]; then
+		cp /usr/share/arch-anywhere/{.tcshrc,.tcshrc.conf} "$ARCH"/root/
+		cp /usr/share/arch-anywhere/{.tcshrc,.tcshrc.conf} "$ARCH"/etc/skel/
+	elif [ "$shell" == "mksh" ]; then
+		cp /usr/share/arch-anywhere/.mkshrc "$ARCH"/root/
+		cp /usr/share/arch-anywhere/.mkshrc "$ARCH"/etc/skel/
 	fi
 
 	cp /usr/share/arch-anywhere/.bashrc-root "$ARCH"/root/.bashrc
