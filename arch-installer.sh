@@ -124,16 +124,16 @@ check_connection() {
         
 	case "$cpu_mhz" in
 		[0-9][0-9][0-9]) 
-			cpu_sleep=4
+			cpu_sleep=4.5
 		;;
 		[1][0-9][0-9][0-9])
-			cpu_sleep=3.5
+			cpu_sleep=4
 		;;
 		[2][0-9][0-9][0-9])
-			cpu_sleep=2.5
+			cpu_sleep=3.5
 		;;
 		*)
-			cpu_sleep=1.5
+			cpu_sleep=2.5
 		;;
 	esac
         		
