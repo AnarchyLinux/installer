@@ -414,6 +414,7 @@ auto_part() {
 		ROOT="$(lsblk | grep "$DRIVE" |  awk '{ if (NR==3) print substr ($1,3) }')"
 	fi
 
+	sgdisk --zap-all /dev/"$BOOT" &> /dev/null
 	wipefs -a /dev/"$BOOT" &> /dev/null
 	
 	if "$UEFI" ; then
@@ -491,6 +492,7 @@ auto_encrypt() {
 	fi
 
 	(wipefs -a /dev/"$ROOT"
+	sgdisk --zap-all /dev/"$BOOT"
 	wipefs -a /dev/"$BOOT") &> /dev/null &
 	pid=$! pri=0.1 msg="\n$frmt_load \n\n \Z1> \Z2wipefs -a /dev/$ROOT\Zn" load
 	
@@ -1042,20 +1044,12 @@ prepare_base() {
 
 		while (true)
 		  do
-			if "$UEFI" ; then
-				bootloader=$(dialog --ok-button "$ok" --cancel-button "$cancel" --menu "$loader_type_msg" 12 64 3 \
-					"grub"			"$loader_msg" \
-					"syslinux" 		"$loader_msg1" \
-					"$none" "-" 3>&1 1>&2 2>&3)
-				ex="$?"
-			else
-				bootloader=$(dialog --ok-button "$ok" --cancel-button "$cancel" --menu "$loader_type_msg" 11 64 2 \
-					"grub"			"$loader_msg" \
-					"$none" "-" 3>&1 1>&2 2>&3)
-				ex="$?"
-			fi
+			bootloader=$(dialog --ok-button "$ok" --cancel-button "$cancel" --menu "$loader_type_msg" 12 64 3 \
+				"grub"			"$loader_msg" \
+				"syslinux" 		"$loader_msg1" \
+				"$none" "-" 3>&1 1>&2 2>&3)
 
-			if [ "$ex" -gt "0" ]; then
+			if [ "$?" -gt "0" ]; then
 				if (dialog --defaultno --yes-button "$yes" --no-button "$no" --yesno "\n$exit_msg" 10 60) then
 					main_menu
 				fi
@@ -1388,10 +1382,7 @@ grub_config() {
 
 syslinux_config() {
 
-### Syslinux support for BIOS boot is currently broken
-### If anybody can figure out how to get syslinux working with BIOS boot feel free
-### Until then syslinux will only support EFI boot
-#	if "$UEFI" ; then
+	if "$UEFI" ; then
 		esp_part_int=$(<<<"$esp_part" grep -o "[0-9]")
 		esp_part=$(<<<"$esp_part" grep -o "sd[a-z]")
 		esp_mnt=$(<<<$esp_mnt sed "s!$ARCH!!")
@@ -1402,38 +1393,28 @@ syslinux_config() {
 		arch-chroot "$ARCH" efibootmgr -c -d /dev/"$esp_part" -p "$esp_part_int" -l /EFI/syslinux/syslinux.efi -L "Syslinux") &> /dev/null &
 		pid=$! pri=0.1 msg="\n$syslinux_load \n\n \Z1> \Z2syslinux install efi mode...\Zn" load
 		
-		if "$crypted" ; then
-			sed -i "s|APPEND.*$|APPEND root=/dev/mapper/root cryptdevice=/dev/lvm/lvroot:root rw|" ${ARCH}${esp_mnt}/EFI/syslinux/syslinux.cfg
-		else
-			sed -i "s|APPEND.*$|APPEND root=/dev/$ROOT|" ${ARCH}${esp_mnt}/EFI/syslinux/syslinux.cfg
-		fi
-		
 		if [ "$esp_mnt" != "/boot" ]; then
 			dialog --ok-button "$ok" --msgbox "\n$esp_warn_msg" 11 60
 			cp "$ARCH"/boot/{vmlinuz-linux,initramfs-linux.img,initramfs-linux-fallback.img} ${ARCH}${esp_mnt} &
 			pid=$! pri=0.1 msg="$wait_load \n\n \Z1> \Z2cp "$ARCH"/boot/vmlinuz-linux ${ARCH}${esp_mnt}\Zn" load
 		fi
 		
-#	else
-#		(mkdir /boot/syslinux
-#		arch-chroot "$ARCH" cp -r /usr/lib/syslinux/bios/*.c32 /boot/syslinux/
-#		cp /usr/share/arch-anywhere/syslinux/{syslinux.cfg,splash.png} "$ARCH"/boot/syslinux
-#		arch-chroot "$ARCH" extlinux --install /boot/syslinux
-#		if "$GPT" ; then
-#			sgdisk /dev/"$DRIVE" --attributes=$(<<<"$BOOT" grep -o "[0-9]*"):set:2
-#			arch-chroot "$ARCH" dd bs=440 conv=notrunc count=1 if=/usr/lib/syslinux/bios/gptmbr.bin of=/dev/"$DRIVE"
-#		else
-#			parted /dev/"$DRIVE" set $(<<<"$BOOT" grep -o "[0-9]*") boot on
-#			arch-chroot "$ARCH" dd bs=440 count=1 if=/usr/lib/syslinux/bios/mbr.bin of=/dev/"$DRIVE"
-#		fi) &> /dev/null &
-#		pid=$! pri=0.1 msg="\n$syslinux_load \n\n \Z1> \Z2syslinux install legacy BIOS\Zn" load
-#	
-#		if "$crypted" ; then
-#			sed -i "s|APPEND.*$|APPEND root=/dev/mapper/root cryptdevice=/dev/lvm/lvroot:root rw|" "$ARCH"/boot/syslinux/syslinux.cfg
-#		else
-#			sed -i "s|APPEND.*$|APPEND root=/dev/$ROOT|" "$ARCH"/boot/syslinux/syslinux.cfg
-#		fi
-#	fi
+		if "$crypted" ; then
+			sed -i "s|APPEND.*$|APPEND root=/dev/mapper/root cryptdevice=/dev/lvm/lvroot:root rw|" ${ARCH}${esp_mnt}/EFI/syslinux/syslinux.cfg
+		else
+			sed -i "s|APPEND.*$|APPEND root=/dev/$ROOT|" ${ARCH}${esp_mnt}/EFI/syslinux/syslinux.cfg
+		fi
+	else
+		(syslinux-install_update -i -m -c "$ARCH"
+		cp /usr/share/arch-anywhere/syslinux/{syslinux.cfg,splash.png} "$ARCH"/boot/syslinux) &> /dev/null &
+		pid=$! pri=0.1 msg="\n$syslinux_load \n\n \Z1> \Z2syslinux-install_update -i -a -m -c $ARCH\Zn" load
+		
+		if "$crypted" ; then
+			sed -i "s|APPEND.*$|APPEND root=/dev/mapper/root cryptdevice=/dev/lvm/lvroot:root rw|" "$ARCH"/boot/syslinux/syslinux.cfg
+		else
+			sed -i "s|APPEND.*$|APPEND root=/dev/$ROOT|" "$ARCH"/boot/syslinux/syslinux.cfg
+		fi
+	fi
 
 }
 
