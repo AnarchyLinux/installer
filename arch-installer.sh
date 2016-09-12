@@ -109,13 +109,15 @@ check_connection() {
 	
 	op_title="$connection_op_msg"
 	test_mirror=$(</etc/pacman.d/mirrorlist grep "^Server" | awk 'NR==1{print $3}' | sed 's/$.*//')
-	wget --no-check-certificate --append-output=/tmp/wget.log -O /dev/null "${test_mirror}extra/os/i686/bluez-utils-5.41-2-i686.pkg.tar.xz" &
+	test_pkg=bluez-utils
+	test_pkg_ver=$(pacman -Sy --print-format='%v' $(echo "$test_pkg") | tail -n1)
+	test_link="${test_mirror}extra/os/i686/${test_pkg}-${test_pkg_ver}-i686.pkg.tar.xz"
+	wget --no-check-certificate --append-output=/tmp/wget.log -O /dev/null "${test_link}" &
 	pid=$! pri=0.3 msg="\n$connection_load \n\n \Z1> \Z2wget -O /dev/null test_link/test1Mb.db\Zn" load
+	
 	sed -i 's/\,/\./' /tmp/wget.log
-		
 	connection_speed=$(tail /tmp/wget.log | grep -oP '(?<=\().*(?=\))' | awk '{print $1}')
 	connection_rate=$(tail /tmp/wget.log | grep -oP '(?<=\().*(?=\))' | awk '{print $2}')
-
     cpu_mhz=$(lscpu | grep "CPU max MHz" | awk '{print $4}' | sed 's/\..*//')
 
 	if [ "$?" -gt "0" ]; then
@@ -334,7 +336,8 @@ prepare_drives() {
 		fi
 	
 		if (dialog --defaultno --yes-button "$write" --no-button "$cancel" --yesno "\n$drive_var" "$height" 60) then
-			sgdisk --zap-all /dev/"$DRIVE" &> /dev/null &
+			(sgdisk --zap-all /dev/"$DRIVE"
+			wipefs -a /dev/"$DRIVE") &> /dev/null &
 			pid=$! pri=0.1 msg="\n$frmt_load \n\n \Z1> \Z2sgdisk --zap-all /dev/$DRIVE\Zn" load
 		else
 			prepare_drives
@@ -413,28 +416,29 @@ auto_part() {
 		BOOT="$(lsblk | grep "$DRIVE" |  awk '{ if (NR==2) print substr ($1,3) }')"
 		ROOT="$(lsblk | grep "$DRIVE" |  awk '{ if (NR==3) print substr ($1,3) }')"
 	fi
-
-	sgdisk --zap-all /dev/"$BOOT" &> /dev/null
-	wipefs -a /dev/"$BOOT" &> /dev/null
 	
 	if "$UEFI" ; then
-		mkfs.vfat -F32 /dev/"$BOOT" &> /dev/null &
+		(sgdisk --zap-all /dev/"$BOOT"
+		wipefs -a /dev/"$BOOT"
+		mkfs.vfat -F32 /dev/"$BOOT") &> /dev/null &
 		pid=$! pri=0.1 msg="\n$efi_load1 \n\n \Z1> \Z2mkfs.vfat -F32 /dev/$BOOT\Zn" load
 		esp_part="/dev/$BOOT"
 		esp_mnt=/boot
 	else
-		mkfs.ext4 /dev/"$BOOT" &> /dev/null &
+		(sgdisk --zap-all /dev/"$BOOT"
+		wipefs -a /dev/"$BOOT"
+		mkfs.ext4 /dev/"$BOOT") &> /dev/null &
 		pid=$! pri=0.1 msg="\n$boot_load \n\n \Z1> \Z2mkfs.ext4 /dev/$BOOT\Zn" load
 	fi
-	
-	wipefs -a /dev/"$ROOT" &> /dev/null
-	
+		
 	case "$FS" in
-		jfs|reiserfs)
-			echo -e "y" | mkfs."$FS" /dev/"$ROOT" &> /dev/null &
+		jfs|reiserfs)	(echo -e "y" | mkfs."$FS" /dev/"$ROOT"
+						sgdisk --zap-all /dev/"$ROOT"
+						wipefs -a /dev/"$ROOT") &> /dev/null &
 		;;
-		*)
-			mkfs."$FS" /dev/"$ROOT" &> /dev/null &
+		*)	(sgdisk --zap-all /dev/"$ROOT"
+			wipefs -a /dev/"$ROOT"
+			mkfs."$FS" /dev/"$ROOT") &> /dev/null &
 		;;
 	esac
 	pid=$! pri=0.6 msg="\n$load_var1 \n\n \Z1> \Z2mkfs.$FS /dev/$ROOT\Zn" load
@@ -491,8 +495,9 @@ auto_encrypt() {
 		ROOT="$(lsblk | grep "$DRIVE" |  awk '{ if (NR==3) print substr ($1,3) }')"
 	fi
 
-	(wipefs -a /dev/"$ROOT"
+	(sgdisk --zap-all /dev/"$ROOT"
 	sgdisk --zap-all /dev/"$BOOT"
+	wipefs -a /dev/"$ROOT"
 	wipefs -a /dev/"$BOOT") &> /dev/null &
 	pid=$! pri=0.1 msg="\n$frmt_load \n\n \Z1> \Z2wipefs -a /dev/$ROOT\Zn" load
 	
@@ -531,7 +536,6 @@ auto_encrypt() {
 		esp_part="/dev/$BOOT"
 		esp_mnt=/boot
 	else
-		wipefs -a /dev/"$BOOT" &> /dev/null
 		mkfs.ext4 /dev/"$BOOT" &> /dev/null &
 		pid=$! pri=0.2 msg="\n$boot_load \n\n \Z1> \Z2mkfs.ext4 /dev/$BOOT\Zn" load
 	fi
@@ -647,6 +651,7 @@ part_class() {
 						source "$lang_file"
 
 						if (dialog --yes-button "$write" --no-button "$cancel" --defaultno --yesno "\n$root_confirm_var" 14 50) then
+							sgdisk --zap-all /dev/"$part"
 							wipefs -a /dev/"$part" &> /dev/null &
 							pid=$! pri=0.1 msg="\n$frmt_load \n\n \Z1> \Z2wipefs -a /dev/$part\Zn" load
 
@@ -775,6 +780,7 @@ part_class() {
 			
 				if "$frmt" ; then
 					if (dialog --yes-button "$write" --no-button "$cancel" --defaultno --yesno "$part_confirm_var" 12 50) then
+						sgdisk --zap-all /dev/"$part"
 						wipefs -a /dev/"$part" &> /dev/null &
 						pid=$! pri=0.1 msg="\n$frmt_load \n\n \Z1> \Z2wipefs -a /dev/$part\Zn" load
 			
@@ -1044,10 +1050,18 @@ prepare_base() {
 
 		while (true)
 		  do
-			bootloader=$(dialog --ok-button "$ok" --cancel-button "$cancel" --menu "$loader_type_msg" 12 64 3 \
-				"grub"			"$loader_msg" \
-				"syslinux" 		"$loader_msg1" \
-				"$none" "-" 3>&1 1>&2 2>&3)
+			if "$UEFI" ; then
+				bootloader=$(dialog --ok-button "$ok" --cancel-button "$cancel" --menu "$loader_type_msg" 12 64 3 \
+					"grub"			"$loader_msg" \
+					"syslinux" 		"$loader_msg1" \
+					"$none" "-" 3>&1 1>&2 2>&3)
+				ex="$?"
+			else
+				bootloader=$(dialog --ok-button "$ok" --cancel-button "$cancel" --menu "$loader_type_msg" 11 64 2 \
+					"grub"			"$loader_msg" \
+					"$none" "-" 3>&1 1>&2 2>&3)
+				ex="$?"
+			fi
 
 			if [ "$?" -gt "0" ]; then
 				if (dialog --defaultno --yes-button "$yes" --no-button "$no" --yesno "\n$exit_msg" 10 60) then
@@ -1382,7 +1396,11 @@ grub_config() {
 
 syslinux_config() {
 
-	if "$UEFI" ; then
+### Syslinux support when using MBR is currently broken
+### Boot fails for systems using BIOS boot
+### If anyone can figure out how to get this working again be my guest...
+
+#	if "$UEFI" ; then
 		esp_part_int=$(<<<"$esp_part" grep -o "[0-9]")
 		esp_part=$(<<<"$esp_part" grep -o "sd[a-z]")
 		esp_mnt=$(<<<$esp_mnt sed "s!$ARCH!!")
@@ -1404,17 +1422,17 @@ syslinux_config() {
 		else
 			sed -i "s|APPEND.*$|APPEND root=/dev/$ROOT|" ${ARCH}${esp_mnt}/EFI/syslinux/syslinux.cfg
 		fi
-	else
-		(syslinux-install_update -i -m -c "$ARCH"
-		cp /usr/share/arch-anywhere/syslinux/{syslinux.cfg,splash.png} "$ARCH"/boot/syslinux) &> /dev/null &
-		pid=$! pri=0.1 msg="\n$syslinux_load \n\n \Z1> \Z2syslinux-install_update -i -a -m -c $ARCH\Zn" load
+#	else
+#		(syslinux-install_update -i -m -c "$ARCH"
+#		cp /usr/share/arch-anywhere/syslinux/{syslinux.cfg,splash.png} "$ARCH"/boot/syslinux) &> /dev/null &
+#		pid=$! pri=0.1 msg="\n$syslinux_load \n\n \Z1> \Z2syslinux-install_update -i -a -m -c $ARCH\Zn" load
 		
-		if "$crypted" ; then
-			sed -i "s|APPEND.*$|APPEND root=/dev/mapper/root cryptdevice=/dev/lvm/lvroot:root rw|" "$ARCH"/boot/syslinux/syslinux.cfg
-		else
-			sed -i "s|APPEND.*$|APPEND root=/dev/$ROOT|" "$ARCH"/boot/syslinux/syslinux.cfg
-		fi
-	fi
+#		if "$crypted" ; then
+#			sed -i "s|APPEND.*$|APPEND root=/dev/mapper/root cryptdevice=/dev/lvm/lvroot:root rw|" "$ARCH"/boot/syslinux/syslinux.cfg
+#		else
+#			sed -i "s|APPEND.*$|APPEND root=/dev/$ROOT|" "$ARCH"/boot/syslinux/syslinux.cfg
+#		fi
+#	fi
 
 }
 
@@ -1428,7 +1446,7 @@ configure_system() {
 	fi
 		
 	if "$crypted" ; then
-		echo "/dev/mapper/root        /               $FS         defaults        0       1" >> "$ARCH"/etc/fstab
+		(echo "/dev/mapper/root        /               $FS         defaults        0       1" >> "$ARCH"/etc/fstab
 		echo "/dev/mapper/tmp         /tmp            tmpfs        defaults        0       0" >> "$ARCH"/etc/fstab
 		echo "tmp	       /dev/lvm/tmp	       /dev/urandom	tmp,cipher=aes-xts-plain64,size=256" >> "$ARCH"/etc/crypttab
 		if "$SWAP" ; then
@@ -1436,13 +1454,13 @@ configure_system() {
 			echo "swap	/dev/lvm/swap	/dev/urandom	swap,cipher=aes-xts-plain64,size=256" >> "$ARCH"/etc/crypttab
 		fi
 		sed -i 's/k filesystems k/k lvm2 encrypt filesystems k/' "$ARCH"/etc/mkinitcpio.conf
-		arch-chroot "$ARCH" mkinitcpio -p linux &> /dev/null &
+		arch-chroot "$ARCH" mkinitcpio -p linux) &> /dev/null &
 		pid=$! pri=1 msg="\n$encrypt_load1 \n\n \Z1> \Z2mkinitcpio -p linux\Zn" load
 	fi
 
-	sed -i -e "s/#$LOCALE/$LOCALE/" "$ARCH"/etc/locale.gen
+	(sed -i -e "s/#$LOCALE/$LOCALE/" "$ARCH"/etc/locale.gen
 	echo LANG="$LOCALE" > "$ARCH"/etc/locale.conf
-	arch-chroot "$ARCH" locale-gen &> /dev/null &
+	arch-chroot "$ARCH" locale-gen) &> /dev/null &
 	pid=$! pri=0.1 msg="\n$locale_load_var \n\n \Z1> \Z2LANG=$LOCALE ; locale-gen\Zn" load
 	
 	if [ "$keyboard" != "$default" ]; then
@@ -1452,10 +1470,9 @@ configure_system() {
 		fi
 	fi
 
-	if [ -n "$SUB_SUBZONE" ]; then
-		arch-chroot "$ARCH" ln -s /usr/share/zoneinfo/"$ZONE" /etc/localtime &
-		pid=$! pri=0.1 msg="\n$zone_load_var \n\n \Z1> \Z2ln -s $ZONE /etc/localtime\Zn" load
-	fi
+	(arch-chroot "$ARCH" ln -s /usr/share/zoneinfo/"$ZONE" /etc/localtime
+	sleep 0.5) &
+	pid=$! pri=0.1 msg="\n$zone_load_var \n\n \Z1> \Z2ln -s $ZONE /etc/localtime\Zn" load
 
 	case "$net_util" in
 		networkmanager)	arch-chroot "$ARCH" systemctl enable NetworkManager.service &>/dev/null
@@ -1467,8 +1484,8 @@ configure_system() {
 	esac
 
     if "$enable_bt" ; then
- 	   arch-chroot "$ARCH" systemctl enable bluetooth &>/dev/null &
-        pid=$! pri=0.1 msg="\n$btenable_msg \n\n \Z1> \Z2systemctl enable bluetooth.service\Zn" load
+ 	   	arch-chroot "$ARCH" systemctl enable bluetooth &>/dev/null &
+    	pid=$! pri=0.1 msg="\n$btenable_msg \n\n \Z1> \Z2systemctl enable bluetooth.service\Zn" load
     fi
 	
 	if "$desktop" ; then
