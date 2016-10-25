@@ -30,10 +30,14 @@ if [ -r ~/.zshrc -a -r ~/.zshrc.global -a ! -r ~/.zshrc.local ] ; then
     printf '-!-\n'
 fi
 
-alias arch-wiki-guide="elinks ~/.guide.html"
-alias arch-wiki-simple="elinks ~/.simple-guide.html"
 alias help="cat ~/.help"
 alias start="cat /etc/issue"
+alias 1="arch-anywhere"
+alias 2="arch-wiki"
+alias 3="iptest"
+alias 4="sysinfo"
+alias 5="fetchmirrors"
+alias 6="reboot"
 
 ## Settings for umask
 #if (( EUID == 0 )); then
@@ -333,7 +337,7 @@ alias start="cat /etc/issue"
 #getanames ()  { perl -ne 'while ( m/a name="([^"]*)"/gc ) { print $1, "\n"; }' $* }
 #getforms ()   { perl -ne 'while ( m:(\</?(input|form|select|option).*?\>):gic ) { print $1, "\n"; }' $* }
 #getstrings () { perl -ne 'while ( m/"(.*?)"/gc ) { print $1, "\n"; }' $*}
-#getanchors () { perl -ne 'while ( m/«([^«»\n]+)»/gc ) { print $1, "\n"; }' $* }
+#getanchors () { perl -ne 'while ( m/Â«([^Â«Â»\n]+)Â»/gc ) { print $1, "\n"; }' $* }
 #showINC ()    { perl -e 'for (@INC) { printf "%d %s\n", $i++, $_ }' }
 #vimpm ()      { vim `perldoc -l $1 | sed -e 's/pod$/pm/'` }
 #vimhelp ()    { vim -c "help $1" -c on -c "au! VimEnter *" }
