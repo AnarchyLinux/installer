@@ -1108,7 +1108,7 @@ prepare_base() {
 		
 		if "$bluetooth" ; then
 			if (dialog --defaultno --yes-button "$yes" --no-button "$no" --yesno "\n$bluetooth_msg" 10 60) then
-				base_install="$base_install bluez bluez-utils"
+				base_install="$base_install bluez bluez-utils pulseaudio-bluetooth"
 				enable_bt=true
 			fi
 		fi
