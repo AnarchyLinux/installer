@@ -737,7 +737,7 @@ part_class() {
 			fi
 			
 			if [ "$mnt" != "SWAP" ]; then
-				if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$part_frmt_msg" 11 50) then
+				if (dialog --yes-button "$yes" --no-button "$no" --defaultno --yesno "\n$part_frmt_msg" 11 50) then
 					f2fs=$(cat /sys/block/$(echo $part | sed 's/[0-9]//g')/queue/rotational)
 					
 					if [ "$mnt" == "/boot" ] || [ "$mnt" == "/boot/EFI" ] || [ "$mnt" == "/boot/efi" ]; then
