@@ -78,7 +78,7 @@ Arch Anywhere, quick, easy, and straight forward, "Keep it simple stupid".
 
 You can find the latest version of Arch Anywhere on the Download page:
 
-http://arch-anywhere.org/download.html
+http://arch-anywhere.org/download
 
 
 <p>
