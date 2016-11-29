@@ -1186,53 +1186,43 @@ graphics() {
 								start_term="exec startxfce4" de_config=true
 		;;
 		"xfce4") 	if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$extra_msg0" 10 60) then
-						DE="xfce4 xfce4-goodies xdg-user-dirs"
-					else
-						DE="xdg-user-dirs"
+						DE="xfce4 xfce4-goodies"
 					fi
 					start_term="exec startxfce4"
 		;;
 		"budgie")	if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$extra_msg6" 10 60) then
-						DE="budgie-desktop gnome xdg-user-dirs"
+						DE="budgie-desktop gnome"
 					else
-						DE="budgie-desktop xdg-user-dirs"
+						DE="budgie-desktop"
 					fi
 					start_term="export XDG_CURRENT_DESKTOP=Budgie:GNOME ; exec budgie-desktop"
 		;;
 		"gnome")	if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$extra_msg1" 10 60) then
-						DE="gnome gnome-extra xdg-user-dirs"
-					else
-						DE="xdg-user-dirs"
+						DE="gnome gnome-extra"
 					fi
 					 start_term="exec gnome-session"
 		;;
 		"mate")		if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$extra_msg2" 10 60) then
-						DE="mate mate-extra xdg-user-dirs"
-					else
-						DE="xdg-user-dirs"
+						DE="mate mate-extra"
 					fi
 					 start_term="exec mate-session"
 		;;
 		"KDE plasma")	if (dialog --defaultno --yes-button "$yes" --no-button "$no" --yesno "\n$extra_msg3" 10 60) then
-						DE="plasma-desktop sddm konsole dolphin plasma-nm plasma-pa breeze-kde4 xdg-user-dirs"
+						DE="plasma-desktop sddm konsole dolphin plasma-nm plasma-pa breeze-kde4"
 					else
-						DE="plasma kde-applications xdg-user-dirs"
+						DE="plasma kde-applications"
 					fi
 						
 						enable_dm=true
 						start_term="exec startkde"
 		;;
 		"deepin")	if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$extra_msg4" 10 60) then
-						DE="deepin deepin-extra xdg-user-dirs"
-					else
-						DE="xdg-user-dirs"
+						DE="deepin deepin-extra"
 					fi
  					start_term="exec startdde"
  		;;
  		"xmonad")	if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$extra_msg5" 10 60) then 
                         			DE="xmonad xmonad-contrib"
-					else
-						DE="xdg-user-dirs"
                     			fi
                     			start_term="exec xmonad"
 		;;	
@@ -1241,8 +1231,6 @@ graphics() {
 		;;
 		"lxde") 	if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$gtk3_msg0" 10 60) then 
                         			DE="lxde-gtk3"
-					else
-						DE="xdg-user-dirs"
                     			fi				
 					start_term="exec startlxde" 
 		;;
