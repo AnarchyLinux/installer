@@ -1200,14 +1200,14 @@ graphics() {
 					start_term="export XDG_CURRENT_DESKTOP=Budgie:GNOME ; exec budgie-desktop"
 		;;
 		"gnome")	if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$extra_msg1" 10 60) then
-						DE="gnome gnome-extra"
+						DE="gnome gnome-extra xdg-user-dirs"
 					else
 						DE="xdg-user-dirs"
 					fi
 					 start_term="exec gnome-session"
 		;;
 		"mate")		if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$extra_msg2" 10 60) then
-						DE="mate mate-extra"
+						DE="mate mate-extra xdg-user-dirs"
 					else
 						DE="xdg-user-dirs"
 					fi
