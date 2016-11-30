@@ -1182,7 +1182,7 @@ graphics() {
 	fi
 
 	case "$DE" in
-		"Arch-Anywhere-Xfce") 	DE="xfce4 xfce4-goodies xdg-user-dirs gvfs zsh zsh-syntax-highlighting"
+		"Arch-Anywhere-Xfce") 	DE="xfce4 xfce4-goodies gvfs zsh zsh-syntax-highlighting"
 								start_term="exec startxfce4" de_config=true
 		;;
 		"xfce4") 	if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$extra_msg0" 10 60) then
@@ -1290,7 +1290,7 @@ graphics() {
 		fi
 	done
 				
-	DE="$DE xorg-server xorg-server-utils xorg-xinit xterm $GPU"
+	DE="$DE xdg-user-dirs xorg-server xorg-server-utils xorg-xinit xterm $GPU"
 		
 	if [ "$net_util" == "networkmanager" ] ; then
 		DE="$DE network-manager-applet"
