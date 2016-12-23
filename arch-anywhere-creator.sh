@@ -97,7 +97,7 @@ init() {
 	fi
 	
 	# Extract archiso to mntdir and continue with build
-	7z x "$iso" "$customiso"
+	7z x "$iso" -o"$customiso"
 	builds
 
 }
