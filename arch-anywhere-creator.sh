@@ -4,105 +4,100 @@
 export version="arch-anywhere-2.2.4-dual.iso"
 
 # Set the ISO label here
-export iso_label="ARCH_ANY224"
+export iso_label="AA224"
 
 # Location variables all directories must exist
-export aa="`dirname $(readlink -f "$0")`"
+export aa=$(pwd)
 export customiso="$aa/customiso"
-export mntdir="$aa/mnt"
+export iso=$(ls "$aa"/archlinux-* | tail -n1 | sed 's!.*/!!')
+update=false
+
+# Check depends
+
+if [ ! -f /usr/bin/7z ] || [ ! -f /usr/bin/mksquashfs ] || [ ! -f /usr/bin/xorriso ] || [ ! -f /usr/bin/wget ] || [ ! -f /usr/bin/arch-chroot ]; then
+	depends=false
+	until "$depends"
+	  do
+		echo
+		echo -n "ISO creation requires arch-install-scripts, mksquashfs-tools, libisoburn, and wget, would you like to install missing dependencies now? [y/N]: "
+		read input
+
+		case "$input" in
+			y|Y|yes|Yes|yY|Yy|yy|YY)
+				if [ ! -f "/usr/bin/wget" ]; then query="wget"; fi
+				if [ ! -f /usr/bin/xorriso ]; then query="$query libisoburn"; fi
+				if [ ! -f /usr/bin/mksquashfs ]; then query="$query squashfs-tools"; fi
+				if [ ! -f /usr/bin/7z ]; then query="$query p7zip" ; fi
+				if [ ! -f /usr/bin/arch-chroot ]; then query="$query arch-install-scripts"; fi
+				sudo pacman -Syy $(echo "$query")
+				depends=true
+			;;
+			n|N|no|No|nN|Nn|nn|NN)
+				echo "Error: missing depends, exiting."
+				exit 1
+			;;
+			*)
+				echo
+				echo "$input is an invalid option"
+			;;
+		esac
+	done
+fi
+
 
 # Link to the iso used to create Arch Anywhere
-export archiso_link="http://arch.localmsp.org/arch/iso/2016.12.01/archlinux-2016.12.01-dual.iso"
+export archiso_link=$(lynx -dump $(lynx -dump http://arch.localmsp.org/arch/iso | grep "8\. " | awk '{print $2}') | grep "7\. " | awk '{print $2}')
+
+if [ -z "$archiso_link" ]; then
+	echo -e "ERROR: archiso link not found\nRequired for updating archiso.\nPlease install 'lynx' to resolve this issue"
+	sleep 4
+else
+	iso_ver=$(<<<"$archiso_link" sed 's!.*/!!')
+fi
+
+if [ "$iso_ver" != "$iso" ]; then
+	if [ -z "$iso" ]; then
+		echo -en "\nNo archiso found under $aa\nEould you like to download now? [y/N]: "
+		read input
+    
+		case "$input" in
+			y|Y|yes|Yes|yY|Yy|yy|YY) update=true
+			;;
+			n|N|no|No|nN|Nn|nn|NN)	echo "Error: Creating the ISO requires the official archiso to be located at '$aa', exiting."
+									exit 1
+			;;
+		esac
+	else
+		echo -en "An updated verison of the archiso is available for download\n'$iso_ver'\nDownload now? [y/N]: "
+		read input
+		
+		case "$input" in
+			y|Y|yes|Yes|yY|Yy|yy|YY) update=true
+			;;
+			n|N|no|No|nN|Nn|nn|NN)	echo -e "Continuing using old iso\n'$iso'"
+									sleep 1
+			;;
+		esac
+	fi
+	
+	if "$update" ; then
+		cd "$aa"
+		wget "$archiso_link"
+		if [ "$?" -gt "0" ]; then
+			echo "Error: requires wget, exiting"
+			exit 1
+		fi
+	fi
+fi
 
 init() {
 	
 	if [ -d "$customiso" ]; then
 		sudo rm -rf "$customiso"
 	fi
-
-	if [ ! -d "$mntdir" ]; then
-		mkdir "$mntdir"
-	fi
 	
-	if [ -d "$mntdir"/arch ]; then
-		cp -a "$mntdir" "$customiso"
-	else
-		mounted=false
-		echo -n "ISO not mounted would you like to mount it now? [y/n]: "
-		read input
-		
-		until "$mounted"
-		  do
-			case "$input" in
-				y|Y|yes|Yes|yY|Yy|yy|YY)
-					if [ -f "$aa"/archlinux-*.iso ]; then
-						sudo mount -t iso9660 -o loop "$aa"/archlinux-*.iso "$mntdir"
-						if [ "$?" -eq "0" ]; then
-							mounted=true
-						else
-							echo "Error: failed mounting the archiso, exiting."
-							exit 1
-						fi
-						cp -a "$mntdir" "$customiso"
-					else
-						echo
-						echo -n "No archiso found under $aa would you like to download now? [y/N]"
-						read input
-    
-						case "$input" in
-							y|Y|yes|Yes|yY|Yy|yy|YY)
-								cd "$aa"
-								wget "$archiso_link"
-								if [ "$?" -gt "0" ]; then
-									echo "Error: requires wget, exiting"
-									exit 1
-								fi
-							;;
-							n|N|no|No|nN|Nn|nn|NN)
-								echo "Error: Creating the ISO requires the official archiso to be located at $aa, exiting."
-								exit 1
-							;;
-						esac
-					fi
-				;;
-				n|N|no|No|nN|Nn|nn|NN)
-					echo "Error: archiso must be mounted at $mntdir, exiting."
-					exit1
-				;;
-			esac
-		done
-	fi
-
-# Check depends
-
-	if [ ! -f /usr/bin/mksquashfs ] || [ ! -f /usr/bin/xorriso ] || [ ! -f /usr/bin/wget ] || [ ! -f /usr/bin/arch-chroot ]; then
-		depends=false
-		until "$depends"
-		  do
-			echo
-			echo -n "ISO creation requires arch-install-scripts, mksquashfs-tools, libisoburn, and wget, would you like to install missing dependencies now? [y/N]: "
-			read input
-
-			case "$input" in
-				y|Y|yes|Yes|yY|Yy|yy|YY)
-					if [ ! -f "/usr/bin/wget" ]; then query="wget"; fi
-					if [ ! -f /usr/bin/xorriso ]; then query="$query libisoburn"; fi
-					if [ ! -f /usr/bin/mksquashfs ]; then query="$query squashfs-tools"; fi
-					if [ ! -f /usr/bin/arch-chroot ]; then query="$query arch-install-scripts"; fi
-					sudo pacman -Syy $(echo "$query")
-					depends=true
-				;;
-				n|N|no|No|nN|Nn|nn|NN)
-					echo "Error: missing depends, exiting."
-					exit 1
-				;;
-				*)
-					echo
-					echo "$input is an invalid option"
-				;;
-			esac
-		done
-	fi
+	# Extract archiso to mntdir and continue with build
+	7z x "$iso" "$customiso"
 	builds
 
 }
@@ -283,7 +278,6 @@ create_iso() {
 		case "$input" in
 			y|Y|yes|Yes|yY|Yy|yy|YY)
 				rm -rf "$customiso"
-				sudo umount "$mntdir"
 				check_sums
 			;;
 			n|N|no|No|nN|Nn|nn|NN)
