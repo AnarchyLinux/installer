@@ -372,7 +372,7 @@ auto_part() {
 			if "$SWAP" ; then
 				echo -e "n\n\n\n512M\nef00\nn\n3\n\n+$SWAPSPACE\n8200\nn\n\n\n\n\nw\ny" | gdisk /dev/"$DRIVE" &> /dev/null &
 				pid=$! pri=0.1 msg="\n$load_var0 \n\n \Z1> \Z2gdisk /dev/$DRIVE\Zn" load
-				SWAP="$(lsblk | grep "$DRIVE" |  awk '{ if (NR==4) print substr ($1,3) }')"
+				SWAP="${DRIVE}3"
 				(wipefs -a /dev/"$SWAP"
 				mkswap /dev/"$SWAP"
 				swapon /dev/"$SWAP") &> /dev/null &
@@ -381,13 +381,13 @@ auto_part() {
 				echo -e "n\n\n\n512M\nef00\nn\n\n\n\n\nw\ny" | gdisk /dev/"$DRIVE" &> /dev/null &
 				pid=$! pri=0.1 msg="\n$load_var0 \n\n \Z1> \Z2gdisk /dev/$DRIVE\Zn" load
 			fi
-			BOOT="$(lsblk | grep "$DRIVE" |  awk '{ if (NR==2) print substr ($1,3) }')"
-			ROOT="$(lsblk | grep "$DRIVE" |  awk '{ if (NR==3) print substr ($1,3) }')"
+			BOOT="${DRIVE}1"
+			ROOT="${DRIVE}2"
 		else
 			if "$SWAP" ; then
 				echo -e "o\ny\nn\n1\n\n+100M\n\nn\n2\n\n+1M\nEF02\nn\n4\n\n+$SWAPSPACE\n8200\nn\n3\n\n\n\nw\ny" | gdisk /dev/"$DRIVE" &> /dev/null &
 				pid=$! pri=0.1 msg="\n$load_var0 \n\n \Z1> \Z2gdisk /dev/$DRIVE\Zn" load
-				SWAP="$(lsblk | grep "$DRIVE" |  awk '{ if (NR==5) print substr ($1,3) }')"
+				SWAP="${DRIVE}4"
 				(wipefs -a /dev/"$SWAP"
 				mkswap /dev/"$SWAP"
 				swapon /dev/"$SWAP") &> /dev/null &
@@ -396,14 +396,14 @@ auto_part() {
 				echo -e "o\ny\nn\n1\n\n+100M\n\nn\n2\n\n+1M\nEF02\nn\n3\n\n\n\nw\ny" | gdisk /dev/"$DRIVE" &> /dev/null &
 				pid=$! pri=0.1 msg="\n$load_var0 \n\n \Z1> \Z2gdisk /dev/$DRIVE\Zn" load
 			fi
-			BOOT="$(lsblk | grep "$DRIVE" |  awk '{ if (NR==2) print substr ($1,3) }')"	
-			ROOT="$(lsblk | grep "$DRIVE" |  awk '{ if (NR==4) print substr ($1,3) }')"
+			BOOT="${DRIVE}1"
+			ROOT="${DRIVE}3"
 		fi
 	else
 		if "$SWAP" ; then
 			echo -e "o\nn\np\n1\n\n+100M\nn\np\n3\n\n+$SWAPSPACE\nt\n\n82\nn\np\n2\n\n\nw" | fdisk /dev/"$DRIVE" &> /dev/null &
 			pid=$! pri=0.1 msg="\n$load_var0 \n\n \Z1> \Z2fdisk /dev/$DRIVE\Zn" load
-			SWAP="$(lsblk | grep "$DRIVE" |  awk '{ if (NR==4) print substr ($1,3) }')"					
+			SWAP="${DRIVE}3"					
 			(wipefs -a /dev/"$SWAP"
 			mkswap /dev/"$SWAP"
 			swapon /dev/"$SWAP") &> /dev/null &
@@ -413,8 +413,8 @@ auto_part() {
 			echo -e "o\nn\np\n1\n\n+100M\nn\np\n2\n\n\nw" | fdisk /dev/"$DRIVE" &> /dev/null &
 			pid=$! pri=0.1 msg="\n$load_var0 \n\n \Z1> \Z2fdisk /dev/$DRIVE\Zn" load
 		fi				
-		BOOT="$(lsblk | grep "$DRIVE" |  awk '{ if (NR==2) print substr ($1,3) }')"
-		ROOT="$(lsblk | grep "$DRIVE" |  awk '{ if (NR==3) print substr ($1,3) }')"
+		BOOT="${DRIVE}1"
+		ROOT="${DRIVE}2"
 	fi
 	
 	if "$UEFI" ; then
