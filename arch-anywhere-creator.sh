@@ -57,7 +57,7 @@ fi
 
 if [ "$iso_ver" != "$iso" ]; then
 	if [ -z "$iso" ]; then
-		echo -en "\nNo archiso found under $aa\nEould you like to download now? [y/N]: "
+		echo -en "\nNo archiso found under $aa\nWould you like to download now? [y/N]: "
 		read input
     
 		case "$input" in
