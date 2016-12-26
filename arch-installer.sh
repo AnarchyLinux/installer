@@ -108,11 +108,11 @@ update_mirrors() {
 check_connection() {
 	
 	op_title="$connection_op_msg"
-	test_mirror=$(</etc/pacman.d/mirrorlist grep "^Server" | awk 'NR==1{print $3}' | sed 's/$.*//')
+	(test_mirror=$(</etc/pacman.d/mirrorlist grep "^Server" | awk 'NR==1{print $3}' | sed 's/$.*//')
 	test_pkg=bluez-utils
 	test_pkg_ver=$(pacman -Sy --print-format='%v' $(echo "$test_pkg") | tail -n1)
 	test_link="${test_mirror}extra/os/i686/${test_pkg}-${test_pkg_ver}-i686.pkg.tar.xz"
-	wget --no-check-certificate --append-output=/tmp/wget.log -O /dev/null "${test_link}" &
+	wget --no-check-certificate --append-output=/tmp/wget.log -O /dev/null "${test_link}") &
 	pid=$! pri=0.3 msg="\n$connection_load \n\n \Z1> \Z2wget -O /dev/null test_link/test1Mb.db\Zn" load
 	
 	sed -i 's/\,/\./' /tmp/wget.log
@@ -385,7 +385,7 @@ auto_part() {
 			ROOT="${DRIVE}2"
 		else
 			if "$SWAP" ; then
-				echo -e "o\ny\nn\n1\n\n+100M\n\nn\n2\n\n+1M\nEF02\nn\n4\n\n+$SWAPSPACE\n8200\nn\n3\n\n\n\nw\ny" | gdisk /dev/"$DRIVE" &> /dev/null &
+				echo -e "o\ny\nn\n1\n\n+212M\n\nn\n2\n\n+1M\nEF02\nn\n4\n\n+$SWAPSPACE\n8200\nn\n3\n\n\n\nw\ny" | gdisk /dev/"$DRIVE" &> /dev/null &
 				pid=$! pri=0.1 msg="\n$load_var0 \n\n \Z1> \Z2gdisk /dev/$DRIVE\Zn" load
 				SWAP="${DRIVE}4"
 				(wipefs -a /dev/"$SWAP"
@@ -393,7 +393,7 @@ auto_part() {
 				swapon /dev/"$SWAP") &> /dev/null &
 				pid=$! pri=0.1 msg="\n$swap_load \n\n \Z1> \Z2mkswap /dev/$SWAP\Zn" load
 			else
-				echo -e "o\ny\nn\n1\n\n+100M\n\nn\n2\n\n+1M\nEF02\nn\n3\n\n\n\nw\ny" | gdisk /dev/"$DRIVE" &> /dev/null &
+				echo -e "o\ny\nn\n1\n\n+212M\n\nn\n2\n\n+1M\nEF02\nn\n3\n\n\n\nw\ny" | gdisk /dev/"$DRIVE" &> /dev/null &
 				pid=$! pri=0.1 msg="\n$load_var0 \n\n \Z1> \Z2gdisk /dev/$DRIVE\Zn" load
 			fi
 			BOOT="${DRIVE}1"
@@ -401,7 +401,7 @@ auto_part() {
 		fi
 	else
 		if "$SWAP" ; then
-			echo -e "o\nn\np\n1\n\n+100M\nn\np\n3\n\n+$SWAPSPACE\nt\n\n82\nn\np\n2\n\n\nw" | fdisk /dev/"$DRIVE" &> /dev/null &
+			echo -e "o\nn\np\n1\n\n+212M\nn\np\n3\n\n+$SWAPSPACE\nt\n\n82\nn\np\n2\n\n\nw" | fdisk /dev/"$DRIVE" &> /dev/null &
 			pid=$! pri=0.1 msg="\n$load_var0 \n\n \Z1> \Z2fdisk /dev/$DRIVE\Zn" load
 			SWAP="${DRIVE}3"					
 			(wipefs -a /dev/"$SWAP"
@@ -410,7 +410,7 @@ auto_part() {
 			pid=$! pri=0.1 msg="\n$swap_load \n\n \Z1> \Z2mkswap /dev/$SWAP\Zn" load
 
 		else
-			echo -e "o\nn\np\n1\n\n+100M\nn\np\n2\n\n\nw" | fdisk /dev/"$DRIVE" &> /dev/null &
+			echo -e "o\nn\np\n1\n\n+212M\nn\np\n2\n\n\nw" | fdisk /dev/"$DRIVE" &> /dev/null &
 			pid=$! pri=0.1 msg="\n$load_var0 \n\n \Z1> \Z2fdisk /dev/$DRIVE\Zn" load
 		fi				
 		BOOT="${DRIVE}1"
@@ -422,12 +422,12 @@ auto_part() {
 		wipefs -a /dev/"$BOOT"
 		mkfs.vfat -F32 /dev/"$BOOT") &> /dev/null &
 		pid=$! pri=0.1 msg="\n$efi_load1 \n\n \Z1> \Z2mkfs.vfat -F32 /dev/$BOOT\Zn" load
-		esp_part="/dev/$BOOT"
+		esp_part="$BOOT"
 		esp_mnt=/boot
 	else
 		(sgdisk --zap-all /dev/"$BOOT"
 		wipefs -a /dev/"$BOOT"
-		mkfs.ext4 /dev/"$BOOT") &> /dev/null &
+		mkfs.ext4 -O \^64bit /dev/"$BOOT") &> /dev/null &
 		pid=$! pri=0.1 msg="\n$boot_load \n\n \Z1> \Z2mkfs.ext4 /dev/$BOOT\Zn" load
 	fi
 		
@@ -483,13 +483,13 @@ auto_encrypt() {
 			BOOT="${DRIVE}1"
 			ROOT="${DRIVE}2"
 		else
-			echo -e "o\ny\nn\n1\n\n+100M\n\nn\n2\n\n+1M\nEF02\nn\n3\n\n\n\nw\ny" | gdisk /dev/"$DRIVE" &> /dev/null &
+			echo -e "o\ny\nn\n1\n\n+512M\n\nn\n2\n\n+1M\nEF02\nn\n3\n\n\n\nw\ny" | gdisk /dev/"$DRIVE" &> /dev/null &
 			pid=$! pri=0.1 msg="\n$load_var0 \n\n \Z1> \Z2gdisk /dev/$DRIVE\Zn" load
 			ROOT="${DRIVE}3"
 			BOOT="${DRIVE}1"
 		fi
 	else
-		echo -e "o\nn\np\n1\n\n+100M\nn\np\n2\n\n\nw" | fdisk /dev/"$DRIVE" &> /dev/null &
+		echo -e "o\nn\np\n1\n\n+512M\nn\np\n2\n\n\nw" | fdisk /dev/"$DRIVE" &> /dev/null &
 		pid=$! pri=0.1 msg="\n$load_var0 \n\n \Z1> \Z2fdisk /dev/$DRIVE\Zn" load
 		BOOT="${DRIVE}1"
 		ROOT="${DRIVE}2"
@@ -536,7 +536,7 @@ auto_encrypt() {
 		esp_part="/dev/$BOOT"
 		esp_mnt=/boot
 	else
-		mkfs.ext4 /dev/"$BOOT" &> /dev/null &
+		mkfs.ext4 -O \^64bit /dev/"$BOOT" &> /dev/null &
 		pid=$! pri=0.2 msg="\n$boot_load \n\n \Z1> \Z2mkfs.ext4 /dev/$BOOT\Zn" load
 	fi
 
@@ -651,8 +651,8 @@ part_class() {
 						source "$lang_file"
 
 						if (dialog --yes-button "$write" --no-button "$cancel" --defaultno --yesno "\n$root_confirm_var" 14 50) then
-							sgdisk --zap-all /dev/"$part"
-							wipefs -a /dev/"$part" &> /dev/null &
+							(sgdisk --zap-all /dev/"$part"
+							wipefs -a /dev/"$part") &> /dev/null &
 							pid=$! pri=0.1 msg="\n$frmt_load \n\n \Z1> \Z2wipefs -a /dev/$part\Zn" load
 
 							case "$FS" in
@@ -780,8 +780,8 @@ part_class() {
 			
 				if "$frmt" ; then
 					if (dialog --yes-button "$write" --no-button "$cancel" --defaultno --yesno "$part_confirm_var" 12 50) then
-						sgdisk --zap-all /dev/"$part"
-						wipefs -a /dev/"$part" &> /dev/null &
+						(sgdisk --zap-all /dev/"$part"
+						wipefs -a /dev/"$part") &> /dev/null &
 						pid=$! pri=0.1 msg="\n$frmt_load \n\n \Z1> \Z2wipefs -a /dev/$part\Zn" load
 			
 						case "$FS" in
@@ -1013,10 +1013,10 @@ prepare_base() {
 				base_install="base linux-grsec sudo"
 			;;
 			"Arch-Linux-LTS-Base")
-				base_install="base linux-lts sudo"
+				base_install="base linux-lts linux-lts-headers sudo"
 			;;
 			"Arch-Linux-LTS-Base-Devel")
-				base_install="base base-devel linux-lts"
+				base_install="base base-devel linux-lts linux-lts-headers"
 			;;
 		esac
 
@@ -1050,34 +1050,42 @@ prepare_base() {
 
 		while (true)
 		  do
-			if "$UEFI" ; then
-				bootloader=$(dialog --ok-button "$ok" --cancel-button "$cancel" --menu "$loader_type_msg" 12 64 3 \
-					"grub"			"$loader_msg" \
-					"syslinux" 		"$loader_msg1" \
-					"$none" "-" 3>&1 1>&2 2>&3)
-				ex="$?"
-			else
-				bootloader=$(dialog --ok-button "$ok" --cancel-button "$cancel" --menu "$loader_type_msg" 11 64 2 \
-					"grub"			"$loader_msg" \
-					"$none" "-" 3>&1 1>&2 2>&3)
-				ex="$?"
-			fi
+			bootloader=$(dialog --ok-button "$ok" --cancel-button "$cancel" --menu "$loader_type_msg" 12 64 3 \
+				"grub"			"$loader_msg" \
+				"syslinux"		"$loader_msg1" \
+				"$none" "-" 3>&1 1>&2 2>&3)
 
 			if [ "$?" -gt "0" ]; then
 				if (dialog --defaultno --yes-button "$yes" --no-button "$no" --yesno "\n$exit_msg" 10 60) then
 					main_menu
 				fi
-			else
-				if [ "$bootloader" != "$none" ]; then
-					base_install="$base_install $bootloader" ; break
-				else
-					if (dialog --defaultno --yes-button "$yes" --no-button "$no" --yesno "$grub_warn_msg0" 10 60) then
-						dialog --ok-button "$ok" --msgbox "$grub_warn_msg1" 10 60
+			elif [ "$bootloader" == "syslinux" ]; then
+				if ! "$UEFI" ; then
+					if (dumpe2fs $(df | grep "${ARCH}/boot" | awk '{print $1}') | grep "64bit" &> /dev/null); then
+						if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$syslinux_warn_msg" 11 60) then
+							part=$(df | grep "${ARCH}/boot" | awk '{print $1}')
+							(umount "$ARCH"/boot
+							wipefs -a "$part"
+							mkfs.ext4 -O \^64bit "$part"
+							mount "$part" "$ARCH"/boot) &> /dev/null &
+							pid=$! pri=0.1 msg="\n$boot_load \n\n \Z1> \Z2mkfs.ext4 -O ^64bit /dev/$part\Zn" load
+							break
+						fi
+					else
 						break
 					fi
+				else
+					break
+				fi
+			else
+				if (dialog --defaultno --yes-button "$yes" --no-button "$no" --yesno "\n$grub_warn_msg0" 10 60) then
+					dialog --ok-button "$ok" --msgbox "\n$grub_warn_msg1" 10 60
+					break
 				fi
 			fi			
 		done
+
+		base_install="$base_install $bootloader"
 	
 		while (true)
 		  do
@@ -1397,11 +1405,7 @@ grub_config() {
 
 syslinux_config() {
 
-### Syslinux support when using MBR is currently broken
-### Boot fails for systems using BIOS boot
-### If anyone can figure out how to get this working again be my guest...
-
-#	if "$UEFI" ; then
+	if "$UEFI" ; then
 		esp_part_int=$(<<<"$esp_part" grep -o "[0-9]")
 		esp_part=$(<<<"$esp_part" grep -o "sd[a-z]")
 		esp_mnt=$(<<<$esp_mnt sed "s!$ARCH!!")
@@ -1423,17 +1427,17 @@ syslinux_config() {
 		else
 			sed -i "s|APPEND.*$|APPEND root=/dev/$ROOT|" ${ARCH}${esp_mnt}/EFI/syslinux/syslinux.cfg
 		fi
-#	else
-#		(syslinux-install_update -i -m -c "$ARCH"
-#		cp /usr/share/arch-anywhere/syslinux/{syslinux.cfg,splash.png} "$ARCH"/boot/syslinux) &> /dev/null &
-#		pid=$! pri=0.1 msg="\n$syslinux_load \n\n \Z1> \Z2syslinux-install_update -i -a -m -c $ARCH\Zn" load
+	else
+		(syslinux-install_update -i -a -m -c "$ARCH"
+		cp /usr/share/arch-anywhere/syslinux/{syslinux.cfg,splash.png} "$ARCH"/boot/syslinux) &> /dev/null &
+		pid=$! pri=0.1 msg="\n$syslinux_load \n\n \Z1> \Z2syslinux-install_update -i -a -m -c $ARCH\Zn" load
 		
-#		if "$crypted" ; then
-#			sed -i "s|APPEND.*$|APPEND root=/dev/mapper/root cryptdevice=/dev/lvm/lvroot:root rw|" "$ARCH"/boot/syslinux/syslinux.cfg
-#		else
-#			sed -i "s|APPEND.*$|APPEND root=/dev/$ROOT|" "$ARCH"/boot/syslinux/syslinux.cfg
-#		fi
-#	fi
+		if "$crypted" ; then
+			sed -i "s|APPEND.*$|APPEND root=/dev/mapper/root cryptdevice=/dev/lvm/lvroot:root rw|" "$ARCH"/boot/syslinux/syslinux.cfg
+		else
+			sed -i "s|APPEND.*$|APPEND root=/dev/$ROOT|" "$ARCH"/boot/syslinux/syslinux.cfg
+		fi
+	fi
 
 }
 
@@ -1945,7 +1949,7 @@ reboot_system() {
 	op_title="$complete_op_msg"
 	if "$INSTALLED" ; then
 		if [ "$bootloader" == "$none" ]; then
-			if (dialog --yes-button "$yes" --no-button "$no" --yesno "$complete_no_boot_msg" 10 60) then
+			if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$complete_no_boot_msg" 10 60) then
 				reset ; exit
 			fi
 		fi
