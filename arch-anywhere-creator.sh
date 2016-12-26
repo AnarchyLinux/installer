@@ -46,6 +46,7 @@ fi
 
 
 # Link to the iso used to create Arch Anywhere
+echo "Checking for updated ISO..."
 export archiso_link=$(lynx -dump $(lynx -dump http://arch.localmsp.org/arch/iso | grep "8\. " | awk '{print $2}') | grep "7\. " | awk '{print $2}')
 
 if [ -z "$archiso_link" ]; then
