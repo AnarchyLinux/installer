@@ -1050,15 +1050,27 @@ prepare_base() {
 
 		while (true)
 		  do
-			bootloader=$(dialog --ok-button "$ok" --cancel-button "$cancel" --menu "$loader_type_msg" 12 64 3 \
-				"grub"			"$loader_msg" \
-				"syslinux"		"$loader_msg1" \
-				"$none" "-" 3>&1 1>&2 2>&3)
-
-			if [ "$?" -gt "0" ]; then
+			if "$UEFI" ; then
+				bootloader=$(dialog --ok-button "$ok" --cancel-button "$cancel" --menu "$loader_type_msg" 13 64 4 \
+					"grub"			"$loader_msg" \
+					"syslinux"		"$loader_msg1" \
+					"systemd-boot"	"$loader_msg2" \
+					"$none" "-" 3>&1 1>&2 2>&3)
+				ex="$?"
+			else
+				bootloader=$(dialog --ok-button "$ok" --cancel-button "$cancel" --menu "$loader_type_msg" 12 64 3 \
+					"grub"			"$loader_msg" \
+					"syslinux"		"$loader_msg1" \
+					"$none" "-" 3>&1 1>&2 2>&3)
+				ex="$?"
+			fi
+			
+			if [ "$ex" -gt "0" ]; then
 				if (dialog --defaultno --yes-button "$yes" --no-button "$no" --yesno "\n$exit_msg" 10 60) then
 					main_menu
 				fi
+			elif [ "$bootloader" == "systemd-boot" ]; then
+				break
 			elif [ "$bootloader" == "syslinux" ]; then
 				if ! "$UEFI" ; then
 					if (dumpe2fs $(df | grep "${ARCH}/boot" | awk '{print $1}') | grep "64bit" &> /dev/null); then
@@ -1069,14 +1081,20 @@ prepare_base() {
 							mkfs.ext4 -O \^64bit "$part"
 							mount "$part" "$ARCH"/boot) &> /dev/null &
 							pid=$! pri=0.1 msg="\n$boot_load \n\n \Z1> \Z2mkfs.ext4 -O ^64bit /dev/$part\Zn" load
+							base_install="$base_install $bootloader"
 							break
 						fi
 					else
+						base_install="$base_install $bootloader"
 						break
 					fi
 				else
+					base_install="$base_install $bootloader"
 					break
 				fi
+			elif [ "$bootloader" == "grub" ]; then
+				base_install="$base_install $bootloader"
+				break
 			else
 				if (dialog --defaultno --yes-button "$yes" --no-button "$no" --yesno "\n$grub_warn_msg0" 10 60) then
 					dialog --ok-button "$ok" --msgbox "\n$grub_warn_msg1" 10 60
@@ -1084,8 +1102,6 @@ prepare_base() {
 				fi
 			fi			
 		done
-
-		base_install="$base_install $bootloader"
 	
 		while (true)
 		  do
@@ -1221,6 +1237,7 @@ graphics() {
 							DE="plasma kde-applications"
 						fi
 						
+						DM="sddm"
 						enable_dm=true
 						start_term="exec startkde"
 		;;
@@ -1315,9 +1332,21 @@ graphics() {
 	fi
 	
 	if ! "$enable_dm" ; then
-		if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$lightdm_msg" 10 60) then
-			DE="$DE lightdm lightdm-gtk-greeter"
-			enable_dm=true
+		if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$dm_msg" 10 60) then
+			DM=$(dialog --ok-button "$ok" --cancel-button "$cancel" --menu "$dm_msg1" 13 64 4 \
+				"gdm"		"$dm0" \
+				"lightdm"	"$dm1" \
+				"lxdm"		"$dm2" \
+				"sddm"		"$dm3" 3>&1 1>&2 2>&3)
+			if [ "$?" -eq "0" ]; then
+				if [ "$DM" == "lightdm" ]; then
+					DE="$DE $DM lightdm-gtk-greeter"
+				else
+					DE="$DE $DM"
+				fi
+				
+				enable_dm=true
+			fi
 		else
 			dialog --ok-button "$ok" --msgbox "\n$startx_msg" 10 60
 		fi
@@ -1364,6 +1393,7 @@ install_base() {
 		case "$bootloader" in
 			grub) grub_config ;;
 			syslinux) syslinux_config ;;
+			systemd-boot) systemd_config ;;
 		esac
 
 		configure_system
@@ -1441,6 +1471,29 @@ syslinux_config() {
 
 }
 
+systemd_config() {
+
+	esp_mnt=$(<<<$esp_mnt sed "s!$ARCH!!")
+	(arch-chroot "$ARCH" bootctl --path="$esp_mnt" install
+	cp /usr/share/systemd/bootctl/loader.conf ${ARCH}${esp_mnt}/loader/
+	echo "timeout  4" >> ${ARCH}${esp_mnt}/loader/loader.conf
+	echo -e "title          Arch Linux\nlinux          /vmlinuz-linux\ninitrd         /initramfs-linux.img" > ${ARCH}${esp_mnt}/loader/entries/arch.conf) &> /dev/null &
+	pid=$! pri=0.1 msg="\n$syslinux_load \n\n \Z1> \Z2bootctl --path="$esp_mnt" install\Zn" load
+	
+	if "$crypted" ; then
+		echo "options		cryptdevice=/dev/lvm/lvroot:root root=/dev/mapper/root quiet rw" >> ${ARCH}${esp_mnt}/loader/entries/arch.conf
+	else
+		echo "options		root=PARTUUID=$(blkid -s PARTUUID -o value $(df | grep -m1 "$ARCH" | awk '{print $1}')) rw" >> ${ARCH}${esp_mnt}/loader/entries/arch.conf
+	fi
+
+	if [ "$esp_mnt" != "/boot" ]; then
+		dialog --ok-button "$ok" --msgbox "\n$esp_warn_msg1" 11 60
+		cp "$ARCH"/boot/{vmlinuz-linux,initramfs-linux.img,initramfs-linux-fallback.img} ${ARCH}${esp_mnt} &
+		pid=$! pri=0.1 msg="$wait_load \n\n \Z1> \Z2cp "$ARCH"/boot/vmlinuz-linux ${ARCH}${esp_mnt}\Zn" load
+	fi
+
+}
+
 configure_system() {
 
 	op_title="$config_op_msg"
@@ -1499,13 +1552,8 @@ configure_system() {
 	fi
 	
 	if "$enable_dm" ; then 
-		if (<<<"$DE" grep "plasma" &> /dev/null); then
-			arch-chroot "$ARCH" systemctl enable sddm.service &> /dev/null &
-			pid=$! pri="0.1" msg="$wait_load \n\n \Z1> \Z2systemctl enable sddm\Zn" load
-		else
-			arch-chroot "$ARCH" systemctl enable lightdm.service &> /dev/null &
-			pid=$! pri="0.1" msg="\n$dm_load \n\n \Z1> \Z2systemctl enable lightdm\Zn" load
-		fi
+		arch-chroot "$ARCH" systemctl enable "$DM".service &> /dev/null &
+		pid=$! pri="0.1" msg="$wait_load \n\n \Z1> \Z2systemctl enable "$DM"\Zn" load
 	fi
 		
 	if "$VBOX" ; then
