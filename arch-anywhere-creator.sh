@@ -191,6 +191,8 @@ prepare_i686() {
 	sudo sed -i 's/\$arch/i686/g' squashfs-root/etc/pacman.d/mirrorlist
 	sudo sed -i 's/auto/i686/' squashfs-root/etc/pacman.conf
 	sudo setarch i686 pacman --root squashfs-root --cachedir squashfs-root/var/cache/pacman/pkg  --config squashfs-root/etc/pacman.conf --noconfirm -Syyy terminus-font 
+	sudo setarch i686 pacman --root squashfs-root --cachedir squashfs-root/var/cache/pacman/pkg  --config squashfs-root/etc/pacman.conf --noconfirm -U /tmp/fetchmirrors/*.pkg.tar.xz
+	sudo setarch i686 pacman --root squashfs-root --cachedir squashfs-root/var/cache/pacman/pkg  --config squashfs-root/etc/pacman.conf --noconfirm -U /tmp/arch-wiki-cli/*.pkg.tar.xz
 	sudo setarch i686 pacman --root squashfs-root --cachedir squashfs-root/var/cache/pacman/pkg  --config squashfs-root/etc/pacman.conf -Sl | awk '/\[installed\]$/ {print $1 "/" $2 "-" $3}' > "$customiso"/arch/pkglist.i686.txt
 	sudo setarch i686 pacman --root squashfs-root --cachedir squashfs-root/var/cache/pacman/pkg  --config squashfs-root/etc/pacman.conf --noconfirm -Scc
 	sudo rm -f "$customiso"/arch/i686/squashfs-root//var/cache/pacman/pkg/*
@@ -204,13 +206,7 @@ prepare_i686() {
 	sudo mkdir "$customiso"/arch/i686/squashfs-root/usr/share/arch-anywhere
 	sudo mkdir "$customiso"/arch/i686/squashfs-root/usr/share/arch-anywhere/{lang,pkg}
 	sudo cp "$aa"/lang/* "$customiso"/arch/i686/squashfs-root/usr/share/arch-anywhere/lang
-	sudo cp /tmp/fetchmirrors/*.pkg.tar.xz "$customiso"/arch/i686/squashfs-root/usr/share/arch-anywhere/pkg
-	sudo cp /tmp/arch-wiki-cli/*.pkg.tar.xz "$customiso"/arch/i686/squashfs-root/usr/share/arch-anywhere/pkg
 	sudo chmod +x "$customiso"/arch/i686/squashfs-root/usr/bin/arch-anywhere
-	sudo cp "$aa"/extra/arch-wiki "$customiso"/arch/i686/squashfs-root/usr/bin/arch-wiki
-	sudo chmod +x "$customiso"/arch/i686/squashfs-root/usr/bin/arch-wiki	
-	sudo cp "$aa"/extra/fetchmirrors "$customiso"/arch/i686/squashfs-root/usr/bin/fetchmirrors
-	sudo chmod +x "$customiso"/arch/i686/squashfs-root/usr/bin/fetchmirrors
 	sudo cp "$aa"/extra/sysinfo "$customiso"/arch/i686/squashfs-root/usr/bin/sysinfo
 	sudo chmod +x "$customiso"/arch/i686/squashfs-root/usr/bin/sysinfo
 	sudo cp "$aa"/extra/iptest "$customiso"/arch/i686/squashfs-root/usr/bin/iptest
