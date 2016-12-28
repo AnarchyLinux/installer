@@ -1153,6 +1153,10 @@ prepare_base() {
 			base_install="$base_install efibootmgr"
 		fi
 
+		if "$intel" ; then
+			base_install="$base_install intel-ucode"
+		fi
+
 	elif "$INSTALLED" ; then
 		dialog --ok-button "$ok" --msgbox "\n$install_err_msg0" 10 60
 		main_menu
@@ -1457,6 +1461,11 @@ syslinux_config() {
 		else
 			sed -i "s|APPEND.*$|APPEND root=/dev/$ROOT|" ${ARCH}${esp_mnt}/EFI/syslinux/syslinux.cfg
 		fi
+
+		if "$intel" ; then
+			sed -i "s|../../initramfs-linux.img|../../intel-ucode.img,../../initramfs-linux.img|" "$ARCH"/boot/syslinux/syslinux.cfg
+		fi
+
 	else
 		(syslinux-install_update -i -a -m -c "$ARCH"
 		cp /usr/share/arch-anywhere/syslinux/{syslinux.cfg,splash.png} "$ARCH"/boot/syslinux) &> /dev/null &
@@ -1467,6 +1476,10 @@ syslinux_config() {
 		else
 			sed -i "s|APPEND.*$|APPEND root=/dev/$ROOT|" "$ARCH"/boot/syslinux/syslinux.cfg
 		fi
+
+		if "$intel" ; then
+			sed -i "s|../initramfs-linux.img|../intel-ucode.img,../initramfs-linux.img|" "$ARCH"/boot/syslinux/syslinux.cfg
+		fi
 	fi
 
 }
@@ -1476,7 +1489,7 @@ systemd_config() {
 	esp_mnt=$(<<<$esp_mnt sed "s!$ARCH!!")
 	(arch-chroot "$ARCH" bootctl --path="$esp_mnt" install
 	cp /usr/share/systemd/bootctl/loader.conf ${ARCH}${esp_mnt}/loader/
-	echo "timeout  4" >> ${ARCH}${esp_mnt}/loader/loader.conf
+	echo "timeout 4" >> ${ARCH}${esp_mnt}/loader/loader.conf
 	echo -e "title          Arch Linux\nlinux          /vmlinuz-linux\ninitrd         /initramfs-linux.img" > ${ARCH}${esp_mnt}/loader/entries/arch.conf) &> /dev/null &
 	pid=$! pri=0.1 msg="\n$syslinux_load \n\n \Z1> \Z2bootctl --path="$esp_mnt" install\Zn" load
 	
@@ -1484,6 +1497,10 @@ systemd_config() {
 		echo "options		cryptdevice=/dev/lvm/lvroot:root root=/dev/mapper/root quiet rw" >> ${ARCH}${esp_mnt}/loader/entries/arch.conf
 	else
 		echo "options		root=PARTUUID=$(blkid -s PARTUUID -o value $(df | grep -m1 "$ARCH" | awk '{print $1}')) rw" >> ${ARCH}${esp_mnt}/loader/entries/arch.conf
+	fi
+
+	if "$intel" ; then
+		sed -i '/initrd/i\initrd  \/intel-ucode.img' ${ARCH}${esp_mnt}/loader/entries/arch.conf
 	fi
 
 	if [ "$esp_mnt" != "/boot" ]; then
