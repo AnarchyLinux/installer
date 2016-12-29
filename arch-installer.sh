@@ -1295,19 +1295,25 @@ graphics() {
 		GPU=$(dialog --ok-button "$ok" --cancel-button "$cancel" --menu "$graphics_msg" 16 60 5 \
 			"$default"			"$gr0" \
 			"mesa-libgl"        "$gr1" \
-			"Nvidia"            "$gr2" \
+			"NVIDIA"            "$gr2" \
 			"xf86-video-ati"    "$gr4" \
 			"xf86-video-intel"  "$gr5" 3>&1 1>&2 2>&3)
 		if [ "$?" -gt "0" ]; then
 			if (dialog --yes-button "$yes" --no-button "$no" --yesno "$desktop_cancel_msg" 10 60) then
 				install_base
 			fi
-		elif [ "$GPU" == "Nvidia" ]; then
+		elif [ "$GPU" == "NVIDIA" ]; then
 			GPU=$(dialog --ok-button "$ok" --cancel-button "$cancel" --menu "$nvidia_msg" 15 60 4 \
 				"nvidia"       "$gr6" \
 				"nvidia-340xx" "$gr7" \
 				"nvidia-304xx" "$gr8" 3>&1 1>&2 2>&3)
+			
 			if [ "$?" -eq "0" ]; then
+				if [ "$GPU" == "nvidia" ]; then
+					if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$nvidia_modeset_msg" 10 60) then
+						drm=true
+					fi
+				fi
 				GPU="$GPU ${GPU}-libgl"
 				break
 			fi
@@ -1385,15 +1391,7 @@ install_base() {
 			dialog --ok-button "$ok" --msgbox "\n$failed_msg" 10 60
 			reset ; tail /tmp/arch-anywhere.log ; exit 1
 		fi
-		
-		if "$enable_f2fs" && ! "$crypted" && ! "$UEFI" ; then
-			sed -i 's/MODULES=""/MODULES="f2fs crc32 libcrc32c crc32c_generic crc32c-intel crc32-pclmul"/' "$ARCH"/etc/mkinitcpio.conf
-			arch-chroot "$ARCH" mkinitcpio -p linux &> /dev/null &
-			pid=$! pri=1 msg="\n$f2fs_config_load \n\n \Z1> \Z2mkinitcpio -p linux\Zn" load
-		elif "$enable_f2fs" && ! "$crypted" || ! "$UEFI" ; then
-			sed -i 's/MODULES=""/MODULES="f2fs crc32 libcrc32c crc32c_generic crc32c-intel crc32-pclmul"/' "$ARCH"/etc/mkinitcpio.conf
-		fi
-				
+						
 		case "$bootloader" in
 			grub) grub_config ;;
 			syslinux) syslinux_config ;;
@@ -1417,6 +1415,10 @@ grub_config() {
 		sed -i 's!quiet!cryptdevice=/dev/lvm/lvroot:root root=/dev/mapper/root!' "$ARCH"/etc/default/grub
 	else
 		sed -i 's/quiet//' "$ARCH"/etc/default/grub
+	fi
+
+	if "$drm" ; then
+		sed -i '/GRUB_CMDLINE_LINUX_DEFAULT=/ s/.$/ nvidia-drm.modeset=1"/;s/" /"/' "$ARCH"/etc/default/grub
 	fi
 
 	if "$UEFI" ; then
@@ -1463,7 +1465,11 @@ syslinux_config() {
 		fi
 
 		if "$intel" ; then
-			sed -i "s|../../initramfs-linux.img|../../intel-ucode.img,../../initramfs-linux.img|" "$ARCH"/boot/syslinux/syslinux.cfg
+			sed -i "s|../../initramfs-linux.img|../../intel-ucode.img,../../initramfs-linux.img|" ${ARCH}${esp_mnt}/EFI/syslinux/syslinux.cfg
+		fi
+		
+		if "$drm" ; then
+			sed -i '/APPEND/ s/$/ nvidia-drm.modeset=1/' ${ARCH}${esp_mnt}/EFI/syslinux/syslinux.cfg
 		fi
 
 	else
@@ -1479,6 +1485,10 @@ syslinux_config() {
 
 		if "$intel" ; then
 			sed -i "s|../initramfs-linux.img|../intel-ucode.img,../initramfs-linux.img|" "$ARCH"/boot/syslinux/syslinux.cfg
+		fi
+
+		if "$drm" ; then
+			sed -i '/APPEND/ s/$/ nvidia-drm.modeset=1/' ${ARCH}/boot/syslinux/syslinux.cfg
 		fi
 	fi
 
@@ -1503,6 +1513,10 @@ systemd_config() {
 		sed -i '/initrd/i\initrd  \/intel-ucode.img' ${ARCH}${esp_mnt}/loader/entries/arch.conf
 	fi
 
+	if "$drm" ; then
+		sed -i '/options/ s/$/ nvidia-drm.modeset=1/' ${ARCH}${esp_mnt}/loader/entries/arch.conf
+	fi
+
 	if [ "$esp_mnt" != "/boot" ]; then
 		dialog --ok-button "$ok" --msgbox "\n$esp_warn_msg1" 11 60
 		cp "$ARCH"/boot/{vmlinuz-linux,initramfs-linux.img,initramfs-linux-fallback.img} ${ARCH}${esp_mnt} &
@@ -1514,6 +1528,26 @@ systemd_config() {
 configure_system() {
 
 	op_title="$config_op_msg"
+	
+	if "$drm" ; then
+		sed -i 's/MODULES=""/MODULES="nvidia nvidia_modeset nvidia_uvm nvidia_drm"/' "$ARCH"/etc/mkinitcpio.conf
+		sed -i 's!FILES=""!FILES="/etc/modprobe.d/nvidia.conf"!' "$ARCH"/etc/mkinitcpio.conf
+		echo "options nvidia_drm modeset=1" > "$ARCH"/etc/modprobe.d/nvidia.conf
+		echo -e "[Trigger]\nOperation=Install\nOperation=Upgrade\nOperation=Remove\nType=Package\nTarget=nvidia\n\n[Action]\nDepends=mkinitcpio\nWhen=PostTransaction\nExec=/usr/bin/mkinitcpio -p linux" > "$ARCH"/etc/pacman.d/hooks/nvidia.hook
+		if ! "$crypted" && ! "$enable_f2fs" ; then
+			arch-chroot "$ARCH" mkinitcpio -p linux &> /dev/null &
+			pid=$! pri=1 msg="\n$kernel_config_load \n\n \Z1> \Z2mkinitcpio -p linux\Zn" load
+		fi
+	fi
+
+	if "$enable_f2fs" ; then
+		sed -i '/MODULES=/ s/.$/ f2fs crc32 libcrc32c crc32c_generic crc32c-intel crc32-pclmul"/;s/" /"/' "$ARCH"/etc/mkinitcpio.conf
+		if ! "$crypted" ; then
+			arch-chroot "$ARCH" mkinitcpio -p linux &> /dev/null &
+			pid=$! pri=1 msg="\n$f2fs_config_load \n\n \Z1> \Z2mkinitcpio -p linux\Zn" load
+		fi
+	fi
+
 	if "$crypted" && "$UEFI" ; then
 		echo "/dev/$BOOT              $esp           vfat         rw,relatime,fmask=0022,dmask=0022,codepage=437,iocharset=iso8859-1,shortname=mixed,errors=remount-ro        0       2" > "$ARCH"/etc/fstab
 	elif "$crypted" ; then
