@@ -1344,9 +1344,7 @@ graphics() {
 	if ! "$enable_dm" ; then
 		if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$dm_msg" 10 60) then
 			DM=$(dialog --ok-button "$ok" --cancel-button "$cancel" --menu "$dm_msg1" 13 64 4 \
-				"gdm"		"$dm0" \
 				"lightdm"	"$dm1" \
-				"lxdm"		"$dm2" \
 				"sddm"		"$dm3" 3>&1 1>&2 2>&3)
 			if [ "$?" -eq "0" ]; then
 				if [ "$DM" == "lightdm" ]; then
