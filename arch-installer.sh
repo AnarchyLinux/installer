@@ -2,7 +2,7 @@
 ###############################################################
 ### Arch Linux Anywhere Install Script
 ###
-### Copyright (C) 2016  Dylan Schacht
+### Copyright (C) 2017  Dylan Schacht
 ###
 ### By: Dylan Schacht (deadhead)
 ### Email: deadhead3492@gmail.com
@@ -218,7 +218,7 @@ set_zone() {
 		if (find /usr/share/zoneinfo/"$ZONE" -maxdepth 1 -type  d | sed -n -e 's!^.*/!!p' | grep "$SUBZONE" &> /dev/null); then
 			sublist=$(find /usr/share/zoneinfo/"$ZONE"/"$SUBZONE" -maxdepth 1 | sed -n -e 's!^.*/!!p' | sort | sed 's/$/ -/g' | grep -v "$SUBZONE")
 			SUB_SUBZONE=$(dialog --ok-button "$ok" --cancel-button "$back" --menu "$zone_msg1" 15 60 7 $sublist 3>&1 1>&2 2>&3)
-			if [ "$?" -gt "0" ]; then 
+			if [ "$?" -gt "0" ]; then
 				set_zone 
 			fi
 			ZONE="${ZONE}/${SUBZONE}/${SUB_SUBZONE}"
@@ -234,7 +234,7 @@ set_zone() {
 prepare_drives() {
 
 	op_title="$part_op_msg"
-	lsblk | grep "/mnt\|SWAP" &> /dev/null
+	df | grep "$ARCH" &> /dev/null
 	if [ "$?" -eq "0" ]; then
 		umount -R "$ARCH" &> /dev/null &
 		pid=$! pri=0.1 msg="$wait_load \n\n \Z1> \Z2umount -R $ARCH\Zn" load
@@ -254,13 +254,13 @@ prepare_drives() {
 		if "$screen_h" ; then
 			cat <<-EOF > /tmp/part.sh
 					dialog --colors --backtitle "$backtitle" --title "$title" --ok-button "$ok" --cancel-button "$cancel" --menu "$drive_msg \n\n $dev_menu" 14 60 3 \\
-					$(lsblk | grep "disk" | grep -v "$USB\|loop" | awk '{print "\""$1"\"""  ""\"| "$4"  |  "$6" |==>\""" \\"}' | column -t)
+					$(fdisk -l | grep "Disk /dev" | grep -v "$USB\|loop" | sed 's!.*/!!;s/://' | awk '{print "\""$1"\"""  ""\"| "$2" "$3" |==>\""" \\"}' | column -t)
 					3>&1 1>&2 2>&3
 				EOF
 		else
 				cat <<-EOF > /tmp/part.sh
 					dialog --colors --title "$title" --ok-button "$ok" --cancel-button "$cancel" --menu "$drive_msg \n\n $dev_menu" 14 60 3 \\
-					$(lsblk | grep "disk" | grep -v "$USB\|loop" | awk '{print "\""$1"\"""  ""\"| "$4"  |  "$6" |==>\""" \\"}' | column -t)
+					$(fdisk -l | grep "Disk /dev" | grep -v "$USB\|loop" | sed 's!.*/!!;s/://' | awk '{print "\""$1"\"""  ""\"| "$2" "$3" |==>\""" \\"}' | column -t)
 					3>&1 1>&2 2>&3
 				EOF
 		fi
@@ -272,30 +272,30 @@ prepare_drives() {
 			prepare_drives
 		fi
 		
-		drive_gigs=$(lsblk | grep -w "$DRIVE" | awk '{print $4}' | grep -o '[0-9]*' | awk 'NR==1') 
+		drive_mib=$(($(fdisk -l | grep -w "$DRIVE" | awk '{print $5}')/1024/1024))
+		drive_gigs=$((drive_mib/1024))
 		f2fs=$(cat /sys/block/"$DRIVE"/queue/rotational)
 		fs_select
 
 		if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$swap_msg0" 10 60) then
-			while ! "$swapped" 
+			while (true)
 			  do
 				SWAPSPACE=$(dialog --ok-button "$ok" --inputbox "\n$swap_msg1" 11 55 "512M" 3>&1 1>&2 2>&3)
 					
 				if [ "$?" -gt "0" ]; then
-					SWAP=false
-					swapped=true
+					SWAP=false ; break
 				else
 					if [ "$(grep -o ".$" <<< "$SWAPSPACE")" == "M" ]; then 
-						if [ "$(grep -o '[0-9]*' <<< "$SWAPSPACE")" -lt "$(echo "$drive_gigs*1000-4096" | bc)" ]; then 
-							SWAP=true 
-							swapped=true
+						SWAPSPACE=$(<<<$SWAPSPACE sed 's/M//;s/\..*//')
+						if [ "$SWAPSPACE" -lt "$(echo "$drive_mib-5120" | bc)" ]; then 
+							SWAP=true ; break
 						else 
 							dialog --ok-button "$ok" --msgbox "\n$swap_err_msg0" 10 60
 						fi
-					elif [ "$(grep -o ".$" <<< "$SWAPSPACE")" == "G" ]; then 
-						if [ "$(grep -o '[0-9]*' <<< "$SWAPSPACE")" -lt "$(echo "$drive_gigs-4" | bc)" ]; then 
-							SWAP=true 
-							swapped=true
+					elif [ "$(grep -o ".$" <<< "$SWAPSPACE")" == "G" ]; then
+						SWAPSPACE=$(echo "$(<<<$SWAPSPACE sed 's/G//')*1024" | bc | sed 's/\..*//')
+						if [ "$SWAPSPACE" -lt "$(echo "$drive_mib-5120" | bc)" ]; then 
+							SWAP=true ; break
 						else 
 							dialog --ok-button "$ok" --msgbox "\n$swap_err_msg0" 10 60
 						fi
@@ -370,7 +370,7 @@ auto_part() {
 	if "$GPT" ; then
 		if "$UEFI" ; then
 			if "$SWAP" ; then
-				echo -e "n\n\n\n512M\nef00\nn\n3\n\n+$SWAPSPACE\n8200\nn\n\n\n\n\nw\ny" | gdisk /dev/"$DRIVE" &> /dev/null &
+				echo -e "n\n\n\n512M\nef00\nn\n3\n\n+${SWAPSPACE}M\n8200\nn\n\n\n\n\nw\ny" | gdisk /dev/"$DRIVE" &> /dev/null &
 				pid=$! pri=0.1 msg="\n$load_var0 \n\n \Z1> \Z2gdisk /dev/$DRIVE\Zn" load
 				SWAP="${DRIVE}3"
 				(wipefs -a /dev/"$SWAP"
@@ -385,7 +385,7 @@ auto_part() {
 			ROOT="${DRIVE}2"
 		else
 			if "$SWAP" ; then
-				echo -e "o\ny\nn\n1\n\n+212M\n\nn\n2\n\n+1M\nEF02\nn\n4\n\n+$SWAPSPACE\n8200\nn\n3\n\n\n\nw\ny" | gdisk /dev/"$DRIVE" &> /dev/null &
+				echo -e "o\ny\nn\n1\n\n+212M\n\nn\n2\n\n+1M\nEF02\nn\n4\n\n+${SWAPSPACE}M\n8200\nn\n3\n\n\n\nw\ny" | gdisk /dev/"$DRIVE" &> /dev/null &
 				pid=$! pri=0.1 msg="\n$load_var0 \n\n \Z1> \Z2gdisk /dev/$DRIVE\Zn" load
 				SWAP="${DRIVE}4"
 				(wipefs -a /dev/"$SWAP"
@@ -401,7 +401,7 @@ auto_part() {
 		fi
 	else
 		if "$SWAP" ; then
-			echo -e "o\nn\np\n1\n\n+212M\nn\np\n3\n\n+$SWAPSPACE\nt\n\n82\nn\np\n2\n\n\nw" | fdisk /dev/"$DRIVE" &> /dev/null &
+			echo -e "o\nn\np\n1\n\n+212M\nn\np\n3\n\n+${SWAPSPACE}M\nt\n\n82\nn\np\n2\n\n\nw" | fdisk /dev/"$DRIVE" &> /dev/null &
 			pid=$! pri=0.1 msg="\n$load_var0 \n\n \Z1> \Z2fdisk /dev/$DRIVE\Zn" load
 			SWAP="${DRIVE}3"					
 			(wipefs -a /dev/"$SWAP"
@@ -506,8 +506,8 @@ auto_encrypt() {
 	pid=$! pri=0.1 msg="\n$pv_load \n\n \Z1> \Z2lvm pvcreate /dev/$ROOT\Zn" load
 
 	if "$SWAP" ; then
-		lvm lvcreate -L "$SWAPSPACE" -n swap lvm &> /dev/null &
-		pid=$! pri=0.1 msg="\n$swap_load \n\n \Z1> \Z2lvm lvcreate -L $SWAPSPACE -n swap lvm\Zn" load
+		lvm lvcreate -L "${SWAPSPACE}M" -n swap lvm &> /dev/null &
+		pid=$! pri=0.1 msg="\n$swap_load \n\n \Z1> \Z2lvm lvcreate -L ${SWAPSPACE}M -n swap lvm\Zn" load
 	fi
 
 	(lvm lvcreate -L 500M -n tmp lvm
@@ -558,31 +558,32 @@ auto_encrypt() {
 part_menu() {
 
 	op_title="$manual_op_msg"
-	unset manual_part
+	unset part
 	tmp_menu=/tmp/part.sh tmp_list=/tmp/part.list
 	dev_menu="|  Device:  |  Size:  |  Used:  |  FS:  |  Mount:  |  Type:  |"
-	count=$(lsblk | grep "sd." | grep -v "$USB\|loop\|1K" | wc -l)
+	count=$(fdisk -l | grep "/dev/" | grep -v "$USB\|loop\|1K\|1M" | wc -l)
 	int=1
 
 	until [ "$int" -gt "$count" ]
 	  do
-		device=$(lsblk | grep "sd." | grep -v "$USB\|loop\|1K" | awk "NR==$int {print \$1}")
-		dev_size=$(lsblk | grep "sd." | grep -v "$USB\|loop\|1K" | awk "NR==$int {print \$4}" | sed 's/\,/\./')
-		dev_type=$(lsblk | grep "sd." | grep -v "$USB\|loop\|1K" | awk "NR==$int {print \$6}")
-		mnt_point=$(lsblk | grep "sd." | grep -v "$USB\|loop\|1K" | awk "NR==$int {print \$7}" | sed 's/\/mnt/\//;s/\/\//\//')
-
+		device=$(fdisk -l | grep "/dev/" | grep -v "$USB\|loop\|1K\|1M" | sed 's/Disk //;s/://' | awk '{print $1}'| sed 's!.*/!!' | awk "NR==$int")
 		if [ "$int" -eq "1" ]; then
 			if "$screen_h" ; then
 				echo "dialog --extra-button --extra-label \"$write\" --colors --backtitle \"$backtitle\" --title \"$op_title\" --ok-button \"$edit\" --cancel-button \"$cancel\" --menu \"$manual_part_msg \n\n $dev_menu\" 21 68 9 \\" > "$tmp_menu"
 			else
 				echo "dialog --extra-button --extra-label \"$write\" --colors --title \"$title\" --ok-button \"$edit\" --cancel-button \"$cancel\" --menu \"$manual_part_msg \n\n $dev_menu\" 20 68 8 \\" > "$tmp_menu"
 			fi
+			dev_size=$(fdisk -l | grep -w "$device" | awk '{print $3$4}' | sed 's/,//')
+			dev_type=$(fdisk -l | grep -w "$device" | awk '{print $1}')
 			echo "\"$device   \" \"$dev_size $dev_type ------------->\" \\" > $tmp_list
 		else
 			if (<<<"$device" grep "sd.[0-9]" &> /dev/null) then
+				dev_size=$(fdisk -l | grep -w "$device" | sed 's/\*//' | awk '{print $5}')
+				dev_type=$(fdisk -l | grep -w "$device" | sed 's/\*//' | awk '{print $7,$8}')
+				mnt_point=$(df | grep -w "$device" | awk '{print $6}')
 				if (<<<"$mnt_point" grep "/" &> /dev/null) then
-					fs_type="$(df -T | grep "$(<<<"$device" sed 's/^..//')" | awk '{print $2}')"
-					dev_used=$(df -T | grep "$(<<<"$device" sed 's/^..//')" | awk '{print $6}')
+					fs_type="$(df -T | grep -w "$device" | awk '{print $2}')"
+					dev_used=$(df -T | grep -w "$device" | awk '{print $6}')
 				else
 					unset fs_type dev_used
 				fi
@@ -609,6 +610,8 @@ part_menu() {
 				echo "\"$device\" \"$dev_size $dev_used $fs_type $mnt_point $part_type\" \\" >> "$tmp_list"
 				unset part_type
 			else
+				dev_size=$(fdisk -l | grep -w "$device" | awk '{print $3$4}' | sed 's/,//')
+				dev_type=$(fdisk -l | grep -w "$device" | awk '{print $1}')
 				echo "\"$device\" \"$dev_size $dev_type ------------->\" \\" >> "$tmp_list"
 			fi
 		fi
@@ -619,9 +622,9 @@ part_menu() {
 	<"$tmp_list" column -t >> "$tmp_menu"
 	echo "\"$done_msg\" \"$write\" 3>&1 1>&2 2>&3" >> "$tmp_menu"
 	echo "if [ \"\$?\" -eq \"3\" ]; then clear ; echo \"$done_msg\" ; fi" >> "$tmp_menu"
-	manual_part=$(bash "$tmp_menu" | sed 's/ //g')
+	part=$(bash "$tmp_menu" | sed 's/ //g')
 	rm $tmp_menu $tmp_list
-	if (<<<"$manual_part" grep "$done_msg") then manual_part="$done_msg" ; fi
+	if (<<<"$part" grep "$done_msg") then part="$done_msg" ; fi
 	part_class
 
 }
@@ -629,15 +632,14 @@ part_menu() {
 part_class() {
 
 	op_title="$edit_op_msg"
-	if [ -z "$manual_part" ]; then
+	if [ -z "$part" ]; then
 		prepare_drives
-	elif (<<<$manual_part grep "[0-9]" &> /dev/null); then
-		part=$(<<<"$manual_part" sed 's/^..//')
-		part_size=$(lsblk | grep "$part" | awk '{print $4}' | sed 's/\,/\./')
-		part_mount=$(lsblk | grep "$part" | awk '{print $7}' | sed 's/\/mnt/\//;s/\/\//\//')
+	elif (<<<$part grep "[0-9]" &> /dev/null); then
+		part_size=$(fdisk -l | grep -w "$part" | sed 's/\*//;s/\,/\./' | awk '{print $5}')
+		part_mount=$(df | grep -w "$part" | awk '{print $6}' | sed 's/\/mnt/\//;s/\/\//\//')
 		source "$lang_file"  &> /dev/null
 
-		if ! (lsblk | grep "part" | grep "$ARCH" &> /dev/null); then
+		if [ -z "$ROOT" ]; then
 			case "$part_size" in
 				[4-9]G|[0-9][0-9]*G|[4-9].*G|T)
 					if (dialog --yes-button "$yes" --no-button "$no" --defaultno --yesno "\n$root_var" 13 60) then
@@ -710,12 +712,15 @@ part_class() {
 				fi
 			fi
 		elif (dialog --yes-button "$edit" --no-button "$back" --yesno "\n$manual_new_part_var" 12 60) then
-			mnt=$(dialog --ok-button "$ok" --cancel-button "$cancel" --menu "$mnt_var0" 15 60 6 $points 3>&1 1>&2 2>&3)
-			
-			if [ "$?" -gt "0" ]; then
-				part_menu
+			if (fdisk -l | grep -w "$part" | grep "swap\|SWAP" &> /dev/null); then
+				mnt="SWAP"
+			else
+				mnt=$(dialog --ok-button "$ok" --cancel-button "$cancel" --menu "$mnt_var0" 15 60 6 $points 3>&1 1>&2 2>&3)
+				if [ "$?" -gt "0" ]; then
+					part_menu
+				fi
 			fi
-
+	
 			if [ "$mnt" == "$custom" ]; then
 				err=true
 
@@ -744,6 +749,7 @@ part_class() {
 						if (fdisk -l | grep "$part" | grep "EFI" &> /dev/null); then
 							vfat=true
 						fi
+						BOOT="$part"
 						f2fs=1
 						btrfs=false
 					fi
@@ -812,13 +818,17 @@ part_class() {
 		fi
 
 		part_menu
-	elif [ "$manual_part" == "$done_msg" ]; then
+	elif [ "$part" == "$done_msg" ]; then
 		if ! "$mounted" ; then
 			dialog --ok-button "$ok" --msgbox "\n$root_err_msg1" 10 60
 			part_menu
 		else
-			final_part=$(lsblk | grep "/\|[SWAP]" | grep "part" | grep -v "/run" | awk '{print " "$1" "$4" "$7 "\\n"}' | sed 's/\/mnt/\//;s/\/\//\//' | column -t)
-			final_count=$(lsblk | grep "/\|[SWAP]" | grep "part" | grep -v "/run" | wc -l)
+			if [ -z "$BOOT" ]; then
+				BOOT="$ROOT"
+			fi
+
+			final_part=$((df -h | grep "$ARCH" | awk '{print $1,$2,$6 "\\n"}' | sed 's/\/mnt/\//;s/\/\//\//' ; swapon | awk 'NR==2 {print $1,$3,"SWAP"}') | column -t)
+			final_count=$(<<<"$final_part" wc -l)
 
 			if [ "$final_count" -lt "7" ]; then
 				height=17
@@ -891,13 +901,13 @@ part_class() {
 				fi
 
 				if "$enable_f2fs" ; then
-					if ! (lsblk | grep "$ARCH/boot\|$ARCH/boot/efi" &> /dev/null) then
+					if ! (df | grep "$ARCH/boot\|$ARCH/boot/efi" &> /dev/null) then
 						FS="f2fs" source "$lang_file"
 						dialog --ok-button "$ok" --msgbox "\n$fs_err_var" 10 60
 						part_menu
 					fi
 				elif "$enable_btrfs" ; then
-					if ! (lsblk | grep "$ARCH/boot\|$ARCH/boot/efi" &> /dev/null) then
+					if ! (df | grep "$ARCH/boot\|$ARCH/boot/efi" &> /dev/null) then
 						FS="btrfs" source "$lang_file"
 						dialog --ok-button "$ok" --msgbox "\n$fs_err_var" 10 60
 						part_menu
@@ -912,10 +922,10 @@ part_class() {
 			fi
 		fi
 	else
-		part_size=$(lsblk | grep "$manual_part" | awk 'NR==1 {print $4}')
+		part_size=$(fdisk -l | grep -w "$part" | sed 's/\,//' | awk '{print $3,$4}')
 		source "$lang_file"
 
-		if (lsblk | grep "$manual_part" | grep "$ARCH" &> /dev/null); then	
+		if (df | grep -w "$part" | grep "$ARCH" &> /dev/null); then	
 			if (dialog --yes-button "$edit" --no-button "$cancel" --defaultno --yesno "\n$mount_warn_var" 10 60) then
 				points=$(echo -e "$points_orig\n$custom $custom-mountpoint")
 				(umount -R "$ARCH"
@@ -923,12 +933,12 @@ part_class() {
 				pid=$! pri=0.1 msg="$wait_load \n\n \Z1> \Z2umount -R /mnt\Zn" load
 				mounted=false
 				unset DRIVE
-				cfdisk /dev/"$manual_part"
+				cfdisk /dev/"$part"
 				sleep 0.5
 				clear
 			fi
-		elif (dialog --yes-button "$edit" --no-button "$cancel" --yesno "$manual_part_var3" 12 60) then
-			cfdisk /dev/"$manual_part"
+		elif (dialog --yes-button "$edit" --no-button "$cancel" --yesno "\n$manual_part_var3" 12 60) then
+			cfdisk /dev/"$part"
 			sleep 0.5
 			clear
 		fi
@@ -1004,19 +1014,19 @@ prepare_base() {
 
 		case "$install_menu" in
 			"Arch-Linux-Base")
-				base_install="base sudo"
+				base_install="base sudo" kernel="linux"
 			;;
 			"Arch-Linux-Base-Devel") 
-				base_install="base base-devel"
+				base_install="base base-devel" kernel="linux"
 			;;
 			"Arch-Linux-GrSec")
-				base_install="base linux-grsec sudo"
+				base_install="base linux-grsec sudo" kernel="linux-grsec"
 			;;
 			"Arch-Linux-LTS-Base")
-				base_install="base linux-lts linux-lts-headers sudo"
+				base_install="base linux-lts linux-lts-headers sudo" kernel="linux-lts"
 			;;
 			"Arch-Linux-LTS-Base-Devel")
-				base_install="base base-devel linux-lts linux-lts-headers"
+				base_install="base base-devel linux-lts linux-lts-headers" kernel="linux-lts"
 			;;
 		esac
 
@@ -1072,19 +1082,14 @@ prepare_base() {
 			elif [ "$bootloader" == "systemd-boot" ]; then
 				break
 			elif [ "$bootloader" == "syslinux" ]; then
-				if ! "$UEFI" ; then
-					if (dumpe2fs $(df | grep "${ARCH}/boot" | awk '{print $1}') | grep "64bit" &> /dev/null); then
-						if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$syslinux_warn_msg" 11 60) then
-							part=$(df | grep "${ARCH}/boot" | awk '{print $1}')
-							(umount "$ARCH"/boot
-							wipefs -a "$part"
-							mkfs.ext4 -O \^64bit "$part"
-							mount "$part" "$ARCH"/boot) &> /dev/null &
-							pid=$! pri=0.1 msg="\n$boot_load \n\n \Z1> \Z2mkfs.ext4 -O ^64bit /dev/$part\Zn" load
-							base_install="$base_install $bootloader"
-							break
-						fi
-					else
+				if (tune2fs -l /dev/"$BOOT" | grep "64bit" &> /dev/null); then
+					if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$syslinux_warn_msg" 11 60) then
+						mnt=$(df | grep -w "$BOOT" | awk '{print $6}')
+						(umount "$mnt"
+						wipefs -a /dev/"$BOOT"
+						mkfs.ext4 -O \^64bit /dev/"$BOOT"
+						mount /dev/"$BOOT" "$mnt") &> /dev/null &
+						pid=$! pri=0.1 msg="\n$boot_load \n\n \Z1> \Z2mkfs.ext4 -O ^64bit /dev/$BOOT\Zn" load
 						base_install="$base_install $bootloader"
 						break
 					fi
@@ -1451,11 +1456,17 @@ syslinux_config() {
 		pid=$! pri=0.1 msg="\n$syslinux_load \n\n \Z1> \Z2syslinux install efi mode...\Zn" load
 		
 		if [ "$esp_mnt" != "/boot" ]; then
-			dialog --ok-button "$ok" --msgbox "\n$esp_warn_msg" 11 60
+			if [ "$kernel" == "linux" ]; then
+				echo -e "$linux_hook\nExec = /usr/bin/cp "$ARCH"/boot/{vmlinuz-linux,initramfs-linux.img,initramfs-linux-fallback.img} ${ARCH}${esp_mnt}" > "$ARCH"/etc/pacman.d/hooks/linux-esp.hook
+			elif [ "$kernel" == "linux-lts" ]; then
+				echo -e "$lts_hook\nExec = /usr/bin/cp "$ARCH"/boot/{vmlinuz-linux,initramfs-linux.img,initramfs-linux-fallback.img} ${ARCH}${esp_mnt}" > "$ARCH"/etc/pacman.d/hooks/linux-esp.hook
+			else
+				echo -e "$grs_hook\nExec = /usr/bin/cp "$ARCH"/boot/{vmlinuz-linux,initramfs-linux.img,initramfs-linux-fallback.img} ${ARCH}${esp_mnt}" > "$ARCH"/etc/pacman.d/hooks/linux-esp.hook
+			fi
 			cp "$ARCH"/boot/{vmlinuz-linux,initramfs-linux.img,initramfs-linux-fallback.img} ${ARCH}${esp_mnt} &
 			pid=$! pri=0.1 msg="$wait_load \n\n \Z1> \Z2cp "$ARCH"/boot/vmlinuz-linux ${ARCH}${esp_mnt}\Zn" load
 		fi
-		
+
 		if "$crypted" ; then
 			sed -i "s|APPEND.*$|APPEND root=/dev/mapper/root cryptdevice=/dev/lvm/lvroot:root rw|" ${ARCH}${esp_mnt}/EFI/syslinux/syslinux.cfg
 		else
@@ -1516,7 +1527,13 @@ systemd_config() {
 	fi
 
 	if [ "$esp_mnt" != "/boot" ]; then
-		dialog --ok-button "$ok" --msgbox "\n$esp_warn_msg1" 11 60
+		if [ "$kernel" == "linux" ]; then
+			echo -e "$linux_hook\nExec = /usr/bin/cp "$ARCH"/boot/{vmlinuz-linux,initramfs-linux.img,initramfs-linux-fallback.img} ${ARCH}${esp_mnt}" > "$ARCH"/etc/pacman.d/hooks/linux-esp.hook
+		elif [ "$kernel" == "linux-lts" ]; then
+			echo -e "$lts_hook\nExec = /usr/bin/cp "$ARCH"/boot/{vmlinuz-linux,initramfs-linux.img,initramfs-linux-fallback.img} ${ARCH}${esp_mnt}" > "$ARCH"/etc/pacman.d/hooks/linux-esp.hook
+		else
+			echo -e "$grs_hook\nExec = /usr/bin/cp "$ARCH"/boot/{vmlinuz-linux,initramfs-linux.img,initramfs-linux-fallback.img} ${ARCH}${esp_mnt}" > "$ARCH"/etc/pacman.d/hooks/linux-esp.hook
+		fi
 		cp "$ARCH"/boot/{vmlinuz-linux,initramfs-linux.img,initramfs-linux-fallback.img} ${ARCH}${esp_mnt} &
 		pid=$! pri=0.1 msg="$wait_load \n\n \Z1> \Z2cp "$ARCH"/boot/vmlinuz-linux ${ARCH}${esp_mnt}\Zn" load
 	fi
@@ -1531,7 +1548,7 @@ configure_system() {
 		sed -i 's/MODULES=""/MODULES="nvidia nvidia_modeset nvidia_uvm nvidia_drm"/' "$ARCH"/etc/mkinitcpio.conf
 		sed -i 's!FILES=""!FILES="/etc/modprobe.d/nvidia.conf"!' "$ARCH"/etc/mkinitcpio.conf
 		echo "options nvidia_drm modeset=1" > "$ARCH"/etc/modprobe.d/nvidia.conf
-		echo -e "[Trigger]\nOperation=Install\nOperation=Upgrade\nOperation=Remove\nType=Package\nTarget=nvidia\n\n[Action]\nDepends=mkinitcpio\nWhen=PostTransaction\nExec=/usr/bin/mkinitcpio -p linux" > "$ARCH"/etc/pacman.d/hooks/nvidia.hook
+		echo -e "$nvidia_hook\nExec=/usr/bin/mkinitcpio -p linux" > "$ARCH"/etc/pacman.d/hooks/nvidia.hook
 		if ! "$crypted" && ! "$enable_f2fs" ; then
 			arch-chroot "$ARCH" mkinitcpio -p linux &> /dev/null &
 			pid=$! pri=1 msg="\n$kernel_config_load \n\n \Z1> \Z2mkinitcpio -p linux\Zn" load
