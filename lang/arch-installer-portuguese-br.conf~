@@ -32,37 +32,37 @@ LANG="pt_BR.UTF-8"
 ### -------------------------------------------------------------------------------------------------------- ###
 translate_this() {
 
-swap_err_msg2="\n$error falha ao ativar o swap, tente formatar primeiro \n\n $a Retornando ao menu da partição..."
+swap_err_msg2="\n$error failed turning on swap, try formatting first \n\n $a Returning to partition menu..."
 
-part_err_msg2="\n$error falha ao montar o dispositivo \n\n Retornando ao menu da partição..."
+part_err_msg2="\n$error failed mounting device \n\n Returning to partition menu..."
 
-syslinux_warn_msg="A instalação do syslinux no modo BIOS requer suporte a volume 64bit para ser desativado para a partição de boot.\n\n $a Nota: Isto irá formatar sua partição de boot\n Continuar com a desativação do volume 64bit não partição de boot?"
+syslinux_warn_msg="Installing syslinux in BIOS mode requires 64bit volume support to be disabled for boot partition.\n\n $a Note: This will format your boot partition\n Continue disabling 64bit volume on boot partition?"
 
-extra_msg6="Instalar o grupo GNOME? \n\n $a Grupo de programas do GNOME"
+extra_msg6="Install gnome group? \n\n $a gnome group programs"
 
-gtk3_msg0="Instalar o lxde gtk3? \n\n $a (Versão experimental)"
+gtk3_msg0="Install lxde gtk3? \n\n $a (experimental version)"
 
-part_frmt_msg="Gostaria de formatar a partição selecionada? \n\n $a Selecione 'Sim' para formatar a partição. \n $a Selecione 'Não' para montar sem formatar."
+part_frmt_msg="Would you like to format the selected partition? \n\n $a Select 'yes' to format partition. \n $a Select 'no' to mount without formating."
 
-swap_frmt_msg="Gostaria de formatar o espaço swap? \n\n $a Selecione 'Sim' para formatar o novo espaço swap. \n $a Ou 'Não' para habilitar sem formatar."
+swap_frmt_msg="Would you like to format the swap space? \n\n $a Select yes to format new swap space. \n $a No to enable without formatting."
 
-shell_msg="Selecione o seu comando shell preferido \n\n $a Bash é o padrão!"
+shell_msg="Select your desired command shell \n\n $a Default is bash"
 
-nvidia_modeset_msg="Gostaria de habilitar o modo de configuração de kernel NVIDIA DRM? \n\n $a Módulo do Kernel DRM."
+nvidia_modeset_msg="Would you like to enable Nvidia DRM kernel mode setting? \n\n $a Direct Rendering Manager Kernel Module."
 
-aar_add_msg="Gostaria de adicionar o repositório personalizado do Arch Anywhere ao seu pacman.conf? \n\n $a Adiciona um repositório personalizado de pacotes"
+aar_add_msg="Would you like to add the Arch Anywhere custom repository to your pacman.conf? \n\n $a Adds custom package repo"
 
-aar="Repositório Arch Anywhere"
+aar="Arch Anywhere Repository"
 
-aar_msg="Programa RAA =>"
+aar_msg="AAR Software =>"
 
-kernel_config_load="Por favor, aguarde enquanto o kernel é configurado..."
+kernel_config_load="Please wait while configuring kernel..."
 
 }
 
 translate_this_var() {
 
-fs_err_var="$error Uma partição separada '/boot' deve ser configurada quando se utiliza um sistema de arquivos $FS. \n\n $a Retornando ao menu da partição..."
+fs_err_var="$error A separate '/boot' partition must be setup when using an $FS filesystem. \n\n $a Returning to partition menu..."
 
 }
 ### -------------------------------------------------------------------------------------------------------- ###
