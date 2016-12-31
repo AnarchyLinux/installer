@@ -31,7 +31,7 @@ init() {
 	op_title=" -| Language Select |- "
 	ILANG=$(dialog --nocancel --menu "\nArch Anywhere Installer\n\n \Z2*\Zn Select your install language:" 20 60 10 \
 		"English" "-" \
-		"Dutch" "Netherlands" \
+		"Dutch" "Nederlands" \
 		"French" "Français" \
 		"German" "Deutsch" \
 		"Greek" "Greek" \
