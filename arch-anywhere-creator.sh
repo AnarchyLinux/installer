@@ -169,7 +169,8 @@ prepare_x86_64() {
 	sudo cp "$aa"/boot/{issue,hostname} "$customiso"/arch/x86_64/squashfs-root/etc/
 	sudo cp -r "$aa"/boot/loader/syslinux "$customiso"/arch/x86_64/squashfs-root/usr/share/arch-anywhere/
 	sudo cp "$aa"/boot/splash.png "$customiso"/arch/x86_64/squashfs-root/usr/share/arch-anywhere/syslinux
-	
+	sudo cp "$aa"/etc/{nvidia340.xx,nvidia304.xx} "$customiso"/arch/x86_64/squashfs-root/usr/share/arch-anywhere/
+
 ### cd back into root system directory, remove old system
 	cd "$customiso"/arch/x86_64
 	rm airootfs.sfs
@@ -221,6 +222,7 @@ prepare_i686() {
 	sudo cp "$aa"/boot/hostname "$customiso"/arch/i686/squashfs-root/etc/
 	sudo cp -r "$aa"/boot/loader/syslinux "$customiso"/arch/i686/squashfs-root/usr/share/arch-anywhere/
 	sudo cp "$aa"/boot/splash.png "$customiso"/arch/i686/squashfs-root/usr/share/arch-anywhere/syslinux
+	sudo cp "$aa"/etc/{nvidia340.xx,nvidia304.xx} "$customiso"/arch/i686/squashfs-root/usr/share/arch-anywhere/
 	cd "$customiso"/arch/i686
 	rm airootfs.sfs
 	echo "Recreating i686..."
