@@ -1014,13 +1014,13 @@ prepare_base() {
 
 		case "$install_menu" in
 			"Arch-Linux-Base")
-				base_install="base sudo" kernel="linux"
+				base_install="base sudo linux-headers" kernel="linux"
 			;;
 			"Arch-Linux-Base-Devel") 
-				base_install="base base-devel" kernel="linux"
+				base_install="base base-devel linux-headers" kernel="linux"
 			;;
 			"Arch-Linux-GrSec")
-				base_install="base linux-grsec sudo" kernel="linux-grsec"
+				base_install="base linux-grsec linux-grsec-headers sudo" kernel="linux-grsec"
 			;;
 			"Arch-Linux-LTS-Base")
 				base_install="base linux-lts linux-lts-headers sudo" kernel="linux-lts"
@@ -1292,44 +1292,88 @@ graphics() {
 
 	while (true)
 	  do
-	  	if "$VBOX" ; then
-	  		dialog --ok-button "$ok" --msgbox "\n$vbox_msg" 10 60
-			GPU="virtualbox-guest-utils linux-headers mesa-libgl"
-	  		break
+	  	if "$VM" ; then
+	  		case "$virt" in
+	  			vbox)	dialog --ok-button "$ok" --msgbox "\n$vbox_msg" 10 60
+						GPU="virtualbox-guest-utils mesa-libgl"
+	  			;;
+	  			vmware)	dialog --ok-button "$ok" --msgbox "\n$vmware_msg" 10 60
+						GPU="xf86-video-vmware xf86-input-vmmouse open-vm-tools mesa mesa-libgl"
+	  			;;
+	  			hyper-v) dialog --ok-button "$ok" --msgbox "\n$hyperv_msg" 10 60
+						 GPU="xf86-video-fbdev mesa-libgl"
+	  			;;
+	  			*) dialog --ok-button "$ok" --msgbox "\n$vm_msg" 10 60
+						 GPU="xf86-video-fbdev mesa-libgl"
+	  			;;
+	  		esac
 	  	fi
-		GPU=$(dialog --ok-button "$ok" --cancel-button "$cancel" --menu "$graphics_msg" 16 60 5 \
-			"$default"			"$gr0" \
-			"mesa-libgl"        "$gr1" \
-			"NVIDIA"            "$gr2" \
-			"xf86-video-ati"    "$gr4" \
-			"xf86-video-intel"  "$gr5" 3>&1 1>&2 2>&3)
-		if [ "$?" -gt "0" ]; then
+
+	  	if "$NVIDIA" ; then
+			GPU=$(dialog --ok-button "$ok" --cancel-button "$cancel" --menu "$graphics_msg" 18 60 6 \
+				"$default"			 "$gr0" \
+				"xf86-video-ati"     "$gr4" \
+				"xf86-video-intel"   "$gr5" \
+				"xf86-video-nouveau" "$gr9" \
+				"xf86-video-vesa"	 "$gr1" \
+				"NVIDIA"             "$gr2 ->" 3>&1 1>&2 2>&3)
+			ex="$?"
+		else
+			GPU=$(dialog --ok-button "$ok" --cancel-button "$cancel" --menu "$graphics_msg" 17 60 5 \
+				"$default"			 "$gr0" \
+				"xf86-video-ati"     "$gr4" \
+				"xf86-video-intel"   "$gr5" \
+				"xf86-video-nouveau" "$gr9" \
+				"xf86-video-vesa"	 "$gr1" 3>&1 1>&2 2>&3)
+			ex="$?"
+		fi
+		
+		if [ "$ex" -gt "0" ]; then
 			if (dialog --yes-button "$yes" --no-button "$no" --yesno "$desktop_cancel_msg" 10 60) then
 				install_base
 			fi
 		elif [ "$GPU" == "NVIDIA" ]; then
 			GPU=$(dialog --ok-button "$ok" --cancel-button "$cancel" --menu "$nvidia_msg" 15 60 4 \
+				"$gr0"		   "->"
 				"nvidia"       "$gr6" \
 				"nvidia-340xx" "$gr7" \
 				"nvidia-304xx" "$gr8" 3>&1 1>&2 2>&3)
 			
 			if [ "$?" -eq "0" ]; then
-				if [ "$GPU" == "nvidia" ]; then
-					if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$nvidia_modeset_msg" 10 60) then
-						drm=true
-					fi
+				if [ "$GPU" == "$gr0" ]; then
+					pci_id=$(lspci -nn | grep "VGA" | egrep -o '\[.*\]' | awk '{print $NF}' | sed 's/.*://;s/]//')
+			        if (</usr/share/arch-anywhere/nvidia340.xx grep "$pci_id" &>/dev/null); then
+        			    if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$nvidia_340msg" 10 60); then
+        			    	GPU="nvidia-340xx"
+        			    fi
+        			elif (</usr/share/arch-anywhere/nvidia304.xx grep "$pci_id" &>/dev/null); then
+           				if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$nvidia_304msg" 10 60); then
+           					GPU="nvidia-304xx"
+			        	fi
+			        else
+            			if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$nvidia_curmsg" 10 60); then
+            				GPU="nvidia"
+            			fi
+			        fi
 				fi
 				GPU="$GPU ${GPU}-libgl"
 				break
 			fi
 		elif [ "$GPU" == "$default" ]; then
-			unset GPU
+			GPU="$default_GPU mesa-libgl"
 			break
 		else
+			GPU="$GPU mesa-libgl"
 			break
 		fi
 	done
-				
+	
+	if (<<<"$GPU" grep -w "nvidia "); then
+		if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$nvidia_modeset_msg" 10 60) then
+			drm=true
+		fi
+	fi
+
 	DE="$DE xdg-user-dirs xorg-server xorg-server-utils xorg-xinit xterm $GPU"
 		
 	if [ "$net_util" == "networkmanager" ] ; then
@@ -1622,9 +1666,15 @@ configure_system() {
 		pid=$! pri="0.1" msg="$wait_load \n\n \Z1> \Z2systemctl enable "$DM"\Zn" load
 	fi
 		
-	if "$VBOX" ; then
-		arch-chroot "$ARCH" systemctl enable vboxservice &>/dev/null &
-		pid=$! pri=0.1 msg="\n$vbox_enable_msg \n\n \Z1> \Z2systemctl enable vboxservice\Zn" load
+	if "$VM" ; then
+		case "$virt" in
+			vbox)	arch-chroot "$ARCH" systemctl enable vboxservice &>/dev/null &
+					pid=$! pri=0.1 msg="\n$vbox_enable_msg \n\n \Z1> \Z2systemctl enable vboxservice\Zn" load
+			;;
+			vmware)	arch-chroot "$ARCH" systemctl enable vmware-vmblock-fuse &>/dev/null &
+					pid=$! pri=0.1 msg="\n$vbox_enable_msg \n\n \Z1> \Z2systemctl enable vboxservice\Zn" load
+			;;
+		esac
 	fi
 
 	if "$de_config" ; then	
