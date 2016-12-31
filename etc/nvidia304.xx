@@ -1,0 +1,137 @@
+NVIDIA 304.xx chipset / PCI ID list
+
+NVIDIA GPU product 	Device PCI ID
+---------------------------------
+GeForce 6800 Ultra 	0x0040
+GeForce 6800 	0x0041
+GeForce 6800 LE 	0x0042
+GeForce 6800 XE 	0x0043
+GeForce 6800 XT 	0x0044
+GeForce 6800 GT 	0x0045
+GeForce 6800 GT 	0x0046
+GeForce 6800 GS 	0x0047
+GeForce 6800 XT 	0x0048
+Quadro FX 4000 	0x004E
+GeForce 7800 GTX 	0x0090
+GeForce 7800 GTX 	0x0091
+GeForce 7800 GT 	0x0092
+GeForce 7800 GS 	0x0093
+GeForce 7800 SLI 	0x0095
+GeForce Go 7800 	0x0098
+GeForce Go 7800 GTX 	0x0099
+Quadro FX 4500 	0x009D
+GeForce 6800 GS 	0x00C0
+GeForce 6800 	0x00C1
+GeForce 6800 LE 	0x00C2
+GeForce 6800 XT 	0x00C3
+GeForce Go 6800 	0x00C8
+GeForce Go 6800 Ultra 	0x00C9
+Quadro FX Go1400 	0x00CC
+Quadro FX 3450/4000 SDI 	0x00CD
+Quadro FX 1400 	0x00CE
+GeForce 6600 GT 	0x00F1
+GeForce 6600 	0x00F2
+GeForce 6200 	0x00F3
+GeForce 6600 LE 	0x00F4
+GeForce 7800 GS 	0x00F5
+GeForce 6800 GS 	0x00F6
+Quadro FX 3400/Quadro FX 4000 	0x00F8
+GeForce 6800 Ultra 	0x00F9
+GeForce 6600 GT 	0x0140
+GeForce 6600 	0x0141
+GeForce 6600 LE 	0x0142
+GeForce 6600 VE 	0x0143
+GeForce Go 6600 	0x0144
+GeForce 6610 XL 	0x0145
+GeForce Go 6600 TE/6200 TE 	0x0146
+GeForce 6700 XL 	0x0147
+GeForce Go 6600 	0x0148
+GeForce Go 6600 GT 	0x0149
+Quadro NVS 440 	0x014A
+Quadro FX 540M 	0x014C
+Quadro FX 550 	0x014D
+Quadro FX 540 	0x014E
+GeForce 6200 	0x014F
+GeForce 6500 	0x0160
+GeForce 6200 TurboCache(TM) 	0x0161
+GeForce 6200SE TurboCache(TM) 	0x0162
+GeForce 6200 LE 	0x0163
+GeForce Go 6200 	0x0164
+Quadro NVS 285 	0x0165
+GeForce Go 6400 	0x0166
+GeForce Go 6200 	0x0167
+GeForce Go 6400 	0x0168
+GeForce 6250 	0x0169
+GeForce 7100 GS 	0x016A
+GeForce 7350 LE 	0x01D0
+GeForce 7300 LE 	0x01D1
+GeForce 7550 LE 	0x01D2
+GeForce 7300 SE/7200 GS 	0x01D3
+GeForce Go 7200 	0x01D6
+GeForce Go 7300 	0x01D7
+GeForce Go 7400 	0x01D8
+Quadro NVS 110M 	0x01DA
+Quadro NVS 120M 	0x01DB
+Quadro FX 350M 	0x01DC
+GeForce 7500 LE 	0x01DD
+Quadro FX 350 	0x01DE
+GeForce 7300 GS 	0x01DF
+GeForce 6800 	0x0211
+GeForce 6800 LE 	0x0212
+GeForce 6800 GT 	0x0215
+GeForce 6800 XT 	0x0218
+GeForce 6200 	0x0221
+GeForce 6200 A-LE 	0x0222
+GeForce 6150 	0x0240
+GeForce 6150 LE 	0x0241
+GeForce 6100 	0x0242
+GeForce Go 6150 	0x0244
+Quadro NVS 210S / GeForce 6150LE 	0x0245
+GeForce Go 6100 	0x0247
+GeForce 7900 GTX 	0x0290
+GeForce 7900 GT/GTO 	0x0291
+GeForce 7900 GS 	0x0292
+GeForce 7950 GX2 	0x0293
+GeForce 7950 GX2 	0x0294
+GeForce 7950 GT 	0x0295
+GeForce Go 7950 GTX 	0x0297
+GeForce Go 7900 GS 	0x0298
+Quadro NVS 510M 	0x0299
+Quadro FX 2500M 	0x029A
+Quadro FX 1500M 	0x029B
+Quadro FX 5500 	0x029C
+Quadro FX 3500 	0x029D
+Quadro FX 1500 	0x029E
+Quadro FX 4500 X2 	0x029F
+GeForce 7600 GT 	0x02E0
+GeForce 7600 GS 	0x02E1
+GeForce 7300 GT 	0x02E2
+GeForce 7900 GS 	0x02E3
+GeForce 7950 GT 	0x02E4
+GeForce 7650 GS 	0x038B
+GeForce 7650 GS 	0x0390
+GeForce 7600 GT 	0x0391
+GeForce 7600 GS 	0x0392
+GeForce 7300 GT 	0x0393
+GeForce 7600 LE 	0x0394
+GeForce 7300 GT 	0x0395
+GeForce Go 7700 	0x0397
+GeForce Go 7600 	0x0398
+GeForce Go 7600 GT 	0x0399
+Quadro FX 560M 	0x039C
+Quadro FX 560 	0x039E
+GeForce 6150SE nForce 430 	0x03D0
+GeForce 6100 nForce 405 	0x03D1
+GeForce 6100 nForce 400 	0x03D2
+GeForce 6100 nForce 420 	0x03D5
+GeForce 7025 / nForce 630a 	0x03D6
+GeForce 7150M / nForce 630M 	0x0531
+GeForce 7000M / nForce 610M 	0x0533
+GeForce 7050 PV / nForce 630a 	0x053A
+GeForce 7050 PV / nForce 630a 	0x053B
+GeForce 7025 / nForce 630a 	0x053E
+GeForce 7150 / nForce 630i 	0x07E0
+GeForce 7100 / nForce 630i 	0x07E1
+GeForce 7050 / nForce 630i 	0x07E2
+GeForce 7050 / nForce 610i 	0x07E3
+GeForce 7050 / nForce 620i 	0x07E5
