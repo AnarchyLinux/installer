@@ -31,6 +31,7 @@ init() {
 	op_title=" -| Language Select |- "
 	ILANG=$(dialog --nocancel --menu "\nArch Anywhere Installer\n\n \Z2*\Zn Select your install language:" 20 60 10 \
 		"English" "-" \
+		"Dutch" "Netherlands" \
 		"French" "Français" \
 		"German" "Deutsch" \
 		"Greek" "Greek" \
@@ -44,6 +45,7 @@ init() {
 
 	case "$ILANG" in
 		"English") export lang_file=/usr/share/arch-anywhere/lang/arch-installer-english.conf ;;
+		"Dutch") export lang_file=/usr/share/arch-anywhere/lang/arch-installer-dutch.conf ;;
 		"French") export lang_file=/usr/share/arch-anywhere/lang/arch-installer-french.conf ;;
 		"German") export lang_file=/usr/share/arch-anywhere/lang/arch-installer-german.conf ;;
 		"Greek") export lang_file=/usr/share/arch-anywhere/lang/arch-installer-greek.conf ;;
