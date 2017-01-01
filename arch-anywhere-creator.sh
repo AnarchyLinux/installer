@@ -151,7 +151,7 @@ prepare_x86_64() {
 #	sudo cp "$aa"/etc/arch-anywhere.service "$customiso"/arch/x86_64/squashfs-root/usr/lib/systemd/system/
 #	sudo cp "$aa"/arch-anywhere-init.sh "$customiso"/arch/x86_64/squashfs-root/usr/bin/arch-anywhere-init
 	sudo cp "$aa"/arch-installer.sh "$customiso"/arch/x86_64/squashfs-root/usr/bin/arch-anywhere
-	sudo cp "$aa"/extra/{arch-wiki,fetchmirrors,sysinfo,iptest} "$customiso"/arch/x86_64/squashfs-root/usr/bin/
+	sudo cp "$aa"/extra/{sysinfo,iptest} "$customiso"/arch/x86_64/squashfs-root/usr/bin/
 	sudo chmod +x "$customiso"/arch/x86_64/squashfs-root/usr/bin/{arch-anywhere,,sysinfo,iptest}
 #	sudo arch-chroot "$customiso"/arch/x86_64/squashfs-root /bin/bash -c "systemctl enable arch-anywhere.service"
 
