@@ -255,13 +255,13 @@ prepare_drives() {
 		dev_menu="           Device: | Size: | Type:  |"
 		if "$screen_h" ; then
 			cat <<-EOF > /tmp/part.sh
-					dialog --colors --backtitle "$backtitle" --title "$title" --ok-button "$ok" --cancel-button "$cancel" --menu "$drive_msg \n\n $dev_menu" 14 60 3 \\
+					dialog --colors --backtitle "$backtitle" --title "$title" --ok-button "$ok" --cancel-button "$cancel" --menu "$drive_msg \n\n $dev_menu" 16 60 3 \\
 					$(fdisk -l | grep "Disk /dev" | grep -v "$USB\|loop" | sed 's!.*/!!;s/://' | awk '{print "\""$1"\"""  ""\"| "$2" "$3" |==>\""" \\"}' | column -t)
 					3>&1 1>&2 2>&3
 				EOF
 		else
 				cat <<-EOF > /tmp/part.sh
-					dialog --colors --title "$title" --ok-button "$ok" --cancel-button "$cancel" --menu "$drive_msg \n\n $dev_menu" 14 60 3 \\
+					dialog --colors --title "$title" --ok-button "$ok" --cancel-button "$cancel" --menu "$drive_msg \n\n $dev_menu" 16 60 3 \\
 					$(fdisk -l | grep "Disk /dev" | grep -v "$USB\|loop" | sed 's!.*/!!;s/://' | awk '{print "\""$1"\"""  ""\"| "$2" "$3" |==>\""" \\"}' | column -t)
 					3>&1 1>&2 2>&3
 				EOF
