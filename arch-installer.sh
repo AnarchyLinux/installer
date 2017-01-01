@@ -243,7 +243,7 @@ prepare_drives() {
 		swapoff -a &> /dev/null &
 	fi
 	
-	PART=$(dialog --ok-button "$ok" --cancel-button "$cancel" --menu "$part_msg" 14 64 4 \
+	PART=$(dialog --ok-button "$ok" --cancel-button "$cancel" --menu "$part_msg" 16 64 4 \
 	"$method0" "-" \
 	"$method1" "-" \
 	"$method2"  "-" \
