@@ -88,6 +88,7 @@ if [ "$iso_ver" != "$iso" ]; then
 			echo "Error: requires wget, exiting"
 			exit 1
 		fi
+		export iso=$(ls "$aa"/archlinux-* | tail -n1 | sed 's!.*/!!')
 	fi
 fi
 
