@@ -1298,15 +1298,19 @@ graphics() {
 	  		case "$virt" in
 	  			vbox)	dialog --ok-button "$ok" --msgbox "\n$vbox_msg" 10 60
 						GPU="virtualbox-guest-utils mesa-libgl"
+	  					break
 	  			;;
 	  			vmware)	dialog --ok-button "$ok" --msgbox "\n$vmware_msg" 10 60
 						GPU="xf86-video-vmware xf86-input-vmmouse open-vm-tools mesa mesa-libgl"
+	  					break
 	  			;;
 	  			hyper-v) dialog --ok-button "$ok" --msgbox "\n$hyperv_msg" 10 60
 						 GPU="xf86-video-fbdev mesa-libgl"
+	  					break
 	  			;;
-	  			*) dialog --ok-button "$ok" --msgbox "\n$vm_msg" 10 60
-						 GPU="xf86-video-fbdev mesa-libgl"
+	  			*) 		dialog --ok-button "$ok" --msgbox "\n$vm_msg" 10 60
+						GPU="xf86-video-fbdev mesa-libgl"
+	  					break
 	  			;;
 	  		esac
 	  	fi
