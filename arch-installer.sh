@@ -1112,7 +1112,7 @@ prepare_base() {
 	
 		while (true)
 		  do
-			net_util=$(dialog --ok-button "$ok" --cancel-button "$cancel" --menu "$wifi_util_msg" 12 64 3 \
+			net_util=$(dialog --ok-button "$ok" --cancel-button "$cancel" --menu "$wifi_util_msg" 14 64 3 \
 				"netctl"			"$net_util_msg0" \
 				"networkmanager" 		"$net_util_msg1" \
 				"$none" "-" 3>&1 1>&2 2>&3)
