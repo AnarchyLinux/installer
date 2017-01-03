@@ -729,21 +729,18 @@ part_class() {
 			fi
 	
 			if [ "$mnt" == "$custom" ]; then
-				err=true
-
-				until ! "$err"
+				while (true)
 				  do
 					mnt=$(dialog --ok-button "$ok" --cancel-button "$cancel" --inputbox "$custom_msg" 10 50 "/" 3>&1 1>&2 2>&3)
 					
 					if [ "$?" -gt "0" ]; then
-						err=false
-						part_menu
+						part_menu ; break
 					elif (<<<$mnt grep "[\[\$\!\'\"\`\\|%&#@()+=<>~;:?.,^{}]\|]" &> /dev/null); then
 						dialog --ok-button "$ok" --msgbox "\n$custom_err_msg0" 10 60
 					elif (<<<$mnt grep "^[/]$" &> /dev/null); then
 						dialog --ok-button "$ok" --msgbox "\n$custom_err_msg1" 10 60
 					else
-						err=false
+						break
 					fi
 				done
 			fi
@@ -752,13 +749,15 @@ part_class() {
 				if (dialog --yes-button "$yes" --no-button "$no" --defaultno --yesno "\n$part_frmt_msg" 11 50) then
 					f2fs=$(cat /sys/block/$(echo $part | sed 's/[0-9]//g')/queue/rotational)
 					
+					if (fdisk -l | grep "$part" | grep "EFI" &> /dev/null); then
+						vfat=true
+					fi
+					
 					if [ "$mnt" == "/boot" ] || [ "$mnt" == "/boot/EFI" ] || [ "$mnt" == "/boot/efi" ]; then
-						if (fdisk -l | grep "$part" | grep "EFI" &> /dev/null); then
-							vfat=true
-						fi
-						BOOT="$part"
 						f2fs=1
 						btrfs=false
+					fi
+					
 					fi
 					
 					fs_select
@@ -769,6 +768,10 @@ part_class() {
 					frmt=true
 				else
 					frmt=false
+				fi
+				
+				if [ "$mnt" == "/boot" ] || [ "$mnt" == "/boot/EFI" ] || [ "$mnt" == "/boot/efi" ]; then
+						BOOT="$part"
 				fi
 			else
 				FS="SWAP"
@@ -1089,18 +1092,23 @@ prepare_base() {
 			elif [ "$bootloader" == "systemd-boot" ]; then
 				break
 			elif [ "$bootloader" == "syslinux" ]; then
-				if (tune2fs -l /dev/"$BOOT" | grep "64bit" &> /dev/null); then
-					if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$syslinux_warn_msg" 11 60) then
-						mnt=$(df | grep -w "$BOOT" | awk '{print $6}')
-						(umount "$mnt"
-						wipefs -a /dev/"$BOOT"
-						mkfs.ext4 -O \^64bit /dev/"$BOOT"
-						mount /dev/"$BOOT" "$mnt") &> /dev/null &
-						pid=$! pri=0.1 msg="\n$boot_load \n\n \Z1> \Z2mkfs.ext4 -O ^64bit /dev/$BOOT\Zn" load
+				if ! "$UEFI" ; then
+					if (tune2fs -l /dev/"$BOOT" | grep "64bit" &> /dev/null); then
+						if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$syslinux_warn_msg" 11 60) then
+							mnt=$(df | grep -w "$BOOT" | awk '{print $6}')
+							(umount "$mnt"
+							wipefs -a /dev/"$BOOT"
+							mkfs.ext4 -O \^64bit /dev/"$BOOT"
+							mount /dev/"$BOOT" "$mnt") &> /dev/null &
+							pid=$! pri=0.1 msg="\n$boot_load \n\n \Z1> \Z2mkfs.ext4 -O ^64bit /dev/$BOOT\Zn" load
+							base_install="$base_install $bootloader"
+							break
+						fi
+					else
 						base_install="$base_install $bootloader"
 						break
 					fi
-				else
+				else 
 					base_install="$base_install $bootloader"
 					break
 				fi
