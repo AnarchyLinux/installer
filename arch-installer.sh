@@ -1377,6 +1377,15 @@ graphics() {
             				break
 				fi
 			        fi
+				elif [ "$GPU" == "nvidia" ]; then
+					GPU="$GPU ${GPU}-libgl"
+					if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$nvidia_modeset_msg" 10 60) then
+						drm=true
+					fi
+					break
+				else
+					GPU="$GPU ${GPU}-libgl"
+					break
 				fi
 			fi
 		elif [ "$GPU" == "$default" ]; then
@@ -1387,12 +1396,6 @@ graphics() {
 			break
 		fi
 	done
-	
-	if (<<<"$GPU" grep -w "nvidia "); then
-		if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$nvidia_modeset_msg" 10 60) then
-			drm=true
-		fi
-	fi
 
 	DE="$DE xdg-user-dirs xorg-server xorg-server-utils xorg-xinit xterm $GPU"
 		
