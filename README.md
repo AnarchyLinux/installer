@@ -4,7 +4,7 @@ Arch Anywhere is a modified version of the official archiso providing a hassle f
 
 The Arch Anywhere installer is intended to allow novice Linux users a simple and pain free way to install Arch Linux regardless of their previous experience. It is also intended to allow advanced users with a way to deploy an Arch system while still providing the flexibility and freedom of choice of a traditional Arch Linux install. Install Arch Linux when you want it, where you want it, how you want it, that is the Arch Anywhere philosophy.
 
-The Arch Anywhere ISO also contains a built in Arch Wiki allowing users to browse the official Arch Linux Wiki from the cli. Simply invoke the 'arch-wiki' command at anytime to search the arch wiki (search args may be passed ex: 'arch-wiki beginners guide'). A utility to update and rank the latest Arch Linux mirrorlist is also inluded in the ISO it can be invoked by running 'fetchmirrors'. These included utilities make it easy for new users to install Arch from the command line without using the installer and provide a way to learn how Arch really works by learning the install process. 
+The Arch Anywhere ISO also contains a built in Arch Wiki allowing users to browse the official Arch Linux Wiki from the cli. Simply invoke the 'arch-wiki' command at anytime to search the arch wiki (search args may be passed ex: 'arch-wiki beginners guide'). A utility to update and rank the latest Arch Linux mirrorlist is also included in the ISO it can be invoked by running 'fetchmirrors'. These included utilities make it easy for new users to install Arch from the command line without using the installer and provide a way to learn how Arch really works by learning the install process. 
 
 Arch Anywhere aims to provide a polished Arch Linux install experience while leaving open every possible install avenue for the user to choose from.
 
@@ -30,8 +30,8 @@ http://arch-anywhere.org/
 * Supported partitioning methods include:
 
     Full drive automatic partitioning with optional SWAP partition <br />
-    Full drive automatic partitioning with luks on LVM encryption for root and tmp partition with optional enctypted SWAP partition <br />
-    Manual partition (advanced users) uses cfdisk for partitioning select custom mountpoints <br />
+    Full drive automatic partitioning with luks on LVM encryption for root and tmp partition with optional encrypted SWAP partition <br />
+    Manual partition (advanced users) uses cfdisk for partitioning select custom mount points <br />
 
 * Supported Desktop Environments + Window Managers:
 
