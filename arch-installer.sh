@@ -757,9 +757,7 @@ part_class() {
 						f2fs=1
 						btrfs=false
 					fi
-					
-					fi
-					
+
 					fs_select
 
 					if [ "$?" -gt "0" ]; then
