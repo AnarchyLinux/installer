@@ -749,27 +749,27 @@ part_class() {
 				if (dialog --yes-button "$yes" --no-button "$no" --defaultno --yesno "\n$part_frmt_msg" 11 50) then
 					f2fs=$(cat /sys/block/$(echo $part | sed 's/[0-9]//g')/queue/rotational)
 					
-					if (fdisk -l | grep "$part" | grep "EFI" &> /dev/null); then
-						vfat=true
-					fi
-					
 					if [ "$mnt" == "/boot" ] || [ "$mnt" == "/boot/EFI" ] || [ "$mnt" == "/boot/efi" ]; then
 						f2fs=1
 						btrfs=false
 					fi
-
+					
+					if (fdisk -l | grep "$part" | grep "EFI" &> /dev/null); then
+						vfat=true
+					fi
+					
 					fs_select
 
 					if [ "$?" -gt "0" ]; then
 						part_menu
 					fi
 					frmt=true
-				else
+				else	
 					frmt=false
 				fi
-				
+
 				if [ "$mnt" == "/boot" ] || [ "$mnt" == "/boot/EFI" ] || [ "$mnt" == "/boot/efi" ]; then
-						BOOT="$part"
+					BOOT="$part"
 				fi
 			else
 				FS="SWAP"
@@ -1106,7 +1106,7 @@ prepare_base() {
 						base_install="$base_install $bootloader"
 						break
 					fi
-				else 
+				else
 					base_install="$base_install $bootloader"
 					break
 				fi
@@ -1351,7 +1351,7 @@ graphics() {
 			fi
 		elif [ "$GPU" == "NVIDIA" ]; then
 			GPU=$(dialog --ok-button "$ok" --cancel-button "$cancel" --menu "$nvidia_msg" 15 60 4 \
-				"$gr0"		"->" \
+				"$gr0"		   "->"	  \
 				"nvidia"       "$gr6" \
 				"nvidia-340xx" "$gr7" \
 				"nvidia-304xx" "$gr8" 3>&1 1>&2 2>&3)
@@ -1361,30 +1361,24 @@ graphics() {
 					pci_id=$(lspci -nn | grep "VGA" | egrep -o '\[.*\]' | awk '{print $NF}' | sed 's/.*://;s/]//')
 			        if (</usr/share/arch-anywhere/nvidia340.xx grep "$pci_id" &>/dev/null); then
         			    if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$nvidia_340msg" 10 60); then
-        			    	GPU="nvidia-340xx" GPU="$GPU ${GPU}-libgl"
-					break
+        			    	GPU="nvidia-340xx"
         			    fi
         			elif (</usr/share/arch-anywhere/nvidia304.xx grep "$pci_id" &>/dev/null); then
            				if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$nvidia_304msg" 10 60); then
-           					GPU="nvidia-304xx" GPU="$GPU ${GPU}-libgl"
-						break
+           					GPU="nvidia-304xx"
 			        	fi
 			        else
             			if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$nvidia_curmsg" 10 60); then
-            				GPU="nvidia" GPU="$GPU ${GPU}-libgl"
-            				break
-				fi
+            				GPU="nvidia"
+            			fi
 			        fi
 				elif [ "$GPU" == "nvidia" ]; then
-					GPU="$GPU ${GPU}-libgl"
 					if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$nvidia_modeset_msg" 10 60) then
 						drm=true
 					fi
-					break
-				else
-					GPU="$GPU ${GPU}-libgl"
-					break
 				fi
+				GPU="$GPU ${GPU}-libgl"
+				break
 			fi
 		elif [ "$GPU" == "$default" ]; then
 			GPU="$default_GPU mesa-libgl"
@@ -1394,11 +1388,15 @@ graphics() {
 			break
 		fi
 	done
-
+	
 	DE="$DE xdg-user-dirs xorg-server xorg-server-utils xorg-xinit xterm $GPU"
 		
 	if [ "$net_util" == "networkmanager" ] ; then
-		DE="$DE network-manager-applet"
+		if (<<<"$DE" grep "plasma" &> /dev/null); then
+			DE="$DE plasma-nm"
+		else
+			DE="$DE network-manager-applet"
+		fi
 	fi
 
 	if (dialog --defaultno --yes-button "$yes" --no-button "$no" --yesno "\n$touchpad_msg" 10 60) then
@@ -1932,6 +1930,7 @@ install_software() {
 						err=true
 					elif "$desktop" ; then
 						if (<<<$download grep "networkmanager"); then
+
 							download=$(<<<$download sed 's/networkmanager/networkmanager network-manager-applet/')
 						fi
 					fi
