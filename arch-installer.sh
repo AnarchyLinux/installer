@@ -75,9 +75,19 @@ update_mirrors() {
 	if ! (</etc/pacman.d/mirrorlist grep "rankmirrors" &>/dev/null) then
 		op_title="$mirror_op_msg"
 		code=$(dialog --nocancel --ok-button "$ok" --menu "$mirror_msg1" 17 60 10 $countries 3>&1 1>&2 2>&3)
-		(wget --no-check-certificate --append-output=/dev/null "https://www.archlinux.org/mirrorlist/?country=$code&protocol=http" -O /etc/pacman.d/mirrorlist.bak
-		echo "$?" > /tmp/ex_status.var ; sleep 0.5) &> /dev/null &
-		pid=$! pri=0.1 msg="\n$mirror_load0 \n\n \Z1> \Z2wget -O /etc/pacman.d/mirrorlist archlinux.org/mirrorlist/?country=$code\Zn" load
+		if [ "$code" == "AL" ]; then
+			(wget --no-check-certificate --append-output=/dev/null "https://www.archlinux.org/mirrorlist/all/" -O /etc/pacman.d/mirrorlist.bak
+			echo "$?" > /tmp/ex_status.var ; sleep 0.5) &> /dev/null &
+			pid=$! pri=0.1 msg="\n$mirror_load0 \n\n \Z1> \Z2wget -O /etc/pacman.d/mirrorlist archlinux.org/mirrorlist/all\Zn" load
+		elif [ "$code" == "AS" ]; then
+			(wget --no-check-certificate --append-output=/dev/null "https://www.archlinux.org/mirrorlist/all/https/" -O /etc/pacman.d/mirrorlist.bak
+			echo "$?" > /tmp/ex_status.var ; sleep 0.5) &> /dev/null &
+			pid=$! pri=0.1 msg="\n$mirror_load0 \n\n \Z1> \Z2wget -O /etc/pacman.d/mirrorlist archlinux.org/mirrorlist/all/https\Zn" load
+		else
+			(wget --no-check-certificate --append-output=/dev/null "https://www.archlinux.org/mirrorlist/?country=$code&protocol=http" -O /etc/pacman.d/mirrorlist.bak
+			echo "$?" > /tmp/ex_status.var ; sleep 0.5) &> /dev/null &
+			pid=$! pri=0.1 msg="\n$mirror_load0 \n\n \Z1> \Z2wget -O /etc/pacman.d/mirrorlist archlinux.org/mirrorlist/?country=$code\Zn" load
+		fi
 		
 		while [ "$(</tmp/ex_status.var)" -gt "0" ]
 		  do
@@ -1422,6 +1432,8 @@ graphics() {
 		if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$dm_msg" 10 60) then
 			DM=$(dialog --ok-button "$ok" --cancel-button "$cancel" --menu "$dm_msg1" 13 64 4 \
 				"lightdm"	"$dm1" \
+				"gdm"		"$dm0" \
+				"lxdm"		"$dm2" \
 				"sddm"		"$dm3" 3>&1 1>&2 2>&3)
 			if [ "$?" -eq "0" ]; then
 				if [ "$DM" == "lightdm" ]; then
