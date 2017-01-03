@@ -1345,7 +1345,7 @@ graphics() {
 			fi
 		elif [ "$GPU" == "NVIDIA" ]; then
 			GPU=$(dialog --ok-button "$ok" --cancel-button "$cancel" --menu "$nvidia_msg" 15 60 4 \
-				"$gr0"		   "->"
+				"$gr0"		"->" \
 				"nvidia"       "$gr6" \
 				"nvidia-340xx" "$gr7" \
 				"nvidia-304xx" "$gr8" 3>&1 1>&2 2>&3)
@@ -1355,20 +1355,21 @@ graphics() {
 					pci_id=$(lspci -nn | grep "VGA" | egrep -o '\[.*\]' | awk '{print $NF}' | sed 's/.*://;s/]//')
 			        if (</usr/share/arch-anywhere/nvidia340.xx grep "$pci_id" &>/dev/null); then
         			    if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$nvidia_340msg" 10 60); then
-        			    	GPU="nvidia-340xx"
+        			    	GPU="nvidia-340xx" GPU="$GPU ${GPU}-libgl"
+					break
         			    fi
         			elif (</usr/share/arch-anywhere/nvidia304.xx grep "$pci_id" &>/dev/null); then
            				if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$nvidia_304msg" 10 60); then
-           					GPU="nvidia-304xx"
+           					GPU="nvidia-304xx" GPU="$GPU ${GPU}-libgl"
+						break
 			        	fi
 			        else
             			if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$nvidia_curmsg" 10 60); then
-            				GPU="nvidia"
-            			fi
+            				GPU="nvidia" GPU="$GPU ${GPU}-libgl"
+            				break
+				fi
 			        fi
 				fi
-				GPU="$GPU ${GPU}-libgl"
-				break
 			fi
 		elif [ "$GPU" == "$default" ]; then
 			GPU="$default_GPU mesa-libgl"
