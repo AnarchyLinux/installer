@@ -14,7 +14,7 @@ update=false
 
 # Check depends
 
-if [ ! -f /usr/bin/7z ] || [ ! -f /usr/bin/mksquashfs ] || [ ! -f /usr/bin/xorriso ] || [ ! -f /usr/bin/wget ] || [ ! -f /usr/bin/arch-chroot ]; then
+if [ ! -f /usr/bin/7z ] || [ ! -f /usr/bin/mksquashfs ] || [ ! -f /usr/bin/xorriso ] || [ ! -f /usr/bin/wget ] || [ ! -f /usr/bin/arch-chroot ] || [ ! -f /usr/bin/grep ] || [ ! -f /usr/bin/awk ]; then
 	depends=false
 	until "$depends"
 	  do
@@ -29,6 +29,8 @@ if [ ! -f /usr/bin/7z ] || [ ! -f /usr/bin/mksquashfs ] || [ ! -f /usr/bin/xorri
 				if [ ! -f /usr/bin/mksquashfs ]; then query="$query squashfs-tools"; fi
 				if [ ! -f /usr/bin/7z ]; then query="$query p7zip" ; fi
 				if [ ! -f /usr/bin/arch-chroot ]; then query="$query arch-install-scripts"; fi
+				if [ ! -f /usr/bin/grep ]; then query="$query grep"; fi
+				if [ ! -f /usr/bin/awk ]; then query="$query awk"; fi
 				sudo pacman -Syy $(echo "$query")
 				depends=true
 			;;
