@@ -2026,7 +2026,7 @@ install_software() {
 						err=true
 					fi
 
-					if [ "$software" == "libreoffice-fresh" ] || [ "$software" == "libreoffice-still" ];
+					if [ "$software" == "libreoffice-fresh" ] || [ "$software" == "libreoffice-still" ]; then
 						if [ -n "$lib" ]; then
 							software="$software $software-$lib"
 						fi
