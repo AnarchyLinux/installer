@@ -45,17 +45,17 @@ init() {
 
 	case "$ILANG" in
 		"English") export lang_file=/usr/share/arch-anywhere/lang/arch-installer-english.conf ;;
-		"Dutch") export lang_file=/usr/share/arch-anywhere/lang/arch-installer-dutch.conf ;;
-		"French") export lang_file=/usr/share/arch-anywhere/lang/arch-installer-french.conf ;;
-		"German") export lang_file=/usr/share/arch-anywhere/lang/arch-installer-german.conf ;;
-		"Greek") export lang_file=/usr/share/arch-anywhere/lang/arch-installer-greek.conf ;;
-		"Indonesian") export lang_file=/usr/share/arch-anywhere/lang/arch-installer-indonesia.conf ;;
-		"Portuguese") export lang_file=/usr/share/arch-anywhere/lang/arch-installer-portuguese.conf ;;
-		"Portuguese-Brazilian") export lang_file=/usr/share/arch-anywhere/lang/arch-installer-portuguese-br.conf ;;
-		"Romanian") export lang_file=/usr/share/arch-anywhere/lang/arch-installer-romanian.conf ;;
-		"Russian") export lang_file=/usr/share/arch-anywhere/lang/arch-installer-russian.conf ;;
-		"Spanish") export lang_file=/usr/share/arch-anywhere/lang/arch-installer-spanish.conf ;;
-		"Swedish") export lang_file=/usr/share/arch-anywhere/lang/arch-installer-swedish.conf ;;
+		"Dutch") export lang_file=/usr/share/arch-anywhere/lang/arch-installer-dutch.conf export lib=nl ;;
+		"French") export lang_file=/usr/share/arch-anywhere/lang/arch-installer-french.conf lib=fr ;;
+		"German") export lang_file=/usr/share/arch-anywhere/lang/arch-installer-german.conf lib=de ;;
+		"Greek") export lang_file=/usr/share/arch-anywhere/lang/arch-installer-greek.conf lib=el ;;
+		"Indonesian") export lang_file=/usr/share/arch-anywhere/lang/arch-installer-indonesia.conf lib=id ;;
+		"Portuguese") export lang_file=/usr/share/arch-anywhere/lang/arch-installer-portuguese.conf lib=pt ;;
+		"Portuguese-Brazilian") export lang_file=/usr/share/arch-anywhere/lang/arch-installer-portuguese-br.conf lib=pt_BR ;;
+		"Romanian") export lang_file=/usr/share/arch-anywhere/lang/arch-installer-romanian.conf lib=ro ;;
+		"Russian") export lang_file=/usr/share/arch-anywhere/lang/arch-installer-russian.conf lib=ru ;;
+		"Spanish") export lang_file=/usr/share/arch-anywhere/lang/arch-installer-spanish.conf lib=es ;;
+		"Swedish") export lang_file=/usr/share/arch-anywhere/lang/arch-installer-swedish.conf lib=sv ;;
 	esac
 
 	source "$lang_file"
@@ -1237,6 +1237,8 @@ graphics() {
 		fi
 	fi
 
+	source "$lang_file"
+
 	case "$DE" in
 		"Arch-Anywhere-Xfce") 	DE="xfce4 xfce4-goodies gvfs zsh zsh-syntax-highlighting"
 								start_term="exec startxfce4" de_config=true
@@ -1258,8 +1260,18 @@ graphics() {
 					fi
 					 start_term="exec gnome-session"
 		;;
-		"mate")		if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$extra_msg2" 10 60) then
-						DE="mate mate-extra"
+		"mate")		if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$gtk3_var" 10 60) then 
+						if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$extra_msg2" 10 60) then
+							DE="mate-gtk3 mate-extra-gtk3"
+						else
+							DE="mate-gtk3"
+						fi
+					else
+						if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$extra_msg2" 10 60) then
+							DE="mate mate-extra gtk-engine-murrine"
+						else
+							DE="mate gtk-engine-murrine"
+						fi
 					fi
 					 start_term="exec mate-session"
 		;;
@@ -1285,7 +1297,7 @@ graphics() {
 		;;	
 		"cinnamon") start_term="exec cinnamon-session" 
 		;;
-		"lxde") 	if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$gtk3_msg0" 10 60) then 
+		"lxde") 	if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$gtk3_var" 10 60) then 
                         DE="lxde-gtk3"
                     fi
 					start_term="exec startlxde" 
@@ -1322,7 +1334,7 @@ graphics() {
 	  					break
 	  			;;
 	  			vmware)	dialog --ok-button "$ok" --msgbox "\n$vmware_msg" 10 60
-						GPU="xf86-video-vmware xf86-input-vmmouse open-vm-tools mesa mesa-libgl"
+						GPU="xf86-video-vmware xf86-input-vmmouse open-vm-tools gtkmm mesa mesa-libgl"
 	  					break
 	  			;;
 	  			hyper-v) dialog --ok-button "$ok" --msgbox "\n$hyperv_msg" 10 60
@@ -1408,7 +1420,7 @@ graphics() {
 		fi
 	done
 	
-	DE="$DE xdg-user-dirs xorg-server xorg-server-utils xorg-xinit xterm $GPU"
+	DE="$DE xdg-user-dirs xorg-server xorg-server-utils xorg-xinit xterm ttf-dejavu $GPU"
 		
 	if [ "$net_util" == "networkmanager" ] ; then
 		if (<<<"$DE" grep "plasma" &> /dev/null); then
@@ -1467,6 +1479,9 @@ install_base() {
 	
 	if (dialog --yes-button "$install" --no-button "$cancel" --yesno "\n$install_var" "$x" 60); then
 		tmpfile=$(mktemp)
+		(pacman-key --init
+		pacman-key --populate archlinux) &> /dev/null &
+		pid=$! pri=1 msg="\n$keys_load\n\n \Z1> \Z2pacman-key --init ; pacman-key --populate archlinux\Zn" load
 		(pacstrap "$ARCH" $(echo "$base_install") ; echo "$?" > /tmp/ex_status) &> "$tmpfile" &
 		pid=$! pri=$(echo "$down" | sed 's/\..*$//') msg="\n$install_load_var" load_log
 		genfstab -U -p "$ARCH" >> "$ARCH"/etc/fstab
@@ -1674,7 +1689,7 @@ configure_system() {
 	if [ "$keyboard" != "$default" ]; then
 		echo "KEYMAP=$keyboard" > "$ARCH"/etc/vconsole.conf
 		if "$desktop" ; then
-			arch-chroot "$ARCH" setxkbmap -layout "$keyboard"
+			arch-chroot "$ARCH" localectl --no-convert set-x11-keymap "$keyboard"
 		fi
 	fi
 
@@ -2009,6 +2024,12 @@ install_software() {
 						"libreoffice-still"		"$office5" OFF 3>&1 1>&2 2>&3)
 					if [ "$?" -gt "0" ]; then
 						err=true
+					fi
+
+					if [ "$software" == "libreoffice-fresh" ] || [ "$software" == "libreoffice-still" ];
+						if [ -n "$lib" ]; then
+							software="$software $software-$lib"
+						fi
 					fi
 				;;
 				"$terminal")
