@@ -4,7 +4,7 @@
 export version="arch-anywhere-2.2.4-dual.iso"
 
 # Set the ISO label here
-export iso_label="AA224"
+export iso_label="ARCH_ANY224"
 
 # Location variables all directories must exist
 export aa=$(pwd)
@@ -236,20 +236,18 @@ prepare_i686() {
 
 configure_boot() {
 	
-	sudo mkdir "$customiso"/EFI/archiso/mnt
-	sudo mount -o loop "$customiso"/EFI/archiso/efiboot.img "$customiso"/EFI/archiso/mnt
-	sed -i "s/archisolabel=.*/archisolabel=$iso_label/" "$aa"/boot/iso/archiso-x86_64.CD.conf
-	sed -i "s/archisolabel=.*/archisolabel=$iso_label/" "$aa"/boot/iso/archiso-x86_64.conf
-	sed -i "s/archisolabel=.*/archisolabel=$iso_label/" "$aa"/boot/iso/archiso_sys64.cfg 
-	sed -i "s/archisolabel=.*/archisolabel=$iso_label/" "$aa"/boot/iso/archiso_sys32.cfg
-	sudo cp "$aa"/boot/iso/archiso-x86_64.CD.conf "$customiso"/EFI/archiso/mnt/loader/entries/archiso-x86_64.conf
-	sudo umount "$customiso"/EFI/archiso/mnt
-	sudo rmdir "$customiso"/EFI/archiso/mnt
-	cp "$aa"/boot/iso/archiso-x86_64.conf "$customiso"/loader/entries/
+	archiso_label=$(<"$customiso"/loader/entries/archiso-x86_64.conf awk 'NR==5{print $NF}' | sed 's/.*=//')
+	archiso_hex=$(<<<"$archiso_label" xxd -p)
+	iso_hex=$(<<<"$iso_label" xxd -p)
 	cp "$aa"/boot/splash.png "$customiso"/arch/boot/syslinux
 	cp "$aa"/boot/iso/archiso_head.cfg "$customiso"/arch/boot/syslinux
-	cp "$aa"/boot/iso/archiso_sys64.cfg "$customiso"/arch/boot/syslinux
-	cp "$aa"/boot/iso/archiso_sys32.cfg "$customiso"/arch/boot/syslinux
+	sed -i "s/$archiso_label/$iso_label/" "$customiso"/loader/entries/archiso-x86_64.conf
+	sed -i "s/$archiso_label/$iso_label/" "$customiso"/arch/boot/syslinux/archiso_sys64.cfg 
+	sed -i "s/$archiso_label/$iso_label/" "$customiso"/arch/boot/syslinux/archiso_sys32.cfg
+	cd "$customiso"/EFI/archiso/
+	echo -e "Replacing label hex in efiboot.img...\n$archiso_label $archiso_hex > $iso_label $iso_hex"
+	xxd -p efiboot.img | sed "s/$archiso_hex/$iso_hex/" | xxd -r -p > efiboot1.img
+	mv efiboot1.img efiboot.img
 	create_iso
 
 }
