@@ -1262,7 +1262,7 @@ graphics() {
 		;;
 		"mate")		if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$gtk3_var" 10 60) then 
 						if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$extra_msg2" 10 60) then
-							DE="mate-gtk3 mate-extra-gtk3"
+							DE="mate-gtk3 mate-extra-gtk3 gtk3-print-backends"
 						else
 							DE="mate-gtk3"
 						fi
