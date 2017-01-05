@@ -1331,6 +1331,9 @@ graphics() {
 	  		case "$virt" in
 	  			vbox)	dialog --ok-button "$ok" --msgbox "\n$vbox_msg" 10 60
 						GPU="virtualbox-guest-utils mesa-libgl"
+						if [ "$kernel" == "linux-lts" ]; then
+							GPU="$GPU dkms virtualbox-guest-dkms"
+						fi
 	  					break
 	  			;;
 	  			vmware)	dialog --ok-button "$ok" --msgbox "\n$vmware_msg" 10 60
@@ -1431,7 +1434,11 @@ graphics() {
 	fi
 
 	if (dialog --defaultno --yes-button "$yes" --no-button "$no" --yesno "\n$touchpad_msg" 10 60) then
-		GPU="$DE xf86-input-synaptics"
+		if (<<<"$DE" grep "gnome" &> /dev/null); then
+			DE="$DE xf86-input-libinput"
+		else
+			DE="$DE xf86-input-synaptics"
+		fi
 	fi
 
 	if "$enable_bt" ; then
@@ -1689,7 +1696,7 @@ configure_system() {
 	if [ "$keyboard" != "$default" ]; then
 		echo "KEYMAP=$keyboard" > "$ARCH"/etc/vconsole.conf
 		if "$desktop" ; then
-			arch-chroot "$ARCH" localectl --no-convert set-x11-keymap "$keyboard"
+			echo -e "Section \"InputClass\"\nIdentifier \"system-keyboard\"\nMatchIsKeyboard \"on\"\nOption \"XkbLayout\" \"$keyboard\"\nEndSection" > "$ARCH"/etc/X11/xorg.conf.d/00-keyboard.conf
 		fi
 	fi
 
