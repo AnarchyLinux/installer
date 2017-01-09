@@ -296,7 +296,7 @@ prepare_drives() {
 		if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$swap_msg0" 10 60) then
 			while (true)
 			  do
-				SWAPSPACE=$(dialog --ok-button "$ok" --inputbox "\n$swap_msg1" 11 55 "512M" 3>&1 1>&2 2>&3)
+				SWAPSPACE=$(dialog --ok-button "$ok" --cancel-button "$cancel" --inputbox "\n$swap_msg1" 11 55 "512M" 3>&1 1>&2 2>&3)
 					
 				if [ "$?" -gt "0" ]; then
 					SWAP=false ; break
