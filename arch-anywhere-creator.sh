@@ -124,113 +124,68 @@ builds() {
 		cd arch-wiki-cli
 		makepkg -s
 	fi
-	prepare_x86_64
+	prepare_sys
 
 }
 
-prepare_x86_64() {
+prepare_sys() {
 	
-### Change directory into the ISO where the filesystem is stored.
-### Unsquash root filesystem 'airootfs.sfs' this creates a directory 'squashfs-root' containing the entire system
-	echo "Preparing x86_64..."
-	cd "$customiso"/arch/x86_64
-	sudo unsquashfs airootfs.sfs
+	sys=x86_64
+
+	while (true)
+	  do	
+	### Change directory into the ISO where the filesystem is stored.
+	### Unsquash root filesystem 'airootfs.sfs' this creates a directory 'squashfs-root' containing the entire system
+		echo "Preparing $sys"
+		cd "$customiso"/arch/"$sys"
+		sudo unsquashfs airootfs.sfs
 	
-### Install fonts onto system and cleanup
-	sudo pacman --root squashfs-root --cachedir squashfs-root/var/cache/pacman/pkg  --config squashfs-root/etc/pacman.conf --noconfirm -Syyy terminus-font
-	sudo pacman --root squashfs-root --cachedir squashfs-root/var/cache/pacman/pkg  --config squashfs-root/etc/pacman.conf --noconfirm -U /tmp/fetchmirrors/*.pkg.tar.xz
-	sudo pacman --root squashfs-root --cachedir squashfs-root/var/cache/pacman/pkg  --config squashfs-root/etc/pacman.conf --noconfirm -U /tmp/arch-wiki-cli/*.pkg.tar.xz
-	sudo pacman --root squashfs-root --cachedir squashfs-root/var/cache/pacman/pkg  --config squashfs-root/etc/pacman.conf -Sl | awk '/\[installed\]$/ {print $1 "/" $2 "-" $3}' > "$customiso"/arch/pkglist.x86_64.txt
-	sudo pacman --root squashfs-root --cachedir squashfs-root/var/cache/pacman/pkg  --config squashfs-root/etc/pacman.conf --noconfirm -Scc
-	sudo rm -f "$customiso"/arch/x86_64/squashfs-root/var/cache/pacman/pkg/*
+	### Install fonts onto system and cleanup
+		sudo pacman --root squashfs-root --cachedir squashfs-root/var/cache/pacman/pkg  --config squashfs-root/etc/pacman.conf --noconfirm -Syyy terminus-font
+		sudo pacman --root squashfs-root --cachedir squashfs-root/var/cache/pacman/pkg  --config squashfs-root/etc/pacman.conf --noconfirm -U /tmp/fetchmirrors/*.pkg.tar.xz
+		sudo pacman --root squashfs-root --cachedir squashfs-root/var/cache/pacman/pkg  --config squashfs-root/etc/pacman.conf --noconfirm -U /tmp/arch-wiki-cli/*.pkg.tar.xz
+		sudo pacman --root squashfs-root --cachedir squashfs-root/var/cache/pacman/pkg  --config squashfs-root/etc/pacman.conf -Sl | awk '/\[installed\]$/ {print $1 "/" $2 "-" $3}' > "$customiso"/arch/pkglist.${sys}.txt
+		sudo pacman --root squashfs-root --cachedir squashfs-root/var/cache/pacman/pkg  --config squashfs-root/etc/pacman.conf --noconfirm -Scc
+		sudo rm -f "$customiso"/arch/"$sys"/squashfs-root/var/cache/pacman/pkg/*
 	
-### Copy over vconsole.conf (sets font at boot) & locale.gen (enables locale(s) for font)
-	sudo cp "$aa"/etc/{vconsole.conf,locale.gen} "$customiso"/arch/x86_64/squashfs-root/etc
-	sudo arch-chroot squashfs-root /bin/bash locale-gen
+	### Copy over vconsole.conf (sets font at boot) & locale.gen (enables locale(s) for font)
+		sudo cp "$aa"/etc/{vconsole.conf,locale.gen} "$customiso"/arch/"$sys"/squashfs-root/etc
+		sudo arch-chroot squashfs-root /bin/bash locale-gen
 	
-### Copy over main arch anywhere config, installer script, and arch-wiki,  make executeable
-	sudo cp "$aa"/etc/arch-anywhere.conf "$customiso"/arch/x86_64/squashfs-root/etc/
-#	sudo cp "$aa"/etc/arch-anywhere.service "$customiso"/arch/x86_64/squashfs-root/usr/lib/systemd/system/
-#	sudo cp "$aa"/arch-anywhere-init.sh "$customiso"/arch/x86_64/squashfs-root/usr/bin/arch-anywhere-init
-	sudo cp "$aa"/arch-installer.sh "$customiso"/arch/x86_64/squashfs-root/usr/bin/arch-anywhere
-	sudo cp "$aa"/extra/{sysinfo,iptest} "$customiso"/arch/x86_64/squashfs-root/usr/bin/
-	sudo chmod +x "$customiso"/arch/x86_64/squashfs-root/usr/bin/{arch-anywhere,,sysinfo,iptest}
-#	sudo arch-chroot "$customiso"/arch/x86_64/squashfs-root /bin/bash -c "systemctl enable arch-anywhere.service"
+	### Copy over main arch anywhere config, installer script, and arch-wiki,  make executeable
+		sudo cp "$aa"/etc/arch-anywhere.conf "$customiso"/arch/"$sys"/squashfs-root/etc/
+		sudo cp "$aa"/arch-installer.sh "$customiso"/arch/"$sys"/squashfs-root/usr/bin/arch-anywhere
+		sudo cp "$aa"/extra/{sysinfo,iptest} "$customiso"/arch/"$sys"/squashfs-root/usr/bin/
+		sudo chmod +x "$customiso"/arch/"$sys"/squashfs-root/usr/bin/{arch-anywhere,sysinfo,iptest}
 
-### Create arch-anywhere directory and lang directory copy over all lang files
-	sudo mkdir -p "$customiso"/arch/x86_64/squashfs-root/usr/share/arch-anywhere/{lang,pkg}
-	sudo cp "$aa"/lang/* "$customiso"/arch/x86_64/squashfs-root/usr/share/arch-anywhere/lang	
+	### Create arch-anywhere directory and lang directory copy over all lang files
+		sudo mkdir -p "$customiso"/arch/"$sys"/squashfs-root/usr/share/arch-anywhere/{lang,pkg}
+		sudo cp "$aa"/lang/* "$customiso"/arch/"$sys"/squashfs-root/usr/share/arch-anywhere/lang	
 
-### Copy over extra files (dot files, desktop configurations, help file, issue file, hostname file)
-	sudo cp "$aa"/extra/{.zshrc,.help,.dialogrc} "$customiso"/arch/x86_64/squashfs-root/root/
-	sudo cp "$aa"/extra/{.bashrc,.bashrc-root,.tcshrc,.tcshrc.conf,.mkshrc} "$customiso"/arch/x86_64/squashfs-root/usr/share/arch-anywhere
-	sudo cp "$aa"/extra/.zshrc-sys "$customiso"/arch/x86_64/squashfs-root/usr/share/arch-anywhere/.zshrc
-#	sudo mkdir "$customiso"/arch/x86_64/squashfs-root/usr/share/arch-anywhere/pkg
-#	sudo mv /tmp/*.pkg.tar.xz "$customiso"/arch/x86_64/squashfs-root/usr/share/arch-anywhere/pkg
-	sudo cp -r "$aa"/extra/desktop "$customiso"/arch/x86_64/squashfs-root/usr/share/arch-anywhere/
-	sudo cp "$aa"/boot/{issue,hostname} "$customiso"/arch/x86_64/squashfs-root/etc/
-	sudo cp -r "$aa"/boot/loader/syslinux "$customiso"/arch/x86_64/squashfs-root/usr/share/arch-anywhere/
-	sudo cp "$aa"/boot/splash.png "$customiso"/arch/x86_64/squashfs-root/usr/share/arch-anywhere/syslinux
-	sudo cp "$aa"/etc/{nvidia340.xx,nvidia304.xx} "$customiso"/arch/x86_64/squashfs-root/usr/share/arch-anywhere/
+	### Copy over extra files (dot files, desktop configurations, help file, issue file, hostname file)
+		sudo cp "$aa"/extra/{.zshrc,.help,.dialogrc} "$customiso"/arch/"$sys"/squashfs-root/root/
+		sudo cp "$aa"/extra/{.bashrc,.bashrc-root,.tcshrc,.tcshrc.conf,.mkshrc} "$customiso"/arch/"$sys"/squashfs-root/usr/share/arch-anywhere
+		sudo cp "$aa"/extra/.zshrc-sys "$customiso"/arch/"$sys"/squashfs-root/usr/share/arch-anywhere/.zshrc
+		sudo cp -r "$aa"/extra/desktop "$customiso"/arch/"$sys"/squashfs-root/usr/share/arch-anywhere/
+		sudo cp "$aa"/boot/{issue,hostname} "$customiso"/arch/"$sys"/squashfs-root/etc/
+		sudo cp -r "$aa"/boot/loader/syslinux "$customiso"/arch/"$sys"/squashfs-root/usr/share/arch-anywhere/
+		sudo cp "$aa"/boot/splash.png "$customiso"/arch/"$sys"/squashfs-root/usr/share/arch-anywhere/syslinux
+		sudo cp "$aa"/etc/{nvidia340.xx,nvidia304.xx} "$customiso"/arch/"$sys"/squashfs-root/usr/share/arch-anywhere/
 
-### cd back into root system directory, remove old system
-	cd "$customiso"/arch/x86_64
-	rm airootfs.sfs
+	### cd back into root system directory, remove old system
+		cd "$customiso"/arch/"$sys"
+		rm airootfs.sfs
 
-### Recreate the ISO using compression remove unsquashed system generate checksums and continue to i686
-	echo "Recreating x86_64..."
-	sudo mksquashfs squashfs-root airootfs.sfs -b 1024k -comp xz
-	sudo rm -r squashfs-root
-	md5sum airootfs.sfs > airootfs.md5
-	prepare_i686
-
-}
-
-prepare_i686() {
+	### Recreate the ISO using compression remove unsquashed system generate checksums and continue to i686
+		echo "Recreating $sys..."
+		sudo mksquashfs squashfs-root airootfs.sfs -b 1024k -comp xz
+		sudo rm -r squashfs-root
+		md5sum airootfs.sfs > airootfs.md5
 	
-	echo "Preparing i686..."
-	cd "$customiso"/arch/i686
-	sudo unsquashfs airootfs.sfs
-	sudo sed -i 's/\$arch/i686/g' squashfs-root/etc/pacman.d/mirrorlist
-	sudo sed -i 's/auto/i686/' squashfs-root/etc/pacman.conf
-	sudo setarch i686 pacman --root squashfs-root --cachedir squashfs-root/var/cache/pacman/pkg  --config squashfs-root/etc/pacman.conf --noconfirm -Syyy terminus-font 
-	sudo setarch i686 pacman --root squashfs-root --cachedir squashfs-root/var/cache/pacman/pkg  --config squashfs-root/etc/pacman.conf --noconfirm -U /tmp/fetchmirrors/*.pkg.tar.xz
-	sudo setarch i686 pacman --root squashfs-root --cachedir squashfs-root/var/cache/pacman/pkg  --config squashfs-root/etc/pacman.conf --noconfirm -U /tmp/arch-wiki-cli/*.pkg.tar.xz
-	sudo setarch i686 pacman --root squashfs-root --cachedir squashfs-root/var/cache/pacman/pkg  --config squashfs-root/etc/pacman.conf -Sl | awk '/\[installed\]$/ {print $1 "/" $2 "-" $3}' > "$customiso"/arch/pkglist.i686.txt
-	sudo setarch i686 pacman --root squashfs-root --cachedir squashfs-root/var/cache/pacman/pkg  --config squashfs-root/etc/pacman.conf --noconfirm -Scc
-	sudo rm -f "$customiso"/arch/i686/squashfs-root//var/cache/pacman/pkg/*
-#	sudo cp "$aa"/etc/arch-anywhere.service "$customiso"/arch/i686/squashfs-root/etc/systemd/system/
-#	sudo cp "$aa"/arch-anywhere-init.sh "$customiso"/arch/i686/squashfs-root/usr/bin/arch-anywhere-init
-	sudo cp "$aa"/etc/arch-anywhere.conf "$customiso"/arch/i686/squashfs-root/etc/
-	sudo cp "$aa"/etc/locale.gen "$customiso"/arch/i686/squashfs-root/etc
-	sudo arch-chroot squashfs-root /bin/bash locale-gen
-	sudo cp "$aa"/etc/vconsole.conf "$customiso"/arch/i686/squashfs-root/etc
-	sudo cp "$aa"/arch-installer.sh "$customiso"/arch/i686/squashfs-root/usr/bin/arch-anywhere
-	sudo mkdir "$customiso"/arch/i686/squashfs-root/usr/share/arch-anywhere
-	sudo mkdir "$customiso"/arch/i686/squashfs-root/usr/share/arch-anywhere/{lang,pkg}
-	sudo cp "$aa"/lang/* "$customiso"/arch/i686/squashfs-root/usr/share/arch-anywhere/lang
-	sudo chmod +x "$customiso"/arch/i686/squashfs-root/usr/bin/arch-anywhere
-	sudo cp "$aa"/extra/sysinfo "$customiso"/arch/i686/squashfs-root/usr/bin/sysinfo
-	sudo chmod +x "$customiso"/arch/i686/squashfs-root/usr/bin/sysinfo
-	sudo cp "$aa"/extra/iptest "$customiso"/arch/i686/squashfs-root/usr/bin/iptest
-	sudo chmod +x "$customiso"/arch/i686/squashfs-root/usr/bin/iptest
-#	sudo chmod +x "$customiso"/arch/i686/squashfs-root/usr/bin/arch-anywhere-init
-#	sudo arch-chroot "$customiso"/arch/i686/squashfs-root /bin/bash -c "systemctl enable arch-anywhere.service"
-	sudo cp "$aa"/extra/{.zshrc,.help,.dialogrc} "$customiso"/arch/i686/squashfs-root/root/
-	sudo cp "$aa"/extra/{.bashrc,.bashrc-root,.tcshrc,.tcshrc.conf,.mkshrc} "$customiso"/arch/i686/squashfs-root/usr/share/arch-anywhere
-	sudo cp "$aa"/extra/.zshrc-sys "$customiso"/arch/i686/squashfs-root/usr/share/arch-anywhere/.zshrc
-	sudo cp -r "$aa"/extra/desktop "$customiso"/arch/i686/squashfs-root/usr/share/arch-anywhere/
-	sudo cp "$aa"/boot/issue "$customiso"/arch/i686/squashfs-root/etc/
-	sudo cp "$aa"/boot/hostname "$customiso"/arch/i686/squashfs-root/etc/
-	sudo cp -r "$aa"/boot/loader/syslinux "$customiso"/arch/i686/squashfs-root/usr/share/arch-anywhere/
-	sudo cp "$aa"/boot/splash.png "$customiso"/arch/i686/squashfs-root/usr/share/arch-anywhere/syslinux
-	sudo cp "$aa"/etc/{nvidia340.xx,nvidia304.xx} "$customiso"/arch/i686/squashfs-root/usr/share/arch-anywhere/
-	cd "$customiso"/arch/i686
-	rm airootfs.sfs
-	echo "Recreating i686..."
-	sudo mksquashfs squashfs-root airootfs.sfs -b 1024k -comp xz
-	sudo rm -r squashfs-root
-	md5sum airootfs.sfs > airootfs.md5
+		if [ "$sys" == "i686" ]; then break ; fi
+		sys=i686
+	done
+
 	configure_boot
 
 }

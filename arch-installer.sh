@@ -96,7 +96,7 @@ update_mirrors() {
 					wifi-menu
 					if [ "$?" -gt "0" ]; then
 						dialog --ok-button "$ok" --msgbox "\n$wifi_msg1" 10 60
-						setterm -background black -store ; reset ; echo "$connect_err1" ; exit 1
+						setterm -background black -store ; reset ; echo "$connect_err1" | sed 's/\\Z1//;s/\\Zn//' ; exit 1
 					else
 						echo "0" > /tmp/ex_status.var
 					fi
@@ -105,7 +105,7 @@ update_mirrors() {
 				fi
 			else
 				dialog --ok-button "$ok" --msgbox "\n$connect_err0" 10 60
-				setterm -background black -store ; reset ; echo -e "$connect_err1" ;  exit 1
+				setterm -background black -store ; reset ; echo -e "$connect_err1" | sed 's/\\Z1//;s/\\Zn//' ;  exit 1
 			fi
 		done
 
@@ -287,8 +287,9 @@ prepare_drives() {
 			prepare_drives
 		fi
 		
-		drive_mib=$(($(fdisk -l | grep -w "$DRIVE" | awk '{print $5}')/1024/1024))
-		drive_gigs=$((drive_mib/1024))
+		drive_byte=$(fdisk -l | grep -w "$DRIVE" | awk '{print $5}')
+		drive_mib=$((drive_byte/1024/1024))
+		drive_gig=$((drive_mib/1024))
 		f2fs=$(cat /sys/block/"$DRIVE"/queue/rotational)
 		fs_select
 
@@ -309,7 +310,7 @@ prepare_drives() {
 						fi
 					elif [ "$(grep -o ".$" <<< "$SWAPSPACE")" == "G" ]; then
 						SWAPSPACE=$(echo "$(<<<$SWAPSPACE sed 's/G//')*1024" | bc | sed 's/\..*//')
-						if [ "$SWAPSPACE" -lt "$(echo "$drive_mib-5120" | bc)" ]; then 
+						if [ "$SWAPSPACE" -lt "$(echo "$drive_gig-5" | bc)" ]; then 
 							SWAP=true ; break
 						else 
 							dialog --ok-button "$ok" --msgbox "\n$swap_err_msg0" 10 60
@@ -1032,19 +1033,19 @@ prepare_base() {
 
 		case "$install_menu" in
 			"Arch-Linux-Base")
-				base_install="base sudo linux-headers" kernel="linux"
+				base_install="linux-headers sudo" kernel="linux"
 			;;
 			"Arch-Linux-Base-Devel") 
-				base_install="base base-devel linux-headers" kernel="linux"
+				base_install="base-devel linux-headers" kernel="linux"
 			;;
 			"Arch-Linux-GrSec")
-				base_install="base linux-grsec linux-grsec-headers sudo" kernel="linux-grsec"
+				base_install="base-devel linux-grsec linux-grsec-headers" kernel="linux-grsec"
 			;;
 			"Arch-Linux-LTS-Base")
-				base_install="base linux-lts linux-lts-headers sudo" kernel="linux-lts"
+				base_install="linux-lts linux-lts-headers sudo" kernel="linux-lts"
 			;;
 			"Arch-Linux-LTS-Base-Devel")
-				base_install="base base-devel linux-lts linux-lts-headers" kernel="linux-lts"
+				base_install="base-devel linux-lts linux-lts-headers" kernel="linux-lts"
 			;;
 		esac
 
@@ -1330,25 +1331,24 @@ graphics() {
 	  	if "$VM" ; then
 	  		case "$virt" in
 	  			vbox)	dialog --ok-button "$ok" --msgbox "\n$vbox_msg" 10 60
-						GPU="virtualbox-guest-utils mesa-libgl"
-						if [ "$kernel" == "linux-lts" ]; then
-							GPU="$GPU dkms virtualbox-guest-dkms"
+						GPU="virtualbox-guest-utils"
+						if [ "$kernel" == "linux" ]; then
+							GPU="$GPU virtualbox-guest-modules-arch"
+						else
+							GPU="$GPU virtualbox-guest-dkms"
 						fi
-	  					break
 	  			;;
 	  			vmware)	dialog --ok-button "$ok" --msgbox "\n$vmware_msg" 10 60
 						GPU="xf86-video-vmware xf86-input-vmmouse open-vm-tools gtkmm mesa mesa-libgl"
-	  					break
 	  			;;
 	  			hyper-v) dialog --ok-button "$ok" --msgbox "\n$hyperv_msg" 10 60
 						 GPU="xf86-video-fbdev mesa-libgl"
-	  					break
 	  			;;
 	  			*) 		dialog --ok-button "$ok" --msgbox "\n$vm_msg" 10 60
 						GPU="xf86-video-fbdev mesa-libgl"
-	  					break
 	  			;;
 	  		esac
+	  		break
 	  	fi
 
 	  	if "$NVIDIA" ; then
@@ -1486,11 +1486,21 @@ install_base() {
 	
 	if (dialog --yes-button "$install" --no-button "$cancel" --yesno "\n$install_var" "$x" 60); then
 		tmpfile=$(mktemp)
+		
 		(pacman-key --init
 		pacman-key --populate archlinux) &> /dev/null &
 		pid=$! pri=1 msg="\n$keys_load\n\n \Z1> \Z2pacman-key --init ; pacman-key --populate archlinux\Zn" load
-		(pacstrap "$ARCH" $(echo "$base_install") ; echo "$?" > /tmp/ex_status) &> "$tmpfile" &
-		pid=$! pri=$(echo "$down" | sed 's/\..*$//') msg="\n$install_load_var" load_log
+
+		if [ "$kernel" == "linux" ]; then
+			base_install="$(pacman -Sqg base) $base_install"
+			(pacstrap "$ARCH" $(echo "$base_install") ; echo "$?" > /tmp/ex_status) &> "$tmpfile" &
+			pid=$! pri=$(echo "$down" | sed 's/\..*$//') msg="\n$install_load_var" load_log
+		else
+			base_install="$(pacman -Sqg base | sed 's/^linux//') $base_install"
+			(pacstrap "$ARCH" $(echo "$base_install") ; echo "$?" > /tmp/ex_status) &> "$tmpfile" &
+			pid=$! pri=$(echo "$down" | sed 's/\..*$//') msg="\n$install_load_var" load_log
+		fi
+
 		genfstab -U -p "$ARCH" >> "$ARCH"/etc/fstab
 
 		if [ $(</tmp/ex_status) -eq "0" ]; then
