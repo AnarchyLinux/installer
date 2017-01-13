@@ -1,144 +1,161 @@
-#----------------------------
-# History
-#----------------------------
-HISTFILE=~/.histfile
+#######################################################
+####### Arch Anywhere ZSH configuration file    #######
+#######################################################
+
+### Set/unset ZSH options
+#########################
+# setopt NOHUP
+# setopt NOTIFY
+# setopt NO_FLOW_CONTROL
+setopt INC_APPEND_HISTORY SHARE_HISTORY
+setopt APPEND_HISTORY
+# setopt AUTO_LIST
+# setopt AUTO_REMOVE_SLASH
+# setopt AUTO_RESUME
+unsetopt BG_NICE
+setopt CORRECT
+setopt EXTENDED_HISTORY
+# setopt HASH_CMDS
+setopt MENUCOMPLETE
+setopt ALL_EXPORT
+
+### Set/unset  shell options
+############################
+setopt   notify globdots correct pushdtohome cdablevars autolist
+setopt   correctall autocd recexact longlistjobs
+setopt   autoresume histignoredups pushdsilent 
+setopt   autopushd pushdminus extendedglob rcquotes mailwarning
+unsetopt bgnice autoparamslash
+
+### Autoload zsh modules when they are referenced
+#################################################
+zmodload -a zsh/stat stat
+zmodload -a zsh/zpty zpty
+zmodload -a zsh/zprof zprof
+zmodload -ap zsh/mapfile mapfile
+
+### Set variables
+#################
+PATH="/usr/local/bin:/usr/local/sbin/:$PATH"
+HISTFILE=$HOME/.zhistory
 HISTSIZE=1000
 SAVEHIST=1000
-
-#-----------------------------
-# Dircolors
-#-----------------------------
+HOSTNAME="`hostname`"
 LS_COLORS='rs=0:di=01;34:ln=01;36:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:su=37;41:sg=30;43:tw=30;42:ow=34;42:st=37;44:ex=01;32:';
-export LS_COLORS
 
-#-----------------------------
-# Alias
-#-----------------------------
-alias pacman="pacman --color auto"
-alias ls="ls --color"
+### Load colors
+###############
+autoload colors zsh/terminfo
+if [[ "$terminfo[colors]" -ge 8 ]]; then
+   colors
+fi
+for color in RED GREEN YELLOW BLUE MAGENTA CYAN WHITE; do
+   eval PR_$color='%{$terminfo[bold]$fg[${(L)color}]%}'
+   eval PR_LIGHT_$color='%{$fg[${(L)color}]%}'
+   (( count = $count + 1 ))
+done
 
-#------------------------------
-# Keybindings
-#------------------------------
-bindkey -v
-typeset -g -A key
-bindkey '\e[3~' delete-char
-bindkey '\e[1~' beginning-of-line
-bindkey '\e[4~' end-of-line
-bindkey '\e[2~' overwrite-mode
-bindkey '^?' backward-delete-char
-bindkey '^[[1~' beginning-of-line
-bindkey '^[[5~' up-line-or-history
-bindkey '^[[3~' delete-char
-bindkey '^[[4~' end-of-line
-bindkey '^[[6~' down-line-or-history
-bindkey '^[[A' up-line-or-search
-bindkey '^[[D' backward-char
-bindkey '^[[B' down-line-or-search
-bindkey '^[[C' forward-char 
-## for rxvt
-#bindkey "\e[8~" end-of-line
-#bindkey "\e[7~" beginning-of-line
-## for gnome-terminal
-#bindkey "\eOH" beginning-of-line
-#bindkey "\eOF" end-of-line
+### Set prompt
+##############
+PR_NO_COLOR="%{$terminfo[sgr0]%}"
+PS1="[%(!.${PR_RED}%n.$PR_LIGHT_YELLOW%n)%(!.${PR_LIGHT_YELLOW}@.$PR_RED@)$PR_NO_COLOR%(!.${PR_LIGHT_RED}%U%m%u.${PR_LIGHT_GREEN}%U%m%u)$PR_NO_COLOR:%(!.${PR_RED}%2c.${PR_BLUE}%2c)$PR_NO_COLOR]%(!.${PR_LIGHT_RED}#.${PR_LIGHT_GREEN}$) "
+RPS1="$PR_LIGHT_YELLOW(%D{%m-%d %H:%M})$PR_NO_COLOR"
+unsetopt ALL_EXPORT
 
-#------------------------------
-# Comp stuff
-#------------------------------
-zmodload zsh/complist 
-autoload -Uz compinit
+### Set alias
+#############
+alias ll='ls -al'
+alias ls='ls --color=auto '
+
+### Bind keys
+#############
+autoload -U compinit
 compinit
-zstyle :compinstall filename '${HOME}/.zshrc'
+bindkey "^?" backward-delete-char
+bindkey '^[OH' beginning-of-line
+bindkey '^[OF' end-of-line
+bindkey '^[[5~' up-line-or-history
+bindkey '^[[6~' down-line-or-history
+bindkey "^r" history-incremental-search-backward
+bindkey ' ' magic-space    # also do history expansion on space
+bindkey '^I' complete-word # complete on tab, leave expansion to _expand
+zstyle ':completion::complete:*' use-cache on
+zstyle ':completion::complete:*' cache-path ~/.zsh/cache/$HOST
 
-#- buggy
-zstyle ':completion:*:descriptions' format '%U%B%d%b%u'
-zstyle ':completion:*:warnings' format '%BSorry, no matches for: %d%b'
-#-/buggy
+zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
+zstyle ':completion:*' list-prompt '%SAt %p: Hit TAB for more, or the character to insert%s'
+zstyle ':completion:*' menu select=1 _complete _ignored _approximate
+zstyle -e ':completion:*:approximate:*' max-errors \
+    'reply=( $(( ($#PREFIX+$#SUFFIX)/2 )) numeric )'
+zstyle ':completion:*' select-prompt '%SScrolling active: current selection at %p%s'
 
-zstyle ':completion:*:pacman:*' force-list always
-zstyle ':completion:*:*:pacman:*' menu yes select
+# Completion Styles
 
-zstyle ':completion:*:default' list-colors ${(s.:.)LS_COLORS}
+# list of completers to use
+zstyle ':completion:*::::' completer _expand _complete _ignored _approximate
 
-zstyle ':completion:*:*:kill:*' menu yes select
-zstyle ':completion:*:kill:*'   force-list always
+# allow one error for every three characters typed in approximate completer
+zstyle -e ':completion:*:approximate:*' max-errors \
+    'reply=( $(( ($#PREFIX+$#SUFFIX)/2 )) numeric )'
+    
+# insert all expansions for expand completer
+zstyle ':completion:*:expand:*' tag-order all-expansions
 
-zstyle ':completion:*:*:killall:*' menu yes select
-zstyle ':completion:*:killall:*'   force-list always
+# formatting and messages
+zstyle ':completion:*' verbose yes
+zstyle ':completion:*:descriptions' format '%B%d%b'
+zstyle ':completion:*:messages' format '%d'
+zstyle ':completion:*:warnings' format 'No matches for: %d'
+zstyle ':completion:*:corrections' format '%B%d (errors: %e)%b'
+zstyle ':completion:*' group-name ''
 
-#- complete pacman-color the same as pacman
-compdef _pacman pacman-color=pacman
+# match uppercase from lowercase
+zstyle ':completion:*' matcher-list 'm:{a-z}={A-Z}'
 
-#------------------------------
-# Window title
-#------------------------------
-case $TERM in
-  termite|*xterm*|rxvt|rxvt-unicode|rxvt-256color|rxvt-unicode-256color|(dt|k|E)term)
-    precmd () {
-      vcs_info
-      print -Pn "\e]0;[%n@%M][%~]%#\a"
-    } 
-    preexec () { print -Pn "\e]0;[%n@%M][%~]%# ($1)\a" }
-    ;;
-  screen|screen-256color)
-    precmd () { 
-      vcs_info
-      print -Pn "\e]83;title \"$1\"\a" 
-      print -Pn "\e]0;$TERM - (%L) [%n@%M]%# [%~]\a" 
-    }
-    preexec () { 
-      print -Pn "\e]83;title \"$1\"\a" 
-      print -Pn "\e]0;$TERM - (%L) [%n@%M]%# [%~] ($1)\a" 
-    }
-    ;; 
-esac
+# offer indexes before parameters in subscripts
+zstyle ':completion:*:*:-subscript-:*' tag-order indexes parameters
 
+# command for process lists, the local web server details and host completion
+# on processes completion complete all user processes
+zstyle ':completion:*:processes' command 'ps -au$USER'
 
-#------------------------------
-# Prompt
-#------------------------------
-autoload -U colors zsh/terminfo
-colors
+## add colors to processes for kill completion
+zstyle ':completion:*:*:kill:*:processes' list-colors '=(#b) #([0-9]#)*=0=01;31'
 
-autoload -Uz vcs_info
-zstyle ':vcs_info:*' enable git hg
-zstyle ':vcs_info:*' check-for-changes true
-zstyle ':vcs_info:git*' formats "%{${fg[cyan]}%}[%{${fg[green]}%}%s%{${fg[cyan]}%}][%{${fg[blue]}%}%r/%S%%{${fg[cyan]}%}][%{${fg[blue]}%}%b%{${fg[yellow]}%}%m%u%c%{${fg[cyan]}%}]%{$reset_color%}"
+#zstyle ':completion:*:processes' command 'ps -o pid,s,nice,stime,args'
+#zstyle ':completion:*:urls' local 'www' '/var/www/htdocs' 'public_html'
+#
+#NEW completion:
+# 1. All /etc/hosts hostnames are in autocomplete
+# 2. If you have a comment in /etc/hosts like #%foobar.domain,
+#    then foobar.domain will show up in autocomplete!
+zstyle ':completion:*' hosts $(awk '/^[^#]/ {print $2 $3" "$4" "$5}' /etc/hosts | grep -v ip6- && grep "^#%" /etc/hosts | awk -F% '{print $2}') 
+# Filename suffixes to ignore during completion (except after rm command)
+zstyle ':completion:*:*:(^rm):*:*files' ignored-patterns '*?.o' '*?.c~' \
+    '*?.old' '*?.pro'
+# the same for old style completion
+#fignore=(.o .c~ .old .pro)
 
-setprompt() {
-  # load some modules
-  setopt prompt_subst
+# ignore completion functions (until the _ignored completer)
+zstyle ':completion:*:functions' ignored-patterns '_*'
+zstyle ':completion:*:*:*:users' ignored-patterns \
+        adm apache bin daemon games gdm halt ident junkbust lp mail mailnull \
+        named news nfsnobody nobody nscd ntp operator pcap postgres radvd \
+        rpc rpcuser rpm shutdown squid sshd sync uucp vcsa xfs avahi-autoipd\
+        avahi backup messagebus beagleindex debian-tor dhcp dnsmasq fetchmail\
+        firebird gnats haldaemon hplip irc klog list man cupsys postfix\
+        proxy syslog www-data mldonkey sys snort
+# SSH Completion
+zstyle ':completion:*:scp:*' tag-order \
+   files users 'hosts:-host hosts:-domain:domain hosts:-ipaddr"IP\ Address *'
+zstyle ':completion:*:scp:*' group-order \
+   files all-files users hosts-domain hosts-host hosts-ipaddr
+zstyle ':completion:*:ssh:*' tag-order \
+   users 'hosts:-host hosts:-domain:domain hosts:-ipaddr"IP\ Address *'
+zstyle ':completion:*:ssh:*' group-order \
+   hosts-domain hosts-host users hosts-ipaddr
+zstyle '*' single-ignored show
 
-  # make some aliases for the colours: (coud use normal escap.seq's too)
-  for color in RED GREEN YELLOW BLUE MAGENTA CYAN WHITE; do
-    eval PR_$color='%{$fg[${(L)color}]%}'
-  done
-  PR_NO_COLOR="%{$terminfo[sgr0]%}"
-
-  # Check the UID
-  if [[ $UID -ge 1000 ]]; then # normal user
-    eval PR_USER='${PR_GREEN}%n${PR_NO_COLOR}'
-    eval PR_USER_OP='${PR_GREEN}%#${PR_NO_COLOR}'
-  elif [[ $UID -eq 0 ]]; then # root
-    eval PR_USER='${PR_RED}%n${PR_NO_COLOR}'
-    eval PR_USER_OP='${PR_RED}%#${PR_NO_COLOR}'
-  fi
-
-  # Check if we are on SSH or not
-  if [[ -n "$SSH_CLIENT"  ||  -n "$SSH2_CLIENT" ]]; then 
-    eval PR_HOST='${PR_YELLOW}%M${PR_NO_COLOR}' #SSH
-  else 
-    eval PR_HOST='${PR_GREEN}%M${PR_NO_COLOR}' # no SSH
-  fi
-  # set the prompt
-  PS1=$'${PR_CYAN}[${PR_USER}${PR_CYAN}@${PR_HOST}${PR_CYAN}][${PR_BLUE}%~${PR_CYAN}]${PR_USER_OP} '
-  PS2=$'%_>'
-  RPROMPT=$'${vcs_info_msg_0_}'
-}
-setprompt
-
-#-------------------------------
-# Plugins
-#-------------------------------
+### Source plugins
+##################
 source /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
