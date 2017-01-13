@@ -1,10 +1,10 @@
 #!/bin/bash
 
 # Set the version here
-export version="arch-anywhere-2.2.4-dual.iso"
+export version="arch-anywhere-2.2.5-dual.iso"
 
 # Set the ISO label here
-export iso_label="ARCH_ANY224"
+export iso_label="ARCH_ANY225"
 
 # Location variables all directories must exist
 export aa=$(pwd)
