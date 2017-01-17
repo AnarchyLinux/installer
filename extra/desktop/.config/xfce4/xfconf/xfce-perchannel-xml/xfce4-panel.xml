@@ -9,7 +9,7 @@
       <property name="position" type="string" value="p=6;x=0;y=0"/>
       <property name="length" type="uint" value="100"/>
       <property name="position-locked" type="bool" value="true"/>
-      <property name="size" type="uint" value="24"/>
+      <property name="size" type="uint" value="26"/>
       <property name="plugin-ids" type="array">
         <value type="int" value="1"/>
         <value type="int" value="3"/>
@@ -23,9 +23,9 @@
       </property>
       <property name="background-style" type="uint" value="1"/>
       <property name="background-color" type="array">
-        <value type="uint" value="5654"/>
-        <value type="uint" value="3855"/>
-        <value type="uint" value="6425"/>
+        <value type="uint" value="0"/>
+        <value type="uint" value="11051"/>
+        <value type="uint" value="13878"/>
         <value type="uint" value="65535"/>
       </property>
       <property name="background-alpha" type="uint" value="92"/>
@@ -43,12 +43,12 @@
         <value type="int" value="6"/>
       </property>
       <property name="length" type="uint" value="100"/>
-      <property name="size" type="uint" value="24"/>
+      <property name="size" type="uint" value="26"/>
       <property name="background-style" type="uint" value="1"/>
       <property name="background-color" type="array">
-        <value type="uint" value="5654"/>
-        <value type="uint" value="3855"/>
-        <value type="uint" value="6425"/>
+        <value type="uint" value="0"/>
+        <value type="uint" value="11051"/>
+        <value type="uint" value="13878"/>
         <value type="uint" value="65535"/>
       </property>
       <property name="background-alpha" type="uint" value="92"/>
@@ -84,7 +84,7 @@
       </property>
     </property>
     <property name="plugin-10" type="string" value="mixer">
-      <property name="sound-card" type="string" value="HDAIntelMIDAlsamixer"/>
+      <property name="sound-card" type="string" value="Intel82801AAICHAlsamixer"/>
       <property name="track" type="string" value="Master"/>
       <property name="command" type="string" value="xfce4-mixer"/>
       <property name="enable-keyboard-shortcuts" type="bool" value="true"/>
