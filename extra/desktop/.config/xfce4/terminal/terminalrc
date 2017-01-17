@@ -30,4 +30,6 @@ ColorBold=#93a1a1
 ColorBoldUseDefault=FALSE
 TabActivityColor=#dc322f
 ScrollingBar=TERMINAL_SCROLLBAR_NONE
+DropdownHeight=37
+DropdownAlwaysShowTabs=FALSE
 
