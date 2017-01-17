@@ -1209,7 +1209,7 @@ graphics() {
 	op_title="$de_op_msg"
 	if ! (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$desktop_msg" 10 60) then
 		if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$desktop_cancel_msg" 10 60) then	
-			x="15" ; install_base
+			x="17" ; install_base
 		fi	
 	fi
 	
@@ -1473,7 +1473,7 @@ graphics() {
 	fi
 	
 	base_install+=" $DE"
-	desktop=true x=20
+	desktop=true x=19
 	install_base
 
 }
@@ -1488,7 +1488,7 @@ install_base() {
 	export software_size="$download_size Mib"
 	cal_rate
 	
-	if (dialog --yes-button "$install" --no-button "$cancel" --yesno "\n$install_var" "$x" 60); then
+	if (dialog --yes-button "$install" --no-button "$cancel" --yesno "\n$install_var" "$x" 65); then
 		tmpfile=$(mktemp)
 		
 		(pacman-key --init
