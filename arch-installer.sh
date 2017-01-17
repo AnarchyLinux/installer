@@ -76,15 +76,15 @@ update_mirrors() {
 		op_title="$mirror_op_msg"
 		code=$(dialog --nocancel --ok-button "$ok" --menu "$mirror_msg1" 17 60 10 $countries 3>&1 1>&2 2>&3)
 		if [ "$code" == "AL" ]; then
-			(wget --no-check-certificate --append-output=/dev/null "https://www.archlinux.org/mirrorlist/all/" -O /etc/pacman.d/mirrorlist.bak
+			(wget -4 --no-check-certificate --append-output=/dev/null "https://www.archlinux.org/mirrorlist/all/" -O /etc/pacman.d/mirrorlist.bak
 			echo "$?" > /tmp/ex_status.var ; sleep 0.5) &> /dev/null &
 			pid=$! pri=0.1 msg="\n$mirror_load0 \n\n \Z1> \Z2wget -O /etc/pacman.d/mirrorlist archlinux.org/mirrorlist/all\Zn" load
 		elif [ "$code" == "AS" ]; then
-			(wget --no-check-certificate --append-output=/dev/null "https://www.archlinux.org/mirrorlist/all/https/" -O /etc/pacman.d/mirrorlist.bak
+			(wget -4 --no-check-certificate --append-output=/dev/null "https://www.archlinux.org/mirrorlist/all/https/" -O /etc/pacman.d/mirrorlist.bak
 			echo "$?" > /tmp/ex_status.var ; sleep 0.5) &> /dev/null &
 			pid=$! pri=0.1 msg="\n$mirror_load0 \n\n \Z1> \Z2wget -O /etc/pacman.d/mirrorlist archlinux.org/mirrorlist/all/https\Zn" load
 		else
-			(wget --no-check-certificate --append-output=/dev/null "https://www.archlinux.org/mirrorlist/?country=$code&protocol=http" -O /etc/pacman.d/mirrorlist.bak
+			(wget -4 --no-check-certificate --append-output=/dev/null "https://www.archlinux.org/mirrorlist/?country=$code&protocol=http" -O /etc/pacman.d/mirrorlist.bak
 			echo "$?" > /tmp/ex_status.var ; sleep 0.5) &> /dev/null &
 			pid=$! pri=0.1 msg="\n$mirror_load0 \n\n \Z1> \Z2wget -O /etc/pacman.d/mirrorlist archlinux.org/mirrorlist/?country=$code\Zn" load
 		fi
@@ -125,7 +125,7 @@ check_connection() {
 	test_pkg=bluez-utils
 	test_pkg_ver=$(pacman -Sy --print-format='%v' $(echo "$test_pkg") | tail -n1)
 	test_link="${test_mirror}extra/os/i686/${test_pkg}-${test_pkg_ver}-i686.pkg.tar.xz"
-	wget --no-check-certificate --append-output=/tmp/wget.log -O /dev/null "${test_link}") &
+	wget -4 --no-check-certificate --append-output=/tmp/wget.log -O /dev/null "${test_link}") &
 	pid=$! pri=0.3 msg="\n$connection_load \n\n \Z1> \Z2wget -O /dev/null test_link/test1Mb.db\Zn" load
 	
 	sed -i 's/\,/\./' /tmp/wget.log
@@ -289,7 +289,7 @@ prepare_drives() {
 		
 		drive_byte=$(fdisk -l | grep -w "$DRIVE" | awk '{print $5}')
 		drive_mib=$((drive_byte/1024/1024))
-		drive_gig=$((drive_mib/1024))
+		drive_gigs=$((drive_mib/1024))
 		f2fs=$(cat /sys/block/"$DRIVE"/queue/rotational)
 		fs_select
 
@@ -310,7 +310,7 @@ prepare_drives() {
 						fi
 					elif [ "$(grep -o ".$" <<< "$SWAPSPACE")" == "G" ]; then
 						SWAPSPACE=$(echo "$(<<<$SWAPSPACE sed 's/G//')*1024" | bc | sed 's/\..*//')
-						if [ "$SWAPSPACE" -lt "$(echo "$drive_gig-5" | bc)" ]; then 
+						if [ "$SWAPSPACE" -lt "$(echo "$drive_mib-5120" | bc)" ]; then
 							SWAP=true ; break
 						else 
 							dialog --ok-button "$ok" --msgbox "\n$swap_err_msg0" 10 60
@@ -1072,7 +1072,7 @@ prepare_base() {
 					;;
 				esac
 	
-				base_install="$base_install $shell"
+				base_install+=" $shell"
 				break
 			fi
 		done
@@ -1110,19 +1110,19 @@ prepare_base() {
 							mkfs.ext4 -O \^64bit /dev/"$BOOT"
 							mount /dev/"$BOOT" "$mnt") &> /dev/null &
 							pid=$! pri=0.1 msg="\n$boot_load \n\n \Z1> \Z2mkfs.ext4 -O ^64bit /dev/$BOOT\Zn" load
-							base_install="$base_install $bootloader"
+							base_install+=" $bootloader"
 							break
 						fi
 					else
-						base_install="$base_install $bootloader"
+						base_install+=" $bootloader"
 						break
 					fi
 				else
-					base_install="$base_install $bootloader"
+					base_install+=" $bootloader"
 					break
 				fi
 			elif [ "$bootloader" == "grub" ]; then
-				base_install="$base_install $bootloader"
+				base_install+=" $bootloader"
 				break
 			else
 				if (dialog --defaultno --yes-button "$yes" --no-button "$no" --yesno "\n$grub_warn_msg0" 10 60) then
@@ -1145,45 +1145,45 @@ prepare_base() {
 				fi
 			else
 				if [ "$net_util" == "netctl" ] || [ "$net_util" == "networkmanager" ]; then
-					base_install="$base_install $net_util dialog" enable_nm=true
+					base_install+=" $net_util dialog" enable_nm=true
 				fi
 				break
 			fi
 		done
 		
 		if "$wifi" ; then
-			base_install="$base_install wireless_tools wpa_supplicant wpa_actiond"
+			base_install+=" wireless_tools wpa_supplicant wpa_actiond"
 		else
 			if (dialog --defaultno --yes-button "$yes" --no-button "$no" --yesno "\n$wifi_option_msg" 10 60) then
-				base_install="$base_install wireless_tools wpa_supplicant wpa_actiond"
+				base_install+=" wireless_tools wpa_supplicant wpa_actiond"
 			fi
 		fi
 		
 		if "$bluetooth" ; then
 			if (dialog --defaultno --yes-button "$yes" --no-button "$no" --yesno "\n$bluetooth_msg" 10 60) then
-				base_install="$base_install bluez bluez-utils pulseaudio-bluetooth"
+				base_install+=" bluez bluez-utils pulseaudio-bluetooth"
 				enable_bt=true
 			fi
 		fi
 		
 		if (dialog --defaultno --yes-button "$yes" --no-button "$no" --yesno "\n$pppoe_msg" 10 60) then
-			base_install="$base_install rp-pppoe"
+			base_install+=" rp-pppoe"
 		fi
 		
 		if (dialog --defaultno --yes-button "$yes" --no-button "$no" --yesno "\n$os_prober_msg" 10 60) then
-			base_install="$base_install os-prober"
+			base_install+=" os-prober"
 		fi
 		
 		if "$enable_f2fs" ; then
-			base_install="$base_install f2fs-tools"
+			base_install+=" f2fs-tools"
 		fi
 	
 		if "$UEFI" ; then
-			base_install="$base_install efibootmgr"
+			base_install+=" efibootmgr"
 		fi
 
 		if "$intel" ; then
-			base_install="$base_install intel-ucode"
+			base_install+=" intel-ucode"
 		fi
 
 	elif "$INSTALLED" ; then
@@ -1267,6 +1267,7 @@ graphics() {
 						else
 							DE="mate-gtk3"
 						fi
+						GTK3=true
 					else
 						if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$extra_msg2" 10 60) then
 							DE="mate mate-extra gtk-engine-murrine"
@@ -1300,6 +1301,7 @@ graphics() {
 		;;
 		"lxde") 	if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$gtk3_var" 10 60) then 
                         DE="lxde-gtk3"
+                    	GTK3=true
                     fi
 					start_term="exec startlxde" 
 		;;
@@ -1333,9 +1335,9 @@ graphics() {
 	  			vbox)	dialog --ok-button "$ok" --msgbox "\n$vbox_msg" 10 60
 						GPU="virtualbox-guest-utils"
 						if [ "$kernel" == "linux" ]; then
-							GPU="$GPU virtualbox-guest-modules-arch"
+							GPU+=" virtualbox-guest-modules-arch"
 						else
-							GPU="$GPU virtualbox-guest-dkms"
+							GPU+=" virtualbox-guest-dkms"
 						fi
 	  			;;
 	  			vmware)	dialog --ok-button "$ok" --msgbox "\n$vmware_msg" 10 60
@@ -1386,17 +1388,17 @@ graphics() {
 					pci_id=$(lspci -nn | grep "VGA" | egrep -o '\[.*\]' | awk '{print $NF}' | sed 's/.*://;s/]//')
 			        if (</usr/share/arch-anywhere/nvidia340.xx grep "$pci_id" &>/dev/null); then
         			    if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$nvidia_340msg" 10 60); then
-        			    	GPU="nvidia-340xx" GPU="$GPU ${GPU}-libgl"
+        			    	GPU="nvidia-340xx nvidia-340xx-libgl"
         			    	break
         			    fi
         			elif (</usr/share/arch-anywhere/nvidia304.xx grep "$pci_id" &>/dev/null); then
            				if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$nvidia_304msg" 10 60); then
-           					GPU="nvidia-304xx" GPU="$GPU ${GPU}-libgl"
+           					GPU="nvidia-304xx nvidia 304xx-libgl"
            					break
 			        	fi
 			        else
             			if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$nvidia_curmsg" 10 60); then
-            				GPU="nvidia" GPU="$GPU ${GPU}-libgl"
+            				GPU="nvidia nvidia-libgl"
 							if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$nvidia_modeset_msg" 10 60) then
 								drm=true
 							fi
@@ -1407,10 +1409,10 @@ graphics() {
 					if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$nvidia_modeset_msg" 10 60) then
 						drm=true
 					fi
-					GPU="$GPU ${GPU}-libgl"
+					GPU+=" ${GPU}-libgl"
 					break
 				else
-					GPU="$GPU ${GPU}-libgl"
+					GPU+=" ${GPU}-libgl"
 					break
 				fi
 			fi
@@ -1418,7 +1420,7 @@ graphics() {
 			GPU="$default_GPU mesa-libgl"
 			break
 		else
-			GPU="$GPU mesa-libgl"
+			GPU+=" mesa-libgl"
 			break
 		fi
 	done
@@ -1427,23 +1429,23 @@ graphics() {
 		
 	if [ "$net_util" == "networkmanager" ] ; then
 		if (<<<"$DE" grep "plasma" &> /dev/null); then
-			DE="$DE plasma-nm"
+			DE+=" plasma-nm"
 		else
-			DE="$DE network-manager-applet"
+			DE+=" network-manager-applet"
 		fi
 	fi
 
 	if (dialog --defaultno --yes-button "$yes" --no-button "$no" --yesno "\n$touchpad_msg" 10 60) then
 		if (<<<"$DE" grep "gnome" &> /dev/null); then
-			DE="$DE xf86-input-libinput"
+			DE+=" xf86-input-libinput"
 		else
-			DE="$DE xf86-input-synaptics"
+			DE+=" xf86-input-synaptics"
 		fi
 	fi
 
 	if "$enable_bt" ; then
 		if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$blueman_msg" 10 60) then
-			DE="$DE blueman"
+			DE+=" blueman"
 		fi
 	fi
 	
@@ -1456,9 +1458,11 @@ graphics() {
 				"sddm"		"$dm3" 3>&1 1>&2 2>&3)
 			if [ "$?" -eq "0" ]; then
 				if [ "$DM" == "lightdm" ]; then
-					DE="$DE $DM lightdm-gtk-greeter"
+					DE+=" $DM lightdm-gtk-greeter"
+				elif [ "$DM" == "lxdm" ] && "$GTK3"; then
+					DE+=" ${DM}-gtk3"
 				else
-					DE="$DE $DM"
+					DE+="$ $DM"
 				fi
 				
 				enable_dm=true
@@ -1468,7 +1472,7 @@ graphics() {
 		fi
 	fi
 	
-	base_install="$base_install $DE"
+	base_install+=" $DE"
 	desktop=true x=17
 	install_base
 
@@ -1716,7 +1720,7 @@ configure_system() {
 
 	case "$net_util" in
 		networkmanager)	arch-chroot "$ARCH" systemctl enable NetworkManager.service &>/dev/null
-			pid=$! pri=0.1 msg="\n$nwmanager_msg0 \n\n \Z1> \Z2systemctl enable NetworkManager.service\Zn" load
+		pid=$! pri=0.1 msg="\n$nwmanager_msg0 \n\n \Z1> \Z2systemctl enable NetworkManager.service\Zn" load
 		;;
 		netctl)	arch-chroot "$ARCH" systemctl enable netctl.service &>/dev/null &
     	pid=$! pri=0.1 msg="\n$nwmanager_msg1 \n\n \Z1> \Z2systemctl enable netctl.service\Zn" load
