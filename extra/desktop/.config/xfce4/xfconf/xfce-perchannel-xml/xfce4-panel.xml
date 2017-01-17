@@ -81,6 +81,7 @@
       <property name="names-visible" type="array">
         <value type="string" value="xfce terminal"/>
         <value type="string" value="networkmanager applet"/>
+        <value type="string" value="drop-down terminal"/>
       </property>
     </property>
     <property name="plugin-10" type="string" value="mixer">
