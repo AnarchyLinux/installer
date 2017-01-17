@@ -1473,7 +1473,7 @@ graphics() {
 	fi
 	
 	base_install+=" $DE"
-	desktop=true x=17
+	desktop=true x=20
 	install_base
 
 }
