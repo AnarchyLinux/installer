@@ -46,7 +46,7 @@ init() {
 
 	case "$ILANG" in
 		"English") export lang_file=/usr/share/arch-anywhere/lang/arch-installer-english.conf ;;
-		"Dutch") export lang_file=/usr/share/arch-anywhere/lang/arch-installer-dutch.conf export lib=nl ;;
+		"Dutch") export lang_file=/usr/share/arch-anywhere/lang/arch-installer-dutch.conf lib=nl ;;
 		"French") export lang_file=/usr/share/arch-anywhere/lang/arch-installer-french.conf lib=fr ;;
 		"German") export lang_file=/usr/share/arch-anywhere/lang/arch-installer-german.conf lib=de ;;
 		"Greek") export lang_file=/usr/share/arch-anywhere/lang/arch-installer-greek.conf lib=el ;;
