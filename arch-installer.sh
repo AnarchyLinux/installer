@@ -1464,7 +1464,7 @@ graphics() {
 				elif [ "$DM" == "lxdm" ] && "$GTK3"; then
 					DE+=" ${DM}-gtk3"
 				else
-					DE+="$ $DM"
+					DE+=" $DM"
 				fi
 				
 				enable_dm=true
