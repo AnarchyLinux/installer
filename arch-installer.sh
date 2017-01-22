@@ -1427,7 +1427,7 @@ graphics() {
 		fi
 	done
 	
-	DE="$DE xdg-user-dirs xorg-server xorg-server-utils xorg-xinit xterm ttf-dejavu $GPU"
+	DE="$DE xdg-user-dirs xorg-server xorg-server-utils xorg-xinit xterm ttf-dejavu gvfs $GPU"
 		
 	if [ "$net_util" == "networkmanager" ] ; then
 		if (<<<"$DE" grep "plasma" &> /dev/null); then
