@@ -1282,7 +1282,7 @@ graphics() {
 		"KDE plasma")	if (dialog --defaultno --yes-button "$yes" --no-button "$no" --yesno "\n$extra_msg3" 10 60) then
 							DE="plasma-desktop sddm konsole dolphin plasma-nm plasma-pa breeze-kde4 libxshmfence kscreen"
 						else
-							DE="plasma kde-applications libxshmfence kscreen"
+							DE="plasma kde-applications"
 						fi
 						
 						DM="sddm"
