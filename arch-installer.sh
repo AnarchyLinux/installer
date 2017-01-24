@@ -1716,9 +1716,9 @@ configure_system() {
 		fi
 	fi
 
-	(arch-chroot "$ARCH" ln -s /usr/share/zoneinfo/"$ZONE" /etc/localtime
+	(arch-chroot "$ARCH" ln -sf /usr/share/zoneinfo/"$ZONE" /etc/localtime
 	sleep 0.5) &
-	pid=$! pri=0.1 msg="\n$zone_load_var \n\n \Z1> \Z2ln -s $ZONE /etc/localtime\Zn" load
+	pid=$! pri=0.1 msg="\n$zone_load_var \n\n \Z1> \Z2ln -sf $ZONE /etc/localtime\Zn" load
 
 	case "$net_util" in
 		networkmanager)	arch-chroot "$ARCH" systemctl enable NetworkManager.service &>/dev/null
