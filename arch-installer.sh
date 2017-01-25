@@ -1980,6 +1980,7 @@ install_software() {
 						"irssi"				"$net9" OFF \
 						"lynx"				"$net3" OFF \
 						"minitube"			"$net4" OFF \
+						"opera"				"$net5" OFF \
 						"thunderbird"			"$net6" OFF \
 						"transmission-cli" 		"$net7" OFF \
 						"transmission-gtk"		"$net8" OFF \
