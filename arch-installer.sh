@@ -1503,11 +1503,11 @@ install_base() {
 
 		if [ "$kernel" == "linux" ]; then
 			base_install="$(pacman -Sqg base) $base_install"
-			(pacstrap "$ARCH" $(echo "$base_install") ; echo "$?" > /tmp/ex_status) &> "$tmpfile" &
+			(pacstrap "$ARCH" --force $(echo "$base_install") ; echo "$?" > /tmp/ex_status) &> "$tmpfile" &
 			pid=$! pri=$(echo "$down" | sed 's/\..*$//') msg="\n$install_load_var" load_log
 		else
 			base_install="$(pacman -Sqg base | sed 's/^linux//') $base_install"
-			(pacstrap "$ARCH" $(echo "$base_install") ; echo "$?" > /tmp/ex_status) &> "$tmpfile" &
+			(pacstrap "$ARCH" --force $(echo "$base_install") ; echo "$?" > /tmp/ex_status) &> "$tmpfile" &
 			pid=$! pri=$(echo "$down" | sed 's/\..*$//') msg="\n$install_load_var" load_log
 		fi
 
