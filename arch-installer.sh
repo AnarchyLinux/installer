@@ -288,7 +288,11 @@ prepare_drives() {
 		if [ -z "$DRIVE" ]; then
 			prepare_drives
 		fi
-		
+
+		if [[ "$DRIVE" == nvme* ]] || [[ "$DRIVE" == mmc* ]]; then
+			PART_PREFIX="p"
+		fi
+
 		drive_byte=$(fdisk -l | grep -w "$DRIVE" | awk '{print $5}')
 		drive_mib=$((drive_byte/1024/1024))
 		drive_gigs=$((drive_mib/1024))
@@ -392,7 +396,7 @@ auto_part() {
 			if "$SWAP" ; then
 				echo -e "n\n\n\n512M\nef00\nn\n3\n\n+${SWAPSPACE}M\n8200\nn\n\n\n\n\nw\ny" | gdisk /dev/"$DRIVE" &> /dev/null &
 				pid=$! pri=0.1 msg="\n$load_var0 \n\n \Z1> \Z2gdisk /dev/$DRIVE\Zn" load
-				SWAP="${DRIVE}3"
+				SWAP="${DRIVE}${PART_PREFIX}3"
 				(wipefs -a /dev/"$SWAP"
 				mkswap /dev/"$SWAP"
 				swapon /dev/"$SWAP") &> /dev/null &
@@ -401,13 +405,13 @@ auto_part() {
 				echo -e "n\n\n\n512M\nef00\nn\n\n\n\n\nw\ny" | gdisk /dev/"$DRIVE" &> /dev/null &
 				pid=$! pri=0.1 msg="\n$load_var0 \n\n \Z1> \Z2gdisk /dev/$DRIVE\Zn" load
 			fi
-			BOOT="${DRIVE}1"
-			ROOT="${DRIVE}2"
+			BOOT="${DRIVE}${PART_PREFIX}1"
+			ROOT="${DRIVE}${PART_PREFIX}2"
 		else
 			if "$SWAP" ; then
 				echo -e "o\ny\nn\n1\n\n+212M\n\nn\n2\n\n+1M\nEF02\nn\n4\n\n+${SWAPSPACE}M\n8200\nn\n3\n\n\n\nw\ny" | gdisk /dev/"$DRIVE" &> /dev/null &
 				pid=$! pri=0.1 msg="\n$load_var0 \n\n \Z1> \Z2gdisk /dev/$DRIVE\Zn" load
-				SWAP="${DRIVE}4"
+				SWAP="${DRIVE}${PART_PREFIX}4"
 				(wipefs -a /dev/"$SWAP"
 				mkswap /dev/"$SWAP"
 				swapon /dev/"$SWAP") &> /dev/null &
@@ -416,14 +420,14 @@ auto_part() {
 				echo -e "o\ny\nn\n1\n\n+212M\n\nn\n2\n\n+1M\nEF02\nn\n3\n\n\n\nw\ny" | gdisk /dev/"$DRIVE" &> /dev/null &
 				pid=$! pri=0.1 msg="\n$load_var0 \n\n \Z1> \Z2gdisk /dev/$DRIVE\Zn" load
 			fi
-			BOOT="${DRIVE}1"
-			ROOT="${DRIVE}3"
+			BOOT="${DRIVE}${PART_PREFIX}1"
+			ROOT="${DRIVE}${PART_PREFIX}3"
 		fi
 	else
 		if "$SWAP" ; then
 			echo -e "o\nn\np\n1\n\n+212M\nn\np\n3\n\n+${SWAPSPACE}M\nt\n\n82\nn\np\n2\n\n\nw" | fdisk /dev/"$DRIVE" &> /dev/null &
 			pid=$! pri=0.1 msg="\n$load_var0 \n\n \Z1> \Z2fdisk /dev/$DRIVE\Zn" load
-			SWAP="${DRIVE}3"					
+			SWAP="${DRIVE}${PART_PREFIX}3"
 			(wipefs -a /dev/"$SWAP"
 			mkswap /dev/"$SWAP"
 			swapon /dev/"$SWAP") &> /dev/null &
@@ -433,8 +437,8 @@ auto_part() {
 			echo -e "o\nn\np\n1\n\n+212M\nn\np\n2\n\n\nw" | fdisk /dev/"$DRIVE" &> /dev/null &
 			pid=$! pri=0.1 msg="\n$load_var0 \n\n \Z1> \Z2fdisk /dev/$DRIVE\Zn" load
 		fi				
-		BOOT="${DRIVE}1"
-		ROOT="${DRIVE}2"
+		BOOT="${DRIVE}${PART_PREFIX}1"
+		ROOT="${DRIVE}${PART_PREFIX}2"
 	fi
 	
 	if "$UEFI" ; then
@@ -500,19 +504,19 @@ auto_encrypt() {
 		if "$UEFI" ; then
 			echo -e "n\n\n\n512M\nef00\nn\n\n\n\n\nw\ny" | gdisk /dev/"$DRIVE" &> /dev/null &
 			pid=$! pri=0.1 msg="\n$load_var0 \n\n \Z1> \Z2gdisk /dev/$DRIVE\Zn" load
-			BOOT="${DRIVE}1"
-			ROOT="${DRIVE}2"
+			BOOT="${DRIVE}${PART_PREFIX}1"
+			ROOT="${DRIVE}${PART_PREFIX}2"
 		else
 			echo -e "o\ny\nn\n1\n\n+512M\n\nn\n2\n\n+1M\nEF02\nn\n3\n\n\n\nw\ny" | gdisk /dev/"$DRIVE" &> /dev/null &
 			pid=$! pri=0.1 msg="\n$load_var0 \n\n \Z1> \Z2gdisk /dev/$DRIVE\Zn" load
-			ROOT="${DRIVE}3"
-			BOOT="${DRIVE}1"
+			BOOT="${DRIVE}${PART_PREFIX}1"
+			ROOT="${DRIVE}${PART_PREFIX}3"
 		fi
 	else
 		echo -e "o\nn\np\n1\n\n+512M\nn\np\n2\n\n\nw" | fdisk /dev/"$DRIVE" &> /dev/null &
 		pid=$! pri=0.1 msg="\n$load_var0 \n\n \Z1> \Z2fdisk /dev/$DRIVE\Zn" load
-		BOOT="${DRIVE}1"
-		ROOT="${DRIVE}2"
+		BOOT="${DRIVE}${PART_PREFIX}1"
+		ROOT="${DRIVE}${PART_PREFIX}2"
 	fi
 
 	(sgdisk --zap-all /dev/"$ROOT"
