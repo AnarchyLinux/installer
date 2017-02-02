@@ -1958,6 +1958,8 @@ install_software() {
 						"yaourt"		"$aar3" OFF 3>&1 1>&2 2>&3)
 					if [ "$?" -gt "0" ]; then
 						err=true
+					elif (<<<"$software" grep "octopi" &>/dev/null) && (<<<"$DE" grep "plasma" &>/dev/null); then
+						software+=" kdesu"
 					fi
 				;;
 				"$audio")
