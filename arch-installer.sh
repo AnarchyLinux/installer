@@ -1070,6 +1070,8 @@ prepare_base() {
 				fi
 			else
 				case "$shell" in
+                                        bash) sh="/bin/bash" shell="bash-completion"
+                                        ;;
 					fish) 	sh="/bin/bash"
 					;;
 					zsh) sh="/usr/bin/$shell" shell="zsh zsh-syntax-highlighting"
