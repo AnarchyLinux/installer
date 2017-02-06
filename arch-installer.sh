@@ -1958,6 +1958,7 @@ install_software() {
 						"fetchmirrors"		"$aar1" ON \
 						"octopi"		"$aar4" OFF \
 						"pacaur"		"$aar2" OFF \
+						"pamac-aur"		"$aar5" OFF \
 						"yaourt"		"$aar3" OFF 3>&1 1>&2 2>&3)
 					if [ "$?" -gt "0" ]; then
 						err=true
