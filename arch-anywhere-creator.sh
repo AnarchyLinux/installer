@@ -159,18 +159,18 @@ prepare_sys() {
 		sudo chmod +x "$customiso"/arch/"$sys"/squashfs-root/usr/bin/{arch-anywhere,sysinfo,iptest}
 
 	### Create arch-anywhere directory and lang directory copy over all lang files
-		sudo mkdir -p "$customiso"/arch/"$sys"/squashfs-root/usr/share/arch-anywhere/{lang,pkg}
+		sudo mkdir -p "$customiso"/arch/"$sys"/squashfs-root/usr/share/arch-anywhere/{lang,pkg,extra,boot,etc}
 		sudo cp "$aa"/lang/* "$customiso"/arch/"$sys"/squashfs-root/usr/share/arch-anywhere/lang	
 
 	### Copy over extra files (dot files, desktop configurations, help file, issue file, hostname file)
 		sudo cp "$aa"/extra/{.zshrc,.help,.dialogrc} "$customiso"/arch/"$sys"/squashfs-root/root/
-		sudo cp "$aa"/extra/{.bashrc,.bashrc-root,.tcshrc,.tcshrc.conf,.mkshrc} "$customiso"/arch/"$sys"/squashfs-root/usr/share/arch-anywhere
-		sudo cp "$aa"/extra/.zshrc-sys "$customiso"/arch/"$sys"/squashfs-root/usr/share/arch-anywhere/.zshrc
-		sudo cp -r "$aa"/extra/desktop "$customiso"/arch/"$sys"/squashfs-root/usr/share/arch-anywhere/
+		sudo cp "$aa"/extra/{.bashrc,.bashrc-root,.tcshrc,.tcshrc.conf,.mkshrc} "$customiso"/arch/"$sys"/squashfs-root/usr/share/arch-anywhere/extra/
+		sudo cp "$aa"/extra/.zshrc-sys "$customiso"/arch/"$sys"/squashfs-root/usr/share/arch-anywhere/extra/.zshrc
+		sudo cp -r "$aa"/extra/desktop "$customiso"/arch/"$sys"/squashfs-root/usr/share/arch-anywhere/extra/
 		sudo cp "$aa"/boot/{issue,hostname} "$customiso"/arch/"$sys"/squashfs-root/etc/
-		sudo cp -r "$aa"/boot/loader/syslinux "$customiso"/arch/"$sys"/squashfs-root/usr/share/arch-anywhere/
-		sudo cp "$aa"/boot/splash.png "$customiso"/arch/"$sys"/squashfs-root/usr/share/arch-anywhere/syslinux
-		sudo cp "$aa"/etc/{nvidia340.xx,nvidia304.xx} "$customiso"/arch/"$sys"/squashfs-root/usr/share/arch-anywhere/
+		sudo cp -r "$aa"/boot/loader/ "$customiso"/arch/"$sys"/squashfs-root/usr/share/arch-anywhere/boot/
+		sudo cp "$aa"/boot/splash.png "$customiso"/arch/"$sys"/squashfs-root/usr/share/arch-anywhere/boot/
+		sudo cp "$aa"/etc/{nvidia340.xx,nvidia304.xx} "$customiso"/arch/"$sys"/squashfs-root/usr/share/arch-anywhere/etc/
 
 	### cd back into root system directory, remove old system
 		cd "$customiso"/arch/"$sys"
