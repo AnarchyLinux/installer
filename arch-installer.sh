@@ -27,7 +27,7 @@
 init() {
 
 	trap '' 2
-	source /etc/arch-anywhere.conf
+	source "$aa_conf"
 	op_title=" -| Language Select |- "
 	ILANG=$(dialog --nocancel --menu "\nArch Anywhere Installer\n\n \Z2*\Zn Select your install language:" 20 60 10 \
 		"English" "-" \
@@ -45,19 +45,19 @@ init() {
 		"Swedish" "Svenska" 3>&1 1>&2 2>&3)
 
 	case "$ILANG" in
-		"English") export lang_file=/usr/share/arch-anywhere/lang/arch-installer-english.conf ;;
-		"Dutch") export lang_file=/usr/share/arch-anywhere/lang/arch-installer-dutch.conf lib=nl ;;
-		"French") export lang_file=/usr/share/arch-anywhere/lang/arch-installer-french.conf lib=fr ;;
-		"German") export lang_file=/usr/share/arch-anywhere/lang/arch-installer-german.conf lib=de ;;
-		"Greek") export lang_file=/usr/share/arch-anywhere/lang/arch-installer-greek.conf lib=el ;;
-		"Indonesian") export lang_file=/usr/share/arch-anywhere/lang/arch-installer-indonesia.conf lib=id ;;
-		"Polish") export lang_file=/usr/share/arch-anywhere/lang/arch-installer-polish.conf lib=pl ;;
-		"Portuguese") export lang_file=/usr/share/arch-anywhere/lang/arch-installer-portuguese.conf lib=pt ;;
-		"Portuguese-Brazilian") export lang_file=/usr/share/arch-anywhere/lang/arch-installer-portuguese-br.conf lib=pt_BR ;;
-		"Romanian") export lang_file=/usr/share/arch-anywhere/lang/arch-installer-romanian.conf lib=ro ;;
-		"Russian") export lang_file=/usr/share/arch-anywhere/lang/arch-installer-russian.conf lib=ru ;;
-		"Spanish") export lang_file=/usr/share/arch-anywhere/lang/arch-installer-spanish.conf lib=es ;;
-		"Swedish") export lang_file=/usr/share/arch-anywhere/lang/arch-installer-swedish.conf lib=sv ;;
+		"English") export lang_file="$aa_dir"/lang/arch-installer-english.conf ;;
+		"Dutch") export lang_file="$aa_dir"/lang/arch-installer-dutch.conf lib=nl ;;
+		"French") export lang_file="$aa_dir"/lang/arch-installer-french.conf lib=fr ;;
+		"German") export lang_file="$aa_dir"/lang/arch-installer-german.conf lib=de ;;
+		"Greek") export lang_file="$aa_dir"/lang/arch-installer-greek.conf lib=el ;;
+		"Indonesian") export lang_file="$aa_dir"/lang/arch-installer-indonesia.conf lib=id ;;
+		"Polish") export lang_file="$aa_dir"/lang/arch-installer-polish.conf lib=pl ;;
+		"Portuguese") export lang_file="$aa_dir"/lang/arch-installer-portuguese.conf lib=pt ;;
+		"Portuguese-Brazilian") export lang_file="$aa_dir"/lang/arch-installer-portuguese-br.conf lib=pt_BR ;;
+		"Romanian") export lang_file="$aa_dir"/lang/arch-installer-romanian.conf lib=ro ;;
+		"Russian") export lang_file="$aa_dir"/lang/arch-installer-russian.conf lib=ru ;;
+		"Spanish") export lang_file="$aa_dir"/lang/arch-installer-spanish.conf lib=es ;;
+		"Swedish") export lang_file="$aa_dir"/lang/arch-installer-swedish.conf lib=sv ;;
 	esac
 
 	source "$lang_file"
@@ -1394,12 +1394,12 @@ graphics() {
 			if [ "$?" -eq "0" ]; then
 				if [ "$GPU" == "$gr0" ]; then
 					pci_id=$(lspci -nn | grep "VGA" | egrep -o '\[.*\]' | awk '{print $NF}' | sed 's/.*://;s/]//')
-			        if (</usr/share/arch-anywhere/nvidia340.xx grep "$pci_id" &>/dev/null); then
+			        if (<"$aa_dir"/etc/nvidia340.xx grep "$pci_id" &>/dev/null); then
         			    if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$nvidia_340msg" 10 60); then
         			    	GPU="nvidia-340xx nvidia-340xx-libgl"
         			    	break
         			    fi
-        			elif (</usr/share/arch-anywhere/nvidia304.xx grep "$pci_id" &>/dev/null); then
+				elif (<"$aa_dir"/etc/nvidia304.xx grep "$pci_id" &>/dev/null); then
            				if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$nvidia_304msg" 10 60); then
            					GPU="nvidia-304xx nvidia 304xx-libgl"
            					break
@@ -1578,8 +1578,8 @@ syslinux_config() {
 		esp_mnt=$(<<<$esp_mnt sed "s!$ARCH!!")
 		(mkdir -p ${ARCH}${esp_mnt}/EFI/syslinux
 		cp -r "$ARCH"/usr/lib/syslinux/efi64/* ${ARCH}${esp_mnt}/EFI/syslinux/
-		cp /usr/share/arch-anywhere/syslinux/syslinux_efi.cfg ${ARCH}${esp_mnt}/EFI/syslinux/syslinux.cfg
-		cp /usr/share/arch-anywhere/syslinux/splash.png ${ARCH}${esp_mnt}/EFI/syslinux
+		cp "$aa_dir"/boot/loader/syslinux/syslinux_efi.cfg ${ARCH}${esp_mnt}/EFI/syslinux/syslinux.cfg
+		cp "$aa_dir"/boot/splash.png ${ARCH}${esp_mnt}/EFI/syslinux
 		arch-chroot "$ARCH" efibootmgr -c -d /dev/"$esp_part" -p "$esp_part_int" -l /EFI/syslinux/syslinux.efi -L "Syslinux") &> /dev/null &
 		pid=$! pri=0.1 msg="\n$syslinux_load \n\n \Z1> \Z2syslinux install efi mode...\Zn" load
 		
@@ -1611,7 +1611,8 @@ syslinux_config() {
 
 	else
 		(syslinux-install_update -i -a -m -c "$ARCH"
-		cp /usr/share/arch-anywhere/syslinux/{syslinux.cfg,splash.png} "$ARCH"/boot/syslinux) &> /dev/null &
+		cp "$aa_dir"/boot/loader/syslinux/syslinux.cfg "$ARCH"/boot/syslinux/
+		cp "$aa_dir"/boot/splash.png "$ARCH"/boot/syslinux/) &> /dev/null &
 		pid=$! pri=0.1 msg="\n$syslinux_load \n\n \Z1> \Z2syslinux-install_update -i -a -m -c $ARCH\Zn" load
 		
 		if "$crypted" ; then
@@ -1780,21 +1781,21 @@ configure_system() {
 	fi
 	
 	if [ "$sh" == "/usr/bin/zsh" ]; then
-		cp /usr/share/arch-anywhere/.zshrc "$ARCH"/root/
-		cp /usr/share/arch-anywhere/.zshrc "$ARCH"/etc/skel/
+		cp "$aa_dir"/extra/.zshrc "$ARCH"/root/
+		cp "$aa_dir"/extra/.zshrc "$ARCH"/etc/skel/
 	elif [ "$shell" == "fish" ]; then
-		echo "fish && exit" >> /usr/share/arch-anywhere/.bashrc-root
-		echo "fish && exit" >> /usr/share/arch-anywhere/.bashrc
+		echo "fish && exit" >> "$aa_dir"/extra/.bashrc-root
+		echo "fish && exit" >> "$aa_dir"/extra/.bashrc
 	elif [ "$shell" == "tcsh" ]; then
-		cp /usr/share/arch-anywhere/{.tcshrc,.tcshrc.conf} "$ARCH"/root/
-		cp /usr/share/arch-anywhere/{.tcshrc,.tcshrc.conf} "$ARCH"/etc/skel/
+		cp "$aa_dir"/extra/{.tcshrc,.tcshrc.conf} "$ARCH"/root/
+		cp "$aa_dir"/extra/{.tcshrc,.tcshrc.conf} "$ARCH"/etc/skel/
 	elif [ "$shell" == "mksh" ]; then
-		cp /usr/share/arch-anywhere/.mkshrc "$ARCH"/root/
-		cp /usr/share/arch-anywhere/.mkshrc "$ARCH"/etc/skel/
+		cp "$aa_dir"/extra/.mkshrc "$ARCH"/root/
+		cp "$aa_dir"/extra/.mkshrc "$ARCH"/etc/skel/
 	fi
 
-	cp /usr/share/arch-anywhere/.bashrc-root "$ARCH"/root/.bashrc
-	cp /usr/share/arch-anywhere/.bashrc "$ARCH"/etc/skel/
+	cp "$aa_dir"/extra/.bashrc-root "$ARCH"/root/.bashrc
+	cp "$aa_dir"/extra/.bashrc "$ARCH"/etc/skel/
 	set_hostname
 
 }
@@ -1803,15 +1804,15 @@ config_env() {
 
 	sh="/usr/bin/zsh"
 	arch-chroot "$ARCH" chsh -s /usr/bin/zsh &> /dev/null
-	cp /usr/share/arch-anywhere/.zshrc "$ARCH"/root/
+	cp "$aa_dir"/extra/.zshrc "$ARCH"/root/
 	mkdir "$ARCH"/root/.config/ &> /dev/null
-	cp -r /usr/share/arch-anywhere/desktop/.config/{xfce4,Thunar} "$ARCH"/root/.config/
-	cp -r /usr/share/arch-anywhere/{.zshrc,desktop/.config/} "$ARCH"/etc/skel/
-	cp /usr/share/arch-anywhere/desktop/arch-anywhere-icon.png "$ARCH"/etc/skel/.face
-	cp -r "/usr/share/arch-anywhere/desktop/AshOS-Dark-2.0" "$ARCH"/usr/share/themes/
-	cp /usr/share/arch-anywhere/desktop/arch-anywhere-wallpaper.png "$ARCH"/usr/share/backgrounds/xfce/
+	cp -r "$aa_dir"/extra/desktop/.config/{xfce4,Thunar} "$ARCH"/root/.config/
+	cp -r "$aa_dir"/extra/{.zshrc,desktop/.config/} "$ARCH"/etc/skel/
+	cp "$aa_dir"/extra/desktop/arch-anywhere-icon.png "$ARCH"/etc/skel/.face
+	cp -r "$aa_dir"/extra/desktop/AshOS-Dark-2.0 "$ARCH"/usr/share/themes/
+	cp "$aa_dir"/extra/desktop/arch-anywhere-wallpaper.png "$ARCH"/usr/share/backgrounds/xfce/
 	cp "$ARCH"/usr/share/backgrounds/xfce/arch-anywhere-wallpaper.png "$ARCH"/usr/share/backgrounds/xfce/xfce-teal.jpg
-	cp /usr/share/arch-anywhere/desktop/arch-anywhere-icon.png "$ARCH"/usr/share/pixmaps/
+	cp "$aa_dir"/extra/desktop/arch-anywhere-icon.png "$ARCH"/usr/share/pixmaps/
 
 }
 
@@ -2483,4 +2484,11 @@ load_log() {
 }
 
 opt="$1"
+if [ $(basename "$0") = "arch-anywhere" ]; then
+	aa_dir="/usr/share/arch-anywhere" # Arch Anywhere iso
+	aa_conf="/etc/arch-anywhere.conf"
+else
+	aa_dir=$(dirname $(readlink -f "$0")) # Arch Anywhere git repository
+	aa_conf="$aa_dir"/etc/arch-anywhere.conf
+fi
 init
