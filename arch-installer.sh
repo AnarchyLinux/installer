@@ -2041,7 +2041,6 @@ install_software() {
 						"handbrake"				"$media0" OFF \
 						"mplayer"				"$media1" OFF \
 						"mpv"					"$media7" OFF \
-						"multimedia-codecs"			"$media8" OFF \
 						"pitivi"				"$media2" OFF \
 						"simplescreenrecorder"			"$media3" OFF \
 						"smplayer"				"$media4" OFF \
@@ -2049,8 +2048,8 @@ install_software() {
 						"vlc"         	   			"$media6" OFF 3>&1 1>&2 2>&3)
 					if [ "$?" -gt "0" ]; then
 						err=true
-					elif (<<<"$software" grep "multimedia-codecs" &>/dev/null) ; then
-						software+=" gst-plugins-bad gst-plugins-base gst-plugins-good gst-plugins-ugly ffmpegthumbnailer gst-libav"
+###					elif (<<<"$software" grep "multimedia-codecs" &>/dev/null) ; then
+###						software+=" gst-plugins-bad gst-plugins-base gst-plugins-good gst-plugins-ugly ffmpegthumbnailer gst-libav"
 					fi
 				;;
 				"$office")
