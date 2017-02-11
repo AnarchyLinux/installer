@@ -1955,6 +1955,7 @@ install_software() {
 				"$aar")
 					software=$(dialog --ok-button "$ok" --cancel-button "$cancel" --checklist "$software_msg1" 14 60 4 \
 						"arch-wiki-cli"		"$aar0" ON \
+						"downgrade"		"$aar6" OFF \
 						"fetchmirrors"		"$aar1" ON \
 						"octopi"		"$aar4" OFF \
 						"pacaur"		"$aar2" OFF \
