@@ -1433,7 +1433,7 @@ graphics() {
 		fi
 	done
 	
-	DE="$DE xdg-user-dirs xorg-server xorg-server-utils xorg-xinit xterm ttf-dejavu gvfs $GPU"
+	DE="$DE xdg-user-dirs xorg-server xorg-server-utils xorg-xinit xterm ttf-dejavu gvfs pulseaudio pulseaudio-alsa alsa-utils $GPU"
 		
 	if [ "$net_util" == "networkmanager" ] ; then
 		if (<<<"$DE" grep "plasma" &> /dev/null); then
@@ -1978,7 +1978,7 @@ install_software() {
 						"mpd"			"$audio6" OFF \
 						"ncmpcpp"		"$audio7" OFF \
 						"pianobar"		"$audio9" OFF \
-						"pulseaudio"	"$audio8" OFF 3>&1 1>&2 2>&3)
+						"pavucontrol"	"$audio8" OFF 3>&1 1>&2 2>&3)
 					if [ "$?" -gt "0" ]; then
 						err=true
 					fi
