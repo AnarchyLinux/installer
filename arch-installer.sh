@@ -1706,7 +1706,7 @@ configure_system() {
 			echo "/dev/mapper/swap     none            swap          sw                    0       0" >> "$ARCH"/etc/fstab
 			echo "swap	/dev/lvm/swap	/dev/urandom	swap,cipher=aes-xts-plain64,size=256" >> "$ARCH"/etc/crypttab
 		fi
-		sed -i 's/k filesystems k/k lvm2 encrypt filesystems k/' "$ARCH"/etc/mkinitcpio.conf
+		sed -i 's/k filesystems k/k lvm2 keymap encrypt filesystems k/' "$ARCH"/etc/mkinitcpio.conf
 		arch-chroot "$ARCH" mkinitcpio -p linux) &> /dev/null &
 		pid=$! pri=1 msg="\n$encrypt_load1 \n\n \Z1> \Z2mkinitcpio -p linux\Zn" load
 	fi
