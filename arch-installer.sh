@@ -2043,7 +2043,7 @@ install_software() {
 						"handbrake"				"$media0" OFF \
 						"mplayer"				"$media1" OFF \
 						"mpv"					"$media7" OFF \
-						"multimedia-codecs"			"$media8" OFF \						
+						"multimedia-codecs"			"$media8" OFF \
 						"pitivi"				"$media2" OFF \
 						"simplescreenrecorder"			"$media3" OFF \
 						"smplayer"				"$media4" OFF \
@@ -2054,7 +2054,7 @@ install_software() {
 					fi
 					
 					if [ "$software" == "multimedia-codecs" ]; then
-                        		software="gst-plugins-bad gst-plugins-base gst-plugins-good gst-plugins-ugly ffmpegthumbnailer gst-libav"				
+					software="gst-plugins-bad gst-plugins-base gst-plugins-good gst-plugins-ugly ffmpegthumbnailer gst-libav"
 					fi
 				;;
 				"$office")
