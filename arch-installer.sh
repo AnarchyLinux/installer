@@ -597,7 +597,7 @@ part_menu() {
 			else
 				echo "dialog --extra-button --extra-label \"$write\" --colors --title \"$title\" --ok-button \"$edit\" --cancel-button \"$cancel\" --menu \"$manual_part_msg \n\n $dev_menu\" 20 68 8 \\" > "$tmp_menu"
 			fi
-			dev_size=$(fdisk -l | grep -w "$device" | awk '{print $3$4}' | sed 's/,//')
+			dev_size=$(fdisk -l | grep -w "$device" | awk '{print $3$4}' | sed 's/,$//')
 			dev_type=$(fdisk -l | grep -w "$device" | awk '{print $1}')
 			echo "\"$device   \" \"$dev_size $dev_type ------------->\" \\" > $tmp_list
 		else
@@ -634,7 +634,7 @@ part_menu() {
 				echo "\"$device\" \"$dev_size $dev_used $fs_type $mnt_point $part_type\" \\" >> "$tmp_list"
 				unset part_type
 			else
-				dev_size=$(fdisk -l | grep -w "$device" | awk '{print $3$4}' | sed 's/,//')
+				dev_size=$(fdisk -l | grep -w "$device" | awk '{print $3$4}' | sed 's/,$//')
 				dev_type=$(fdisk -l | grep -w "$device" | awk '{print $1}')
 				echo "\"$device\" \"$dev_size $dev_type ------------->\" \\" >> "$tmp_list"
 			fi
