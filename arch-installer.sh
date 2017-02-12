@@ -745,7 +745,22 @@ part_class() {
 				fi
 			fi
 		elif (dialog --yes-button "$edit" --no-button "$back" --yesno "\n$manual_new_part_var" 12 60) then
-			if (fdisk -l | grep -w "$part" | grep "swap\|SWAP" &> /dev/null); then
+			part_swap=false
+			if (fdisk -l | grep "gpt" &>/dev/null) then
+				part_type_uuid=$(fdisk -l -o Device,Size,Type-UUID | grep -w "$device" | awk '{print $3}')
+
+				if [ $part_type_uuid == "0657FD6D-A4AB-43C4-84E5-0933C84B4F4F" ]; then
+					part_swap=true
+				fi
+			else
+				part_type_id=$(fdisk -l | grep -w "$device" | sed 's/\*//' | awk '{print $6}')
+
+				if [ $part_type_id == "82" ]; then
+					part_swap=true
+				fi
+			fi
+
+			if ($part_swap); then
 				mnt="SWAP"
 			else
 				mnt=$(dialog --ok-button "$ok" --cancel-button "$cancel" --menu "$mnt_var0" 15 60 6 $points 3>&1 1>&2 2>&3)
