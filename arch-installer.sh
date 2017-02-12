@@ -604,36 +604,43 @@ part_menu() {
 			echo "\"$device   \" \"$dev_size $dev_type ------------->\" \\" > $tmp_list
 		else
 			if (<<<"$device" grep "sd.[0-9]" &> /dev/null) then
-				dev_size=$(fdisk -l | grep -w "$device" | sed 's/\*//' | awk '{print $5}')
-				dev_type=$(fdisk -l | grep -w "$device" | sed 's/\*//' | awk '{print $7,$8}')
+				part_size=$(fdisk -l | grep -w "$device" | sed 's/\*//' | awk '{print $5}')
 				mnt_point=$(df | grep -w "$device" | awk '{print $6}')
 				if (<<<"$mnt_point" grep "/" &> /dev/null) then
 					fs_type="$(df -T | grep -w "$device" | awk '{print $2}')"
-					dev_used=$(df -T | grep -w "$device" | awk '{print $6}')
+					part_used=$(df -T | grep -w "$device" | awk '{print $6}')
 				else
-					unset fs_type dev_used
+					unset fs_type part_used
 				fi
 				
-				if (fdisk -l | grep "$(<<<"$device" sed 's/^..//')" | grep "*" &> /dev/null) then
-					part_type=$(fdisk -l | grep "$(<<<"$device" sed 's/^..//')" | awk '{print $8,$9}')
-				else
-					if (fdisk -l | grep "Disklabel type: gpt" &>/dev/null) then
-						part_type=$(fdisk -l | grep "$(<<<"$device" sed 's/^..//')" | awk '{print $6,$7}')
-						if [ "$part_type" == "Linux filesystem" ]; then
-							part_type="Linux"
-						elif [ "$part_type" == "EFI System" ]; then
-							part_type="EFI/ESP"
-						fi
+
+				if (fdisk -l | grep "gpt" &>/dev/null) then
+					part_type_uuid=$(fdisk -l -o Device,Size,Type-UUID | grep -w "$device" | awk '{print $3}')
+
+					if [ $part_type_uuid == "0FC63DAF-8483-4772-8E79-3D69D8477DE4" ] ||
+					   [ $part_type_uuid == "44479540-F297-41B2-9AF7-D131D5F0458A" ] ||
+					   [ $part_type_uuid == "4F68BCE3-E8CD-4DB1-96E7-FBCAF984B709" ]; then
+						part_type="Linux"
+					elif [ $part_type_uuid == "0657FD6D-A4AB-43C4-84E5-0933C84B4F4F" ]; then
+						part_type="Linux/SWAP"
+					elif [ $part_type_uuid == "C12A7328-F81F-11D2-BA4B-00A0C93EC93B" ]; then
+						part_type="EFI/ESP"
 					else
-						part_type=$(fdisk -l | grep "$(<<<"$device" sed 's/^..//')" | awk '{print $7,$8}')
+						part_type="Unknown"
+					fi
+				else
+					part_type_id=$(fdisk -l | grep -w "$device" | sed 's/\*//' | awk '{print $6}')
+
+					if [ $part_type_id == "83" ]; then
+						part_type="Linux"
+					elif [ $part_type_id == "82" ]; then
+						part_type="Linux/SWAP"
+					else
+						part_type="Unknown"
 					fi
 				fi
 
-				if [ "$part_type" == "Linux swap" ]; then
-					part_type="Linux/SWAP"
-				fi
-
-				echo "\"$device\" \"$dev_size $dev_used $fs_type $mnt_point $part_type\" \\" >> "$tmp_list"
+				echo "\"$device\" \"$part_size $part_used $fs_type $mnt_point $part_type\" \\" >> "$tmp_list"
 				unset part_type
 			else
 				dev_size=$(fdisk -l | grep -w "$device" | awk '{print $3$4}' | sed 's/,$//')
@@ -661,7 +668,7 @@ part_class() {
 	if [ -z "$part" ]; then
 		prepare_drives
 	elif (<<<$part grep "[0-9]" &> /dev/null); then
-		part_size=$(fdisk -l | grep -w "$part" | sed 's/\*//;s/\,/\./' | awk '{print $5}')
+		part_size=$(fdisk -l | grep -w "$part" | sed 's/\*//' | awk '{print $5}')
 		part_mount=$(df | grep -w "$part" | awk '{print $6}' | sed 's/\/mnt/\//;s/\/\//\//')
 		source "$lang_file"  &> /dev/null
 
