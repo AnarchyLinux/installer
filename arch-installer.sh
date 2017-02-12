@@ -36,7 +36,7 @@ init() {
 		"German" "Deutsch" \
 		"Greek" "Greek" \
 		"Indonesian" "bahasa Indonesia" \
-		"Latvian" "Latvian" \
+		"Latvian" "Latviešu" \
 		"Polish" "Polski" \
 		"Portuguese" "Português" \
 		"Portuguese-Brazilian" "Português do Brasil" \
