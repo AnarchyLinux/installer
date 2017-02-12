@@ -947,7 +947,7 @@ part_class() {
 			fi
 		fi
 	else
-		part_size=$(fdisk -l | grep -w "$part" | sed 's/\,//' | awk '{print $3,$4}')
+		part_size=$(fdisk -l | grep -w "$part" | awk '{print $3,$4}' | sed 's/,$//')
 		source "$lang_file"
 
 		if (df | grep -w "$part" | grep "$ARCH" &> /dev/null); then	
