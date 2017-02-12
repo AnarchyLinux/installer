@@ -590,14 +590,14 @@ part_menu() {
 
 	until [ "$int" -gt "$count" ]
 	  do
-		device=$(fdisk -l | grep "/dev/" | grep -v "$USB\|loop\|1K\|1M" | sed 's/Disk //;s/://' | awk '{print $1}'| sed 's!.*/!!' | awk "NR==$int")
+		device=$(fdisk -l | grep "/dev/" | grep -v "$USB\|loop\|1K\|1M" | sed 's!.*/dev/!/dev/!;s/://' | awk '{print $1}'| sed 's!.*/!!' | awk "NR==$int")
 		if [ "$int" -eq "1" ]; then
 			if "$screen_h" ; then
 				echo "dialog --extra-button --extra-label \"$write\" --colors --backtitle \"$backtitle\" --title \"$op_title\" --ok-button \"$edit\" --cancel-button \"$cancel\" --menu \"$manual_part_msg \n\n $dev_menu\" 21 68 9 \\" > "$tmp_menu"
 			else
 				echo "dialog --extra-button --extra-label \"$write\" --colors --title \"$title\" --ok-button \"$edit\" --cancel-button \"$cancel\" --menu \"$manual_part_msg \n\n $dev_menu\" 20 68 8 \\" > "$tmp_menu"
 			fi
-			dev_size=$(fdisk -l | grep -w "$device" | awk '{print $3$4}' | sed 's/,//')
+			dev_size=$(fdisk -l | grep -w "$device" | awk '{print $3$4}' | sed 's/,$//')
 			dev_type=$(fdisk -l | grep -w "$device" | awk '{print $1}')
 			echo "\"$device   \" \"$dev_size $dev_type ------------->\" \\" > $tmp_list
 		else
@@ -634,7 +634,7 @@ part_menu() {
 				echo "\"$device\" \"$dev_size $dev_used $fs_type $mnt_point $part_type\" \\" >> "$tmp_list"
 				unset part_type
 			else
-				dev_size=$(fdisk -l | grep -w "$device" | awk '{print $3$4}' | sed 's/,//')
+				dev_size=$(fdisk -l | grep -w "$device" | awk '{print $3$4}' | sed 's/,$//')
 				dev_type=$(fdisk -l | grep -w "$device" | awk '{print $1}')
 				echo "\"$device\" \"$dev_size $dev_type ------------->\" \\" >> "$tmp_list"
 			fi
@@ -947,7 +947,7 @@ part_class() {
 			fi
 		fi
 	else
-		part_size=$(fdisk -l | grep -w "$part" | sed 's/\,//' | awk '{print $3,$4}')
+		part_size=$(fdisk -l | grep -w "$part" | awk '{print $3,$4}' | sed 's/,$//')
 		source "$lang_file"
 
 		if (df | grep -w "$part" | grep "$ARCH" &> /dev/null); then	
