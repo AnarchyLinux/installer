@@ -674,7 +674,7 @@ part_class() {
 
 		if [ -z "$ROOT" ]; then
 			case "$part_size" in
-				[4-9]G|[0-9][0-9]*G|[4-9].*G|T)
+				[4-9]G|[0-9][0-9]*G|[4-9].*G|[4-9],*G|T)
 					if (dialog --yes-button "$yes" --no-button "$no" --defaultno --yesno "\n$root_var" 13 60) then
 						f2fs=$(cat /sys/block/$(echo $part | sed 's/[0-9]//g')/queue/rotational)
 						fs_select
