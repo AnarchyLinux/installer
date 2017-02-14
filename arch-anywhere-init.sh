@@ -1,8 +1,0 @@
-#!/bin/bash
-
-main() {
-
-
-}
-
-main
