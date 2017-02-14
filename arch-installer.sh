@@ -1341,7 +1341,7 @@ graphics() {
 					start_term="exec startlxde" 
 		;;
 		"lxqt") 	start_term="exec startlxqt" 
-					DE="lxqt oxygen-icons"
+					DE="lxqt oxygen-icons breeze-icons"
 		;;
 		"enlightenment") 	start_term="exec enlightenment_start"
 							DE="enlightenment terminology"
