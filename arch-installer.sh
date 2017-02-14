@@ -2075,8 +2075,8 @@ install_software() {
 						err=true
 					fi
 					
-					if [ "$software" == "multimedia-codecs" ]; then
-					software="gst-plugins-bad gst-plugins-base gst-plugins-good gst-plugins-ugly ffmpegthumbnailer gst-libav"
+					if (<<<"$software" grep "multimedia-codecs") then
+						software=$(<<<"$software sed 's/multimedia-codecs/gst-plugins-bad gst-plugins-base gst-plugins-good gst-plugins-ugly ffmpegthumbnailer gst-libav/')
 					fi
 				;;
 				"$office")
