@@ -2096,12 +2096,6 @@ install_software() {
 							software="$software $software-$lib"
 						fi
 					fi
-					
-					if [ "$software" == "calligra" ]; then
-						if [ -n "$lib" ]; then
-							software="$software $software-l10n-$lib"
-						fi
-					fi
 				;;
 				"$terminal")
 					software=$(dialog --ok-button "$ok" --cancel-button "$cancel" --checklist "$software_msg1" 18 63 8 \
