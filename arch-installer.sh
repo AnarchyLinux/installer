@@ -2084,7 +2084,6 @@ install_software() {
 					software=$(dialog --ok-button "$ok" --cancel-button "$cancel" --checklist "$software_msg1" 16 63 6 \
 						"abiword"               "$office0" OFF \
 						"calligra"              "$office1" OFF \
-						"calligra-sheets"		"$office2" OFF \
 						"gnumeric"				"$office3" OFF \
 						"libreoffice-fresh"		"$office4" OFF \
 						"libreoffice-still"		"$office5" OFF 3>&1 1>&2 2>&3)
@@ -2095,6 +2094,12 @@ install_software() {
 					if [ "$software" == "libreoffice-fresh" ] || [ "$software" == "libreoffice-still" ]; then
 						if [ -n "$lib" ]; then
 							software="$software $software-$lib"
+						fi
+					fi
+					
+					if [ "$software" == "calligra" ]; then
+						if [ -n "$lib" ]; then
+							software="$software $software-l10n-$lib"
 						fi
 					fi
 				;;
