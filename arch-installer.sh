@@ -273,13 +273,13 @@ prepare_drives() {
 		if "$screen_h" ; then
 			cat <<-EOF > /tmp/part.sh
 					dialog --colors --backtitle "$backtitle" --title "$title" --ok-button "$ok" --cancel-button "$cancel" --menu "$drive_msg \n\n $dev_menu" 16 60 3 \\
-					$(fdisk -l | grep -E "/dev/[[:alnum:]]*:" | grep -v "$USB\|loop" | sed 's!.*/!!;s/://' | awk '{print "\""$1"\"""  ""\"| "$2" "$3" |==>\""" \\"}' | column -t)
+					$(fdisk -l | grep -E "/dev/[[:alnum:]]+:" | grep -v "$USB\|loop" | sed 's!.*/!!;s/://' | awk '{print "\""$1"\"""  ""\"| "$2" "$3" |==>\""" \\"}' | column -t)
 					3>&1 1>&2 2>&3
 				EOF
 		else
 				cat <<-EOF > /tmp/part.sh
 					dialog --colors --title "$title" --ok-button "$ok" --cancel-button "$cancel" --menu "$drive_msg \n\n $dev_menu" 16 60 3 \\
-					$(fdisk -l | grep -E "/dev/[[:alnum:]]*:" | grep -v "$USB\|loop" | sed 's!.*/!!;s/://' | awk '{print "\""$1"\"""  ""\"| "$2" "$3" |==>\""" \\"}' | column -t)
+					$(fdisk -l | grep -E "/dev/[[:alnum:]]+:" | grep -v "$USB\|loop" | sed 's!.*/!!;s/://' | awk '{print "\""$1"\"""  ""\"| "$2" "$3" |==>\""" \\"}' | column -t)
 					3>&1 1>&2 2>&3
 				EOF
 		fi
@@ -592,7 +592,7 @@ part_menu() {
 
 	until [ "$int" -gt "$count" ]
 	  do
-		device=$(fdisk -l | grep "/dev/" | grep -v "$USB\|loop\|1K\|1M" | sed 's!.*/dev/!/dev/!;s/://' | awk '{print $1}'| sed 's!.*/!!' | sed 's/[^[:alnum:]]//g' | awk "NR==$int")
+		device=$(fdisk -l | grep "/dev/" | grep -v "$USB\|loop\|1K\|1M" | sed 's!.*/dev/!/dev/!;s/://' | awk '{print $1}' | sed 's!.*/!!' | sed 's/[^[:alnum:]]//g' | sort | awk "NR==$int")
 		if [ "$int" -eq "1" ]; then
 			if "$screen_h" ; then
 				echo "dialog --extra-button --extra-label \"$write\" --colors --backtitle \"$backtitle\" --title \"$op_title\" --ok-button \"$edit\" --cancel-button \"$cancel\" --menu \"$manual_part_msg \n\n $dev_menu\" 21 68 9 \\" > "$tmp_menu"
@@ -603,7 +603,7 @@ part_menu() {
 			dev_type=$(fdisk -l | grep -w "$device" | awk '{print $1}')
 			echo "\"$device   \" \"$dev_size $dev_type ------------->\" \\" > $tmp_list
 		else
-			if (<<<"$device" grep -E "sd[a-z]+[0-9]+|.*p[0-9]+" &> /dev/null) then
+			if (<<<"$device" grep -E "sd[a-z]+[0-9]+|[a-z]+[[:alnum:]]+p[0-9]+" &> /dev/null) then
 				part_size=$(fdisk -l | grep -w "$device" | sed 's/\*//' | awk '{print $5}')
 				mnt_point=$(df | grep -w "$device" | awk '{print $6}')
 				if (<<<"$mnt_point" grep "/" &> /dev/null) then
@@ -667,7 +667,7 @@ part_class() {
 	op_title="$edit_op_msg"
 	if [ -z "$part" ]; then
 		prepare_drives
-	elif (<<<$part grep "[0-9]" &> /dev/null); then
+	elif (<<<$part grep -E "sd[a-z]+[0-9]+|[a-z]+[[:alnum:]]+p[0-9]+" &> /dev/null); then
 		part_size=$(fdisk -l | grep -w "$part" | sed 's/\*//' | awk '{print $5}')
 		part_mount=$(df | grep -w "$part" | awk '{print $6}' | sed 's/\/mnt/\//;s/\/\//\//')
 		source "$lang_file"  &> /dev/null
