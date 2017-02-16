@@ -592,7 +592,7 @@ part_menu() {
 
 	until [ "$int" -gt "$count" ]
 	  do
-		device=$(fdisk -l | grep "/dev/" | grep -v "$USB\|loop\|1K\|1M" | sed 's!.*/dev/!/dev/!;s/://' | awk '{print $1}'| sed 's!.*/!!' | sed 's/[^[:alnum:]]//g' | awk "NR==$int")
+		device=$(fdisk -l | grep "/dev/" | grep -v "$USB\|loop\|1K\|1M" | sed 's!.*/dev/!/dev/!;s/://' | awk '{print $1}' | sed 's!.*/!!' | sed 's/[^[:alnum:]]//g' | sort | awk "NR==$int")
 		if [ "$int" -eq "1" ]; then
 			if "$screen_h" ; then
 				echo "dialog --extra-button --extra-label \"$write\" --colors --backtitle \"$backtitle\" --title \"$op_title\" --ok-button \"$edit\" --cancel-button \"$cancel\" --menu \"$manual_part_msg \n\n $dev_menu\" 21 68 9 \\" > "$tmp_menu"
