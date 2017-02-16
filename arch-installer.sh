@@ -667,7 +667,7 @@ part_class() {
 	op_title="$edit_op_msg"
 	if [ -z "$part" ]; then
 		prepare_drives
-	elif (<<<$part grep "[0-9]" &> /dev/null); then
+	elif (<<<$part grep -E "sd[a-z]+[0-9]+|[a-z]+[[:alnum:]]+p[0-9]+" &> /dev/null); then
 		part_size=$(fdisk -l | grep -w "$part" | sed 's/\*//' | awk '{print $5}')
 		part_mount=$(df | grep -w "$part" | awk '{print $6}' | sed 's/\/mnt/\//;s/\/\//\//')
 		source "$lang_file"  &> /dev/null
