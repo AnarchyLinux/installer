@@ -1376,7 +1376,7 @@ graphics() {
 						fi
 	  			;;
 	  			vmware)	dialog --ok-button "$ok" --msgbox "\n$vmware_msg" 10 60
-						GPU="xf86-video-vmware xf86-input-vmmouse open-vm-tools gtkmm mesa mesa-libgl"
+						GPU="xf86-video-vmware xf86-input-vmmouse open-vm-tools net-tools gtkmm mesa mesa-libgl"
 	  			;;
 	  			hyper-v) dialog --ok-button "$ok" --msgbox "\n$hyperv_msg" 10 60
 						 GPU="xf86-video-fbdev mesa-libgl"
@@ -1783,7 +1783,9 @@ configure_system() {
 			vbox)	arch-chroot "$ARCH" systemctl enable vboxservice &>/dev/null &
 					pid=$! pri=0.1 msg="\n$vbox_enable_msg \n\n \Z1> \Z2systemctl enable vboxservice\Zn" load
 			;;
-			vmware)	arch-chroot "$ARCH" systemctl enable vmware-vmblock-fuse &>/dev/null &
+			vmware)	(arch-chroot "$ARCH" systemctl enable vmware-vmblock-fuse
+					mkdir "$ARCH"/etc/init.d
+					for x in {0..6}; do mkdir -p "$ARCH"/etc/init.d/rc${x}.d; done) &>/dev/null &
 					pid=$! pri=0.1 msg="\n$vbox_enable_msg \n\n \Z1> \Z2systemctl enable vboxservice\Zn" load
 			;;
 		esac
