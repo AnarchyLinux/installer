@@ -676,7 +676,7 @@ part_class() {
 			case "$part_size" in
 				[4-9]G|[0-9][0-9]*G|[4-9].*G|[4-9],*G|T)
 					if (dialog --yes-button "$yes" --no-button "$no" --defaultno --yesno "\n$root_var" 13 60) then
-						f2fs=$(cat /sys/block/$(echo $part | sed 's/[0-9]//g')/queue/rotational)
+						f2fs=$(cat /sys/block/$(echo $part | sed 's/[0-9]\+$//;/[0-9]/s/p$//')/queue/rotational)
 						fs_select
 
 						if [ "$?" -gt "0" ]; then
@@ -707,7 +707,7 @@ part_class() {
 							if [ $(</tmp/ex_status.var) -eq "0" ]; then
 								mounted=true
 								ROOT="$part"
-								DRIVE=$(<<<$part sed 's/[0-9]//')
+								DRIVE=$(<<<$part sed 's/[0-9]\+$//;/[0-9]/s/p$//')
 							else
 								dialog --ok-button "$ok" --msgbox "\n$part_err_msg1" 10 60
 								prepare_drives
@@ -788,7 +788,7 @@ part_class() {
 			
 			if [ "$mnt" != "SWAP" ]; then
 				if (dialog --yes-button "$yes" --no-button "$no" --defaultno --yesno "\n$part_frmt_msg" 11 50) then
-					f2fs=$(cat /sys/block/$(echo $part | sed 's/[0-9]//g')/queue/rotational)
+					f2fs=$(cat /sys/block/$(echo $part | sed 's/[0-9]\+$//;/[0-9]/s/p$//')/queue/rotational)
 					
 					if [ "$mnt" == "/boot" ] || [ "$mnt" == "/boot/EFI" ] || [ "$mnt" == "/boot/efi" ]; then
 						f2fs=1
