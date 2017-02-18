@@ -1320,6 +1320,9 @@ graphics() {
 							fi
 						else
 							DE="plasma kde-applications"
+							if [ -n "$kdel" ]; then
+								DE+=" kde-l10n-$kdel"
+							fi
 						fi
 						
 						DM="sddm"
