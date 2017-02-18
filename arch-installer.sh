@@ -291,7 +291,7 @@ prepare_drives() {
 			prepare_drives
 		fi
 
-		if [[ "$DRIVE" == nvme* ]] || [[ "$DRIVE" == mmc* ]]; then
+		if (<<<"$DRIVE" egrep "nvme.*|mmc.*|md.*" &> /dev/null) then
 			PART_PREFIX="p"
 		fi
 
