@@ -47,19 +47,19 @@ init() {
 
 	case "$ILANG" in
 		"English") export lang_file="$aa_dir"/lang/arch-installer-english.conf ;;
-		"Dutch") export lang_file="$aa_dir"/lang/arch-installer-dutch.conf lib=nl ;;
-		"French") export lang_file="$aa_dir"/lang/arch-installer-french.conf lib=fr ;;
-		"German") export lang_file="$aa_dir"/lang/arch-installer-german.conf lib=de ;;
-		"Greek") export lang_file="$aa_dir"/lang/arch-installer-greek.conf lib=el ;;
-		"Indonesian") export lang_file="$aa_dir"/lang/arch-installer-indonesia.conf lib=id ;;
-		"Latvian") export lang_file="$aa_dir"/lang/arch-installer-latvian.conf lib=lv ;;		
-		"Polish") export lang_file="$aa_dir"/lang/arch-installer-polish.conf lib=pl ;;
-		"Portuguese") export lang_file="$aa_dir"/lang/arch-installer-portuguese.conf lib=pt ;;
-		"Portuguese-Brazilian") export lang_file="$aa_dir"/lang/arch-installer-portuguese-br.conf lib=pt_BR ;;
-		"Romanian") export lang_file="$aa_dir"/lang/arch-installer-romanian.conf lib=ro ;;
-		"Russian") export lang_file="$aa_dir"/lang/arch-installer-russian.conf lib=ru ;;
-		"Spanish") export lang_file="$aa_dir"/lang/arch-installer-spanish.conf lib=es ;;
-		"Swedish") export lang_file="$aa_dir"/lang/arch-installer-swedish.conf lib=sv ;;
+		"Dutch") export lang_file="$aa_dir"/lang/arch-installer-dutch.conf lib=nl bro="$lib" ;;
+		"French") export lang_file="$aa_dir"/lang/arch-installer-french.conf lib=fr bro="$lib" ;;
+		"German") export lang_file="$aa_dir"/lang/arch-installer-german.conf lib=de bro="$lib" ;;
+		"Greek") export lang_file="$aa_dir"/lang/arch-installer-greek.conf lib=el bro="$lib" ;;
+		"Indonesian") export lang_file="$aa_dir"/lang/arch-installer-indonesia.conf lib=id bro="$lib" ;;
+		"Latvian") export lang_file="$aa_dir"/lang/arch-installer-latvian.conf lib=lv bro="$lib" ;;
+		"Polish") export lang_file="$aa_dir"/lang/arch-installer-polish.conf lib=pl bro="$lib" ;;
+		"Portuguese") export lang_file="$aa_dir"/lang/arch-installer-portuguese.conf lib=pt bro="pt-pt" ;;
+		"Portuguese-Brazilian") export lang_file="$aa_dir"/lang/arch-installer-portuguese-br.conf lib=pt_BR bro="pt-br" ;;
+		"Romanian") export lang_file="$aa_dir"/lang/arch-installer-romanian.conf lib=ro bro="$lib" ;;
+		"Russian") export lang_file="$aa_dir"/lang/arch-installer-russian.conf lib=ru bro="$lib" ;;
+		"Spanish") export lang_file="$aa_dir"/lang/arch-installer-spanish.conf lib=es bro="es-es" ;;
+		"Swedish") export lang_file="$aa_dir"/lang/arch-installer-swedish.conf lib=sv bro="sv-se" ;;
 	esac
 
 	source "$lang_file"
@@ -2027,11 +2027,14 @@ install_software() {
 						"hexchat"			"$net11" OFF 3>&1 1>&2 2>&3)
 					if [ "$?" -gt "0" ]; then
 						err=true
-					elif "$desktop" ; then
-						if (<<<$download grep "networkmanager"); then
-
-							download=$(<<<$download sed 's/networkmanager/networkmanager network-manager-applet/')
-						fi
+					fi
+					
+					if (<<<"$software" grep "firefox" &>/dev/null) && [ -n "$bro" ]; then
+						software+=" firefox-i18n-$bro"
+					fi
+					
+					if (<<<"$software" grep "thunderbird" &>/dev/null) && [ -n "$bro" ] && [ "$bro" != "lv" ]; then
+							software+=" thunderbird-i18n-$bro"
 					fi
 				;;
 				"$games")
@@ -2093,10 +2096,12 @@ install_software() {
 						err=true
 					fi
 
-					if [ "$software" == "libreoffice-fresh" ] || [ "$software" == "libreoffice-still" ]; then
-						if [ -n "$lib" ]; then
-							software="$software $software-$lib"
-						fi
+					if (<<<"$software" grep "libreoffice-fresh" &>/dev/null) && [ -n "$lib" ]; then
+						software+=" libreoffice-fresh-$lib"
+					fi
+					
+					if (<<<"$software" grep "libreoffice-still" &>/dev/null) && [ -n "$lib" ]; then
+						software+=" libreoffice-still-$lib"
 					fi
 				;;
 				"$terminal")
