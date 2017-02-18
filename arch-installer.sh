@@ -2139,6 +2139,7 @@ install_software() {
 				"$system")
 					software=$(dialog --ok-button "$ok" --cancel-button "$cancel" --checklist "$software_msg1" 20 65 10 \
 						"apache"		"$sys1" OFF \
+						"bleachbit"		"$sys22" OFF \
 						"conky"			"$sys2" OFF \
 						"dmenu"			"$sys19" OFF \
 						"git"			"$sys3" OFF \
