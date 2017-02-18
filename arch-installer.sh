@@ -47,19 +47,19 @@ init() {
 
 	case "$ILANG" in
 		"English") export lang_file="$aa_dir"/lang/arch-installer-english.conf ;;
-		"Dutch") export lang_file="$aa_dir"/lang/arch-installer-dutch.conf lib=nl bro=nl ;;
-		"French") export lang_file="$aa_dir"/lang/arch-installer-french.conf lib=fr bro=fr ;;
-		"German") export lang_file="$aa_dir"/lang/arch-installer-german.conf lib=de bro=de ;;
-		"Greek") export lang_file="$aa_dir"/lang/arch-installer-greek.conf lib=el bro=el ;;
-		"Indonesian") export lang_file="$aa_dir"/lang/arch-installer-indonesia.conf lib=id bro=id ;;
-		"Latvian") export lang_file="$aa_dir"/lang/arch-installer-latvian.conf lib=lv bro=lv ;;
-		"Polish") export lang_file="$aa_dir"/lang/arch-installer-polish.conf lib=pl bro=pl ;;
-		"Portuguese") export lang_file="$aa_dir"/lang/arch-installer-portuguese.conf lib=pt bro=pt-pt ;;
-		"Portuguese-Brazilian") export lang_file="$aa_dir"/lang/arch-installer-portuguese-br.conf lib=pt_BR bro=pt-br ;;
-		"Romanian") export lang_file="$aa_dir"/lang/arch-installer-romanian.conf lib=ro bro=ro ;;
-		"Russian") export lang_file="$aa_dir"/lang/arch-installer-russian.conf lib=ru bro=ru ;;
-		"Spanish") export lang_file="$aa_dir"/lang/arch-installer-spanish.conf lib=es bro=es-es ;;
-		"Swedish") export lang_file="$aa_dir"/lang/arch-installer-swedish.conf lib=sv bro=sv-se ;;
+		"Dutch") export lang_file="$aa_dir"/lang/arch-installer-dutch.conf lib=nl bro=nl kdel=nl ;;
+		"French") export lang_file="$aa_dir"/lang/arch-installer-french.conf lib=fr bro=fr kdel=fr ;;
+		"German") export lang_file="$aa_dir"/lang/arch-installer-german.conf lib=de bro=de kdel=de ;;
+		"Greek") export lang_file="$aa_dir"/lang/arch-installer-greek.conf lib=el bro=el kdel=el ;;
+		"Indonesian") export lang_file="$aa_dir"/lang/arch-installer-indonesia.conf lib=id bro=id kdel=id ;;
+		"Latvian") export lang_file="$aa_dir"/lang/arch-installer-latvian.conf lib=lv bro=lv kdel=lv ;;
+		"Polish") export lang_file="$aa_dir"/lang/arch-installer-polish.conf lib=pl bro=pl kdel=pl ;;
+		"Portuguese") export lang_file="$aa_dir"/lang/arch-installer-portuguese.conf lib=pt bro=pt-pt kdel=pt ;;
+		"Portuguese-Brazilian") export lang_file="$aa_dir"/lang/arch-installer-portuguese-br.conf lib=pt_BR bro=pt-br kdel=pt_br ;;
+		"Romanian") export lang_file="$aa_dir"/lang/arch-installer-romanian.conf lib=ro bro=ro kdel=ro ;;
+		"Russian") export lang_file="$aa_dir"/lang/arch-installer-russian.conf lib=ru bro=ru kdel=ru ;;
+		"Spanish") export lang_file="$aa_dir"/lang/arch-installer-spanish.conf lib=es bro=es-es kdel=es ;;
+		"Swedish") export lang_file="$aa_dir"/lang/arch-installer-swedish.conf lib=sv bro=sv-se kdel=sv ;;
 	esac
 
 	source "$lang_file"
@@ -1311,6 +1311,10 @@ graphics() {
 		;;
 		"KDE plasma")	if (dialog --defaultno --yes-button "$yes" --no-button "$no" --yesno "\n$extra_msg3" 10 60) then
 							DE="plasma-desktop sddm konsole dolphin plasma-nm plasma-pa libxshmfence kscreen"
+							if [ -n "$kdel" ]; then
+								DE+=" kde-l10n-$kdel"
+							fi
+							
 							if "$LAPTOP" ; then
 								DE+=" powerdevil"
 							fi
