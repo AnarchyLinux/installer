@@ -55,7 +55,7 @@ init() {
 		"Latvian") export lang_file="$aa_dir"/lang/arch-installer-latvian.conf lib=lv bro=lv kdel=lv ;;
 		"Polish") export lang_file="$aa_dir"/lang/arch-installer-polish.conf lib=pl bro=pl kdel=pl ;;
 		"Portuguese") export lang_file="$aa_dir"/lang/arch-installer-portuguese.conf lib=pt bro=pt-pt kdel=pt ;;
-		"Portuguese-Brazilian") export lang_file="$aa_dir"/lang/arch-installer-portuguese-br.conf lib=pt_BR bro=pt-br kdel=pt_br ;;
+		"Portuguese-Brazilian") export lang_file="$aa_dir"/lang/arch-installer-portuguese-br.conf lib=pt-BR bro=pt-br kdel=pt_br ;;
 		"Romanian") export lang_file="$aa_dir"/lang/arch-installer-romanian.conf lib=ro bro=ro kdel=ro ;;
 		"Russian") export lang_file="$aa_dir"/lang/arch-installer-russian.conf lib=ru bro=ru kdel=ru ;;
 		"Spanish") export lang_file="$aa_dir"/lang/arch-installer-spanish.conf lib=es bro=es-es kdel=es ;;
