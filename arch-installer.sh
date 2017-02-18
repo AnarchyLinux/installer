@@ -47,19 +47,19 @@ init() {
 
 	case "$ILANG" in
 		"English") export lang_file="$aa_dir"/lang/arch-installer-english.conf ;;
-		"Dutch") export lang_file="$aa_dir"/lang/arch-installer-dutch.conf lib=nl bro="$lib" ;;
-		"French") export lang_file="$aa_dir"/lang/arch-installer-french.conf lib=fr bro="$lib" ;;
-		"German") export lang_file="$aa_dir"/lang/arch-installer-german.conf lib=de bro="$lib" ;;
-		"Greek") export lang_file="$aa_dir"/lang/arch-installer-greek.conf lib=el bro="$lib" ;;
-		"Indonesian") export lang_file="$aa_dir"/lang/arch-installer-indonesia.conf lib=id bro="$lib" ;;
-		"Latvian") export lang_file="$aa_dir"/lang/arch-installer-latvian.conf lib=lv bro="$lib" ;;
-		"Polish") export lang_file="$aa_dir"/lang/arch-installer-polish.conf lib=pl bro="$lib" ;;
-		"Portuguese") export lang_file="$aa_dir"/lang/arch-installer-portuguese.conf lib=pt bro="pt-pt" ;;
-		"Portuguese-Brazilian") export lang_file="$aa_dir"/lang/arch-installer-portuguese-br.conf lib=pt_BR bro="pt-br" ;;
-		"Romanian") export lang_file="$aa_dir"/lang/arch-installer-romanian.conf lib=ro bro="$lib" ;;
-		"Russian") export lang_file="$aa_dir"/lang/arch-installer-russian.conf lib=ru bro="$lib" ;;
-		"Spanish") export lang_file="$aa_dir"/lang/arch-installer-spanish.conf lib=es bro="es-es" ;;
-		"Swedish") export lang_file="$aa_dir"/lang/arch-installer-swedish.conf lib=sv bro="sv-se" ;;
+		"Dutch") export lang_file="$aa_dir"/lang/arch-installer-dutch.conf lib=nl bro=nl ;;
+		"French") export lang_file="$aa_dir"/lang/arch-installer-french.conf lib=fr bro=fr ;;
+		"German") export lang_file="$aa_dir"/lang/arch-installer-german.conf lib=de bro=de ;;
+		"Greek") export lang_file="$aa_dir"/lang/arch-installer-greek.conf lib=el bro=el ;;
+		"Indonesian") export lang_file="$aa_dir"/lang/arch-installer-indonesia.conf lib=id bro=id ;;
+		"Latvian") export lang_file="$aa_dir"/lang/arch-installer-latvian.conf lib=lv bro=lv ;;
+		"Polish") export lang_file="$aa_dir"/lang/arch-installer-polish.conf lib=pl bro=pl ;;
+		"Portuguese") export lang_file="$aa_dir"/lang/arch-installer-portuguese.conf lib=pt bro=pt-pt ;;
+		"Portuguese-Brazilian") export lang_file="$aa_dir"/lang/arch-installer-portuguese-br.conf lib=pt_BR bro=pt-br ;;
+		"Romanian") export lang_file="$aa_dir"/lang/arch-installer-romanian.conf lib=ro bro=ro ;;
+		"Russian") export lang_file="$aa_dir"/lang/arch-installer-russian.conf lib=ru bro=ru ;;
+		"Spanish") export lang_file="$aa_dir"/lang/arch-installer-spanish.conf lib=es bro=es-es ;;
+		"Swedish") export lang_file="$aa_dir"/lang/arch-installer-swedish.conf lib=sv bro=sv-se ;;
 	esac
 
 	source "$lang_file"
