@@ -587,7 +587,8 @@ part_menu() {
 	unset part
 	tmp_menu=/tmp/part.sh tmp_list=/tmp/part.list
 	dev_menu="|  Device:  |  Size:  |  Used:  |  FS:  |  Mount:  |  Type:  |"
-	device_count=$(lsblk | egrep -v "NAME|loop[0-9]+|sr[0-9]+|fd[0-9]+" | sort | uniq | wc -l)
+	device_list=$(lsblk | egrep -v "NAME|loop[0-9]+|sr[0-9]+|fd[0-9]+" | sort | uniq)
+	device_count=$(<<<"$device_list" wc -l)
 
 	if "$screen_h" ; then
 		echo "dialog --extra-button --extra-label \"$write\" --colors --backtitle \"$backtitle\" --title \"$op_title\" --ok-button \"$edit\" --cancel-button \"$cancel\" --menu \"$manual_part_msg \n\n $dev_menu\" 21 68 9 \\" > "$tmp_menu"
@@ -598,9 +599,9 @@ part_menu() {
 	int=1
 	until [ "$int" -gt "$device_count" ]
 	do
-		device=$(lsblk | egrep -v "NAME|loop[0-9]+|sr[0-9]+|fd[0-9]+" | sort | uniq | awk '{print $1}' | sed 's/[^[:alnum:]]//g' | awk "NR==$int")
-		dev_type=$(lsblk | grep -m 1 -w "$device" | awk '{print $6}')
-		dev_size=$(lsblk | grep -m 1 -w "$device" | awk '{print $4}')
+		device=$(<<<"$device_list" awk '{print $1}' | sed 's/[^[:alnum:]]//g' | awk "NR==$int")
+		dev_type=$(<<<"$device_list" grep -w "$device" | awk '{print $6}')
+		dev_size=$(<<<"$device_list" grep -w "$device" | awk '{print $4}')
 
 		if (<<<"$dev_type" egrep "disk|raid[0-9]+" &> /dev/null) then
 			echo "\"$device\" \"$dev_size ---- ---- ---- $dev_type\" \\" >> $tmp_list
