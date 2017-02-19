@@ -603,7 +603,7 @@ part_menu() {
 		dev_size=$(lsblk | grep -m 1 -w "$device" | awk '{print $4}')
 
 		if (<<<"$dev_type" egrep "disk|raid[0-9]+" &> /dev/null) then
-			echo "\"$device\" \"$dev_size - - - $dev_type\" \\" >> $tmp_list
+			echo "\"$device\" \"$dev_size ---- ---- ---- $dev_type\" \\" >> $tmp_list
 		else
 				mnt_point=$(df | grep -w "$device" | awk '{print $6}')
 				if (<<<"$mnt_point" grep "/" &> /dev/null) then
@@ -640,15 +640,15 @@ part_menu() {
 				fi
 
 				if [ -z $part_used ]; then
-					part_used="-"
+					part_used="----"
 				fi
 
 				if [ -z $fs_type ]; then
-					fs_type="-"
+					fs_type="----"
 				fi
 
 				if [ -z $mnt_point ]; then
-					mnt_point="-"
+					mnt_point="----"
 				fi
 
 				echo "\"$device\" \"$dev_size $part_used $fs_type $mnt_point $part_type\" \\" >> "$tmp_list"
