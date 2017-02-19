@@ -644,17 +644,9 @@ part_menu() {
 					fi
 				fi
 
-				if [ -z $part_used ]; then
-					part_used="----"
-				fi
-
-				if [ -z $fs_type ]; then
-					fs_type="----"
-				fi
-
-				if [ -z $mnt_point ]; then
-					mnt_point="----"
-				fi
+				test -z "$part_used" && part_used="----"
+				test -z "$fs_type" && fs_type="----"
+				test -z "$mnt_point" && mnt_point="----"
 
 				echo "\"$device\" \"$dev_size $part_used $fs_type $mnt_point $part_type\" \\" >> "$tmp_list"
 				unset part_type
