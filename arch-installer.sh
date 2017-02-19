@@ -605,7 +605,7 @@ part_menu() {
 		if (<<<"$dev_type" egrep "disk|raid[0-9]+" &> /dev/null) then
 			echo "\"$device\" \"$dev_size ---- ---- ---- $dev_type\" \\" >> $tmp_list
 		else
-				mnt_point=$(df | grep -w "$device" | awk '{print $6}')
+				mnt_point=$(df | grep -w "$device" | awk '{print $6}' | sed 's/mnt\/\?//')
 				if (<<<"$mnt_point" grep "/" &> /dev/null) then
 					fs_type="$(df -T | grep -w "$device" | awk '{print $2}')"
 					part_used=$(df -T | grep -w "$device" | awk '{print $6}')
