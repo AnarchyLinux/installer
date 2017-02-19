@@ -625,7 +625,7 @@ part_menu() {
 					elif [ $part_type_uuid == "C12A7328-F81F-11D2-BA4B-00A0C93EC93B" ]; then
 						part_type="EFI/ESP"
 					else
-						part_type="Unknown"
+						part_type=$part_type_uuid
 					fi
 				else
 					part_type_id=$(fdisk -l | grep -w "$device" | sed 's/\*//' | awk '{print $6}')
@@ -635,7 +635,7 @@ part_menu() {
 					elif [ $part_type_id == "82" ]; then
 						part_type="Linux/SWAP"
 					else
-						part_type="Unknown"
+						part_type=$part_type_id
 					fi
 				fi
 
