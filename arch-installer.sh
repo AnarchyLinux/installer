@@ -587,24 +587,24 @@ part_menu() {
 	unset part
 	tmp_menu=/tmp/part.sh tmp_list=/tmp/part.list
 	dev_menu="|  Device:  |  Size:  |  Used:  |  FS:  |  Mount:  |  Type:  |"
-	count=$(fdisk -l | grep "/dev/" | grep -v "$USB\|loop\|1K\|1M" | wc -l)
-	int=1
+	device_count=$(lsblk | egrep -v "NAME|loop[0-9]+|sr[0-9]+|fd[0-9]+" | sort | uniq | wc -l)
 
-	until [ "$int" -gt "$count" ]
-	  do
-		device=$(fdisk -l | grep "/dev/" | grep -v "$USB\|loop\|1K\|1M" | sed 's!.*/dev/!/dev/!;s/://' | awk '{print $1}' | sed 's!.*/!!' | sed 's/[^[:alnum:]]//g' | sort | awk "NR==$int")
-		if [ "$int" -eq "1" ]; then
-			if "$screen_h" ; then
-				echo "dialog --extra-button --extra-label \"$write\" --colors --backtitle \"$backtitle\" --title \"$op_title\" --ok-button \"$edit\" --cancel-button \"$cancel\" --menu \"$manual_part_msg \n\n $dev_menu\" 21 68 9 \\" > "$tmp_menu"
-			else
-				echo "dialog --extra-button --extra-label \"$write\" --colors --title \"$title\" --ok-button \"$edit\" --cancel-button \"$cancel\" --menu \"$manual_part_msg \n\n $dev_menu\" 20 68 8 \\" > "$tmp_menu"
-			fi
-			dev_size=$(fdisk -l | grep -w "$device" | awk '{print $3$4}' | sed 's/,$//')
-			dev_type=$(fdisk -l | grep -w "$device" | awk '{print $1}')
-			echo "\"$device   \" \"$dev_size $dev_type ------------->\" \\" > $tmp_list
+	if "$screen_h" ; then
+		echo "dialog --extra-button --extra-label \"$write\" --colors --backtitle \"$backtitle\" --title \"$op_title\" --ok-button \"$edit\" --cancel-button \"$cancel\" --menu \"$manual_part_msg \n\n $dev_menu\" 21 68 9 \\" > "$tmp_menu"
+	else
+		echo "dialog --extra-button --extra-label \"$write\" --colors --title \"$title\" --ok-button \"$edit\" --cancel-button \"$cancel\" --menu \"$manual_part_msg \n\n $dev_menu\" 20 68 8 \\" > "$tmp_menu"
+	fi
+
+	int=1
+	until [ "$int" -gt "$device_count" ]
+	do
+		device=$(lsblk | egrep -v "NAME|loop[0-9]+|sr[0-9]+|fd[0-9]+" | sort | uniq | awk '{print $1}' | sed 's/[^[:alnum:]]//g' | awk "NR==$int")
+		dev_type=$(lsblk | grep -m 1 -w "$device" | awk '{print $6}')
+		dev_size=$(lsblk | grep -m 1 -w "$device" | awk '{print $4}')
+
+		if (<<<"$dev_type" egrep "disk|raid[0-9]+" &> /dev/null) then
+			echo "\"$device\" \"$dev_size - - - $dev_type\" \\" >> $tmp_list
 		else
-			if (<<<"$device" grep -E "sd[a-z]+[0-9]+|[a-z]+[[:alnum:]]+p[0-9]+" &> /dev/null) then
-				part_size=$(fdisk -l | grep -w "$device" | sed 's/\*//' | awk '{print $5}')
 				mnt_point=$(df | grep -w "$device" | awk '{print $6}')
 				if (<<<"$mnt_point" grep "/" &> /dev/null) then
 					fs_type="$(df -T | grep -w "$device" | awk '{print $2}')"
@@ -612,7 +612,6 @@ part_menu() {
 				else
 					unset fs_type part_used
 				fi
-				
 
 				if (fdisk -l | grep "gpt" &>/dev/null) then
 					part_type_uuid=$(fdisk -l -o Device,Size,Type-UUID | grep -w "$device" | awk '{print $3}')
@@ -640,13 +639,20 @@ part_menu() {
 					fi
 				fi
 
-				echo "\"$device\" \"$part_size $part_used $fs_type $mnt_point $part_type\" \\" >> "$tmp_list"
+				if [ -z $part_used ]; then
+					part_used="-"
+				fi
+
+				if [ -z $fs_type ]; then
+					fs_type="-"
+				fi
+
+				if [ -z $mnt_point ]; then
+					mnt_point="-"
+				fi
+
+				echo "\"$device\" \"$dev_size $part_used $fs_type $mnt_point $part_type\" \\" >> "$tmp_list"
 				unset part_type
-			else
-				dev_size=$(fdisk -l | grep -w "$device" | awk '{print $3$4}' | sed 's/,$//')
-				dev_type=$(fdisk -l | grep -w "$device" | awk '{print $1}')
-				echo "\"$device\" \"$dev_size $dev_type ------------->\" \\" >> "$tmp_list"
-			fi
 		fi
 
 		int=$((int+1))
