@@ -610,7 +610,12 @@ part_menu() {
 					fs_type="$(df -T | grep -w "$device" | awk '{print $2}')"
 					part_used=$(df -T | grep -w "$device" | awk '{print $6}')
 				else
-					unset fs_type part_used
+					part_used=$(swapon -s | grep -w "$device" | awk '{print $4}')
+					if [ -n "$part_used" ]; then
+						part_used=$part_used%
+					fi
+
+					unset fs_type
 				fi
 
 				if (fdisk -l | grep "gpt" &>/dev/null) then
