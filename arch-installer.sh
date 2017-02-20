@@ -1429,32 +1429,35 @@ graphics() {
 			        if (<"$aa_dir"/etc/nvidia340.xx grep "$pci_id" &>/dev/null); then
         			    if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$nvidia_340msg" 10 60); then
         			    	if [ "$kernel" == "lts" ]; then
-								GPU="nvidia-340xx-lts nvidia-340xx-libgl"
+								GPU="nvidia-340xx-lts"
         			    	else
-        			    		GPU="nvidia-340xx nvidia-340xx-libgl"
+        			    		GPU="nvidia-340xx"
         			    	fi
+        			    	GPU+=" nvidia-340xx-libgl nvidia-340xx-utils"
         			    	break
         			    fi
 					elif (<"$aa_dir"/etc/nvidia304.xx grep "$pci_id" &>/dev/null); then
            				if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$nvidia_304msg" 10 60); then
            					if [ "$kernel" == "lts" ]; then
-								GPU="nvidia-304xx-lts nvidia 304xx-libgl"
+								GPU="nvidia-304xx-lts"
            					else
-           						GPU="nvidia-304xx nvidia 304xx-libgl"
+           						GPU="nvidia-304xx"
            					fi
+           					GPU+=" nvidia-304xx-libgl nvidia-304xx-utils"
            					break
 			        	fi
 			        else
             			if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$nvidia_curmsg" 10 60); then
             				if [ "$kernel" == "lts" ]; then
-								GPU="nvidia-lts nvidia-libgl"
+								GPU="nvidia-lts"
             				else
-            					GPU="nvidia nvidia-libgl"
+            					GPU="nvidia"
 							fi
 							
 							if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$nvidia_modeset_msg" 10 60) then
 								drm=true
 							fi
+							GPU+=" nvidia-libgl nvidia-utils"
             				break
             			fi
 			        fi
@@ -1464,16 +1467,16 @@ graphics() {
 					fi
 					
 					if [ "$kernel" == "lts" ]; then
-						GPU="nvidia-lts nvidia-libgl"
+						GPU="nvidia-lts nvidia-libgl nvidia-utils"
 					else
-						GPU+=" ${GPU}-libgl"
+						GPU+=" ${GPU}-libgl ${GPU}-utils"
 					fi
 					break
 				else
 					if [ "$kernel" == "lts" ]; then
-						GPU="${GPU}-lts ${GPU}-libgl"
+						GPU="${GPU}-lts ${GPU}-libgl ${GPU}-utils"
 					else
-						GPU+=" ${GPU}-libgl"
+						GPU+=" ${GPU}-libgl ${GPU}-utils"
 					fi
 					break
 				fi
