@@ -619,7 +619,7 @@ part_menu() {
 		test -z "$dev_used" && dev_used=$empty_value
 		test -z "$dev_mnt" && dev_mnt=$empty_value
 
-		if [ "$dev_fs" != "$empty_value" ] && (<<<"$device" egrep -v "md[0-9]+" &> /dev/null); then
+		if [ "$dev_fs" != "$empty_value" ] && (<<<"$device" egrep -v "md[0-9]+$" &> /dev/null); then
 			if (fdisk -l | grep "gpt" &>/dev/null) then
 				part_type_uuid=$(fdisk -l -o Device,Type-UUID | grep -w "$device" | awk '{print $2}')
 
