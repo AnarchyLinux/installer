@@ -587,67 +587,67 @@ part_menu() {
 	unset part
 	tmp_menu=/tmp/part.sh tmp_list=/tmp/part.list
 	dev_menu="|  Device:  |  Size:  |  Used:  |  FS:  |  Mount:  |  Type:  |"
-	count=$(fdisk -l | grep "/dev/" | grep -v "$USB\|loop\|1K\|1M" | wc -l)
+	device_list=$(lsblk -ni | egrep -v "$USB|loop[0-9]+|sr[0-9]+|fd[0-9]+" | sed 's/[^[:alnum:]., ]//g' | column -t | sort -k 1,1 | uniq)
+	device_count=$(<<<"$device_list" wc -l)
+
+	if "$screen_h" ; then
+		echo "dialog --extra-button --extra-label \"$write\" --colors --backtitle \"$backtitle\" --title \"$op_title\" --ok-button \"$edit\" --cancel-button \"$cancel\" --menu \"$manual_part_msg \n\n $dev_menu\" 21 68 9 \\" > "$tmp_menu"
+	else
+		echo "dialog --extra-button --extra-label \"$write\" --colors --title \"$title\" --ok-button \"$edit\" --cancel-button \"$cancel\" --menu \"$manual_part_msg \n\n $dev_menu\" 20 68 8 \\" > "$tmp_menu"
+	fi
+
 	int=1
+	empty_value="----"
+	until [ "$int" -gt "$device_count" ]
+	do
+		device=$(<<<"$device_list" awk '{print $1}' | awk "NR==$int")
+		dev_type=$(<<<"$device_list" grep -w "$device" | awk '{print $6}')
+		dev_size=$(<<<"$device_list" grep -w "$device" | awk '{print $4}')
+		dev_fs=$(lsblk -no FSTYPE "/dev/$device" | head -1)
+		dev_mnt=$(df | grep -w "$device" | awk '{print $6}' | sed 's/mnt\/\?//')
 
-	until [ "$int" -gt "$count" ]
-	  do
-		device=$(fdisk -l | grep "/dev/" | grep -v "$USB\|loop\|1K\|1M" | sed 's!.*/dev/!/dev/!;s/://' | awk '{print $1}' | sed 's!.*/!!' | sed 's/[^[:alnum:]]//g' | sort | awk "NR==$int")
-		if [ "$int" -eq "1" ]; then
-			if "$screen_h" ; then
-				echo "dialog --extra-button --extra-label \"$write\" --colors --backtitle \"$backtitle\" --title \"$op_title\" --ok-button \"$edit\" --cancel-button \"$cancel\" --menu \"$manual_part_msg \n\n $dev_menu\" 21 68 9 \\" > "$tmp_menu"
-			else
-				echo "dialog --extra-button --extra-label \"$write\" --colors --title \"$title\" --ok-button \"$edit\" --cancel-button \"$cancel\" --menu \"$manual_part_msg \n\n $dev_menu\" 20 68 8 \\" > "$tmp_menu"
-			fi
-			dev_size=$(fdisk -l | grep -w "$device" | awk '{print $3$4}' | sed 's/,$//')
-			dev_type=$(fdisk -l | grep -w "$device" | awk '{print $1}')
-			echo "\"$device   \" \"$dev_size $dev_type ------------->\" \\" > $tmp_list
+		if (<<<"$dev_mnt" grep "/" &> /dev/null) then
+			dev_used=$(df -T | grep -w "$device" | awk '{print $6}')
 		else
-			if (<<<"$device" grep -E "sd[a-z]+[0-9]+|[a-z]+[[:alnum:]]+p[0-9]+" &> /dev/null) then
-				part_size=$(fdisk -l | grep -w "$device" | sed 's/\*//' | awk '{print $5}')
-				mnt_point=$(df | grep -w "$device" | awk '{print $6}')
-				if (<<<"$mnt_point" grep "/" &> /dev/null) then
-					fs_type="$(df -T | grep -w "$device" | awk '{print $2}')"
-					part_used=$(df -T | grep -w "$device" | awk '{print $6}')
-				else
-					unset fs_type part_used
-				fi
-				
-
-				if (fdisk -l | grep "gpt" &>/dev/null) then
-					part_type_uuid=$(fdisk -l -o Device,Size,Type-UUID | grep -w "$device" | awk '{print $3}')
-
-					if [ $part_type_uuid == "0FC63DAF-8483-4772-8E79-3D69D8477DE4" ] ||
-					   [ $part_type_uuid == "44479540-F297-41B2-9AF7-D131D5F0458A" ] ||
-					   [ $part_type_uuid == "4F68BCE3-E8CD-4DB1-96E7-FBCAF984B709" ]; then
-						part_type="Linux"
-					elif [ $part_type_uuid == "0657FD6D-A4AB-43C4-84E5-0933C84B4F4F" ]; then
-						part_type="Linux/SWAP"
-					elif [ $part_type_uuid == "C12A7328-F81F-11D2-BA4B-00A0C93EC93B" ]; then
-						part_type="EFI/ESP"
-					else
-						part_type="Unknown"
-					fi
-				else
-					part_type_id=$(fdisk -l | grep -w "$device" | sed 's/\*//' | awk '{print $6}')
-
-					if [ $part_type_id == "83" ]; then
-						part_type="Linux"
-					elif [ $part_type_id == "82" ]; then
-						part_type="Linux/SWAP"
-					else
-						part_type="Unknown"
-					fi
-				fi
-
-				echo "\"$device\" \"$part_size $part_used $fs_type $mnt_point $part_type\" \\" >> "$tmp_list"
-				unset part_type
-			else
-				dev_size=$(fdisk -l | grep -w "$device" | awk '{print $3$4}' | sed 's/,$//')
-				dev_type=$(fdisk -l | grep -w "$device" | awk '{print $1}')
-				echo "\"$device\" \"$dev_size $dev_type ------------->\" \\" >> "$tmp_list"
+			dev_used=$(swapon -s | grep -w "$device" | awk '{print $4}')
+			if [ -n "$dev_used" ]; then
+				dev_used=$dev_used%
 			fi
 		fi
+
+		test -z "$dev_fs" && dev_fs=$empty_value
+		test -z "$dev_used" && dev_used=$empty_value
+		test -z "$dev_mnt" && dev_mnt=$empty_value
+
+		if (<<<"$dev_type" egrep -v "disk|raid[0-9]+" &> /dev/null) then
+			if (fdisk -l | grep "gpt" &>/dev/null) then
+				part_type_uuid=$(fdisk -l -o Device,Size,Type-UUID | grep -w "$device" | awk '{print $3}')
+
+				if [ $part_type_uuid == "0FC63DAF-8483-4772-8E79-3D69D8477DE4" ] ||
+				   [ $part_type_uuid == "44479540-F297-41B2-9AF7-D131D5F0458A" ] ||
+				   [ $part_type_uuid == "4F68BCE3-E8CD-4DB1-96E7-FBCAF984B709" ]; then
+					dev_type="Linux"
+				elif [ $part_type_uuid == "0657FD6D-A4AB-43C4-84E5-0933C84B4F4F" ]; then
+					dev_type="Linux/SWAP"
+				elif [ $part_type_uuid == "C12A7328-F81F-11D2-BA4B-00A0C93EC93B" ]; then
+					dev_type="EFI/ESP"
+				else
+					dev_type=$part_type_uuid
+				fi
+			else
+				part_type_id=$(fdisk -l | grep -w "$device" | sed 's/\*//' | awk '{print $6}')
+
+				if [ $part_type_id == "83" ]; then
+					dev_type="Linux"
+				elif [ $part_type_id == "82" ]; then
+					dev_type="Linux/SWAP"
+				else
+					dev_type=$part_type_id
+				fi
+			fi
+		fi
+
+		echo "\"$device\" \"$dev_size $dev_used $dev_fs $dev_mnt $dev_type\" \\" >> "$tmp_list"
 
 		int=$((int+1))
 	done
@@ -666,6 +666,7 @@ part_class() {
 
 	op_title="$edit_op_msg"
 	if [ -z "$part" ]; then
+		unset DRIVE ROOT
 		prepare_drives
 	elif (<<<$part grep -E "sd[a-z]+[0-9]+|[a-z]+[[:alnum:]]+p[0-9]+" &> /dev/null); then
 		part_size=$(fdisk -l | grep -w "$part" | sed 's/\*//' | awk '{print $5}')
@@ -850,7 +851,7 @@ part_class() {
 								mkfs."$FS" /dev/"$part" &> /dev/null &
 							;;
 						esac
-						pid=$! pri=1 msg="\n$load_var1 \n\n \Z1> \Z2mkfs.FS /dev/$part\Zn" load
+						pid=$! pri=1 msg="\n$load_var1 \n\n \Z1> \Z2mkfs.$FS /dev/$part\Zn" load
 					else
 						part_menu
 					fi
