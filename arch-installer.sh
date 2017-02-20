@@ -620,31 +620,31 @@ part_menu() {
 		test -z "$dev_mnt" && dev_mnt=$empty_value
 
 		if (<<<"$dev_type" egrep -v "disk|raid[0-9]+" &> /dev/null) then
-				if (fdisk -l | grep "gpt" &>/dev/null) then
-					part_type_uuid=$(fdisk -l -o Device,Size,Type-UUID | grep -w "$device" | awk '{print $3}')
+			if (fdisk -l | grep "gpt" &>/dev/null) then
+				part_type_uuid=$(fdisk -l -o Device,Size,Type-UUID | grep -w "$device" | awk '{print $3}')
 
-					if [ $part_type_uuid == "0FC63DAF-8483-4772-8E79-3D69D8477DE4" ] ||
-					   [ $part_type_uuid == "44479540-F297-41B2-9AF7-D131D5F0458A" ] ||
-					   [ $part_type_uuid == "4F68BCE3-E8CD-4DB1-96E7-FBCAF984B709" ]; then
-						dev_type="Linux"
-					elif [ $part_type_uuid == "0657FD6D-A4AB-43C4-84E5-0933C84B4F4F" ]; then
-						dev_type="Linux/SWAP"
-					elif [ $part_type_uuid == "C12A7328-F81F-11D2-BA4B-00A0C93EC93B" ]; then
-						dev_type="EFI/ESP"
-					else
-						dev_type=$part_type_uuid
-					fi
+				if [ $part_type_uuid == "0FC63DAF-8483-4772-8E79-3D69D8477DE4" ] ||
+				   [ $part_type_uuid == "44479540-F297-41B2-9AF7-D131D5F0458A" ] ||
+				   [ $part_type_uuid == "4F68BCE3-E8CD-4DB1-96E7-FBCAF984B709" ]; then
+					dev_type="Linux"
+				elif [ $part_type_uuid == "0657FD6D-A4AB-43C4-84E5-0933C84B4F4F" ]; then
+					dev_type="Linux/SWAP"
+				elif [ $part_type_uuid == "C12A7328-F81F-11D2-BA4B-00A0C93EC93B" ]; then
+					dev_type="EFI/ESP"
 				else
-					part_type_id=$(fdisk -l | grep -w "$device" | sed 's/\*//' | awk '{print $6}')
-
-					if [ $part_type_id == "83" ]; then
-						dev_type="Linux"
-					elif [ $part_type_id == "82" ]; then
-						dev_type="Linux/SWAP"
-					else
-						dev_type=$part_type_id
-					fi
+					dev_type=$part_type_uuid
 				fi
+			else
+				part_type_id=$(fdisk -l | grep -w "$device" | sed 's/\*//' | awk '{print $6}')
+
+				if [ $part_type_id == "83" ]; then
+					dev_type="Linux"
+				elif [ $part_type_id == "82" ]; then
+					dev_type="Linux/SWAP"
+				else
+					dev_type=$part_type_id
+				fi
+			fi
 		fi
 
 		echo "\"$device\" \"$dev_size $dev_used $dev_fs $dev_mnt $dev_type\" \\" >> "$tmp_list"
