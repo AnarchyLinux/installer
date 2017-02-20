@@ -36,6 +36,7 @@ init() {
 		"German" "Deutsch" \
 		"Greek" "Greek" \
 		"Indonesian" "bahasa Indonesia" \
+		"Italian" "Italiano" \
 		"Latvian" "Latviešu" \
 		"Polish" "Polski" \
 		"Portuguese" "Português" \
@@ -52,6 +53,7 @@ init() {
 		"German") export lang_file="$aa_dir"/lang/arch-installer-german.conf lib=de bro=de kdel=de ;;
 		"Greek") export lang_file="$aa_dir"/lang/arch-installer-greek.conf lib=el bro=el kdel=el ;;
 		"Indonesian") export lang_file="$aa_dir"/lang/arch-installer-indonesia.conf lib=id bro=id kdel=id ;;
+		"Italian") export lang_file="$aa_dir"/lang/arch-installer-italian.conf lib=it bro=it kdel=it ;;
 		"Latvian") export lang_file="$aa_dir"/lang/arch-installer-latvian.conf lib=lv bro=lv kdel=lv ;;
 		"Polish") export lang_file="$aa_dir"/lang/arch-installer-polish.conf lib=pl bro=pl kdel=pl ;;
 		"Portuguese") export lang_file="$aa_dir"/lang/arch-installer-portuguese.conf lib=pt bro=pt-pt kdel=pt ;;
