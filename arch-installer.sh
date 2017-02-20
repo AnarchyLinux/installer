@@ -670,9 +670,13 @@ part_class() {
 	if [ -z "$part" ]; then
 		unset DRIVE ROOT
 		prepare_drives
-	elif (<<<$part grep -E "sd[a-z]+[0-9]+|[a-z]+[[:alnum:]]+p[0-9]+" &> /dev/null); then
+	else
+		part_fs=$(<<<"$device_list" grep -w "$part" | awk '{print $4}')
 		part_size=$(<<<"$device_list" grep -w "$part" | awk '{print $2}')
 		part_mount=$(df | grep -w "$part" | awk '{print $6}' | sed 's/mnt\/\?//')
+	fi
+
+	if (<<<$part grep -E "sd[a-z]+[0-9]+|[a-z]+[[:alnum:]]+p[0-9]+" &> /dev/null); then
 		source "$lang_file"  &> /dev/null
 
 		if [ -z "$ROOT" ]; then
@@ -974,7 +978,6 @@ part_class() {
 			fi
 		fi
 	else
-		part_size=$(<<<"$device_list" grep -w "$part" | awk '{print $2}')
 		source "$lang_file"
 
 		if (df | grep -w "$part" | grep "$ARCH" &> /dev/null); then	
