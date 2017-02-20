@@ -587,7 +587,7 @@ part_menu() {
 	unset part
 	tmp_menu=/tmp/part.sh tmp_list=/tmp/part.list
 	dev_menu="|  Device:  |  Size:  |  Used:  |  FS:  |  Mount:  |  Type:  |"
-	device_list=$(lsblk -ni | egrep -v "$USB|loop[0-9]+|sr[0-9]+|fd[0-9]+" | sed 's/[^[:alnum:]., ]//g' | column -t | sort -k 1,1 | uniq)
+	device_list=$(lsblk -nio NAME,SIZE,TYPE,FSTYPE | egrep -v "$USB|loop[0-9]+|sr[0-9]+|fd[0-9]+" | sed 's/[^[:alnum:]_., ]//g' | column -t | sort -k 1,1 | uniq)
 	device_count=$(<<<"$device_list" wc -l)
 
 	if "$screen_h" ; then
@@ -601,9 +601,9 @@ part_menu() {
 	until [ "$int" -gt "$device_count" ]
 	do
 		device=$(<<<"$device_list" awk '{print $1}' | awk "NR==$int")
-		dev_type=$(<<<"$device_list" grep -w "$device" | awk '{print $6}')
-		dev_size=$(<<<"$device_list" grep -w "$device" | awk '{print $4}')
-		dev_fs=$(lsblk -no FSTYPE "/dev/$device" | head -1)
+		dev_size=$(<<<"$device_list" grep -w "$device" | awk '{print $2}')
+		dev_type=$(<<<"$device_list" grep -w "$device" | awk '{print $3}')
+		dev_fs=$(<<<"$device_list" grep -w "$device" | awk '{print $4}')
 		dev_mnt=$(df | grep -w "$device" | awk '{print $6}' | sed 's/mnt\/\?//')
 
 		if (<<<"$dev_mnt" grep "/" &> /dev/null) then
@@ -619,9 +619,9 @@ part_menu() {
 		test -z "$dev_used" && dev_used=$empty_value
 		test -z "$dev_mnt" && dev_mnt=$empty_value
 
-		if (<<<"$dev_type" egrep -v "disk|raid[0-9]+" &> /dev/null) then
+		if [ "$dev_fs" != "$empty_value" ] && (<<<"$device" egrep -v "md[0-9]+$" &> /dev/null); then
 			if (fdisk -l | grep "gpt" &>/dev/null) then
-				part_type_uuid=$(fdisk -l -o Device,Size,Type-UUID | grep -w "$device" | awk '{print $3}')
+				part_type_uuid=$(fdisk -l -o Device,Type-UUID | grep -w "$device" | awk '{print $2}')
 
 				if [ $part_type_uuid == "0FC63DAF-8483-4772-8E79-3D69D8477DE4" ] ||
 				   [ $part_type_uuid == "44479540-F297-41B2-9AF7-D131D5F0458A" ] ||
@@ -635,7 +635,7 @@ part_menu() {
 					dev_type=$part_type_uuid
 				fi
 			else
-				part_type_id=$(fdisk -l | grep -w "$device" | sed 's/\*//' | awk '{print $6}')
+				part_type_id=$(fdisk -l -o Device,Id | grep -w "$device" | awk '{print $2}')
 
 				if [ $part_type_id == "83" ]; then
 					dev_type="Linux"
