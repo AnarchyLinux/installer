@@ -1282,7 +1282,7 @@ graphics() {
 					start_term="exec startxfce4"
 		;;
 		"budgie")	if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$extra_msg6" 10 60) then
-						DE="budgie-desktop gnome"
+						DE="budgie-desktop gnome arc-icon-theme arc-gtk-theme elementary-icon-theme"
 					else
 						DE="budgie-desktop"
 					fi
