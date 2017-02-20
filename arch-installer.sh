@@ -621,7 +621,7 @@ part_menu() {
 
 		if [ "$dev_fs" != "$empty_value" ]; then
 			if (fdisk -l | grep "gpt" &>/dev/null) then
-				part_type_uuid=$(fdisk -l -o Device,Size,Type-UUID | grep -w "$device" | awk '{print $3}')
+				part_type_uuid=$(fdisk -l -o Device,Type-UUID | grep -w "$device" | awk '{print $2}')
 
 				if [ $part_type_uuid == "0FC63DAF-8483-4772-8E79-3D69D8477DE4" ] ||
 				   [ $part_type_uuid == "44479540-F297-41B2-9AF7-D131D5F0458A" ] ||
@@ -635,7 +635,7 @@ part_menu() {
 					dev_type=$part_type_uuid
 				fi
 			else
-				part_type_id=$(fdisk -l | grep -w "$device" | sed 's/\*//' | awk '{print $6}')
+				part_type_id=$(fdisk -l -o Device,Id | grep -w "$device" | awk '{print $2}')
 
 				if [ $part_type_id == "83" ]; then
 					dev_type="Linux"
