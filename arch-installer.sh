@@ -1337,7 +1337,8 @@ graphics() {
                     			fi
                     			start_term="exec xmonad"
 		;;	
-		"cinnamon") start_term="exec cinnamon-session" 
+		"cinnamon") DE+=" file-roller p7zip zip unrar"
+					start_term="exec cinnamon-session" 
 		;;
 		"lxde") 	if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$gtk3_var" 10 60) then 
                         DE="lxde-gtk3"
@@ -1490,7 +1491,7 @@ graphics() {
 		fi
 	done
 	
-	DE="$DE xdg-user-dirs xorg-server xorg-server-utils xorg-xinit xterm ttf-dejavu gvfs pulseaudio pulseaudio-alsa alsa-utils $GPU"
+	DE="$DE xdg-user-dirs xorg-server xorg-server-utils xorg-xinit xterm ttf-dejavu gvfs pulseaudio pulseaudio-alsa alsa-utils unzip $GPU"
 		
 	if [ "$net_util" == "networkmanager" ] ; then
 		if (<<<"$DE" grep "plasma" &> /dev/null); then
@@ -1615,7 +1616,11 @@ grub_config() {
 		pid=$! pri=0.1 msg="\n$grub_load1 \n\n \Z1> \Z2grub-install --efi-directory="$esp_mnt"\Zn" load
 				
 		if ! "$crypted" ; then
-			arch-chroot "$ARCH" mkinitcpio -p linux &> /dev/null &
+			(if [ "$kernel" == "lts" ]; then
+				arch-chroot "$ARCH" mkinitcpio -p linux-lts
+			else
+				arch-chroot "$ARCH" mkinitcpio -p linux
+			fi) &>/dev/null &
 			pid=$! pri=1 msg="\n$uefi_config_load \n\n \Z1> \Z2mkinitcpio -p linux\Zn" load
 		fi
 	else
@@ -1736,7 +1741,11 @@ configure_system() {
 		echo "options nvidia_drm modeset=1" > "$ARCH"/etc/modprobe.d/nvidia.conf
 		echo -e "$nvidia_hook\nExec=/usr/bin/mkinitcpio -p linux" > "$ARCH"/etc/pacman.d/hooks/nvidia.hook
 		if ! "$crypted" && ! "$enable_f2fs" ; then
-			arch-chroot "$ARCH" mkinitcpio -p linux &> /dev/null &
+			(if [ "$kernel" == "lts" ]; then
+				arch-chroot "$ARCH" mkinitcpio -p linux-lts
+			else
+				arch-chroot "$ARCH" mkinitcpio -p linux
+			fi) &>/dev/null &
 			pid=$! pri=1 msg="\n$kernel_config_load \n\n \Z1> \Z2mkinitcpio -p linux\Zn" load
 		fi
 	fi
@@ -1744,7 +1753,11 @@ configure_system() {
 	if "$enable_f2fs" ; then
 		sed -i '/MODULES=/ s/.$/ f2fs crc32 libcrc32c crc32c_generic crc32c-intel crc32-pclmul"/;s/" /"/' "$ARCH"/etc/mkinitcpio.conf
 		if ! "$crypted" ; then
-			arch-chroot "$ARCH" mkinitcpio -p linux &> /dev/null &
+			(if [ "$kernel" == "lts" ]; then
+				arch-chroot "$ARCH" mkinitcpio -p linux-lts
+			else
+				arch-chroot "$ARCH" mkinitcpio -p linux
+			fi) &>/dev/null &
 			pid=$! pri=1 msg="\n$f2fs_config_load \n\n \Z1> \Z2mkinitcpio -p linux\Zn" load
 		fi
 	fi
@@ -1764,7 +1777,11 @@ configure_system() {
 			echo "swap	/dev/lvm/swap	/dev/urandom	swap,cipher=aes-xts-plain64,size=256" >> "$ARCH"/etc/crypttab
 		fi
 		sed -i 's/HOOKS=.*/HOOKS="base udev autodetect keyboard keymap consolefont modconf block encrypt lvm2 filesystems fsck"/' "$ARCH"/etc/mkinitcpio.conf
-		arch-chroot "$ARCH" mkinitcpio -p linux) &> /dev/null &
+		if [ "$kernel" == "lts" ]; then
+			arch-chroot "$ARCH" mkinitcpio -p linux-lts
+		else
+			arch-chroot "$ARCH" mkinitcpio -p linux
+		fi) &> /dev/null &
 		pid=$! pri=1 msg="\n$encrypt_load1 \n\n \Z1> \Z2mkinitcpio -p linux\Zn" load
 	fi
 
