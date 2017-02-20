@@ -850,7 +850,7 @@ part_class() {
 								mkfs."$FS" /dev/"$part" &> /dev/null &
 							;;
 						esac
-						pid=$! pri=1 msg="\n$load_var1 \n\n \Z1> \Z2mkfs.FS /dev/$part\Zn" load
+						pid=$! pri=1 msg="\n$load_var1 \n\n \Z1> \Z2mkfs.$FS /dev/$part\Zn" load
 					else
 						part_menu
 					fi
