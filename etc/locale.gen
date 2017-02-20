@@ -278,7 +278,7 @@ id_ID.UTF-8 UTF-8
 #is_IS ISO-8859-1  
 #it_CH.UTF-8 UTF-8  
 #it_CH ISO-8859-1  
-#it_IT.UTF-8 UTF-8  
+it_IT.UTF-8 UTF-8  
 #it_IT ISO-8859-1  
 #it_IT@euro ISO-8859-15  
 #iu_CA UTF-8  
