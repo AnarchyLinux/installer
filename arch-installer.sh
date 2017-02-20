@@ -604,53 +604,50 @@ part_menu() {
 		dev_type=$(<<<"$device_list" grep -w "$device" | awk '{print $6}')
 		dev_size=$(<<<"$device_list" grep -w "$device" | awk '{print $4}')
 		dev_fs=$(lsblk -no FSTYPE "/dev/$device" | head -1)
-		test -z "$dev_fs" && dev_fs=$empty_value
+		dev_mnt=$(df | grep -w "$device" | awk '{print $6}' | sed 's/mnt\/\?//')
 
-		if (<<<"$dev_type" egrep "disk|raid[0-9]+" &> /dev/null) then
-			echo "\"$device\" \"$dev_size ---- $dev_fs ---- $dev_type\" \\" >> $tmp_list
+		if (<<<"$dev_mnt" grep "/" &> /dev/null) then
+			dev_used=$(df -T | grep -w "$device" | awk '{print $6}')
 		else
-				mnt_point=$(df | grep -w "$device" | awk '{print $6}' | sed 's/mnt\/\?//')
-				if (<<<"$mnt_point" grep "/" &> /dev/null) then
-					part_used=$(df -T | grep -w "$device" | awk '{print $6}')
-				else
-					part_used=$(swapon -s | grep -w "$device" | awk '{print $4}')
-					if [ -n "$part_used" ]; then
-						part_used=$part_used%
-					fi
-				fi
+			dev_used=$(swapon -s | grep -w "$device" | awk '{print $4}')
+			if [ -n "$dev_used" ]; then
+				dev_used=$dev_used%
+			fi
+		fi
 
+		test -z "$dev_fs" && dev_fs=$empty_value
+		test -z "$dev_used" && dev_used=$empty_value
+		test -z "$dev_mnt" && dev_mnt=$empty_value
+
+		if (<<<"$dev_type" egrep -v "disk|raid[0-9]+" &> /dev/null) then
 				if (fdisk -l | grep "gpt" &>/dev/null) then
 					part_type_uuid=$(fdisk -l -o Device,Size,Type-UUID | grep -w "$device" | awk '{print $3}')
 
 					if [ $part_type_uuid == "0FC63DAF-8483-4772-8E79-3D69D8477DE4" ] ||
 					   [ $part_type_uuid == "44479540-F297-41B2-9AF7-D131D5F0458A" ] ||
 					   [ $part_type_uuid == "4F68BCE3-E8CD-4DB1-96E7-FBCAF984B709" ]; then
-						part_type="Linux"
+						dev_type="Linux"
 					elif [ $part_type_uuid == "0657FD6D-A4AB-43C4-84E5-0933C84B4F4F" ]; then
-						part_type="Linux/SWAP"
+						dev_type="Linux/SWAP"
 					elif [ $part_type_uuid == "C12A7328-F81F-11D2-BA4B-00A0C93EC93B" ]; then
-						part_type="EFI/ESP"
+						dev_type="EFI/ESP"
 					else
-						part_type=$part_type_uuid
+						dev_type=$part_type_uuid
 					fi
 				else
 					part_type_id=$(fdisk -l | grep -w "$device" | sed 's/\*//' | awk '{print $6}')
 
 					if [ $part_type_id == "83" ]; then
-						part_type="Linux"
+						dev_type="Linux"
 					elif [ $part_type_id == "82" ]; then
-						part_type="Linux/SWAP"
+						dev_type="Linux/SWAP"
 					else
-						part_type=$part_type_id
+						dev_type=$part_type_id
 					fi
 				fi
-
-				test -z "$part_used" && part_used="----"
-				test -z "$mnt_point" && mnt_point="----"
-
-				echo "\"$device\" \"$dev_size $part_used $dev_fs $mnt_point $part_type\" \\" >> "$tmp_list"
-				unset part_type
 		fi
+
+		echo "\"$device\" \"$dev_size $dev_used $dev_fs $dev_mnt $dev_type\" \\" >> "$tmp_list"
 
 		int=$((int+1))
 	done
