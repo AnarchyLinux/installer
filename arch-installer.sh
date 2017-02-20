@@ -1340,7 +1340,7 @@ graphics() {
                     			fi
                     			start_term="exec xmonad"
 		;;	
-		"cinnamon") DE+=" file-roller p7zip zip unrar"
+		"cinnamon") DE+=" gnome-terminal file-roller p7zip zip unrar"
 					start_term="exec cinnamon-session" 
 		;;
 		"lxde") 	if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$gtk3_var" 10 60) then 
