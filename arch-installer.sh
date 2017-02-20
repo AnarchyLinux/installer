@@ -672,7 +672,7 @@ part_class() {
 		prepare_drives
 	elif (<<<$part grep -E "sd[a-z]+[0-9]+|[a-z]+[[:alnum:]]+p[0-9]+" &> /dev/null); then
 		part_size=$(fdisk -l | grep -w "$part" | sed 's/\*//' | awk '{print $5}')
-		part_mount=$(df | grep -w "$part" | awk '{print $6}' | sed 's/\/mnt/\//;s/\/\//\//')
+		part_mount=$(df | grep -w "$part" | awk '{print $6}' | sed 's/mnt\/\?//')
 		source "$lang_file"  &> /dev/null
 
 		if [ -z "$ROOT" ]; then
@@ -879,7 +879,7 @@ part_class() {
 				BOOT="$ROOT"
 			fi
 
-			final_part=$((df -h | grep "$ARCH" | awk '{print $1,$2,$6 "\\n"}' | sed 's/\/mnt/\//;s/\/\//\//' ; swapon | awk 'NR==2 {print $1,$3,"SWAP"}') | column -t)
+			final_part=$((df -h | grep "$ARCH" | awk '{print $1,$2,$6 "\\n"}' | sed 's/mnt\/\?//' ; swapon | awk 'NR==2 {print $1,$3,"SWAP"}') | column -t)
 			final_count=$(<<<"$final_part" wc -l)
 
 			if [ "$final_count" -lt "7" ]; then
