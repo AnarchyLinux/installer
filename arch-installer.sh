@@ -666,6 +666,7 @@ part_class() {
 
 	op_title="$edit_op_msg"
 	if [ -z "$part" ]; then
+		unset DRIVE ROOT
 		prepare_drives
 	elif (<<<$part grep -E "sd[a-z]+[0-9]+|[a-z]+[[:alnum:]]+p[0-9]+" &> /dev/null); then
 		part_size=$(fdisk -l | grep -w "$part" | sed 's/\*//' | awk '{print $5}')
