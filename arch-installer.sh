@@ -1617,7 +1617,7 @@ grub_config() {
 				
 		if ! "$crypted" ; then
 			arch-chroot "$ARCH" mkinitcpio -p "$kernel" &>/dev/null &
-			pid=$! pri=1 msg="\n$uefi_config_load \n\n \Z1> \Z2mkinitcpio -p linux\Zn" load
+			pid=$! pri=1 msg="\n$uefi_config_load \n\n \Z1> \Z2mkinitcpio -p $kernel\Zn" load
 		fi
 	else
 		arch-chroot "$ARCH" grub-install /dev/"$DRIVE" &> /dev/null &
@@ -1735,10 +1735,10 @@ configure_system() {
 		sed -i 's/MODULES=""/MODULES="nvidia nvidia_modeset nvidia_uvm nvidia_drm"/' "$ARCH"/etc/mkinitcpio.conf
 		sed -i 's!FILES=""!FILES="/etc/modprobe.d/nvidia.conf"!' "$ARCH"/etc/mkinitcpio.conf
 		echo "options nvidia_drm modeset=1" > "$ARCH"/etc/modprobe.d/nvidia.conf
-		echo -e "$nvidia_hook\nExec=/usr/bin/mkinitcpio -p linux" > "$ARCH"/etc/pacman.d/hooks/nvidia.hook
+		echo -e "$nvidia_hook\nExec=/usr/bin/mkinitcpio -p $kernel" > "$ARCH"/etc/pacman.d/hooks/nvidia.hook
 		if ! "$crypted" && ! "$enable_f2fs" ; then
 			arch-chroot "$ARCH" mkinitcpio -p "$kernel" &>/dev/null &
-			pid=$! pri=1 msg="\n$kernel_config_load \n\n \Z1> \Z2mkinitcpio -p linux\Zn" load
+			pid=$! pri=1 msg="\n$kernel_config_load \n\n \Z1> \Z2mkinitcpio -p $kernel\Zn" load
 		fi
 	fi
 
@@ -1746,7 +1746,7 @@ configure_system() {
 		sed -i '/MODULES=/ s/.$/ f2fs crc32 libcrc32c crc32c_generic crc32c-intel crc32-pclmul"/;s/" /"/' "$ARCH"/etc/mkinitcpio.conf
 		if ! "$crypted" ; then
 			arch-chroot "$ARCH" mkinitcpio -p "$kernel" &>/dev/null &
-			pid=$! pri=1 msg="\n$f2fs_config_load \n\n \Z1> \Z2mkinitcpio -p linux\Zn" load
+			pid=$! pri=1 msg="\n$f2fs_config_load \n\n \Z1> \Z2mkinitcpio -p $kernel\Zn" load
 		fi
 	fi
 
@@ -1766,7 +1766,7 @@ configure_system() {
 		fi
 		sed -i 's/HOOKS=.*/HOOKS="base udev autodetect keyboard keymap consolefont modconf block encrypt lvm2 filesystems fsck"/' "$ARCH"/etc/mkinitcpio.conf
 		arch-chroot "$ARCH" mkinitcpio -p "$kernel") &> /dev/null &
-		pid=$! pri=1 msg="\n$encrypt_load1 \n\n \Z1> \Z2mkinitcpio -p linux\Zn" load
+		pid=$! pri=1 msg="\n$encrypt_load1 \n\n \Z1> \Z2mkinitcpio -p $kernel\Zn" load
 	fi
 
 	(sed -i -e "s/#$LOCALE/$LOCALE/" "$ARCH"/etc/locale.gen
