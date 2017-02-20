@@ -603,7 +603,7 @@ part_menu() {
 		device=$(<<<"$device_list" awk '{print $1}' | awk "NR==$int")
 		dev_type=$(<<<"$device_list" grep -w "$device" | awk '{print $6}')
 		dev_size=$(<<<"$device_list" grep -w "$device" | awk '{print $4}')
-		dev_fs=$(lsblk -no FSTYPE "$device" | head -1)
+		dev_fs=$(lsblk -no FSTYPE "/dev/$device" | head -1)
 		test -z "$dev_fs" && dev_fs=$empty_value
 
 		if (<<<"$dev_type" egrep "disk|raid[0-9]+" &> /dev/null) then
