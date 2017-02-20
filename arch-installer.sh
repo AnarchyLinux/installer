@@ -587,7 +587,7 @@ part_menu() {
 	unset part
 	tmp_menu=/tmp/part.sh tmp_list=/tmp/part.list
 	dev_menu="|  Device:  |  Size:  |  Used:  |  FS:  |  Mount:  |  Type:  |"
-	device_list=$(lsblk | egrep -v "NAME|loop[0-9]+|sr[0-9]+|fd[0-9]+" | sort | uniq)
+	device_list=$(lsblk -n | egrep -v "loop[0-9]+|sr[0-9]+|fd[0-9]+" | sort | uniq)
 	device_count=$(<<<"$device_list" wc -l)
 
 	if "$screen_h" ; then
