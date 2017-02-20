@@ -597,26 +597,26 @@ part_menu() {
 	fi
 
 	int=1
+	empty_value="----"
 	until [ "$int" -gt "$device_count" ]
 	do
 		device=$(<<<"$device_list" awk '{print $1}' | sed 's/[^[:alnum:]]//g' | awk "NR==$int")
 		dev_type=$(<<<"$device_list" grep -w "$device" | awk '{print $6}')
 		dev_size=$(<<<"$device_list" grep -w "$device" | awk '{print $4}')
+		dev_fs=$(lsblk -no FSTYPE "$device" | head -1)
+		test -z "$dev_fs" && dev_fs=$empty_value
 
 		if (<<<"$dev_type" egrep "disk|raid[0-9]+" &> /dev/null) then
-			echo "\"$device\" \"$dev_size ---- ---- ---- $dev_type\" \\" >> $tmp_list
+			echo "\"$device\" \"$dev_size ---- $dev_fs ---- $dev_type\" \\" >> $tmp_list
 		else
 				mnt_point=$(df | grep -w "$device" | awk '{print $6}' | sed 's/mnt\/\?//')
 				if (<<<"$mnt_point" grep "/" &> /dev/null) then
-					fs_type="$(df -T | grep -w "$device" | awk '{print $2}')"
 					part_used=$(df -T | grep -w "$device" | awk '{print $6}')
 				else
 					part_used=$(swapon -s | grep -w "$device" | awk '{print $4}')
 					if [ -n "$part_used" ]; then
 						part_used=$part_used%
 					fi
-
-					unset fs_type
 				fi
 
 				if (fdisk -l | grep "gpt" &>/dev/null) then
@@ -646,10 +646,9 @@ part_menu() {
 				fi
 
 				test -z "$part_used" && part_used="----"
-				test -z "$fs_type" && fs_type="----"
 				test -z "$mnt_point" && mnt_point="----"
 
-				echo "\"$device\" \"$dev_size $part_used $fs_type $mnt_point $part_type\" \\" >> "$tmp_list"
+				echo "\"$device\" \"$dev_size $part_used $dev_fs $mnt_point $part_type\" \\" >> "$tmp_list"
 				unset part_type
 		fi
 
