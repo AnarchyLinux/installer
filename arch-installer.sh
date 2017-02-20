@@ -671,7 +671,7 @@ part_class() {
 		unset DRIVE ROOT
 		prepare_drives
 	elif (<<<$part grep -E "sd[a-z]+[0-9]+|[a-z]+[[:alnum:]]+p[0-9]+" &> /dev/null); then
-		part_size=$(fdisk -l | grep -w "$part" | sed 's/\*//' | awk '{print $5}')
+		part_size=$(<<<"$device_list" grep -w "$part" | awk '{print $2}')
 		part_mount=$(df | grep -w "$part" | awk '{print $6}' | sed 's/mnt\/\?//')
 		source "$lang_file"  &> /dev/null
 
@@ -974,7 +974,7 @@ part_class() {
 			fi
 		fi
 	else
-		part_size=$(fdisk -l | grep -w "$part" | awk '{print $3,$4}' | sed 's/,$//')
+		part_size=$(<<<"$device_list" grep -w "$part" | awk '{print $2}')
 		source "$lang_file"
 
 		if (df | grep -w "$part" | grep "$ARCH" &> /dev/null); then	
