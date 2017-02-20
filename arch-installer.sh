@@ -587,7 +587,7 @@ part_menu() {
 	unset part
 	tmp_menu=/tmp/part.sh tmp_list=/tmp/part.list
 	dev_menu="|  Device:  |  Size:  |  Used:  |  FS:  |  Mount:  |  Type:  |"
-	device_list=$(lsblk -n | egrep -v "loop[0-9]+|sr[0-9]+|fd[0-9]+" | sort | uniq)
+	device_list=$(lsblk -ni | egrep -v "loop[0-9]+|sr[0-9]+|fd[0-9]+" | sed 's/[^[:alnum:] ]//g' | column -t | sort | uniq)
 	device_count=$(<<<"$device_list" wc -l)
 
 	if "$screen_h" ; then
@@ -600,7 +600,7 @@ part_menu() {
 	empty_value="----"
 	until [ "$int" -gt "$device_count" ]
 	do
-		device=$(<<<"$device_list" awk '{print $1}' | sed 's/[^[:alnum:]]//g' | awk "NR==$int")
+		device=$(<<<"$device_list" awk '{print $1}' | awk "NR==$int")
 		dev_type=$(<<<"$device_list" grep -w "$device" | awk '{print $6}')
 		dev_size=$(<<<"$device_list" grep -w "$device" | awk '{print $4}')
 		dev_fs=$(lsblk -no FSTYPE "$device" | head -1)
