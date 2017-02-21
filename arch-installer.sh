@@ -1232,7 +1232,7 @@ prepare_base() {
 			base_install+=" efibootmgr"
 		fi
 
-		if "$intel" && ! "$VM"; then
+		if "$intel" && ! "$VM" ; then
 			base_install+=" intel-ucode"
 		fi
 
