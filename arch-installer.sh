@@ -274,11 +274,11 @@ prepare_drives() {
 		dev_menu="           Device: | Size: | Type:  |"
 		if "$screen_h" ; then
 			cat <<-EOF > /tmp/part.sh
-					dialog --colors --backtitle "$backtitle" --title "$title" --ok-button "$ok" --cancel-button "$cancel" --menu "$drive_msg \n\n $dev_menu" 16 60 3 \\
+					dialog --colors --backtitle "$backtitle" --title "$title" --ok-button "$ok" --cancel-button "$cancel" --menu "$drive_msg \n\n $dev_menu" 16 60 5 \\
 				EOF
 		else
 			cat <<-EOF > /tmp/part.sh
-					dialog --colors --title "$title" --ok-button "$ok" --cancel-button "$cancel" --menu "$drive_msg \n\n $dev_menu" 16 60 3 \\
+					dialog --colors --title "$title" --ok-button "$ok" --cancel-button "$cancel" --menu "$drive_msg \n\n $dev_menu" 16 60 5 \\
 				EOF
 		fi
 
