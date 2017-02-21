@@ -275,17 +275,17 @@ prepare_drives() {
 		if "$screen_h" ; then
 			cat <<-EOF > /tmp/part.sh
 					dialog --colors --backtitle "$backtitle" --title "$title" --ok-button "$ok" --cancel-button "$cancel" --menu "$drive_msg \n\n $dev_menu" 16 60 3 \\
-					$(fdisk -l | grep -E "/dev/[[:alnum:]]+:" | grep -v "$USB\|loop" | sed 's!.*/!!;s/://' | awk '{print "\""$1"\"""  ""\"| "$2" "$3" |==>\""" \\"}' | column -t)
+					$(lsblk -nio NAME,SIZE,TYPE | egrep "disk|raid[0-9]+$" | sed 's/[^[:alnum:]., ]//g' | sort -k 1,1 | uniq | awk '{print "\""$1"\"""  ""\"| "$2" "$3" |==>\""" \\"}' | column -t)
 					3>&1 1>&2 2>&3
 				EOF
 		else
-				cat <<-EOF > /tmp/part.sh
+			cat <<-EOF > /tmp/part.sh
 					dialog --colors --title "$title" --ok-button "$ok" --cancel-button "$cancel" --menu "$drive_msg \n\n $dev_menu" 16 60 3 \\
-					$(fdisk -l | grep -E "/dev/[[:alnum:]]+:" | grep -v "$USB\|loop" | sed 's!.*/!!;s/://' | awk '{print "\""$1"\"""  ""\"| "$2" "$3" |==>\""" \\"}' | column -t)
+					$(lsblk -nio NAME,SIZE,TYPE | egrep "disk|raid[0-9]+$" | sed 's/[^[:alnum:]., ]//g' | sort -k 1,1 | uniq | awk '{print "\""$1"\"""  ""\"| "$2" "$3" |==>\""" \\"}' | column -t)
 					3>&1 1>&2 2>&3
 				EOF
 		fi
-		
+
 		DRIVE=$(bash /tmp/part.sh)
 		rm /tmp/part.sh
 		
