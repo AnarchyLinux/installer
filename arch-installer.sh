@@ -1730,16 +1730,21 @@ configure_system() {
 	if [ "$bootloader" == "syslinux" ] || [ "$bootloader" == "systemd-boot" ] && "$UEFI" ; then
 		if [ "$esp_mnt" != "/boot" ]; then
 			( if [ "$kernel" == "linux" ]; then
-				echo -e "$linux_hook\nExec = /usr/bin/cp "$ARCH"/boot/{vmlinuz-linux,initramfs-linux.img,initramfs-linux-fallback.img} ${ARCH}${esp_mnt}" > "$ARCH"/etc/pacman.d/hooks/linux-esp.hook
+				echo -e "$linux_hook\nExec = /usr/bin/cp /boot/{vmlinuz-linux,initramfs-linux.img,initramfs-linux-fallback.img} ${esp_mnt}" > "$ARCH"/etc/pacman.d/hooks/linux-esp.hook
 				cp "$ARCH"/boot/{vmlinuz-linux,initramfs-linux.img,initramfs-linux-fallback.img} ${ARCH}${esp_mnt}
 			elif [ "$kernel" == "linux-lts" ]; then
-				echo -e "$lts_hook\nExec = /usr/bin/cp "$ARCH"/boot/{vmlinuz-linux-lts,initramfs-linux-lts.img,initramfs-linux-lts-fallback.img} ${ARCH}${esp_mnt}" > "$ARCH"/etc/pacman.d/hooks/linux-esp.hook
+				echo -e "$lts_hook\nExec = /usr/bin/cp /boot/{vmlinuz-linux-lts,initramfs-linux-lts.img,initramfs-linux-lts-fallback.img} ${esp_mnt}" > "$ARCH"/etc/pacman.d/hooks/linux-esp.hook
 				cp "$ARCH"/boot/{vmlinuz-linux-lts,initramfs-linux-lts.img,initramfs-linux-lts-fallback.img} ${ARCH}${esp_mnt}
 			else
-				echo -e "$grs_hook\nExec = /usr/bin/cp "$ARCH"/boot/{vmlinuz-linux-grsec,initramfs-linux-grsec.img,initramfs-linux-grsec-fallback.img} ${ARCH}${esp_mnt}" > "$ARCH"/etc/pacman.d/hooks/linux-esp.hook
+				echo -e "$grs_hook\nExec = /usr/bin/cp /boot/{vmlinuz-linux-grsec,initramfs-linux-grsec.img,initramfs-linux-grsec-fallback.img} ${esp_mnt}" > "$ARCH"/etc/pacman.d/hooks/linux-esp.hook
 				cp "$ARCH"/boot/{vmlinuz-linux-grsec,initramfs-linux-grsec.img,initramfs-linux-grsec-fallback.img} ${ARCH}${esp_mnt}
+			fi 
+			
+			if "$intel" ; then
+				echo -e "$intel_hook\nExec = /usr/bin/cp /boot/intel-ucode.img ${esp_mnt}" > "$ARCH"/etc/pacman.d/hooks/intel-esp.hook
+				cp "$ARCH"/boot/intel-ucode.img ${ARCH}${esp_mnt}
 			fi ) &
-			pid=$! pri=0.1 msg="$wait_load \n\n \Z1> \Z2cp "$ARCH"/boot/vmlinuz-linux ${ARCH}${esp_mnt}\Zn" load
+			pid=$! pri=0.1 msg="$wait_load \n\n \Z1> \Z2cp "$ARCH"/boot/ ${ARCH}${esp_mnt}\Zn" load
 		fi
 	fi
 	
