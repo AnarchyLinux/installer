@@ -283,7 +283,7 @@ prepare_drives() {
 		fi
 
 		cat <<-EOF >> /tmp/part.sh
-			$(lsblk -nio NAME,SIZE,TYPE | egrep "disk|raid[0-9]+$" | sed 's/[^[:alnum:]_., ]//g' | sort -k 1,1 | uniq | awk '{print "\""$1"\"""  ""\"| "$2" "$3" |==>\""" \\"}' | column -t)
+			$(lsblk -nio NAME,SIZE,TYPE | egrep "disk|raid[0-9]+$" | sed 's/[^[:alnum:]_., ]//g' | sort -k 1,1 | uniq | awk '{print "\""$1"\"""  ""\"| "$2" | "$3" |==>\""" \\"}' | column -t)
 			3>&1 1>&2 2>&3
 		EOF
 
