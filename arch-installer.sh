@@ -671,12 +671,145 @@ part_class() {
 		unset DRIVE ROOT
 		prepare_drives
 	else
+        part_size=$(<<<"$device_list" grep -w "$part" | awk '{print $2}')
+		part_type=$(<<<"$device_list" grep -w "$part" | awk '{print $3}')
 		part_fs=$(<<<"$device_list" grep -w "$part" | awk '{print $4}')
-		part_size=$(<<<"$device_list" grep -w "$part" | awk '{print $2}')
 		part_mount=$(df | grep -w "$part" | awk '{print $6}' | sed 's/mnt\/\?//')
 	fi
 
-	if (<<<$part grep -E "sd[a-z]+[0-9]+|[a-z]+[[:alnum:]]+p[0-9]+" &> /dev/null); then
+	if [ "$part_fs" == "linux_raid_member" ]; then # do nothing
+		:
+	elif ([ "$part_type" == "disk" ]) || ( (<<<"$part_type" egrep "raid[0-9]+" &> /dev/null) && [ -z "$part_fs" ] ); then # Partition
+
+        source "$lang_file"
+
+		if (df | grep -w "$part" | grep "$ARCH" &> /dev/null); then
+			if (dialog --yes-button "$edit" --no-button "$cancel" --defaultno --yesno "\n$mount_warn_var" 10 60) then
+				points=$(echo -e "$points_orig\n$custom $custom-mountpoint")
+				(umount -R "$ARCH"
+				swapoff -a) &> /dev/null &
+				pid=$! pri=0.1 msg="$wait_load \n\n \Z1> \Z2umount -R /mnt\Zn" load
+				mounted=false
+				unset DRIVE
+				cfdisk /dev/"$part"
+				sleep 0.5
+				clear
+			fi
+		elif (dialog --yes-button "$edit" --no-button "$cancel" --yesno "\n$manual_part_var3" 12 60) then
+			cfdisk /dev/"$part"
+			sleep 0.5
+			clear
+		fi
+
+		part_menu
+
+    elif [ "$part" == "$done_msg" ]; then # Done
+
+        if ! "$mounted" ; then
+			dialog --ok-button "$ok" --msgbox "\n$root_err_msg1" 10 60
+			part_menu
+		else
+			if [ -z "$BOOT" ]; then
+				BOOT="$ROOT"
+			fi
+
+			final_part=$((df -h | grep "$ARCH" | awk '{print $1,$2,$6 "\\n"}' | sed 's/mnt\/\?//' ; swapon | awk 'NR==2 {print $1,$3,"SWAP"}') | column -t)
+			final_count=$(<<<"$final_part" wc -l)
+
+			if [ "$final_count" -lt "7" ]; then
+				height=17
+			elif [ "$final_count" -lt "13" ]; then
+				height=23
+			elif [ "$final_count" -lt "17" ]; then
+				height=26
+			else
+				height=30
+			fi
+
+			part_menu="$partition: $size: $mountpoint:"
+
+			if (dialog --yes-button "$write" --no-button "$cancel" --defaultno --yesno "\n$write_confirm_msg \n\n $part_menu \n\n$final_part \n\n $write_confirm" "$height" 50) then
+				if (efivar -l &>/dev/null); then
+					if (fdisk -l | grep "EFI" &>/dev/null); then
+						if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$efi_man_msg" 11 60) then
+							if [ "$(fdisk -l | grep "EFI" | wc -l)" -gt "1" ]; then
+								efint=1
+								while (true)
+								  do
+									if [ "$(fdisk -l | grep "EFI" | awk "NR==$efint {print \$1}")" == "" ]; then
+										dialog --ok-button "$ok" --msgbox "$efi_err_msg1" 10 60
+										part_menu
+									fi
+									esp_part=$(fdisk -l | grep "EFI" | awk "NR==$efint {print \$1}")
+									esp_mnt=$(df -T | grep "$esp_part" | awk '{print $7}' | sed 's|/mnt||')
+									if (df -T | grep "$esp_part" &> /dev/null); then
+										break
+									else
+										efint=$((efint+1))
+									fi
+								done
+							else
+								esp_part=$(fdisk -l | grep "EFI" | awk '{print $1}')
+								if ! (df -T | grep "$esp_part" &> /dev/null); then
+									source "$lang_file"
+									if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$efi_mnt_var" 11 60) then
+										if ! (mountpoint "$ARCH"/boot &> /dev/null); then
+											mkdir "$ARCH"/boot &> /dev/null
+											mount "$esp_part" "$ARCH"/boot
+										else
+											dialog --ok-button "$ok" --msgbox "\n$efi_err_msg" 10 60
+											part_menu
+										fi
+									else
+										part_menu
+									fi
+								else
+									esp_mnt=$(df -T | grep "$esp_part" | awk '{print $7}' | sed 's|/mnt||')
+								fi
+							fi
+							source "$lang_file"
+							if ! (df -T | grep "$esp_part" | grep "vfat" &>/dev/null) then
+								if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$vfat_var" 11 60) then
+										(umount -R "$esp_mnt"
+										mkfs.vfat -F32 "$esp_part"
+										mount "$esp_part" "$esp_mnt") &> /dev/null &
+										pid=$! pri=0.2 msg="\n$efi_load1 \n\n \Z1> \Z2mkfs.vfat -F32 $esp_part\Zn" load
+										UEFI=true
+								else
+									part_menu
+								fi
+							else
+								UEFI=true
+								export esp_part esp_mnt
+							fi
+						fi
+					fi
+				fi
+
+				if "$enable_f2fs" ; then
+					if ! (df | grep "$ARCH/boot\|$ARCH/boot/efi" &> /dev/null) then
+						FS="f2fs" source "$lang_file"
+						dialog --ok-button "$ok" --msgbox "\n$fs_err_var" 10 60
+						part_menu
+					fi
+				elif "$enable_btrfs" ; then
+					if ! (df | grep "$ARCH/boot\|$ARCH/boot/efi" &> /dev/null) then
+						FS="btrfs" source "$lang_file"
+						dialog --ok-button "$ok" --msgbox "\n$fs_err_var" 10 60
+						part_menu
+					fi
+				fi
+
+				sleep 1
+				pid=$! pri=0.1 msg="$wait_load \n\n \Z1> \Z2Finalize...\Zn" load
+				prepare_base
+			else
+				part_menu
+			fi
+		fi
+
+	else # Install on a partition or md device with a file system
+
 		source "$lang_file"  &> /dev/null
 
 		if [ -z "$ROOT" ]; then
@@ -871,131 +1004,6 @@ part_class() {
 					dialog --ok-button "$ok" --msgbox "\n$part_err_msg2" 10 60
 				fi
 			fi
-		fi
-
-		part_menu
-	elif [ "$part" == "$done_msg" ]; then
-		if ! "$mounted" ; then
-			dialog --ok-button "$ok" --msgbox "\n$root_err_msg1" 10 60
-			part_menu
-		else
-			if [ -z "$BOOT" ]; then
-				BOOT="$ROOT"
-			fi
-
-			final_part=$((df -h | grep "$ARCH" | awk '{print $1,$2,$6 "\\n"}' | sed 's/mnt\/\?//' ; swapon | awk 'NR==2 {print $1,$3,"SWAP"}') | column -t)
-			final_count=$(<<<"$final_part" wc -l)
-
-			if [ "$final_count" -lt "7" ]; then
-				height=17
-			elif [ "$final_count" -lt "13" ]; then
-				height=23
-			elif [ "$final_count" -lt "17" ]; then
-				height=26
-			else
-				height=30
-			fi
-			
-			part_menu="$partition: $size: $mountpoint:"
-			
-			if (dialog --yes-button "$write" --no-button "$cancel" --defaultno --yesno "\n$write_confirm_msg \n\n $part_menu \n\n$final_part \n\n $write_confirm" "$height" 50) then
-				if (efivar -l &>/dev/null); then
-					if (fdisk -l | grep "EFI" &>/dev/null); then
-						if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$efi_man_msg" 11 60) then
-							if [ "$(fdisk -l | grep "EFI" | wc -l)" -gt "1" ]; then
-								efint=1
-								while (true)
-								  do
-									if [ "$(fdisk -l | grep "EFI" | awk "NR==$efint {print \$1}")" == "" ]; then
-										dialog --ok-button "$ok" --msgbox "$efi_err_msg1" 10 60
-										part_menu
-									fi
-									esp_part=$(fdisk -l | grep "EFI" | awk "NR==$efint {print \$1}")
-									esp_mnt=$(df -T | grep "$esp_part" | awk '{print $7}' | sed 's|/mnt||')
-									if (df -T | grep "$esp_part" &> /dev/null); then
-										break
-									else
-										efint=$((efint+1))
-									fi
-								done
-							else
-								esp_part=$(fdisk -l | grep "EFI" | awk '{print $1}')
-								if ! (df -T | grep "$esp_part" &> /dev/null); then
-									source "$lang_file"
-									if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$efi_mnt_var" 11 60) then
-										if ! (mountpoint "$ARCH"/boot &> /dev/null); then
-											mkdir "$ARCH"/boot &> /dev/null
-											mount "$esp_part" "$ARCH"/boot
-										else
-											dialog --ok-button "$ok" --msgbox "\n$efi_err_msg" 10 60
-											part_menu
-										fi
-									else
-										part_menu
-									fi
-								else
-									esp_mnt=$(df -T | grep "$esp_part" | awk '{print $7}' | sed 's|/mnt||')
-								fi
-							fi
-							source "$lang_file"
-							if ! (df -T | grep "$esp_part" | grep "vfat" &>/dev/null) then
-								if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$vfat_var" 11 60) then
-										(umount -R "$esp_mnt"
-										mkfs.vfat -F32 "$esp_part"
-										mount "$esp_part" "$esp_mnt") &> /dev/null &
-										pid=$! pri=0.2 msg="\n$efi_load1 \n\n \Z1> \Z2mkfs.vfat -F32 $esp_part\Zn" load
-										UEFI=true
-								else
-									part_menu
-								fi
-							else
-								UEFI=true
-								export esp_part esp_mnt
-							fi
-						fi
-					fi
-				fi
-
-				if "$enable_f2fs" ; then
-					if ! (df | grep "$ARCH/boot\|$ARCH/boot/efi" &> /dev/null) then
-						FS="f2fs" source "$lang_file"
-						dialog --ok-button "$ok" --msgbox "\n$fs_err_var" 10 60
-						part_menu
-					fi
-				elif "$enable_btrfs" ; then
-					if ! (df | grep "$ARCH/boot\|$ARCH/boot/efi" &> /dev/null) then
-						FS="btrfs" source "$lang_file"
-						dialog --ok-button "$ok" --msgbox "\n$fs_err_var" 10 60
-						part_menu
-					fi
-				fi
-				
-				sleep 1
-				pid=$! pri=0.1 msg="$wait_load \n\n \Z1> \Z2Finalize...\Zn" load
-				prepare_base
-			else
-				part_menu
-			fi
-		fi
-	else
-		source "$lang_file"
-
-		if (df | grep -w "$part" | grep "$ARCH" &> /dev/null); then	
-			if (dialog --yes-button "$edit" --no-button "$cancel" --defaultno --yesno "\n$mount_warn_var" 10 60) then
-				points=$(echo -e "$points_orig\n$custom $custom-mountpoint")
-				(umount -R "$ARCH"
-				swapoff -a) &> /dev/null &
-				pid=$! pri=0.1 msg="$wait_load \n\n \Z1> \Z2umount -R /mnt\Zn" load
-				mounted=false
-				unset DRIVE
-				cfdisk /dev/"$part"
-				sleep 0.5
-				clear
-			fi
-		elif (dialog --yes-button "$edit" --no-button "$cancel" --yesno "\n$manual_part_var3" 12 60) then
-			cfdisk /dev/"$part"
-			sleep 0.5
-			clear
 		fi
 
 		part_menu
