@@ -2247,7 +2247,7 @@ install_software() {
 			esac
 			
 			if ! "$err" ; then
-				if [ -z "$software" ]; then
+				if [ -z "$software" ] && [ "$software_menu" != "$done_msg" ]; then
 					if ! (dialog --yes-button "$yes" --no-button "$no" --defaultno --yesno "\n$software_noconfirm_msg ${software_menu}?" 10 60) then
 						skip=true
 					fi
