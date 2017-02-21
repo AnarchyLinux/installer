@@ -1231,11 +1231,7 @@ prepare_base() {
 		if "$UEFI" ; then
 			base_install+=" efibootmgr"
 		fi
-
-		if "$intel" && ! "$VM" ; then
-			base_install+=" intel-ucode"
-		fi
-
+	
 	elif "$INSTALLED" ; then
 		dialog --ok-button "$ok" --msgbox "\n$install_err_msg0" 10 60
 		main_menu
@@ -1599,6 +1595,11 @@ install_base() {
 			reset ; tail /tmp/arch-anywhere.log ; exit 1
 		fi
 						
+		if "$intel" && ! "$VM" ; then
+			arch-chroot "$ARCH" pacman -Sy intel-ucode &>/dev/null &
+			pid=$! pri=0.5 msg="\n$intel_load \n\n \Z1> \Z2pacman -S intel-ucode\Zn" load
+		fi
+		
 		case "$bootloader" in
 			grub) grub_config ;;
 			syslinux) syslinux_config ;;
@@ -1658,19 +1659,7 @@ syslinux_config() {
 		cp "$aa_dir"/boot/splash.png ${ARCH}${esp_mnt}/EFI/syslinux
 		arch-chroot "$ARCH" efibootmgr -c -d /dev/"$esp_part" -p "$esp_part_int" -l /EFI/syslinux/syslinux.efi -L "Syslinux") &> /dev/null &
 		pid=$! pri=0.1 msg="\n$syslinux_load \n\n \Z1> \Z2syslinux install efi mode...\Zn" load
-		
-		if [ "$esp_mnt" != "/boot" ]; then
-			if [ "$kernel" == "linux" ]; then
-				echo -e "$linux_hook\nExec = /usr/bin/cp "$ARCH"/boot/{vmlinuz-linux,initramfs-linux.img,initramfs-linux-fallback.img} ${ARCH}${esp_mnt}" > "$ARCH"/etc/pacman.d/hooks/linux-esp.hook
-			elif [ "$kernel" == "linux-lts" ]; then
-				echo -e "$lts_hook\nExec = /usr/bin/cp "$ARCH"/boot/{vmlinuz-linux-lts,initramfs-linux-lts.img,initramfs-linux-lts-fallback.img} ${ARCH}${esp_mnt}" > "$ARCH"/etc/pacman.d/hooks/linux-esp.hook
-			else
-				echo -e "$grs_hook\nExec = /usr/bin/cp "$ARCH"/boot/{vmlinuz-linux-grsec,initramfs-linux-grsec.img,initramfs-linux-grsec-fallback.img} ${ARCH}${esp_mnt}" > "$ARCH"/etc/pacman.d/hooks/linux-esp.hook
-			fi
-			cp "$ARCH"/boot/{vmlinuz-linux,initramfs-linux.img,initramfs-linux-fallback.img} ${ARCH}${esp_mnt} &
-			pid=$! pri=0.1 msg="$wait_load \n\n \Z1> \Z2cp "$ARCH"/boot/vmlinuz-linux ${ARCH}${esp_mnt}\Zn" load
-		fi
-
+			
 		if "$crypted" ; then
 			sed -i "s|APPEND.*$|APPEND root=/dev/mapper/root cryptdevice=/dev/lvm/lvroot:root rw|" ${ARCH}${esp_mnt}/EFI/syslinux/syslinux.cfg
 		else
@@ -1731,23 +1720,27 @@ systemd_config() {
 		sed -i '/options/ s/$/ nvidia-drm.modeset=1/' ${ARCH}${esp_mnt}/loader/entries/arch.conf
 	fi
 
-	if [ "$esp_mnt" != "/boot" ]; then
-		if [ "$kernel" == "linux" ]; then
-			echo -e "$linux_hook\nExec = /usr/bin/cp "$ARCH"/boot/{vmlinuz-linux,initramfs-linux.img,initramfs-linux-fallback.img} ${ARCH}${esp_mnt}" > "$ARCH"/etc/pacman.d/hooks/linux-esp.hook
-		elif [ "$kernel" == "linux-lts" ]; then
-			echo -e "$lts_hook\nExec = /usr/bin/cp "$ARCH"/boot/{vmlinuz-linux,initramfs-linux.img,initramfs-linux-fallback.img} ${ARCH}${esp_mnt}" > "$ARCH"/etc/pacman.d/hooks/linux-esp.hook
-		else
-			echo -e "$grs_hook\nExec = /usr/bin/cp "$ARCH"/boot/{vmlinuz-linux,initramfs-linux.img,initramfs-linux-fallback.img} ${ARCH}${esp_mnt}" > "$ARCH"/etc/pacman.d/hooks/linux-esp.hook
-		fi
-		cp "$ARCH"/boot/{vmlinuz-linux,initramfs-linux.img,initramfs-linux-fallback.img} ${ARCH}${esp_mnt} &
-		pid=$! pri=0.1 msg="$wait_load \n\n \Z1> \Z2cp "$ARCH"/boot/vmlinuz-linux ${ARCH}${esp_mnt}\Zn" load
-	fi
-
 }
 
 configure_system() {
 
 	op_title="$config_op_msg"
+	
+	if [ "$bootloader" == "syslinux" ] || [ "$bootloader" == "systemd-boot" ] && "$UEFI" ; then
+		if [ "$esp_mnt" != "/boot" ]; then
+			( if [ "$kernel" == "linux" ]; then
+				echo -e "$linux_hook\nExec = /usr/bin/cp "$ARCH"/boot/{vmlinuz-linux,initramfs-linux.img,initramfs-linux-fallback.img} ${ARCH}${esp_mnt}" > "$ARCH"/etc/pacman.d/hooks/linux-esp.hook
+				cp "$ARCH"/boot/{vmlinuz-linux,initramfs-linux.img,initramfs-linux-fallback.img} ${ARCH}${esp_mnt}
+			elif [ "$kernel" == "linux-lts" ]; then
+				echo -e "$lts_hook\nExec = /usr/bin/cp "$ARCH"/boot/{vmlinuz-linux-lts,initramfs-linux-lts.img,initramfs-linux-lts-fallback.img} ${ARCH}${esp_mnt}" > "$ARCH"/etc/pacman.d/hooks/linux-esp.hook
+				cp "$ARCH"/boot/{vmlinuz-linux-lts,initramfs-linux-lts.img,initramfs-linux-lts-fallback.img} ${ARCH}${esp_mnt}
+			else
+				echo -e "$grs_hook\nExec = /usr/bin/cp "$ARCH"/boot/{vmlinuz-linux-grsec,initramfs-linux-grsec.img,initramfs-linux-grsec-fallback.img} ${ARCH}${esp_mnt}" > "$ARCH"/etc/pacman.d/hooks/linux-esp.hook
+				cp "$ARCH"/boot/{vmlinuz-linux-lts,initramfs-linux-grsec.img,initramfs-linux-grsec-fallback.img} ${ARCH}${esp_mnt}
+			fi ) &
+			pid=$! pri=0.1 msg="$wait_load \n\n \Z1> \Z2cp "$ARCH"/boot/vmlinuz-linux ${ARCH}${esp_mnt}\Zn" load
+		fi
+	fi
 	
 	if "$drm" ; then
 		sed -i 's/MODULES=""/MODULES="nvidia nvidia_modeset nvidia_uvm nvidia_drm"/' "$ARCH"/etc/mkinitcpio.conf
