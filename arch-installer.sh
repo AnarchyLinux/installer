@@ -275,16 +275,17 @@ prepare_drives() {
 		if "$screen_h" ; then
 			cat <<-EOF > /tmp/part.sh
 					dialog --colors --backtitle "$backtitle" --title "$title" --ok-button "$ok" --cancel-button "$cancel" --menu "$drive_msg \n\n $dev_menu" 16 60 3 \\
-					$(lsblk -nio NAME,SIZE,TYPE | egrep "disk|raid[0-9]+$" | sed 's/[^[:alnum:]., ]//g' | sort -k 1,1 | uniq | awk '{print "\""$1"\"""  ""\"| "$2" "$3" |==>\""" \\"}' | column -t)
-					3>&1 1>&2 2>&3
 				EOF
 		else
 			cat <<-EOF > /tmp/part.sh
 					dialog --colors --title "$title" --ok-button "$ok" --cancel-button "$cancel" --menu "$drive_msg \n\n $dev_menu" 16 60 3 \\
-					$(lsblk -nio NAME,SIZE,TYPE | egrep "disk|raid[0-9]+$" | sed 's/[^[:alnum:]., ]//g' | sort -k 1,1 | uniq | awk '{print "\""$1"\"""  ""\"| "$2" "$3" |==>\""" \\"}' | column -t)
-					3>&1 1>&2 2>&3
 				EOF
 		fi
+
+		cat <<-EOF >> /tmp/part.sh
+			$(lsblk -nio NAME,SIZE,TYPE | egrep "disk|raid[0-9]+$" | sed 's/[^[:alnum:]_., ]//g' | sort -k 1,1 | uniq | awk '{print "\""$1"\"""  ""\"| "$2" "$3" |==>\""" \\"}' | column -t)
+			3>&1 1>&2 2>&3
+		EOF
 
 		DRIVE=$(bash /tmp/part.sh)
 		rm /tmp/part.sh
