@@ -678,7 +678,7 @@ part_class() {
 	fi
 
 	if [ "$part_fs" == "linux_raid_member" ]; then # do nothing
-		:
+		part_menu
 	elif ([ "$part_type" == "disk" ]) || ( (<<<"$part_type" egrep "raid[0-9]+" &> /dev/null) && [ -z "$part_fs" ] ); then # Partition
 
         source "$lang_file"
