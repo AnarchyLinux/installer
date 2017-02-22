@@ -33,11 +33,11 @@ fi
 alias help="cat ~/.help"
 alias start="cat /etc/issue"
 alias 1="arch-anywhere"
-alias 2="arch-wiki"
-alias 3="iptest"
-alias 4="sysinfo"
-alias 5="fetchmirrors"
-alias 6="reboot"
+alias 2="arch-anywhere -u"
+alias 3="arch-wiki"
+alias 4="iptest"
+alias 5="sysinfo"
+alias 6="fetchmirrors"
 
 ## Settings for umask
 #if (( EUID == 0 )); then
