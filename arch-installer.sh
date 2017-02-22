@@ -171,11 +171,14 @@ set_keys() {
 	"$default" "$default Keymap" \
 	"us" "United States" \
 	"de" "German" \
+	"el" "Greek" \
 	"es" "Spanish" \
 	"fr" "French" \
+	"it" "Italian" \
 	"pt-latin9" "Portugal" \
 	"ro" "Romanian" \
 	"ru" "Russian" \
+	"sv" "Swedish" \
 	"uk" "United Kingdom" \
 	"$other"       "$other-keymaps"		 3>&1 1>&2 2>&3)
 	source "$lang_file"
@@ -199,15 +202,20 @@ set_locale() {
 	LOCALE=$(dialog --nocancel --ok-button "$ok" --menu "$locale_msg" 18 60 11 \
 	"en_US.UTF-8" "United States" \
 	"en_AU.UTF-8" "Australia" \
+	"pt_BR.UTF-8" "Brazil" \
 	"en_CA.UTF-8" "Canada" \
 	"es_ES.UTF-8" "Spanish" \
 	"fr_FR.UTF-8" "French" \
 	"de_DE.UTF-8" "German" \
+	"el_GR.UTF-8" "Greek" \
 	"en_GB.UTF-8" "Great Britain" \
+	"it_IT.UTF-8" "Italian" \
+	"lv_LV.UTF-8" "Latvian" \
 	"en_MX.UTF-8" "Mexico" \
 	"pt_PT.UTF-8" "Portugal" \
 	"ro_RO.UTF-8" "Romanian" \
 	"ru_RU.UTF-8" "Russian" \
+	"es_ES.UTF-8" "Spanish" \
 	"sv_SE.UTF-8" "Swedish" \
 	"$other"       "$other-locale"		 3>&1 1>&2 2>&3)
 
