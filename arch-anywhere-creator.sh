@@ -199,6 +199,11 @@ configure_boot() {
 	cd "$customiso"/EFI/archiso/
 	echo -e "Replacing label hex in efiboot.img...\n$archiso_label $archiso_hex > $iso_label $iso_hex"
 	xxd -c 256 -p efiboot.img | sed "s/$archiso_hex/$iso_hex/" | xxd -r -p > efiboot1.img
+	if ! (xxd -c 256 -p efiboot1.img | grep "$iso_hex" &>/dev/null); then
+		echo "\nError: failed to replace label hex in efiboot.img"
+		echo "Please look into this issue before releasing ISO"
+		echo "Press any key to continue" ; read input
+	fi
 	mv efiboot1.img efiboot.img
 	create_iso
 
