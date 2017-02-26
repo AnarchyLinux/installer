@@ -1594,7 +1594,7 @@ install_base() {
 			base_install="$(pacman -Sqg base | sed 's/^linux//') $base_install"
 		fi
 		
-		(pacstrap "$ARCH" --force $(echo "$base_install") 2>/dev/null ; echo "$?" > /tmp/ex_status) &> "$tmpfile" &
+		(pacstrap "$ARCH" --force $(echo "$base_install") ; echo "$?" > /tmp/ex_status) &> "$tmpfile" &
 		pid=$! pri=$(echo "$down" | sed 's/\..*$//') msg="\n$install_load_var" load_log
 
 		genfstab -U -p "$ARCH" >> "$ARCH"/etc/fstab
@@ -1993,10 +1993,10 @@ install_software() {
 	op_title="$software_op_msg"
 	if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$software_msg0" 10 60) then
 		
-		until "$software_selected"
+		while (true)
 		  do
 			unset software
-			err=false
+			add=true
 			if ! "$skip" ; then
 				software_menu=$(dialog --extra-button --extra-label "$install" --ok-button "$select" --cancel-button "$cancel" --menu "$software_type_msg" 20 63 11 \
 					"$aar" "$aar_msg" \
@@ -2014,15 +2014,12 @@ install_software() {
 				
 				if [ "$ex" -eq "1" ]; then
 					if (dialog --yes-button "$yes" --no-button "$no" --defaultno --yesno "\n$software_warn_msg" 10 60) then
-						software_selected=true
-						err=true
-						unset software_menu
+						break
 					else
-						err=true
+						add=false
 					fi
 				elif [ "$ex" -eq "3" ]; then
 					software_menu="$done_msg"
-					skip=true
 				elif [ "$software_menu" == "$aar" ]; then
 					if ! (<"$ARCH"/etc/pacman.conf grep "arch-anywhere"); then
 						if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$aar_add_msg" 10 60) then
@@ -2045,7 +2042,7 @@ install_software() {
 						"pamac-aur"		"$aar5" OFF \
 						"yaourt"		"$aar3" OFF 3>&1 1>&2 2>&3)
 					if [ "$?" -gt "0" ]; then
-						err=true
+						add=false
 					fi
 				;;
 				"$audio")
@@ -2061,7 +2058,7 @@ install_software() {
 						"pianobar"		"$audio9" OFF \
 						"pavucontrol"	"$audio8" OFF 3>&1 1>&2 2>&3)
 					if [ "$?" -gt "0" ]; then
-						err=true
+						add=false
 					fi
 				;;
 				"$internet")
@@ -2079,7 +2076,7 @@ install_software() {
 						"transmission-gtk"		"$net8" OFF \
 						"hexchat"			"$net11" OFF 3>&1 1>&2 2>&3)
 					if [ "$?" -gt "0" ]; then
-						err=true
+						add=false
 					fi
 					
 					if (<<<"$software" grep "firefox" &>/dev/null) && [ -n "$bro" ]; then
@@ -2103,7 +2100,7 @@ install_software() {
 						"warsow"		"$game8" OFF \
 						"xonotic"		"$game9" OFF 3>&1 1>&2 2>&3)
 					if [ "$?" -gt "0" ]; then
-						err=true
+						add=false
 					fi
 				;;
 				"$graphic")
@@ -2116,7 +2113,7 @@ install_software() {
 						"imagemagick"	"$graphic4" OFF \
 						"pinta"			"$graphic5" OFF 3>&1 1>&2 2>&3)
 					if [ "$?" -gt "0" ]; then
-						err=true
+						add=false
 					fi
 				;;
 				"$multimedia")
@@ -2131,7 +2128,7 @@ install_software() {
 						"totem"					"$media5" OFF \
 						"vlc"         	   			"$media6" OFF 3>&1 1>&2 2>&3)
 					if [ "$?" -gt "0" ]; then
-						err=true
+						add=false
 					fi
 					
 					if (<<<"$software" grep "multimedia-codecs") then
@@ -2146,7 +2143,7 @@ install_software() {
 						"libreoffice-fresh"		"$office4" OFF \
 						"libreoffice-still"		"$office5" OFF 3>&1 1>&2 2>&3)
 					if [ "$?" -gt "0" ]; then
-						err=true
+						add=false
 					fi
 
 					if (<<<"$software" grep "libreoffice-fresh" &>/dev/null) && [ -n "$lib" ]; then
@@ -2168,7 +2165,7 @@ install_software() {
 						"xfce4-terminal"    "$term6" OFF \
 						"yakuake"           "$term7" OFF 3>&1 1>&2 2>&3)
 					if [ "$?" -gt "0" ]; then
-						err=true
+						add=false
 					fi
 				;;
 				"$text_editor")
@@ -2182,7 +2179,7 @@ install_software() {
 						"neovim"		"$edit5" OFF \
 						"vim"			"$edit6" OFF 3>&1 1>&2 2>&3)
 					if [ "$?" -gt "0" ]; then
-						err=true
+						add=false
 					fi
 				;;
 				"$system")
@@ -2211,14 +2208,15 @@ install_software() {
 						"wget"			"$sys18" ON \
 						"xfe"			"$sys23" OFF 3>&1 1>&2 2>&3)
 					if [ "$?" -gt "0" ]; then
-						err=true
+						add=false
 					fi
 				;;
 				"$done_msg")
 					if [ -z "$final_software" ]; then
 						if (dialog --yes-button "$yes" --no-button "$no" --defaultno --yesno "\n$software_warn_msg" 10 60) then
-							software_selected=true
-							err=true
+							break
+						else
+							add=false
 						fi
 					else
 						download=$(echo "$final_software" | sed 's/\"//g' | tr ' ' '\n' | nl | sort -u -k2 | sort -n | cut -f2- | sed 's/$/ /g' | tr -d '\n')
@@ -2245,14 +2243,14 @@ install_software() {
 	  					    software_selected=true err=true
 						else
 							unset final_software
-							err=true
+							add=false
 						fi
 					fi
 				;;
 			esac
 			
-			if ! "$err" ; then
-				if [ -z "$software" ] && [ "$software_menu" != "$done_msg" ]; then
+			if "$add" ; then
+				if [ -z "$software" ]; then
 					if ! (dialog --yes-button "$yes" --no-button "$no" --defaultno --yesno "\n$software_noconfirm_msg ${software_menu}?" 10 60) then
 						skip=true
 					fi
@@ -2278,7 +2276,6 @@ install_software() {
 				fi
 			fi
 		done
-		err=false
 	fi
 	
 	if ! "$pac_update" ; then
