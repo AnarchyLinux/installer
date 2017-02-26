@@ -1996,7 +1996,7 @@ install_software() {
 		while (true)
 		  do
 			unset software
-			add=true
+			add_soft=true
 			if ! "$skip" ; then
 				software_menu=$(dialog --extra-button --extra-label "$install" --ok-button "$select" --cancel-button "$cancel" --menu "$software_type_msg" 20 63 11 \
 					"$aar" "$aar_msg" \
@@ -2016,7 +2016,7 @@ install_software() {
 					if (dialog --yes-button "$yes" --no-button "$no" --defaultno --yesno "\n$software_warn_msg" 10 60) then
 						break
 					else
-						add=false
+						add_soft=false
 					fi
 				elif [ "$ex" -eq "3" ]; then
 					software_menu="$done_msg"
@@ -2033,7 +2033,7 @@ install_software() {
 
 			case "$software_menu" in
 				"$aar")
-					software=$(dialog --ok-button "$ok" --cancel-button "$cancel" --checklist "$software_msg1" 14 60 4 \
+					software=$(dialog --ok-button "$ok" --cancel-button "$cancel" --checklist "$software_msg1" 17 60 7 \
 						"arch-wiki-cli"		"$aar0" ON \
 						"downgrade"		"$aar6" OFF \
 						"fetchmirrors"		"$aar1" ON \
@@ -2042,7 +2042,7 @@ install_software() {
 						"pamac-aur"		"$aar5" OFF \
 						"yaourt"		"$aar3" OFF 3>&1 1>&2 2>&3)
 					if [ "$?" -gt "0" ]; then
-						add=false
+						add_soft=false
 					fi
 				;;
 				"$audio")
@@ -2058,7 +2058,7 @@ install_software() {
 						"pianobar"		"$audio9" OFF \
 						"pavucontrol"	"$audio8" OFF 3>&1 1>&2 2>&3)
 					if [ "$?" -gt "0" ]; then
-						add=false
+						add_soft=false
 					fi
 				;;
 				"$internet")
@@ -2076,7 +2076,7 @@ install_software() {
 						"transmission-gtk"		"$net8" OFF \
 						"hexchat"			"$net11" OFF 3>&1 1>&2 2>&3)
 					if [ "$?" -gt "0" ]; then
-						add=false
+						add_soft=false
 					fi
 					
 					if (<<<"$software" grep "firefox" &>/dev/null) && [ -n "$bro" ]; then
@@ -2100,7 +2100,7 @@ install_software() {
 						"warsow"		"$game8" OFF \
 						"xonotic"		"$game9" OFF 3>&1 1>&2 2>&3)
 					if [ "$?" -gt "0" ]; then
-						add=false
+						add_soft=false
 					fi
 				;;
 				"$graphic")
@@ -2113,7 +2113,7 @@ install_software() {
 						"imagemagick"	"$graphic4" OFF \
 						"pinta"			"$graphic5" OFF 3>&1 1>&2 2>&3)
 					if [ "$?" -gt "0" ]; then
-						add=false
+						add_soft=false
 					fi
 				;;
 				"$multimedia")
@@ -2128,7 +2128,7 @@ install_software() {
 						"totem"					"$media5" OFF \
 						"vlc"         	   			"$media6" OFF 3>&1 1>&2 2>&3)
 					if [ "$?" -gt "0" ]; then
-						add=false
+						add_soft=false
 					fi
 					
 					if (<<<"$software" grep "multimedia-codecs") then
@@ -2143,7 +2143,7 @@ install_software() {
 						"libreoffice-fresh"		"$office4" OFF \
 						"libreoffice-still"		"$office5" OFF 3>&1 1>&2 2>&3)
 					if [ "$?" -gt "0" ]; then
-						add=false
+						add_soft=false
 					fi
 
 					if (<<<"$software" grep "libreoffice-fresh" &>/dev/null) && [ -n "$lib" ]; then
@@ -2165,7 +2165,7 @@ install_software() {
 						"xfce4-terminal"    "$term6" OFF \
 						"yakuake"           "$term7" OFF 3>&1 1>&2 2>&3)
 					if [ "$?" -gt "0" ]; then
-						add=false
+						add_soft=false
 					fi
 				;;
 				"$text_editor")
@@ -2179,7 +2179,7 @@ install_software() {
 						"neovim"		"$edit5" OFF \
 						"vim"			"$edit6" OFF 3>&1 1>&2 2>&3)
 					if [ "$?" -gt "0" ]; then
-						add=false
+						add_soft=false
 					fi
 				;;
 				"$system")
@@ -2208,7 +2208,7 @@ install_software() {
 						"wget"			"$sys18" ON \
 						"xfe"			"$sys23" OFF 3>&1 1>&2 2>&3)
 					if [ "$?" -gt "0" ]; then
-						add=false
+						add_soft=false
 					fi
 				;;
 				"$done_msg")
@@ -2216,7 +2216,7 @@ install_software() {
 						if (dialog --yes-button "$yes" --no-button "$no" --defaultno --yesno "\n$software_warn_msg" 10 60) then
 							break
 						else
-							add=false
+							add_soft=false
 						fi
 					else
 						download=$(echo "$final_software" | sed 's/\"//g' | tr ' ' '\n' | nl | sort -u -k2 | sort -n | cut -f2- | sed 's/$/ /g' | tr -d '\n')
@@ -2240,16 +2240,16 @@ install_software() {
 						    pid=$! pri=$(<<<"$down" sed 's/\..*$//') msg="\n$software_load_var" load_log
 	  					    rm "$tmpfile"
 	  					    unset final_software
-	  					    software_selected=true err=true
+	  					    break
 						else
 							unset final_software
-							add=false
+							add_soft=false
 						fi
 					fi
 				;;
 			esac
 			
-			if "$add" ; then
+			if "$add_soft" ; then
 				if [ -z "$software" ]; then
 					if ! (dialog --yes-button "$yes" --no-button "$no" --defaultno --yesno "\n$software_noconfirm_msg ${software_menu}?" 10 60) then
 						skip=true
