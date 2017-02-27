@@ -1584,10 +1584,6 @@ install_base() {
 	if (dialog --yes-button "$install" --no-button "$cancel" --yesno "\n$install_var" "$x" 65); then
 		tmpfile=$(mktemp)
 		
-		(pacman-key --init
-		pacman-key --populate archlinux) &> /dev/null &
-		pid=$! pri=1 msg="\n$keys_load\n\n \Z1> \Z2pacman-key --init ; pacman-key --populate archlinux\Zn" load
-
 		if [ "$kernel" == "linux" ]; then
 			base_install="$(pacman -Sqg base) $base_install"
 		else
