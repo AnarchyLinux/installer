@@ -18,6 +18,6 @@
 [0;31m |[0;33m 	5.[0;31m) [0;32mSystem Information      - sysinfo				      [0;31m|
 [0;31m |[0;33m 	6.[0;31m) [0;32mUpdate Mirrorlist       - fetchmirrors		      	      [0;31m|
 [0;31m |			    	                                              |
-[0;33m [0;31m|[0;33m For more info on Arch Anywhere type:[0;32m help				      [0;31m|
+[0;33m [0;31m|[0;33m For more info on Arch Anywhere type:[0;32m help[0;33m OR:[0;32m arch-anywhere --help	      [0;31m|
 [0;33m [0;31m|[0;33m To show this screen at any time type:[0;32m start[0m		                      [0;31m|
 [0;31m--------------------------------------------------------------------------------[0m
