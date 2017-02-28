@@ -35,6 +35,7 @@ init() {
 		"French" "Français" \
 		"German" "Deutsch" \
 		"Greek" "Greek" \
+		"Hungarian" "Magyar" \
 		"Indonesian" "bahasa Indonesia" \
 		"Italian" "Italiano" \
 		"Latvian" "Latviešu" \
@@ -52,6 +53,7 @@ init() {
 		"French") export lang_file="$aa_dir"/lang/arch-installer-french.conf lib=fr bro=fr kdel=fr ;;
 		"German") export lang_file="$aa_dir"/lang/arch-installer-german.conf lib=de bro=de kdel=de ;;
 		"Greek") export lang_file="$aa_dir"/lang/arch-installer-greek.conf lib=el bro=el kdel=el ;;
+		"Hungarian") export lang_file="$aa_dir"/lang/arch-installer-hungarian.conf lib=hu bro=hu kdel=hu ;;
 		"Indonesian") export lang_file="$aa_dir"/lang/arch-installer-indonesia.conf lib=id bro=id kdel=id ;;
 		"Italian") export lang_file="$aa_dir"/lang/arch-installer-italian.conf lib=it bro=it kdel=it ;;
 		"Latvian") export lang_file="$aa_dir"/lang/arch-installer-latvian.conf lib=lv bro=lv kdel=lv ;;
@@ -172,6 +174,7 @@ set_keys() {
 	"us" "United States" \
 	"de" "German" \
 	"el" "Greek" \
+	"hu" "Hungarian" \
 	"es" "Spanish" \
 	"fr" "French" \
 	"it" "Italian" \
@@ -209,6 +212,7 @@ set_locale() {
 	"de_DE.UTF-8" "German" \
 	"el_GR.UTF-8" "Greek" \
 	"en_GB.UTF-8" "Great Britain" \
+	"hu_HU.UTF-8" "Hungary" \
 	"it_IT.UTF-8" "Italian" \
 	"lv_LV.UTF-8" "Latvian" \
 	"en_MX.UTF-8" "Mexico" \
