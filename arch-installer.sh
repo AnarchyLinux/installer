@@ -31,6 +31,7 @@ init() {
 	op_title=" -| Language Select |- "
 	ILANG=$(dialog --nocancel --menu "\nArch Anywhere Installer\n\n \Z2*\Zn Select your install language:" 20 60 10 \
 		"English" "-" \
+		"Chinese" "China" \
 		"Dutch" "Nederlands" \
 		"French" "Français" \
 		"German" "Deutsch" \
@@ -64,6 +65,13 @@ init() {
 		"Russian") export lang_file="$aa_dir"/lang/arch-installer-russian.conf lib=ru bro=ru kdel=ru ;;
 		"Spanish") export lang_file="$aa_dir"/lang/arch-installer-spanish.conf lib=es bro=es-es kdel=es ;;
 		"Swedish") export lang_file="$aa_dir"/lang/arch-installer-swedish.conf lib=sv bro=sv-se kdel=sv ;;
+		"Chinese") export lang_file="$aa_dir"/lang/arch-installer-swedish.conf lib=zh-CN bro=zh-cn kdel=zh_cn 
+				   cat /usr/bin/arch-anywhere | sed 's/^int$//' > /root/.arch-anywhere-chinese
+				   chmod +x /root/.arch-anywhere-chinese
+				   echo -e "init_zh() {\ntrap '' 2\nsource \$aa_conf\nlang_file=\$aa_dir/lang/arch-installer-chinese.conf\nsource \$lang_file\nexport reload=true\nupdate_mirrors\n}\ninit_zh"
+				   fbterm
+				   exit
+				   ;;
 	esac
 
 	source "$lang_file"
@@ -2569,7 +2577,7 @@ load_log() {
 }
 
 opt="$1"
-if [ $(basename "$0") = "arch-anywhere" ]; then
+if [[ $(basename "$0") = "arch-anywhere"  || $(basename "$0") = ".arch-anywhere-chinese" ]]; then
 	aa_dir="/usr/share/arch-anywhere" # Arch Anywhere iso
 	aa_conf="/etc/arch-anywhere.conf"
 else
