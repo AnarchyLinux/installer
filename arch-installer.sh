@@ -67,7 +67,6 @@ init() {
 	esac
 
 	source "$lang_file"
-	set_lang="$LANG"
 	export reload=true
 	update_mirrors
 
@@ -265,9 +264,9 @@ set_zone() {
 prepare_drives() {
 
 	op_title="$part_op_msg"
-	
-	df | grep "$ARCH" &> /dev/null
-	if [ "$?" -eq "0" ]; then
+	tmp_menu=/tmp/part.sh
+
+	if (df | grep "$ARCH" &> /dev/null); then
 		umount -R "$ARCH" &> /dev/null &
 		pid=$! pri=0.1 msg="$wait_load \n\n \Z1> \Z2umount -R $ARCH\Zn" load
 		swapoff -a &> /dev/null &
@@ -282,25 +281,24 @@ prepare_drives() {
 	if [ "$?" -gt "0" ] || [ "$PART" == "$menu_msg" ]; then
 		main_menu
 	elif [ "$PART" != "$method2" ]; then
-		LANG=en_US.UTF-8
 		dev_menu="           Device: | Size: | Type:  |"
 		if "$screen_h" ; then
-			cat <<-EOF > /tmp/part.sh
+			cat <<-EOF > "$tmp_menu"
 					dialog --colors --backtitle "$backtitle" --title "$title" --ok-button "$ok" --cancel-button "$cancel" --menu "$drive_msg \n\n $dev_menu" 16 60 5 \\
 				EOF
 		else
-			cat <<-EOF > /tmp/part.sh
+			cat <<-EOF > "$tmp_menu"
 					dialog --colors --title "$title" --ok-button "$ok" --cancel-button "$cancel" --menu "$drive_msg \n\n $dev_menu" 16 60 5 \\
 				EOF
 		fi
 
-		cat <<-EOF >> /tmp/part.sh
+		cat <<-EOF >> "$tmp_menu"
 			$(lsblk -nio NAME,SIZE,TYPE | egrep "disk|raid[0-9]+$" | sed 's/[^[:alnum:]_., ]//g' | sort -k 1,1 | uniq | awk '{print "\""$1"\"""  ""\"| "$2" | "$3" |==>\""" \\"}' | column -t)
 			3>&1 1>&2 2>&3
 		EOF
 
-		DRIVE=$(bash /tmp/part.sh)
-		rm /tmp/part.sh
+		DRIVE=$(bash "$tmp_menu")
+		rm "$tmp_menu"
 		
 		if [ -z "$DRIVE" ]; then
 			prepare_drives
@@ -383,8 +381,6 @@ prepare_drives() {
 		fi
 	fi
 	
-	LANG="$set_lang"
-
 	case "$PART" in
 		"$method0") auto_part	
 		;;
