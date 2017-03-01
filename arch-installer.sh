@@ -1662,11 +1662,11 @@ syslinux_config() {
 		cp "$aa_dir"/boot/splash.png ${ARCH}${esp_mnt}/EFI/syslinux
 		
 		if [ "$kernel" == "linux-lts" ]; then
-			sed -i 's/vmlinuz-linux/vmlinux-linux-lts/' ${ARCH}${esp_mnt}/EFI/syslinux/syslinux.cfg
+			sed -i 's/vmlinuz-linux/vmlinuz-linux-lts/' ${ARCH}${esp_mnt}/EFI/syslinux/syslinux.cfg
 			sed -i 's/initramfs-linux.img/initramfs-linux-lts.img/' ${ARCH}${esp_mnt}/EFI/syslinux/syslinux.cfg
 			sed -i 's/initramfs-linux-fallback.img/initramfs-linux-lts-fallback.img/' ${ARCH}${esp_mnt}/EFI/syslinux/syslinux.cfg
 		elif [ "$kernel" == "linux-grsec" ]; then
-			sed -i 's/vmlinuz-linux/vmlinux-linux-grsec/' ${ARCH}${esp_mnt}/EFI/syslinux/syslinux.cfg
+			sed -i 's/vmlinuz-linux/vmlinuz-linux-grsec/' ${ARCH}${esp_mnt}/EFI/syslinux/syslinux.cfg
 			sed -i 's/initramfs-linux.img/initramfs-linux-grsec.img/' ${ARCH}${esp_mnt}/EFI/syslinux/syslinux.cfg
 			sed -i 's/initramfs-linux-fallback.img/initramfs-linux-grsec-fallback.img/' ${ARCH}${esp_mnt}/EFI/syslinux/syslinux.cfg
 		fi
@@ -1701,11 +1701,11 @@ syslinux_config() {
 		pid=$! pri=0.1 msg="\n$syslinux_load \n\n \Z1> \Z2syslinux-install_update -i -a -m -c $ARCH\Zn" load
 		
 		if [ "$kernel" == "linux-lts" ]; then
-			sed -i 's/vmlinuz-linux/vmlinux-linux-lts/' ${ARCH}/boot/syslinux/syslinux.cfg
+			sed -i 's/vmlinuz-linux/vmlinuz-linux-lts/' ${ARCH}/boot/syslinux/syslinux.cfg
 			sed -i 's/initramfs-linux.img/initramfs-linux-lts.img/' ${ARCH}/boot/syslinux/syslinux.cfg
 			sed -i 's/initramfs-linux-fallback.img/initramfs-linux-lts-fallback.img/' ${ARCH}/boot/syslinux/syslinux.cfg
 		elif [ "$kernel" == "linux-grsec" ]; then
-			sed -i 's/vmlinuz-linux/vmlinux-linux-grsec/' ${ARCH}/boot/syslinux/syslinux.cfg
+			sed -i 's/vmlinuz-linux/vmlinuz-linux-grsec/' ${ARCH}/boot/syslinux/syslinux.cfg
 			sed -i 's/initramfs-linux.img/initramfs-linux-grsec.img/' ${ARCH}/boot/syslinux/syslinux.cfg
 			sed -i 's/initramfs-linux-fallback.img/initramfs-linux-grsec-fallback.img/' ${ARCH}/boot/syslinux/syslinux.cfg
 		fi
