@@ -1660,6 +1660,17 @@ syslinux_config() {
 		cp -r "$ARCH"/usr/lib/syslinux/efi64/* ${ARCH}${esp_mnt}/EFI/syslinux/
 		cp "$aa_dir"/boot/loader/syslinux/syslinux_efi.cfg ${ARCH}${esp_mnt}/EFI/syslinux/syslinux.cfg
 		cp "$aa_dir"/boot/splash.png ${ARCH}${esp_mnt}/EFI/syslinux
+		
+		if [ "$kernel" == "linux-lts" ]; then
+			sed -i 's/vmlinuz-linux/vmlinux-linux-lts/' ${ARCH}${esp_mnt}/EFI/syslinux/syslinux.cfg
+			sed -i 's/initramfs-linux.img/initramfs-linux-lts.img/' ${ARCH}${esp_mnt}/EFI/syslinux/syslinux.cfg
+			sed -i 's/initramfs-linux-fallback.img/initramfs-linux-lts-fallback.img/' ${ARCH}${esp_mnt}/EFI/syslinux/syslinux.cfg
+		elif [ "$kernel" == "linux-grsec" ]; then
+			sed -i 's/vmlinuz-linux/vmlinux-linux-grsec/' ${ARCH}${esp_mnt}/EFI/syslinux/syslinux.cfg
+			sed -i 's/initramfs-linux.img/initramfs-linux-grsec.img/' ${ARCH}${esp_mnt}/EFI/syslinux/syslinux.cfg
+			sed -i 's/initramfs-linux-fallback.img/initramfs-linux-grsec-fallback.img/' ${ARCH}${esp_mnt}/EFI/syslinux/syslinux.cfg
+		fi
+
 		arch-chroot "$ARCH" efibootmgr -c -d /dev/"$esp_part" -p "$esp_part_int" -l /EFI/syslinux/syslinux.efi -L "Syslinux") &> /dev/null &
 		pid=$! pri=0.1 msg="\n$syslinux_load \n\n \Z1> \Z2syslinux install efi mode...\Zn" load
 			
@@ -1670,7 +1681,13 @@ syslinux_config() {
 		fi
 
 		if "$intel" && ! "$VM" ; then
-			sed -i "s|../../initramfs-linux.img|../../intel-ucode.img,../../initramfs-linux.img|" ${ARCH}${esp_mnt}/EFI/syslinux/syslinux.cfg
+			if [ "$kernel" == "linux" ]; then
+				sed -i "s|../../initramfs-linux.img|../../intel-ucode.img,../../initramfs-linux.img|" ${ARCH}${esp_mnt}/EFI/syslinux/syslinux.cfg
+			elif [ "$kernel" == "linux-lts" ]; then
+				sed -i "s|../../initramfs-linux-lts.img|../../intel-ucode.img,../../initramfs-linux-lts.img|" ${ARCH}${esp_mnt}/EFI/syslinux/syslinux.cfg
+			else
+				sed -i "s|../../initramfs-linux-grsec.img|../../intel-ucode.img,../../initramfs-linux-grsec.img|" ${ARCH}${esp_mnt}/EFI/syslinux/syslinux.cfg
+			fi
 		fi
 		
 		if "$drm" ; then
@@ -1683,6 +1700,16 @@ syslinux_config() {
 		cp "$aa_dir"/boot/splash.png "$ARCH"/boot/syslinux/) &> /dev/null &
 		pid=$! pri=0.1 msg="\n$syslinux_load \n\n \Z1> \Z2syslinux-install_update -i -a -m -c $ARCH\Zn" load
 		
+		if [ "$kernel" == "linux-lts" ]; then
+			sed -i 's/vmlinuz-linux/vmlinux-linux-lts/' ${ARCH}/boot/syslinux/syslinux.cfg
+			sed -i 's/initramfs-linux.img/initramfs-linux-lts.img/' ${ARCH}/boot/syslinux/syslinux.cfg
+			sed -i 's/initramfs-linux-fallback.img/initramfs-linux-lts-fallback.img/' ${ARCH}/boot/syslinux/syslinux.cfg
+		elif [ "$kernel" == "linux-grsec" ]; then
+			sed -i 's/vmlinuz-linux/vmlinux-linux-grsec/' ${ARCH}/boot/syslinux/syslinux.cfg
+			sed -i 's/initramfs-linux.img/initramfs-linux-grsec.img/' ${ARCH}/boot/syslinux/syslinux.cfg
+			sed -i 's/initramfs-linux-fallback.img/initramfs-linux-grsec-fallback.img/' ${ARCH}/boot/syslinux/syslinux.cfg
+		fi
+
 		if "$crypted" ; then
 			sed -i "s|APPEND.*$|APPEND root=/dev/mapper/root cryptdevice=/dev/lvm/lvroot:root rw|" "$ARCH"/boot/syslinux/syslinux.cfg
 		else
@@ -1690,7 +1717,13 @@ syslinux_config() {
 		fi
 
 		if "$intel" && ! "$VM" ; then
-			sed -i "s|../initramfs-linux.img|../intel-ucode.img,../initramfs-linux.img|" "$ARCH"/boot/syslinux/syslinux.cfg
+			if [ "$kernel" == "linux" ]; then
+				sed -i "s|../initramfs-linux.img|../intel-ucode.img,../initramfs-linux.img|" "$ARCH"/boot/syslinux/syslinux.cfg
+			elif [ "$kernel" == "linux-lts" ]; then
+				sed -i "s|../initramfs-linux-lts.img|../intel-ucode.img,../initramfs-linux-lts.img|" "$ARCH"/boot/syslinux/syslinux.cfg
+			else
+				sed -i "s|../initramfs-linux-grsec.img|../intel-ucode.img,../initramfs-linux-grsec.img|" "$ARCH"/boot/syslinux/syslinux.cfg
+			fi
 		fi
 
 		if "$drm" ; then
@@ -1705,9 +1738,16 @@ systemd_config() {
 	esp_mnt=$(<<<$esp_mnt sed "s!$ARCH!!")
 	(arch-chroot "$ARCH" bootctl --path="$esp_mnt" install
 	cp /usr/share/systemd/bootctl/loader.conf ${ARCH}${esp_mnt}/loader/
-	echo "timeout 4" >> ${ARCH}${esp_mnt}/loader/loader.conf
-	echo -e "title          Arch Linux\nlinux          /vmlinuz-linux\ninitrd         /initramfs-linux.img" > ${ARCH}${esp_mnt}/loader/entries/arch.conf) &> /dev/null &
+	echo "timeout 4" >> ${ARCH}${esp_mnt}/loader/loader.conf) &> /dev/null &
 	pid=$! pri=0.1 msg="\n$syslinux_load \n\n \Z1> \Z2bootctl --path="$esp_mnt" install\Zn" load
+	
+	if [ "$kernel" == "linux" ]; then
+		echo -e "title          Arch Linux\nlinux          /vmlinuz-linux\ninitrd         /initramfs-linux.img" > ${ARCH}${esp_mnt}/loader/entries/arch.conf
+	elif [ "$kernel" == "linux-lts" ]; then
+		echo -e "title          Arch Linux\nlinux          /vmlinuz-linux-lts\ninitrd         /initramfs-linux-lts.img" > ${ARCH}${esp_mnt}/loader/entries/arch.conf
+	else
+		echo -e "title          Arch Linux\nlinux          /vmlinuz-linux-grsec\ninitrd         /initramfs-linux-grsec.img" > ${ARCH}${esp_mnt}/loader/entries/arch.conf
+	fi
 	
 	if "$crypted" ; then
 		echo "options		cryptdevice=/dev/lvm/lvroot:root root=/dev/mapper/root quiet rw" >> ${ARCH}${esp_mnt}/loader/entries/arch.conf
