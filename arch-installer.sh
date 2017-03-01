@@ -2569,7 +2569,7 @@ load_log() {
 }
 
 opt="$1"
-if [[ $(basename "$0") = "arch-anywhere"  || $(basename "$0") = ".arch-anywhere-chinese" ]]; then
+if [ $(basename "$0") = "arch-anywhere" ]; then
 	aa_dir="/usr/share/arch-anywhere" # Arch Anywhere iso
 	aa_conf="/etc/arch-anywhere.conf"
 else
