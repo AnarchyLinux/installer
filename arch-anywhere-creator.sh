@@ -173,11 +173,11 @@ prepare_sys() {
 	sudo cp "$aa"/lang/* "$customiso"/arch/"$sys"/squashfs-root/usr/share/arch-anywhere/lang	
 
 ### Copy over extra files (dot files, desktop configurations, help file, issue file, hostname file)
-	sudo cp "$aa"/extra/{.zshrc,.help,.dialogrc,.zprofile} "$customiso"/arch/"$sys"/squashfs-root/root/
+	sudo cp "$aa"/extra/{.zshrc,.help,.dialogrc,.zprofile,.issue} "$customiso"/arch/"$sys"/squashfs-root/root/
 	sudo cp "$aa"/extra/{.bashrc,.bashrc-root,.tcshrc,.tcshrc.conf,.mkshrc} "$customiso"/arch/"$sys"/squashfs-root/usr/share/arch-anywhere/extra/
 	sudo cp "$aa"/extra/.zshrc-sys "$customiso"/arch/"$sys"/squashfs-root/usr/share/arch-anywhere/extra/.zshrc
 	sudo cp -r "$aa"/extra/desktop "$customiso"/arch/"$sys"/squashfs-root/usr/share/arch-anywhere/extra/
-	sudo cp "$aa"/boot/{issue,hostname} "$customiso"/arch/"$sys"/squashfs-root/etc/
+	sudo cp "$aa"/boot/hostname "$customiso"/arch/"$sys"/squashfs-root/etc/
 	sudo cp -r "$aa"/boot/loader/ "$customiso"/arch/"$sys"/squashfs-root/usr/share/arch-anywhere/boot/
 	sudo cp "$aa"/boot/splash.png "$customiso"/arch/"$sys"/squashfs-root/usr/share/arch-anywhere/boot/
 	sudo cp "$aa"/etc/{nvidia340.xx,nvidia304.xx} "$customiso"/arch/"$sys"/squashfs-root/usr/share/arch-anywhere/etc/
