@@ -125,13 +125,13 @@ builds() {
 		makepkg -s
 	fi
 	
-	if [ ! -d /tmp/v86d ]; then
-		cd /tmp
-		wget "https://aur.archlinux.org/cgit/aur.git/snapshot/v86d.tar.gz"
-		tar -xf v86d.tar.gz
-		cd v86d
-		makepkg -s
-	fi
+#	if [ ! -d /tmp/v86d ]; then
+#		cd /tmp
+#		wget "https://aur.archlinux.org/cgit/aur.git/snapshot/v86d.tar.gz"
+#		tar -xf v86d.tar.gz
+#		cd v86d
+#		makepkg -s
+#	fi
 
 	prepare_sys
 
@@ -149,17 +149,17 @@ prepare_sys() {
 	sudo unsquashfs airootfs.sfs
 
 ### Install fonts, fbterm, fetchmirrors, arch-wiki, and uvesafb drivers onto system and cleanup
-	sudo pacman --root squashfs-root --cachedir squashfs-root/var/cache/pacman/pkg  --config squashfs-root/etc/pacman.conf --noconfirm -Syyy terminus-font fbterm wqy-zenhei
+	sudo pacman --root squashfs-root --cachedir squashfs-root/var/cache/pacman/pkg  --config squashfs-root/etc/pacman.conf --noconfirm -Syyy terminus-font
 	sudo pacman --root squashfs-root --cachedir squashfs-root/var/cache/pacman/pkg  --config squashfs-root/etc/pacman.conf --noconfirm -U /tmp/fetchmirrors/*.pkg.tar.xz
 	sudo pacman --root squashfs-root --cachedir squashfs-root/var/cache/pacman/pkg  --config squashfs-root/etc/pacman.conf --noconfirm -U /tmp/arch-wiki-cli/*.pkg.tar.xz
-	sudo pacman --root squashfs-root --cachedir squashfs-root/var/cache/pacman/pkg  --config squashfs-root/etc/pacman.conf --noconfirm -U /tmp/v86d/*.pkg.tar.xz
+#	sudo pacman --root squashfs-root --cachedir squashfs-root/var/cache/pacman/pkg  --config squashfs-root/etc/pacman.conf --noconfirm -U /tmp/v86d/*.pkg.tar.xz
 	sudo pacman --root squashfs-root --cachedir squashfs-root/var/cache/pacman/pkg  --config squashfs-root/etc/pacman.conf -Sl | awk '/\[installed\]$/ {print $1 "/" $2 "-" $3}' > "$customiso"/arch/pkglist.${sys}.txt
 	sudo pacman --root squashfs-root --cachedir squashfs-root/var/cache/pacman/pkg  --config squashfs-root/etc/pacman.conf --noconfirm -Scc
 	sudo rm -f "$customiso"/arch/"$sys"/squashfs-root/var/cache/pacman/pkg/*
 
 ### Copy over vconsole.conf (sets font at boot) & locale.gen (enables locale(s) for font) & uvesafb.conf
 	sudo cp "$aa"/etc/{vconsole.conf,locale.gen} "$customiso"/arch/"$sys"/squashfs-root/etc
-	sudo cp "$aa"/etc/uvesafb.conf "$customiso"/arch/"$sys"/squashfs-root/etc/modules-load.d/
+#	sudo cp "$aa"/etc/uvesafb.conf "$customiso"/arch/"$sys"/squashfs-root/etc/modules-load.d/
 	sudo arch-chroot squashfs-root /bin/bash locale-gen
 
 ### Copy over main arch anywhere config, installer script, and arch-wiki,  make executeable
@@ -205,8 +205,8 @@ configure_boot() {
 	cp "$aa"/boot/splash.png "$customiso"/arch/boot/syslinux
 	cp "$aa"/boot/iso/archiso_head.cfg "$customiso"/arch/boot/syslinux
 	sed -i "s/$archiso_label/$iso_label/" "$customiso"/loader/entries/archiso-x86_64.conf
-	sed -i "s/$archiso_label/$iso_label/" "$customiso"/arch/boot/syslinux/archiso_sys64.cfg 
-	sed -i "s/$archiso_label/$iso_label/" "$customiso"/arch/boot/syslinux/archiso_sys32.cfg
+	sed -i "s/$archiso_label/$iso_label/" "$customiso"/arch/boot/syslinux/archiso_sys.cfg 
+	sed -i "s/$archiso_label/$iso_label/" "$customiso"/arch/boot/syslinux/archiso_pxe.cfg
 	cd "$customiso"/EFI/archiso/
 	echo -e "Replacing label hex in efiboot.img...\n$archiso_label $archiso_hex > $iso_label $iso_hex"
 	xxd -c 256 -p efiboot.img | sed "s/$archiso_hex/$iso_hex/" | xxd -r -p > efiboot1.img
