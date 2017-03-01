@@ -70,7 +70,7 @@ if [ "$iso_ver" != "$iso" ]; then
 			;;
 		esac
 	else
-		echo -en "An updated verison of the archiso is available for download\n'$iso_ver'\nDownload now? [y/N]: "
+		echo -en "An updated version of the archiso is available for download\n'$iso_ver'\nDownload now? [y/N]: "
 		read input
 		
 		case "$input" in
