@@ -265,7 +265,8 @@ set_zone() {
 prepare_drives() {
 
 	op_title="$part_op_msg"
-	
+	tmp_menu=/tmp/part.sh
+
 	df | grep "$ARCH" &> /dev/null
 	if [ "$?" -eq "0" ]; then
 		umount -R "$ARCH" &> /dev/null &
@@ -285,22 +286,22 @@ prepare_drives() {
 		LANG=en_US.UTF-8
 		dev_menu="           Device: | Size: | Type:  |"
 		if "$screen_h" ; then
-			cat <<-EOF > /tmp/part.sh
+			cat <<-EOF > "$tmp_menu"
 					dialog --colors --backtitle "$backtitle" --title "$title" --ok-button "$ok" --cancel-button "$cancel" --menu "$drive_msg \n\n $dev_menu" 16 60 5 \\
 				EOF
 		else
-			cat <<-EOF > /tmp/part.sh
+			cat <<-EOF > "$tmp_menu"
 					dialog --colors --title "$title" --ok-button "$ok" --cancel-button "$cancel" --menu "$drive_msg \n\n $dev_menu" 16 60 5 \\
 				EOF
 		fi
 
-		cat <<-EOF >> /tmp/part.sh
+		cat <<-EOF >> "$tmp_menu"
 			$(lsblk -nio NAME,SIZE,TYPE | egrep "disk|raid[0-9]+$" | sed 's/[^[:alnum:]_., ]//g' | sort -k 1,1 | uniq | awk '{print "\""$1"\"""  ""\"| "$2" | "$3" |==>\""" \\"}' | column -t)
 			3>&1 1>&2 2>&3
 		EOF
 
-		DRIVE=$(bash /tmp/part.sh)
-		rm /tmp/part.sh
+		DRIVE=$(bash "$tmp_menu")
+		rm "$tmp_menu"
 		
 		if [ -z "$DRIVE" ]; then
 			prepare_drives
