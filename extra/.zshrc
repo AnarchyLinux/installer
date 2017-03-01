@@ -342,11 +342,4 @@ alias 6="fetchmirrors"
 #vimpm ()      { vim `perldoc -l $1 | sed -e 's/pod$/pm/'` }
 #vimhelp ()    { vim -c "help $1" -c on -c "au! VimEnter *" }
 
-if [ "$SHLVL" -eq "2" ]; then
-	mv .dialogrc .dialogrc-disabled
-	./.arch-anywhere-chinese
-	mv .dialogrc-disabled .dialogrc
-	exit
-fi
-
 ## END OF FILE #################################################################
