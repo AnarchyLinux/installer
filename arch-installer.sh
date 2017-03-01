@@ -267,8 +267,7 @@ prepare_drives() {
 	op_title="$part_op_msg"
 	tmp_menu=/tmp/part.sh
 
-	df | grep "$ARCH" &> /dev/null
-	if [ "$?" -eq "0" ]; then
+	if (df | grep "$ARCH" &> /dev/null); then
 		umount -R "$ARCH" &> /dev/null &
 		pid=$! pri=0.1 msg="$wait_load \n\n \Z1> \Z2umount -R $ARCH\Zn" load
 		swapoff -a &> /dev/null &
