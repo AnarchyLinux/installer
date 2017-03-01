@@ -149,7 +149,7 @@ prepare_sys() {
 	sudo unsquashfs airootfs.sfs
 
 ### Install fonts, fbterm, fetchmirrors, arch-wiki, and uvesafb drivers onto system and cleanup
-	sudo pacman --root squashfs-root --cachedir squashfs-root/var/cache/pacman/pkg  --config squashfs-root/etc/pacman.conf --noconfirm -Syyy terminus-font fbterm fbv
+	sudo pacman --root squashfs-root --cachedir squashfs-root/var/cache/pacman/pkg  --config squashfs-root/etc/pacman.conf --noconfirm -Syyy terminus-font fbterm wqy-zenhei
 	sudo pacman --root squashfs-root --cachedir squashfs-root/var/cache/pacman/pkg  --config squashfs-root/etc/pacman.conf --noconfirm -U /tmp/fetchmirrors/*.pkg.tar.xz
 	sudo pacman --root squashfs-root --cachedir squashfs-root/var/cache/pacman/pkg  --config squashfs-root/etc/pacman.conf --noconfirm -U /tmp/arch-wiki-cli/*.pkg.tar.xz
 	sudo pacman --root squashfs-root --cachedir squashfs-root/var/cache/pacman/pkg  --config squashfs-root/etc/pacman.conf --noconfirm -U /tmp/v86d/*.pkg.tar.xz
@@ -173,11 +173,11 @@ prepare_sys() {
 	sudo cp "$aa"/lang/* "$customiso"/arch/"$sys"/squashfs-root/usr/share/arch-anywhere/lang	
 
 ### Copy over extra files (dot files, desktop configurations, help file, issue file, hostname file)
-	sudo cp "$aa"/extra/{.zshrc,.help,.dialogrc,.zprofile,.issue} "$customiso"/arch/"$sys"/squashfs-root/root/
+	sudo cp "$aa"/extra/{.zshrc,.help,.dialogrc} "$customiso"/arch/"$sys"/squashfs-root/root/
 	sudo cp "$aa"/extra/{.bashrc,.bashrc-root,.tcshrc,.tcshrc.conf,.mkshrc} "$customiso"/arch/"$sys"/squashfs-root/usr/share/arch-anywhere/extra/
 	sudo cp "$aa"/extra/.zshrc-sys "$customiso"/arch/"$sys"/squashfs-root/usr/share/arch-anywhere/extra/.zshrc
 	sudo cp -r "$aa"/extra/desktop "$customiso"/arch/"$sys"/squashfs-root/usr/share/arch-anywhere/extra/
-	sudo cp "$aa"/boot/hostname "$customiso"/arch/"$sys"/squashfs-root/etc/
+	sudo cp "$aa"/boot/{hostname,issue} "$customiso"/arch/"$sys"/squashfs-root/etc/
 	sudo cp -r "$aa"/boot/loader/ "$customiso"/arch/"$sys"/squashfs-root/usr/share/arch-anywhere/boot/
 	sudo cp "$aa"/boot/splash.png "$customiso"/arch/"$sys"/squashfs-root/usr/share/arch-anywhere/boot/
 	sudo cp "$aa"/etc/{nvidia340.xx,nvidia304.xx} "$customiso"/arch/"$sys"/squashfs-root/usr/share/arch-anywhere/etc/
