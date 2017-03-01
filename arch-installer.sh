@@ -67,7 +67,6 @@ init() {
 	esac
 
 	source "$lang_file"
-	set_lang="$LANG"
 	export reload=true
 	update_mirrors
 
@@ -282,7 +281,6 @@ prepare_drives() {
 	if [ "$?" -gt "0" ] || [ "$PART" == "$menu_msg" ]; then
 		main_menu
 	elif [ "$PART" != "$method2" ]; then
-		LANG=en_US.UTF-8
 		dev_menu="           Device: | Size: | Type:  |"
 		if "$screen_h" ; then
 			cat <<-EOF > "$tmp_menu"
@@ -383,8 +381,6 @@ prepare_drives() {
 		fi
 	fi
 	
-	LANG="$set_lang"
-
 	case "$PART" in
 		"$method0") auto_part	
 		;;
