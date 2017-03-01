@@ -31,7 +31,7 @@ if [ -r ~/.zshrc -a -r ~/.zshrc.global -a ! -r ~/.zshrc.local ] ; then
 fi
 
 alias help="cat ~/.help"
-alias start="cat /etc/issue"
+alias start="cat ~/.issue"
 alias 1="arch-anywhere"
 alias 2="arch-anywhere -u"
 alias 3="arch-wiki"
@@ -341,5 +341,7 @@ alias 6="fetchmirrors"
 #showINC ()    { perl -e 'for (@INC) { printf "%d %s\n", $i++, $_ }' }
 #vimpm ()      { vim `perldoc -l $1 | sed -e 's/pod$/pm/'` }
 #vimhelp ()    { vim -c "help $1" -c on -c "au! VimEnter *" }
+
+cat ~/.issue
 
 ## END OF FILE #################################################################
