@@ -1771,7 +1771,8 @@ configure_system() {
 	
 	if [ "$bootloader" == "syslinux" ] || [ "$bootloader" == "systemd-boot" ] && "$UEFI" ; then
 		if [ "$esp_mnt" != "/boot" ]; then
-			( if [ "$kernel" == "linux" ]; then
+			(mkdir "$ARCH"/etc/pacman.d/hooks
+			if [ "$kernel" == "linux" ]; then
 				echo -e "$linux_hook\nExec = /usr/bin/cp /boot/{vmlinuz-linux,initramfs-linux.img,initramfs-linux-fallback.img} ${esp_mnt}" > "$ARCH"/etc/pacman.d/hooks/linux-esp.hook
 				cp "$ARCH"/boot/{vmlinuz-linux,initramfs-linux.img,initramfs-linux-fallback.img} ${ARCH}${esp_mnt}
 			elif [ "$kernel" == "linux-lts" ]; then
@@ -1794,7 +1795,13 @@ configure_system() {
 		sed -i 's/MODULES=""/MODULES="nvidia nvidia_modeset nvidia_uvm nvidia_drm"/' "$ARCH"/etc/mkinitcpio.conf
 		sed -i 's!FILES=""!FILES="/etc/modprobe.d/nvidia.conf"!' "$ARCH"/etc/mkinitcpio.conf
 		echo "options nvidia_drm modeset=1" > "$ARCH"/etc/modprobe.d/nvidia.conf
+		
+		if [ ! -d "$ARCH"/etc/pacman.d/hooks ]; then
+			mkdir "$ARCH"/etc/pacman.d/hooks
+		fi
+		
 		echo -e "$nvidia_hook\nExec=/usr/bin/mkinitcpio -p $kernel" > "$ARCH"/etc/pacman.d/hooks/nvidia.hook
+		
 		if ! "$crypted" && ! "$enable_f2fs" ; then
 			arch-chroot "$ARCH" mkinitcpio -p "$kernel" &>/dev/null &
 			pid=$! pri=1 msg="\n$kernel_config_load \n\n \Z1> \Z2mkinitcpio -p $kernel\Zn" load
