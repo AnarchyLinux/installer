@@ -1905,8 +1905,10 @@ configure_system() {
 		arch-chroot "$ARCH" systemctl enable dhcpcd.service &> /dev/null &
 		pid=$! pri=0.1 msg="\n$dhcp_load \n\n \Z1> \Z2systemctl enable dhcpcd\Zn" load
 	fi
-	
-	if [ "$sh" == "/usr/bin/zsh" ]; then
+
+	if [ "$sh" == "/bin/bash" ]; then
+		cp "$ARCH"/etc/skel/.bash_profile "$ARCH"/root/
+	elif [ "$sh" == "/usr/bin/zsh" ]; then
 		cp "$aa_dir"/extra/.zshrc "$ARCH"/root/
 		cp "$aa_dir"/extra/.zshrc "$ARCH"/etc/skel/
 	elif [ "$shell" == "fish" ]; then
