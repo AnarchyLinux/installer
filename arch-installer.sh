@@ -666,9 +666,8 @@ part_menu() {
 	<"$tmp_list" column -t >> "$tmp_menu"
 	echo "\"$done_msg\" \"$write\" 3>&1 1>&2 2>&3" >> "$tmp_menu"
 	echo "if [ \"\$?\" -eq \"3\" ]; then clear ; echo \"$done_msg\" ; fi" >> "$tmp_menu"
-	part=$(bash "$tmp_menu" | sed 's/ //g')
+	part=$(bash "$tmp_menu" | sed 's/^\s\+//g;s/\s\+$//g')
 	rm $tmp_menu $tmp_list
-	if (<<<"$part" grep "$done_msg" &> /dev/null) then part="$done_msg" ; fi
 	part_class
 
 }
