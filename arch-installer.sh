@@ -666,9 +666,8 @@ part_menu() {
 	<"$tmp_list" column -t >> "$tmp_menu"
 	echo "\"$done_msg\" \"$write\" 3>&1 1>&2 2>&3" >> "$tmp_menu"
 	echo "if [ \"\$?\" -eq \"3\" ]; then clear ; echo \"$done_msg\" ; fi" >> "$tmp_menu"
-	part=$(bash "$tmp_menu" | sed 's/ //g')
+	part=$(bash "$tmp_menu" | sed 's/^\s\+//g;s/\s\+$//g')
 	rm $tmp_menu $tmp_list
-	if (<<<"$part" grep "$done_msg") then part="$done_msg" ; fi
 	part_class
 
 }
@@ -1905,8 +1904,10 @@ configure_system() {
 		arch-chroot "$ARCH" systemctl enable dhcpcd.service &> /dev/null &
 		pid=$! pri=0.1 msg="\n$dhcp_load \n\n \Z1> \Z2systemctl enable dhcpcd\Zn" load
 	fi
-	
-	if [ "$sh" == "/usr/bin/zsh" ]; then
+
+	if [ "$sh" == "/bin/bash" ]; then
+		cp "$ARCH"/etc/skel/.bash_profile "$ARCH"/root/
+	elif [ "$sh" == "/usr/bin/zsh" ]; then
 		cp "$aa_dir"/extra/.zshrc "$ARCH"/root/
 		cp "$aa_dir"/extra/.zshrc "$ARCH"/etc/skel/
 	elif [ "$shell" == "fish" ]; then
