@@ -667,6 +667,7 @@ part_menu() {
 	echo "\"$done_msg\" \"$write\" 3>&1 1>&2 2>&3" >> "$tmp_menu"
 	echo "if [ \"\$?\" -eq \"3\" ]; then clear ; echo \"$done_msg\" ; fi" >> "$tmp_menu"
 	part=$(bash "$tmp_menu" | sed 's/^\s\+//g;s/\s\+$//g')
+	if (<<<"$part" grep "$done_msg" &> /dev/null) then part="$done_msg" ; fi
 	rm $tmp_menu $tmp_list
 	part_class
 
