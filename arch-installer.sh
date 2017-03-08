@@ -2081,6 +2081,7 @@ install_software() {
 					software=$(dialog --ok-button "$ok" --cancel-button "$cancel" --checklist "$software_msg1" 17 60 7 \
 						"arch-wiki-cli"		"$aar0" ON \
 						"downgrade"		"$aar6" OFF \
+						"dolphin-libreoffice-templates"	"$aar7" OFF \
 						"fetchmirrors"		"$aar1" ON \
 						"octopi"		"$aar4" OFF \
 						"pacaur"		"$aar2" OFF \
