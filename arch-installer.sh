@@ -2081,7 +2081,7 @@ install_software() {
 					software=$(dialog --ok-button "$ok" --cancel-button "$cancel" --checklist "$software_msg1" 17 60 7 \
 						"arch-wiki-cli"		"$aar0" ON \
 						"downgrade"		"$aar6" OFF \
-						"dolphin-libreoffice-templates"	"$aar7" OFF \
+						"dolphin-libre"	"$aar7" OFF \
 						"fetchmirrors"		"$aar1" ON \
 						"octopi"		"$aar4" OFF \
 						"pacaur"		"$aar2" OFF \
@@ -2089,6 +2089,10 @@ install_software() {
 						"yaourt"		"$aar3" OFF 3>&1 1>&2 2>&3)
 					if [ "$?" -gt "0" ]; then
 						add_soft=false
+					fi
+					
+					if (<<<"$software" grep "dolphin-libre") then
+						software=$(<<<"$software" sed 's/dolphin-libre/dolphin-libreoffice-templates/')
 					fi
 				;;
 				"$audio")
