@@ -308,7 +308,7 @@ prepare_drives() {
 			PART_PREFIX="p"
 		fi
 
-		drive_byte=$(fdisk -l | grep -w "$DRIVE" | awk '{print $5}')
+		drive_byte=$(lsblk -nibo NAME,SIZE | grep -w "$DRIVE" | awk '{print $2}')
 		drive_mib=$((drive_byte/1024/1024))
 		drive_gigs=$((drive_mib/1024))
 		f2fs=$(cat /sys/block/"$DRIVE"/queue/rotational)
