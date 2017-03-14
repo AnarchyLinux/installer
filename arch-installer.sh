@@ -148,7 +148,7 @@ check_connection() {
 	op_title="$connection_op_msg"
 	(test_mirror=$(</etc/pacman.d/mirrorlist grep "^Server" | awk 'NR==1{print $3}' | sed 's/$.*//')
 	test_pkg=bluez-utils
-	test_pkg_ver=$(pacman -Sy --print-format='%v' $(echo "$test_pkg") | tail -n1)
+	test_pkg_ver=$(curl -s https://www.archlinux.org/packages/extra/i686/$test_pkg/ | grep "<title>" | awk '{print $5}')
 	test_link="${test_mirror}extra/os/i686/${test_pkg}-${test_pkg_ver}-i686.pkg.tar.xz"
 	wget -4 --no-check-certificate --append-output=/tmp/wget.log -O /dev/null "${test_link}") &
 	pid=$! pri=0.3 msg="\n$connection_load \n\n \Z1> \Z2wget -O /dev/null test_link/test1Mb.db\Zn" load
@@ -163,10 +163,6 @@ check_connection() {
 		cpu_mhz=$(lscpu | grep "CPU MHz" | awk '{print $3}' | sed 's/\..*//')
 	fi
 
-	if [ "$?" -gt "0" ]; then
-		cpu_mhz=$(lscpu | grep "CPU MHz" | awk '{print $3}' | sed 's/\..*//')
-	fi
-        
 	case "$cpu_mhz" in
 		[0-9][0-9][0-9]) 
 			cpu_sleep=4.5
