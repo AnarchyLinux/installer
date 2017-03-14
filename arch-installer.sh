@@ -1964,7 +1964,7 @@ config_env() {
 			cp -r "$aa_dir"/extra/desktop/obpower.sh "$ARCH"/usr/bin/obpower
 			chmod +x "$ARCH"/usr/bin/obpower
 			cp -r "$aa_dir"/pkg/opensnap-*.pkg.tar.xz "$ARCH"/var/cache/pacman/pkg
-			arch-chroot "$ARCH" pacman -U /var/cache/pacman/pkg/opensnap-*.pkg.tar.xz &>/dev/null
+			arch-chroot "$ARCH" pacman --noconfirm -U /var/cache/pacman/pkg/opensnap-*.pkg.tar.xz &>/dev/null
 		;;
 	esac
 
