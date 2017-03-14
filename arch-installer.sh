@@ -1248,10 +1248,6 @@ prepare_base() {
 		if "$UEFI" ; then
 			base_install+=" efibootmgr"
 		fi
-
-#		if "$intel" && ! "$VM" ; then
-#			base_instell+=" intel-ucode"
-#		fi
 	
 	elif "$INSTALLED" ; then
 		dialog --ok-button "$ok" --msgbox "\n$install_err_msg0" 10 60
@@ -1615,6 +1611,19 @@ install_base() {
 			reset ; tail /tmp/arch-anywhere.log ; exit 1
 		fi
 						
+		if "$intel" && ! "$VM" ; then
+			if (dialog --yes-button "$install" --no-button "$cancel" --yesno "\n$ucode_msg" 11 60); then
+				arch-chroot "$ARCH" pacman -Sy intel-ucode &>/dev/null &
+				pid=$! pri=1 msg="\n$wait_load \n\n \Z1> \Z2pacman -Sy intel-ucode\Zn" load
+
+				if [ -f "$ARCH/boot/intel-ucode.img" ]; then
+					ucode=true
+				else
+					dialog --ok-button "$ok" --msgbox "\n$ucode_failed_msg" 10 60
+				fi
+			fi
+		fi
+
 		case "$bootloader" in
 			grub) grub_config ;;
 			syslinux) syslinux_config ;;
@@ -1692,15 +1701,15 @@ syslinux_config() {
 			sed -i "s|APPEND.*$|APPEND root=/dev/$ROOT|" ${ARCH}${esp_mnt}/EFI/syslinux/syslinux.cfg
 		fi
 
-#		if "$intel" && ! "$VM" ; then
-#			if [ "$kernel" == "linux" ]; then
-#				sed -i "s|../../initramfs-linux.img|../../intel-ucode.img,../../initramfs-linux.img|" ${ARCH}${esp_mnt}/EFI/syslinux/syslinux.cfg
-#			elif [ "$kernel" == "linux-lts" ]; then
-#				sed -i "s|../../initramfs-linux-lts.img|../../intel-ucode.img,../../initramfs-linux-lts.img|" ${ARCH}${esp_mnt}/EFI/syslinux/syslinux.cfg
-#			else
-#				sed -i "s|../../initramfs-linux-grsec.img|../../intel-ucode.img,../../initramfs-linux-grsec.img|" ${ARCH}${esp_mnt}/EFI/syslinux/syslinux.cfg
-#			fi
-#		fi
+		if "$ucode" ; then
+			if [ "$kernel" == "linux" ]; then
+				sed -i "s|../../initramfs-linux.img|../../intel-ucode.img,../../initramfs-linux.img|" ${ARCH}${esp_mnt}/EFI/syslinux/syslinux.cfg
+			elif [ "$kernel" == "linux-lts" ]; then
+				sed -i "s|../../initramfs-linux-lts.img|../../intel-ucode.img,../../initramfs-linux-lts.img|" ${ARCH}${esp_mnt}/EFI/syslinux/syslinux.cfg
+			else
+				sed -i "s|../../initramfs-linux-grsec.img|../../intel-ucode.img,../../initramfs-linux-grsec.img|" ${ARCH}${esp_mnt}/EFI/syslinux/syslinux.cfg
+			fi
+		fi
 		
 		if "$drm" ; then
 			sed -i '/APPEND/ s/$/ nvidia-drm.modeset=1/' ${ARCH}${esp_mnt}/EFI/syslinux/syslinux.cfg
@@ -1728,15 +1737,15 @@ syslinux_config() {
 			sed -i "s|APPEND.*$|APPEND root=/dev/$ROOT|" "$ARCH"/boot/syslinux/syslinux.cfg
 		fi
 
-#		if "$intel" && ! "$VM" ; then
-#			if [ "$kernel" == "linux" ]; then
-#				sed -i "s|../initramfs-linux.img|../intel-ucode.img,../initramfs-linux.img|" "$ARCH"/boot/syslinux/syslinux.cfg
-#			elif [ "$kernel" == "linux-lts" ]; then
-#				sed -i "s|../initramfs-linux-lts.img|../intel-ucode.img,../initramfs-linux-lts.img|" "$ARCH"/boot/syslinux/syslinux.cfg
-#			else
-#				sed -i "s|../initramfs-linux-grsec.img|../intel-ucode.img,../initramfs-linux-grsec.img|" "$ARCH"/boot/syslinux/syslinux.cfg
-#			fi
-#		fi
+		if "$ucode" ; then
+			if [ "$kernel" == "linux" ]; then
+				sed -i "s|../initramfs-linux.img|../intel-ucode.img,../initramfs-linux.img|" "$ARCH"/boot/syslinux/syslinux.cfg
+			elif [ "$kernel" == "linux-lts" ]; then
+				sed -i "s|../initramfs-linux-lts.img|../intel-ucode.img,../initramfs-linux-lts.img|" "$ARCH"/boot/syslinux/syslinux.cfg
+			else
+				sed -i "s|../initramfs-linux-grsec.img|../intel-ucode.img,../initramfs-linux-grsec.img|" "$ARCH"/boot/syslinux/syslinux.cfg
+			fi
+		fi
 
 		if "$drm" ; then
 			sed -i '/APPEND/ s/$/ nvidia-drm.modeset=1/' ${ARCH}/boot/syslinux/syslinux.cfg
@@ -1767,9 +1776,9 @@ systemd_config() {
 		echo "options		root=PARTUUID=$(blkid -s PARTUUID -o value $(df | grep -m1 "$ARCH" | awk '{print $1}')) rw" >> ${ARCH}${esp_mnt}/loader/entries/arch.conf
 	fi
 
-#	if "$intel" && ! "$VM" ; then
-#		sed -i '/initrd/i\initrd  \/intel-ucode.img' ${ARCH}${esp_mnt}/loader/entries/arch.conf
-#	fi
+	if "$ucode" ; then
+		sed -i '/initrd/i\initrd  \/intel-ucode.img' ${ARCH}${esp_mnt}/loader/entries/arch.conf
+	fi
 
 	if "$drm" ; then
 		sed -i '/options/ s/$/ nvidia-drm.modeset=1/' ${ARCH}${esp_mnt}/loader/entries/arch.conf
@@ -1795,11 +1804,10 @@ configure_system() {
 				cp "$ARCH"/boot/{vmlinuz-linux-grsec,initramfs-linux-grsec.img,initramfs-linux-grsec-fallback.img} ${ARCH}${esp_mnt}
 			fi 
 			
-#			if "$intel" && ! "$VM" ; then
-#				echo -e "$intel_hook\nExec = /usr/bin/cp /boot/intel-ucode.img ${esp_mnt}" > "$ARCH"/etc/pacman.d/hooks/intel-esp.hook
-#				cp "$ARCH"/boot/intel-ucode.img ${ARCH}${esp_mnt}
-#			fi 
-			) &
+			if "$ucode" ; then
+				echo -e "$intel_hook\nExec = /usr/bin/cp /boot/intel-ucode.img ${esp_mnt}" > "$ARCH"/etc/pacman.d/hooks/intel-esp.hook
+				cp "$ARCH"/boot/intel-ucode.img ${ARCH}${esp_mnt}
+			fi ) &
 			pid=$! pri=0.1 msg="$wait_load \n\n \Z1> \Z2cp "$ARCH"/boot/ ${ARCH}${esp_mnt}\Zn" load
 		fi
 	fi
