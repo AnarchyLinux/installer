@@ -1961,15 +1961,17 @@ config_env() {
 			cp "$ARCH"/usr/share/backgrounds/xfce/arch-anywhere-wallpaper.png "$ARCH"/usr/share/backgrounds/xfce/xfce-teal.jpg
 		;;
 		AA-Openbox)
-			cp -r "$aa_dir"/extra/desktop/openbox/* "$ARCH"/root/
-			cp -r "$aa_dir"/extra/desktop/openbox/* "$ARCH"/etc/skel/
+			for file in $(ls -A "$aa_dir/extra/desktop/openbox"); do
+				cp -r "$aa_dir/extra/desktop/openbox/$file" "$ARCH"/root/
+				cp -r "$aa_dir/extra/desktop/openbox/$file" "$ARCH"/etc/skel/
+			done
 			cp -r "$aa_dir"/extra/desktop/Arc/openbox-3 "$ARCH"/usr/share/themes/Arc
 			cp -r "$aa_dir"/extra/desktop/Arc-Dark/openbox-3 "$ARCH"/usr/share/themes/Arc-Dark
 			cp -r "$aa_dir"/extra/desktop/Arc-Darker/openbox-3 "$ARCH"/usr/share/themes/Arc-Darker
 			cp -r "$aa_dir"/extra/desktop/obpower.sh "$ARCH"/usr/bin/obpower
 			chmod +x "$ARCH"/usr/bin/obpower
 			cp -r "$aa_dir"/pkg/opensnap-*.pkg.tar.xz "$ARCH"/var/cache/pacman/pkg
-			arch-chroot "$ARCH" pacman --noconfirm -U /var/cache/pacman/pkg/opensnap-*.pkg.tar.xz &>/dev/null
+			arch-chroot "$ARCH" pacman --noconfirm -U /var/cache/pacman/pkg/$(ls /usr/share/arch-anywhere/pkg/opensnap-*.pkg.tar.xz | sed 's!.*/!!') &>/dev/null
 		;;
 	esac
 
