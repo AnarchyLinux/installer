@@ -1,0 +1,60 @@
+favorites=exo-terminal-emulator.desktop,exo-file-manager.desktop,exo-web-browser.desktop
+recent=xfce-keyboard-settings.desktop,xfce-backdrop-settings.desktop,exo-terminal-emulator.desktop,panel-preferences.desktop,xfce-wmtweaks-settings.desktop,xfce-ui-settings.desktop,xfce-wm-settings.desktop
+button-title=Menu
+button-icon=/usr/share/pixmaps/arch-anywhere-icon.png
+button-single-row=false
+show-button-title=true
+show-button-icon=true
+launcher-show-name=true
+launcher-show-description=true
+item-icon-size=2
+hover-switch-category=false
+category-icon-size=1
+load-hierarchy=false
+recent-items-max=10
+favorites-in-recent=true
+display-recent-default=false
+position-search-alternate=false
+position-commands-alternate=false
+position-categories-alternate=false
+menu-width=400
+menu-height=500
+menu-opacity=72
+command-settings=xfce4-settings-manager
+show-command-settings=true
+command-lockscreen=xflock4
+show-command-lockscreen=true
+command-switchuser=gdmflexiserver
+show-command-switchuser=true
+command-logout=xfce4-session-logout
+show-command-logout=true
+command-menueditor=menulibre
+show-command-menueditor=true
+command-profile=mugshot
+show-command-profile=true
+search-actions=4
+
+[action0]
+name=Man Pages
+pattern=#
+command=exo-open --launch TerminalEmulator man %s
+regex=false
+
+[action1]
+name=Wikipedia
+pattern=!w
+command=exo-open --launch WebBrowser https://en.wikipedia.org/wiki/%u
+regex=false
+
+[action2]
+name=Run in Terminal
+pattern=!
+command=exo-open --launch TerminalEmulator %s
+regex=false
+
+[action3]
+name=Open URI
+pattern=^(file|http|https):\\/\\/(.*)$
+command=exo-open \\0
+regex=true
+
