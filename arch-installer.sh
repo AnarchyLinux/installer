@@ -1310,10 +1310,10 @@ graphics() {
 
 	case "$DE" in
 		"AA-Xfce") 	DE="xfce4 xfce4-goodies gvfs zsh zsh-syntax-highlighting"
-				start_term="exec startxfce4" de_config=true
+				start_term="exec startxfce4" de_config=true env="$DE"
 		;;
 		"AA-Openbox")	DE="openbox thunar thunar-volman xfce4-terminal xfce4-panel xfce4-whiskermenu-plugin xcompmgr transset-df arc-gtk-theme arc-icon-theme obconf lxappearance-obconf wmctrl gxmessage xfce4-pulseaudio-plugin pavucontrol xfdesktop xdotool"
-				start_term="exec openbox-session" de_config=true
+				start_term="exec openbox-session" de_config=true env="$DE"
 		;;
 		"xfce4") 	if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$extra_msg0" 10 60) then
 						DE="xfce4 xfce4-goodies"
@@ -1405,8 +1405,6 @@ graphics() {
 		"i3") 		start_term="exec i3" 
 		;;
 	esac
-
-	env=$(<<<"$DE" awk '{print $1}')
 
 	while (true)
 	  do
