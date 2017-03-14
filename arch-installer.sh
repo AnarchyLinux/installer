@@ -81,8 +81,16 @@ update_mirrors() {
 
 	if ! (</etc/pacman.d/mirrorlist grep "rankmirrors" &>/dev/null) then
 		op_title="$mirror_op_msg"
-		code=$(dialog --nocancel --ok-button "$ok" --menu "$mirror_msg1" 17 60 10 $countries 3>&1 1>&2 2>&3)
-		if [ "$code" == "AL" ]; then
+		code=$(dialog --nocancel --ok-button "$ok" --menu "$mirror_msg1" 17 60 10 \
+			"$default" "->" \
+			$countries 3>&1 1>&2 2>&3)
+		if [ "$code" == "$default" ]; then
+			(wget -4 --no-check-certificate --append-output=/dev/null "https://git.archlinux.org/svntogit/packages.git/plain/trunk/mirrorlist?h=packages/pacman-mirrorlist" -O /tmp/mirrorlist.bak
+			echo "$?" > /tmp/ex_status.var 
+			head -n10 /tmp/mirrorlist.bak | sed 's/#//' > /etc/pacman.d/mirrorlist.bak 
+			sleep 0.5) &> /dev/null &
+			pid=$! pri=0.1 msg="\n$mirror_load0 \n\n \Z1> \Z2wget -O /etc/pacman.d/mirrorlist archlinux.org/mirrorlist/all\Zn" load
+		elif [ "$code" == "AL" ]; then
 			(wget -4 --no-check-certificate --append-output=/dev/null "https://www.archlinux.org/mirrorlist/all/" -O /etc/pacman.d/mirrorlist.bak
 			echo "$?" > /tmp/ex_status.var ; sleep 0.5) &> /dev/null &
 			pid=$! pri=0.1 msg="\n$mirror_load0 \n\n \Z1> \Z2wget -O /etc/pacman.d/mirrorlist archlinux.org/mirrorlist/all\Zn" load
@@ -138,7 +146,7 @@ check_connection() {
 	sed -i 's/\,/\./' /tmp/wget.log
 	connection_speed=$(tail /tmp/wget.log | grep -oP '(?<=\().*(?=\))' | awk '{print $1}')
 	connection_rate=$(tail /tmp/wget.log | grep -oP '(?<=\().*(?=\))' | awk '{print $2}')
-    cpu_mhz=$(lscpu | grep "CPU max MHz" | awk '{print $4}' | sed 's/\..*//')
+	cpu_mhz=$(lscpu | grep "CPU max MHz" | awk '{print $4}' | sed 's/\..*//')
 
 	if [ "$?" -gt "0" ]; then
 		cpu_mhz=$(lscpu | grep "CPU MHz" | awk '{print $3}' | sed 's/\..*//')
