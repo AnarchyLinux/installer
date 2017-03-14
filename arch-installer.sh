@@ -412,15 +412,15 @@ prepare_drives() {
 	fi
 	
 	case "$PART" in
-		"$method0")	auto_part
-				echo "$(date -u "+%F %H:%M") : Begin auto_part function" >> "$log"
+		"$method0")	echo "$(date -u "+%F %H:%M") : Begin auto_part function" >> "$log"
+				auto_part
 		;;
-		"$method1")	auto_encrypt
-				echo "$(date -u "+%F %H:%M") : Begin auto_encrypt function" >> "$log"
+		"$method1")	echo "$(date -u "+%F %H:%M") : Begin auto_encrypt function" >> "$log"
+				auto_encrypt
 		;;
 		"$method2")	points=$(echo -e "$points_orig\n$custom $custom-mountpoint")
-				part_menu
 				echo "$(date -u "+%F %H:%M") : Begin part_menu function" >> "$log"
+				part_menu
 		;;
 	esac
 
