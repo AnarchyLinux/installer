@@ -1273,10 +1273,11 @@ graphics() {
 	fi
 	
 	DE=$(dialog --ok-button "$ok" --cancel-button "$cancel" --menu "$environment_msg" 18 60 11 \
-		"Arch-Anywhere-Xfce" "$de15" \
-		"budgie"		"$de17" \
+		"AA-Xfce"	"$de15" \
+		"AA-Openbox"	"$de18" \
+		"budgie"	"$de17" \
 		"cinnamon"      "$de5" \
-		"deepin"		"$de14" \
+		"deepin"	"$de14" \
 		"gnome"         "$de4" \
 		"KDE plasma"    "$de6" \
 		"lxde"          "$de2" \
@@ -1284,13 +1285,13 @@ graphics() {
 		"mate"          "$de1" \
 		"xfce4"         "$de0" \
 		"awesome"       "$de9" \
-		"bspwm"			"$de13" \
+		"bspwm"		"$de13" \
 		"dwm"           "$de12" \
 		"enlightenment" "$de7" \
 		"fluxbox"       "$de11" \
 		"i3"            "$de10" \
 		"openbox"       "$de8" \
-		"xmonad"		"$de16"  3>&1 1>&2 2>&3)
+		"xmonad"	"$de16"  3>&1 1>&2 2>&3)
 	if [ "$?" -gt "0" ]; then 
 		if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$desktop_cancel_msg" 10 60) then	
 			install_base
@@ -1300,8 +1301,11 @@ graphics() {
 	source "$lang_file"
 
 	case "$DE" in
-		"Arch-Anywhere-Xfce") 	DE="xfce4 xfce4-goodies gvfs zsh zsh-syntax-highlighting"
-								start_term="exec startxfce4" de_config=true
+		"AA-Xfce") 	DE="xfce4 xfce4-goodies gvfs zsh zsh-syntax-highlighting"
+				start_term="exec startxfce4" de_config=true
+		;;
+		"AA-Openbox")	DE="openbox thunar thunar-volman xfce4-terminal xfce4-panel xfce4-whiskermenu-plugin xcompmgr transset-df arc-gtk-theme arc-icon-theme obconf lxappearance-obconf wmctrl gxmessage xfce4-pulseaudio-plugin pavucontrol xfdesktop xdotool"
+				start_term="exec openbox-session" de_config=true
 		;;
 		"xfce4") 	if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$extra_msg0" 10 60) then
 						DE="xfce4 xfce4-goodies"
@@ -1394,7 +1398,7 @@ graphics() {
 		;;
 	esac
 
-	env=$(<<<"$DE" awk '{print $1,$2}')
+	env=$(<<<"$DE" awk '{print $1}')
 
 	while (true)
 	  do
@@ -1930,17 +1934,39 @@ configure_system() {
 
 config_env() {
 
-	sh="/usr/bin/zsh"
-	arch-chroot "$ARCH" chsh -s /usr/bin/zsh &> /dev/null
-	cp "$aa_dir"/extra/.zshrc "$ARCH"/root/
-	mkdir "$ARCH"/root/.config/ &> /dev/null
-	cp -r "$aa_dir"/extra/desktop/.config/{xfce4,Thunar} "$ARCH"/root/.config/
-	cp -r "$aa_dir"/extra/{.zshrc,desktop/.config/} "$ARCH"/etc/skel/
-	cp "$aa_dir"/extra/desktop/arch-anywhere-icon.png "$ARCH"/etc/skel/.face
-	cp -r "$aa_dir"/extra/desktop/AshOS-Dark-2.0 "$ARCH"/usr/share/themes/
-	cp "$aa_dir"/extra/desktop/arch-anywhere-wallpaper.png "$ARCH"/usr/share/backgrounds/xfce/
-	cp "$ARCH"/usr/share/backgrounds/xfce/arch-anywhere-wallpaper.png "$ARCH"/usr/share/backgrounds/xfce/xfce-teal.jpg
-	cp "$aa_dir"/extra/desktop/arch-anywhere-icon.png "$ARCH"/usr/share/pixmaps/
+	case "$env" in
+		AA-Xfce)
+			sh="/usr/bin/zsh"
+			arch-chroot "$ARCH" chsh -s /usr/bin/zsh &> /dev/null
+			cp "$aa_dir"/extra/.zshrc "$ARCH"/root/
+			mkdir "$ARCH"/root/.config/ &> /dev/null
+			cp -r "$aa_dir"/extra/desktop/xfce4/.config/{xfce4,Thunar} "$ARCH"/root/.config/
+			cp -r "$aa_dir"/extra/{.zshrc,desktop/xfce4/.config} "$ARCH"/etc/skel/
+			cp "$aa_dir"/extra/desktop/arch-anywhere-icon.png "$ARCH"/etc/skel/.face
+			cp "$aa_dir"/extra/desktop/arch-anywhere-icon.png "$ARCH"/root/.face
+			cp -r "$aa_dir"/extra/desktop/AshOS-Dark-2.0 "$ARCH"/usr/share/themes/
+			cp -r "$aa_dir"/extra/desktop/arch-anywhere-wallpaper.png "$ARCH"/usr/share/backgrounds/xfce/
+			cp "$ARCH"/usr/share/backgrounds/xfce/arch-anywhere-wallpaper.png "$ARCH"/usr/share/backgrounds/xfce/xfce-teal.jpg
+			cp "$aa_dir"/extra/desktop/arch-anywhere-icon.png "$ARCH"/usr/share/pixmaps/
+		;;
+		AA-Openbox)
+			sh="/usr/bin/zsh"
+			arch-chroot "$ARCH" chsh -s /usr/bin/zsh &>/dev/null
+			mkdir "$ARCH"/root/.config/ &> /dev/null
+			cp -r "$aa_dir"/extra/{.zshrc,desktop/openbox/*} "$ARCH"/root/
+			cp -r "$aa_dir"/extra/{.zshrc,desktop/openbox/*} "$ARCH"/etc/skel/
+			cp "$aa_dir"/extra/desktop/arch-anywhere-icon.png "$ARCH"/etc/skel/.face
+			cp "$aa_dir"/extra/desktop/arch-anywhere-icon.png "$ARCH"/root/.face
+			cp -r "$aa_dir"/extra/desktop/{arch-anywhere-wallpaper.png,arch-anywhere-icon.png} "$ARCH"/usr/share/pixmaps
+			cp -r "$aa_dir"/extra/desktop/Arc/openbox-3 "$ARCH"/usr/share/themes/Arc
+			cp -r "$aa_dir"/extra/desktop/Arc-Dark/openbox-3 "$ARCH"/usr/share/themes/Arc-Dark
+			cp -r "$aa_dir"/extra/desktop/Arc-Darker/openbox-3 "$ARCH"/usr/share/themes/Arc-Darker
+			cp -r "$aa_dir"/extra/desktop/obpower.sh "$ARCH"/usr/bin/obpower
+			chmod +x "$ARCH"/usr/bin/obpower
+			cp -r "$aa_dir"/pkg/opensnap-*.pkg.tar.xz "$ARCH"/var/cache/pacman/pkg
+			arch-chroot "$ARCH" pacman -U /var/cache/pacman/pkg/opensnap-*.pkg.tar.xz &>/dev/null
+		;;
+	esac
 
 }
 

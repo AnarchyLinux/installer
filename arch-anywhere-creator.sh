@@ -125,6 +125,22 @@ builds() {
 		makepkg -s
 	fi
 	
+	if [ ! -d /tmp/opensnap ]; then
+		### Build opensnap
+		cd /tmp
+		wget "https://aur.archlinux.org/cgit/aur.git/snapshot/opensnap.tar.gz"
+		tar -xf opensnap.tar.gz
+		cd opensnap
+		makepkg -s
+	fi
+
+	if [ ! -d /tmp/arc-openbox-master ]; then
+		### Build Arc Openbox theme
+		cd /tmp
+		wget "https://github.com/dglava/arc-openbox/archive/master.zip"
+		unzip master.zip
+	fi
+
 #	if [ ! -d /tmp/v86d ]; then
 #		cd /tmp
 #		wget "https://aur.archlinux.org/cgit/aur.git/snapshot/v86d.tar.gz"
@@ -177,6 +193,8 @@ prepare_sys() {
 	sudo cp "$aa"/extra/{.bashrc,.bashrc-root,.tcshrc,.tcshrc.conf,.mkshrc} "$customiso"/arch/"$sys"/squashfs-root/usr/share/arch-anywhere/extra/
 	sudo cp "$aa"/extra/.zshrc-sys "$customiso"/arch/"$sys"/squashfs-root/usr/share/arch-anywhere/extra/.zshrc
 	sudo cp -r "$aa"/extra/desktop "$customiso"/arch/"$sys"/squashfs-root/usr/share/arch-anywhere/extra/
+	sudo cp -r /tmp/arc-openbox-master/{Arc,Arc-Dark,Arc-Darker} "$customiso"/arch/"$sys"/squashfs-root/usr/share/arch-anywhere/extra/desktop
+	sudo cp -r /tmp/opensnap/opensnap-*.pkg.tar.xz "$customiso"/arch/"$sys"/squashfs-root/usr/share/arch-anywhere/pkg
 	sudo cp "$aa"/boot/{hostname,issue} "$customiso"/arch/"$sys"/squashfs-root/etc/
 	sudo cp -r "$aa"/boot/loader/ "$customiso"/arch/"$sys"/squashfs-root/usr/share/arch-anywhere/boot/
 	sudo cp "$aa"/boot/splash.png "$customiso"/arch/"$sys"/squashfs-root/usr/share/arch-anywhere/boot/
