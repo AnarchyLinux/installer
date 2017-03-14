@@ -1943,30 +1943,26 @@ configure_system() {
 
 config_env() {
 
+	sh="/usr/bin/zsh"
+	arch-chroot "$ARCH" chsh -s /usr/bin/zsh &> /dev/null
+	cp -r "$aa_dir"/extra/desktop/ttf-zekton-rg "$ARCH"/usr/share/fonts
+	cp "$aa_dir"/extra/.zshrc "$ARCH"/root/
+	cp "$aa_dir"/extra/.zshrc "$ARCH"/etc/skel/
+	cp "$aa_dir"/extra/desktop/arch-anywhere-icon.png "$ARCH"/root/.face
+	cp "$aa_dir"/extra/desktop/arch-anywhere-icon.png "$ARCH"/etc/skel/.face
+	cp -r "$aa_dir"/extra/desktop/{arch-anywhere-wallpaper.png,arch-anywhere-icon.png} "$ARCH"/usr/share/pixmaps
+	
 	case "$env" in
 		AA-Xfce)
-			sh="/usr/bin/zsh"
-			arch-chroot "$ARCH" chsh -s /usr/bin/zsh &> /dev/null
-			cp "$aa_dir"/extra/.zshrc "$ARCH"/root/
-			mkdir "$ARCH"/root/.config/ &> /dev/null
-			cp -r "$aa_dir"/extra/desktop/xfce4/.config/{xfce4,Thunar} "$ARCH"/root/.config/
-			cp -r "$aa_dir"/extra/{.zshrc,desktop/xfce4/.config} "$ARCH"/etc/skel/
-			cp "$aa_dir"/extra/desktop/arch-anywhere-icon.png "$ARCH"/etc/skel/.face
-			cp "$aa_dir"/extra/desktop/arch-anywhere-icon.png "$ARCH"/root/.face
+			cp -r "$aa_dir"/extra/desktop/xfce4/.config "$ARCH"/root/
+			cp -r "$aa_dir"/extra/desktop/xfce4/.config "$ARCH"/etc/skel/
 			cp -r "$aa_dir"/extra/desktop/AshOS-Dark-2.0 "$ARCH"/usr/share/themes/
 			cp -r "$aa_dir"/extra/desktop/arch-anywhere-wallpaper.png "$ARCH"/usr/share/backgrounds/xfce/
 			cp "$ARCH"/usr/share/backgrounds/xfce/arch-anywhere-wallpaper.png "$ARCH"/usr/share/backgrounds/xfce/xfce-teal.jpg
-			cp "$aa_dir"/extra/desktop/arch-anywhere-icon.png "$ARCH"/usr/share/pixmaps/
 		;;
 		AA-Openbox)
-			sh="/usr/bin/zsh"
-			arch-chroot "$ARCH" chsh -s /usr/bin/zsh &>/dev/null
-			mkdir "$ARCH"/root/.config/ &> /dev/null
-			cp -r "$aa_dir"/extra/{.zshrc,desktop/openbox/*} "$ARCH"/root/
-			cp -r "$aa_dir"/extra/{.zshrc,desktop/openbox/*} "$ARCH"/etc/skel/
-			cp "$aa_dir"/extra/desktop/arch-anywhere-icon.png "$ARCH"/etc/skel/.face
-			cp "$aa_dir"/extra/desktop/arch-anywhere-icon.png "$ARCH"/root/.face
-			cp -r "$aa_dir"/extra/desktop/{arch-anywhere-wallpaper.png,arch-anywhere-icon.png} "$ARCH"/usr/share/pixmaps
+			cp -r "$aa_dir"/extra/desktop/openbox/* "$ARCH"/root/
+			cp -r "$aa_dir"/extra/desktop/openbox/* "$ARCH"/etc/skel/
 			cp -r "$aa_dir"/extra/desktop/Arc/openbox-3 "$ARCH"/usr/share/themes/Arc
 			cp -r "$aa_dir"/extra/desktop/Arc-Dark/openbox-3 "$ARCH"/usr/share/themes/Arc-Dark
 			cp -r "$aa_dir"/extra/desktop/Arc-Darker/openbox-3 "$ARCH"/usr/share/themes/Arc-Darker
@@ -1976,6 +1972,8 @@ config_env() {
 			arch-chroot "$ARCH" pacman --noconfirm -U /var/cache/pacman/pkg/opensnap-*.pkg.tar.xz &>/dev/null
 		;;
 	esac
+
+	arch-chroot "$ARCH" fc-cache -f
 
 }
 
