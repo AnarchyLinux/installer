@@ -56,10 +56,10 @@
     <property name="snap_to_windows" type="bool" value="false"/>
     <property name="snap_width" type="int" value="10"/>
     <property name="sync_to_vblank" type="bool" value="false"/>
-    <property name="theme" type="string" value="AshOS-Dark-2.0"/>
+    <property name="theme" type="string" value="Arc-Dark"/>
     <property name="tile_on_move" type="bool" value="true"/>
     <property name="title_alignment" type="string" value="left"/>
-    <property name="title_font" type="string" value="Sans Bold 9"/>
+    <property name="title_font" type="string" value="Zekton Bold 10"/>
     <property name="title_horizontal_offset" type="int" value="0"/>
     <property name="titleless_maximize" type="bool" value="false"/>
     <property name="title_shadow_active" type="string" value="false"/>
