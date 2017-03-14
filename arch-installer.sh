@@ -2486,38 +2486,43 @@ reboot_system() {
 			fi
 		fi
 
-		reboot_menu=$(dialog --nocancel --ok-button "$ok" --menu "$complete_msg" 15 60 6 \
+		reboot_menu=$(dialog --nocancel --ok-button "$ok" --menu "$complete_msg" 16 60 7 \
 			"$reboot0" "-" \
 			"$reboot6" "-" \
 			"$reboot2" "-" \
 			"$reboot1" "-" \
+			"$reboot4" "-" \
 			"$reboot3" "-" \
 			"$reboot5" "-" 3>&1 1>&2 2>&3)
 		
 		case "$reboot_menu" in
-			"$reboot0")		umount -R "$ARCH"
-							reset ; reboot ; exit
+			"$reboot0")	umount -R "$ARCH"
+					reset ; reboot ; exit
 			;;
-			"$reboot6")		umount -R "$ARCH"
-							reset ; poweroff ; exit
+			"$reboot6")	umount -R "$ARCH"
+					reset ; poweroff ; exit
 			;;
-			"$reboot1")		umount -R "$ARCH"
-							reset ; exit
+			"$reboot1")	umount -R "$ARCH"
+					reset ; exit
 			;;
-			"$reboot2")		clear
-							echo -e "$arch_chroot_msg" 
-							echo "/root" > /tmp/chroot_dir.var
-							arch_anywhere_chroot
-							clear
+			"$reboot2")	clear
+					echo -e "$arch_chroot_msg" 
+					echo "/root" > /tmp/chroot_dir.var
+					arch_anywhere_chroot
+					clear
 			;;
-			"$reboot3")		if (dialog --yes-button "$yes" --no-button "$no" --yesno "$user_exists_msg" 10 60); then
-								menu_enter=true
-								add_user	
-							else
-								reboot_system
-							fi
+			"$reboot3")	if (dialog --yes-button "$yes" --no-button "$no" --yesno "$user_exists_msg" 10 60); then
+						menu_enter=true
+						add_user	
+					else
+						reboot_system
+					fi
 			;;
-			"$reboot5")		install_software
+			"$reboot5")	install_software
+			;;
+			"$reboot6")	clear
+					less "$log"
+					clear
 			;;
 		esac
 
