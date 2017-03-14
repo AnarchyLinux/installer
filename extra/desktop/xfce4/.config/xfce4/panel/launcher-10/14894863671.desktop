@@ -1,0 +1,10 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=Terminal Drop-Down
+Comment=xfce4-terminal drop-down
+Exec=xfce4-terminal --drop-down
+Icon=utilities-terminal-symbolic
+Path=
+Terminal=false
+StartupNotify=false
