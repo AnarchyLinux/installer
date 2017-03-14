@@ -2471,6 +2471,7 @@ install_software() {
 	fi
 
 	software_selected=false
+	echo "$(date -u "+%F %H:%M") : Install finished" >> "$log"
 	reboot_system
 
 }
@@ -2478,7 +2479,6 @@ install_software() {
 reboot_system() {
 
 	op_title="$complete_op_msg"
-	echo "$(date -u "+%F %H:%M") : Install finished" >> "$log"
 	if "$INSTALLED" ; then
 		if [ "$bootloader" == "$none" ]; then
 			if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$complete_no_boot_msg" 10 60) then
@@ -2523,6 +2523,7 @@ reboot_system() {
 			"$reboot6")	clear
 					less "$log"
 					clear
+					reboot_system
 			;;
 		esac
 
