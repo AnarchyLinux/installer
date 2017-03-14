@@ -2520,7 +2520,7 @@ reboot_system() {
 			;;
 			"$reboot5")	install_software
 			;;
-			"$reboot6")	clear
+			"$reboot4")	clear
 					less "$log"
 					clear
 					reboot_system
