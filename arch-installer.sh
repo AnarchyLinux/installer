@@ -1360,11 +1360,11 @@ graphics() {
 
 	case "$DE" in
 		"AA-Xfce") 	env="$DE"
-				DE="xfce4 xfce4-goodies gvfs zsh zsh-syntax-highlighting htop"
+				DE="xfce4 xfce4-goodies gvfs zsh zsh-syntax-highlighting arc-gtk-theme arc-icon-theme htop"
 				start_term="exec startxfce4"
 		;;
 		"AA-Openbox")	env="$DE"
-				DE="openbox thunar thunar-volman xfce4-terminal xfce4-panel xfce4-whiskermenu-plugin xcompmgr transset-df arc-gtk-theme arc-icon-theme obconf lxappearance-obconf wmctrl gxmessage xfce4-pulseaudio-plugin pavucontrol xfdesktop xdotool htop"
+				DE="openbox thunar thunar-volman xfce4-terminal xfce4-panel xfce4-whiskermenu-plugin xcompmgr transset-df arc-gtk-theme arc-icon-theme obconf lxappearance-obconf wmctrl gxmessage xfce4-pulseaudio-plugin xfdesktop xdotool htop"
 				start_term="exec openbox-session"
 		;;
 		"xfce4") 	if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$extra_msg0" 10 60) then
@@ -1580,7 +1580,7 @@ graphics() {
 		fi
 	done
 	
-	DE="$DE xdg-user-dirs xorg-server xorg-server-utils xorg-xinit xterm ttf-dejavu gvfs pulseaudio pulseaudio-alsa alsa-utils unzip $GPU"
+	DE="$DE xdg-user-dirs xorg-server xorg-server-utils xorg-xinit xterm ttf-dejavu gvfs pulseaudio pavucontrol pulseaudio-alsa alsa-utils unzip $GPU"
 		
 	if [ "$net_util" == "networkmanager" ] ; then
 		if (<<<"$DE" grep "plasma" &> /dev/null); then
