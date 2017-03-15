@@ -2032,6 +2032,10 @@ config_env() {
 
 	sh="/usr/bin/zsh"
 	arch-chroot "$ARCH" chsh -s /usr/bin/zsh &> /dev/null
+	cp -r "$aa_dir"/pkg/arch-wiki-*.pkg.tar.xz "$ARCH"/var/cache/pacman/pkg
+	cp -r "$aa_dir"/pkg/fetchmirrors-*.pkg.tar.xz "$ARCH"/var/cache/pacman/pkg
+	arch-chroot "$ARCH" pacman --noconfirm -U /var/cache/pacman/pkg/$(ls "$aa_dir"/pkg/arch-wiki-*.pkg.tar.xz | sed 's!.*/!!') &>/dev/null
+	arch-chroot "$ARCH" pacman --noconfirm -U /var/cache/pacman/pkg/$(ls "$aa_dir"/pkg/fetchmirrors-*.pkg.tar.xz | sed 's!.*/!!') &>/dev/null
 	cp -r "$aa_dir"/extra/desktop/ttf-zekton-rg "$ARCH"/usr/share/fonts
 	cp "$aa_dir"/extra/.zshrc "$ARCH"/root/
 	cp "$aa_dir"/extra/.zshrc "$ARCH"/etc/skel/
