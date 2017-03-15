@@ -2045,8 +2045,10 @@ config_env() {
 	
 	case "$env" in
 		AA-Xfce)
-			cp -r "$aa_dir"/extra/desktop/xfce4/.config "$ARCH"/root/
-			cp -r "$aa_dir"/extra/desktop/xfce4/.config "$ARCH"/etc/skel/
+			for file in $(ls -A "$aa_dir/extra/desktop/xfce4"); do
+				cp -r "$aa_dir/extra/desktop/xfce4/$file" "$ARCH"/root/
+				cp -r "$aa_dir/extra/desktop/xfce4/$file" "$ARCH"/etc/skel/
+			done
 			cp -r "$aa_dir"/extra/desktop/AshOS-Dark-2.0 "$ARCH"/usr/share/themes/
 			cp -r "$aa_dir"/extra/desktop/arch-anywhere-wallpaper.png "$ARCH"/usr/share/backgrounds/xfce/
 			cp "$ARCH"/usr/share/backgrounds/xfce/arch-anywhere-wallpaper.png "$ARCH"/usr/share/backgrounds/xfce/xfce-teal.jpg
