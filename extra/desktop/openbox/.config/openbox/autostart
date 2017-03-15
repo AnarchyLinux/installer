@@ -20,3 +20,4 @@ xfce4-panel &
 xfdesktop &
 xcompmgr &
 opensnap &
+xscreensaver -no-splash &
