@@ -2063,6 +2063,10 @@ config_env() {
 			chmod +x "$ARCH"/usr/bin/obpower
 			cp -r "$aa_dir"/pkg/opensnap-*.pkg.tar.xz "$ARCH"/var/cache/pacman/pkg
 			arch-chroot "$ARCH" pacman --noconfirm -U /var/cache/pacman/pkg/$(ls /usr/share/arch-anywhere/pkg/opensnap-*.pkg.tar.xz | sed 's!.*/!!') &>/dev/null
+			if [ "$virt" == "vbox" ]; then
+				echo "VBoxClient-all &" >> "$ARCH"/etc/skel/.config/openbox/autostart
+				echo "VBoxClient-all &" >> "$ARCH"/root/.config/openbox/autostart
+			fi
 		;;
 	esac
 
