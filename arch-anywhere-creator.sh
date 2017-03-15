@@ -194,7 +194,9 @@ prepare_sys() {
 	sudo cp "$aa"/extra/.zshrc-sys "$customiso"/arch/"$sys"/squashfs-root/usr/share/arch-anywhere/extra/.zshrc
 	sudo cp -r "$aa"/extra/desktop "$customiso"/arch/"$sys"/squashfs-root/usr/share/arch-anywhere/extra/
 	sudo cp -r /tmp/arc-openbox-master/{Arc,Arc-Dark,Arc-Darker} "$customiso"/arch/"$sys"/squashfs-root/usr/share/arch-anywhere/extra/desktop
-	sudo cp -r /tmp/opensnap/opensnap-*.pkg.tar.xz "$customiso"/arch/"$sys"/squashfs-root/usr/share/arch-anywhere/pkg
+	sudo cp -r /tmp/fetchmirrors/*.pkg.tar.xz "$customiso"/arch/"$sys"/squashfs-root/usr/share/arch-anywhere/pkg
+	sudo cp -r /tmp/arch-wiki-cli/*.pkg.tar.xz "$customiso"/arch/"$sys"/squashfs-root/usr/share/arch-anywhere/pkg
+	sudo cp -r /tmp/opensnap/*.pkg.tar.xz "$customiso"/arch/"$sys"/squashfs-root/usr/share/arch-anywhere/pkg
 	sudo cp "$aa"/boot/{hostname,issue} "$customiso"/arch/"$sys"/squashfs-root/etc/
 	sudo cp -r "$aa"/boot/loader/ "$customiso"/arch/"$sys"/squashfs-root/usr/share/arch-anywhere/boot/
 	sudo cp "$aa"/boot/splash.png "$customiso"/arch/"$sys"/squashfs-root/usr/share/arch-anywhere/boot/
