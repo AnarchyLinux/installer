@@ -1361,11 +1361,11 @@ graphics() {
 
 	case "$DE" in
 		"AA-Xfce") 	env="$DE"
-				DE="xfce4 xfce4-goodies gvfs zsh zsh-syntax-highlighting htop lynx"
+				DE="xfce4 xfce4-goodies gvfs zsh zsh-syntax-highlighting htop lynx xscreensaver"
 				start_term="exec startxfce4"
 		;;
 		"AA-Openbox")	env="$DE"
-				DE="openbox thunar thunar-volman xfce4-terminal xfce4-panel xfce4-whiskermenu-plugin xcompmgr transset-df obconf lxappearance-obconf wmctrl gxmessage xfce4-pulseaudio-plugin xfdesktop xdotool htop lynx"
+				DE="openbox thunar thunar-volman xfce4-terminal xfce4-panel xfce4-whiskermenu-plugin xcompmgr transset-df obconf lxappearance-obconf wmctrl gxmessage xfce4-pulseaudio-plugin xfdesktop xdotool htop lynx xscreensaver"
 				start_term="exec openbox-session"
 		;;
 		"xfce4") 	if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$extra_msg0" 10 60) then
