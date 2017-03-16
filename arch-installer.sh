@@ -1693,9 +1693,18 @@ install_software() {
 				elif [ "$ex" -eq "3" ]; then
 					software_menu="$done_msg"
 				elif [ "$software_menu" == "$aar" ]; then
-					if ! (<"$ARCH"/etc/pacman.conf grep "arch-anywhere"); then
-						if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$aar_add_msg" 10 60) then
-							echo -e "\n[arch-anywhere]\nServer = $aa_repo\nSigLevel = Never" >> "$ARCH"/etc/pacman.conf
+					if "$menu_enter" ; then
+						if ! (<"$ARCH"/etc/pacman.conf grep "arch-anywhere"); then
+							if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$aar_add_msg" 10 60) then
+								echo -e "\n[arch-anywhere]\nServer = $aa_repo\nSigLevel = Never" >> "$ARCH"/etc/pacman.conf
+							fi
+						fi
+					else
+						if ! (</etc/pacman.conf grep "arch-anywhere"); then
+							if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$aar_add_msg" 10 60) then
+								echo -e "\n[arch-anywhere]\nServer = $aa_repo\nSigLevel = Never" >> /etc/pacman.conf
+								add_repo=true
+							fi
 						fi
 					fi
 				fi
@@ -2349,6 +2358,10 @@ configure_system() {
 	arch-chroot "$ARCH" pacman -Sy &> /dev/null &
 	pid=$! pri=0.8 msg="\n$pacman_load \n\n \Z1> \Z2pacman -Sy\Zn" load
 	echo "$(date -u "+%F %H:%M") : Updated pacman databases" >> "$log"
+
+	if "$add_repo" ; then
+		echo -e "\n[arch-anywhere]\nServer = $aa_repo\nSigLevel = Never" >> "$ARCH"/etc/pacman.conf
+	fi
 	
 	if [ "$arch" == "x86_64" ]; then
 		if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n\n$multilib_msg" 11 60) then
