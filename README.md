@@ -37,7 +37,10 @@ http://arch-anywhere.org/
 
     Arch Anywhere XFCE4 (developers custom xfce4 desktop) <br />
     AwesomeWM <br />
+    Budgie <br />
+    Bspwm <br />
     Cinnamon Desktop <br />
+    Deepin <br />
     DWM DynamicWM <br />
     EnlightenmentWM <br />
     FluxboxWM <br />
@@ -54,6 +57,7 @@ http://arch-anywhere.org/
 
     ATI/AMD xf86-video-ati open source drivers <br />
     Intel xf86-video-intel open source drivers <br />
+    NVIDIA: xf86-video-nouveau open source drivers <br />
     NVIDIA: Stable, 340xx, 304xx closed source drivers <br />
     VirtualBox Guest Utilities Drivers <br />
 
@@ -61,6 +65,7 @@ http://arch-anywhere.org/
 
     Grub (Grand Unified Bootloader) <br />
     Syslinux (SysLinux Bootloader) <br />
+    Systemd-boot (Systemd Bootloader) <br />
     Support for UEFI boot <br />
     OsProber (Dual-Boot Support) <br />
 

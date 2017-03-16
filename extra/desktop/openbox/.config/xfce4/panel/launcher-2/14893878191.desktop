@@ -1,0 +1,10 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=obpower
+Comment=Power Options
+Exec=obpower
+Icon=preferences-desktop-accessibility-symbolic
+Path=
+Terminal=false
+StartupNotify=false

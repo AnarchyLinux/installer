@@ -35,6 +35,7 @@ init() {
 		"French" "Français" \
 		"German" "Deutsch" \
 		"Greek" "Greek" \
+		"Hungarian" "Magyar" \
 		"Indonesian" "bahasa Indonesia" \
 		"Italian" "Italiano" \
 		"Latvian" "Latviešu" \
@@ -52,6 +53,7 @@ init() {
 		"French") export lang_file="$aa_dir"/lang/arch-installer-french.conf lib=fr bro=fr kdel=fr ;;
 		"German") export lang_file="$aa_dir"/lang/arch-installer-german.conf lib=de bro=de kdel=de ;;
 		"Greek") export lang_file="$aa_dir"/lang/arch-installer-greek.conf lib=el bro=el kdel=el ;;
+		"Hungarian") export lang_file="$aa_dir"/lang/arch-installer-hungarian.conf lib=hu bro=hu kdel=hu ;;
 		"Indonesian") export lang_file="$aa_dir"/lang/arch-installer-indonesia.conf lib=id bro=id kdel=id ;;
 		"Italian") export lang_file="$aa_dir"/lang/arch-installer-italian.conf lib=it bro=it kdel=it ;;
 		"Latvian") export lang_file="$aa_dir"/lang/arch-installer-latvian.conf lib=lv bro=lv kdel=lv ;;
@@ -65,8 +67,9 @@ init() {
 	esac
 
 	source "$lang_file"
-	set_lang="$LANG"
+	export log=/tmp/arch-anywhere.log
 	export reload=true
+	echo "$(date -u "+%F %H:%M") : Language: $ILANG" > "$log"
 	update_mirrors
 
 }
@@ -80,8 +83,17 @@ update_mirrors() {
 
 	if ! (</etc/pacman.d/mirrorlist grep "rankmirrors" &>/dev/null) then
 		op_title="$mirror_op_msg"
-		code=$(dialog --nocancel --ok-button "$ok" --menu "$mirror_msg1" 17 60 10 $countries 3>&1 1>&2 2>&3)
-		if [ "$code" == "AL" ]; then
+		code=$(dialog --nocancel --ok-button "$ok" --menu "$mirror_msg1" 17 60 10 \
+			"$default" "->" \
+			$countries 3>&1 1>&2 2>&3)
+
+		if [ "$code" == "$default" ]; then
+			(wget -4 --no-check-certificate --append-output=/dev/null "https://git.archlinux.org/svntogit/packages.git/plain/trunk/mirrorlist?h=packages/pacman-mirrorlist" -O /tmp/mirrorlist.bak
+			echo "$?" > /tmp/ex_status.var 
+			head -n10 /tmp/mirrorlist.bak | sed 's/#//' > /etc/pacman.d/mirrorlist.bak 
+			sleep 0.5) &> /dev/null &
+			pid=$! pri=0.1 msg="\n$mirror_load0 \n\n \Z1> \Z2wget -O /etc/pacman.d/mirrorlist archlinux.org/mirrorlist/all\Zn" load
+		elif [ "$code" == "AL" ]; then
 			(wget -4 --no-check-certificate --append-output=/dev/null "https://www.archlinux.org/mirrorlist/all/" -O /etc/pacman.d/mirrorlist.bak
 			echo "$?" > /tmp/ex_status.var ; sleep 0.5) &> /dev/null &
 			pid=$! pri=0.1 msg="\n$mirror_load0 \n\n \Z1> \Z2wget -O /etc/pacman.d/mirrorlist archlinux.org/mirrorlist/all\Zn" load
@@ -94,6 +106,8 @@ update_mirrors() {
 			echo "$?" > /tmp/ex_status.var ; sleep 0.5) &> /dev/null &
 			pid=$! pri=0.1 msg="\n$mirror_load0 \n\n \Z1> \Z2wget -O /etc/pacman.d/mirrorlist archlinux.org/mirrorlist/?country=$code\Zn" load
 		fi
+
+		echo "$(date -u "+%F %H:%M") : Updated Mirrors From: $code" >> "$log"
 		
 		while [ "$(</tmp/ex_status.var)" -gt "0" ]
 		  do
@@ -102,15 +116,18 @@ update_mirrors() {
 					wifi-menu
 					if [ "$?" -gt "0" ]; then
 						dialog --ok-button "$ok" --msgbox "\n$wifi_msg1" 10 60
+						echo "$(date -u "+%F %H:%M") : Failed to connect to wifi: Exit 1" >> "$log"
 						setterm -background black -store ; reset ; echo "$connect_err1" | sed 's/\\Z1//;s/\\Zn//' ; exit 1
 					else
 						echo "0" > /tmp/ex_status.var
+						echo "$(date -u "+%F %H:%M") : Connected to: $wifi_network" >> "$log"
 					fi
 				else
 					unset wifi_network
 				fi
 			else
 				dialog --ok-button "$ok" --msgbox "\n$connect_err0" 10 60
+				echo "$(date -u "+%F %H:%M") : Failed to connect to wifi: Exit 1" >> "$log"
 				setterm -background black -store ; reset ; echo -e "$connect_err1" | sed 's/\\Z1//;s/\\Zn//' ;  exit 1
 			fi
 		done
@@ -118,6 +135,8 @@ update_mirrors() {
 		sed -i 's/#//' /etc/pacman.d/mirrorlist.bak
 		rankmirrors -n 6 /etc/pacman.d/mirrorlist.bak > /etc/pacman.d/mirrorlist &
 	 	pid=$! pri=0.8 msg="\n$mirror_load1 \n\n \Z1> \Z2rankmirrors -n 6 /etc/pacman.d/mirrorlist\Zn" load
+
+	 	echo "$(date -u "+%F %H:%M") : Ranked mirrorlist: /etc/pacman.d/mirrorlist" >> "$log"
 	fi
 
 	check_connection
@@ -129,7 +148,7 @@ check_connection() {
 	op_title="$connection_op_msg"
 	(test_mirror=$(</etc/pacman.d/mirrorlist grep "^Server" | awk 'NR==1{print $3}' | sed 's/$.*//')
 	test_pkg=bluez-utils
-	test_pkg_ver=$(pacman -Sy --print-format='%v' $(echo "$test_pkg") | tail -n1)
+	test_pkg_ver=$(curl -s https://www.archlinux.org/packages/extra/i686/$test_pkg/ | grep "<title>" | awk '{print $5}')
 	test_link="${test_mirror}extra/os/i686/${test_pkg}-${test_pkg_ver}-i686.pkg.tar.xz"
 	wget -4 --no-check-certificate --append-output=/tmp/wget.log -O /dev/null "${test_link}") &
 	pid=$! pri=0.3 msg="\n$connection_load \n\n \Z1> \Z2wget -O /dev/null test_link/test1Mb.db\Zn" load
@@ -137,12 +156,13 @@ check_connection() {
 	sed -i 's/\,/\./' /tmp/wget.log
 	connection_speed=$(tail /tmp/wget.log | grep -oP '(?<=\().*(?=\))' | awk '{print $1}')
 	connection_rate=$(tail /tmp/wget.log | grep -oP '(?<=\().*(?=\))' | awk '{print $2}')
-    cpu_mhz=$(lscpu | grep "CPU max MHz" | awk '{print $4}' | sed 's/\..*//')
-
-	if [ "$?" -gt "0" ]; then
+	
+	if (lscpu | grep "max MHz" &>/dev/null); then
+		cpu_mhz=$(lscpu | grep "CPU max MHz" | awk '{print $4}' | sed 's/\..*//')
+	else
 		cpu_mhz=$(lscpu | grep "CPU MHz" | awk '{print $3}' | sed 's/\..*//')
 	fi
-        
+
 	case "$cpu_mhz" in
 		[0-9][0-9][0-9]) 
 			cpu_sleep=4.5
@@ -159,6 +179,8 @@ check_connection() {
 	esac
         		
 	export connection_speed connection_rate cpu_sleep
+	echo "$(date -u "+%F %H:%M") : Ranked connection speed: $connection_speed $connection_rate" >> "$log"
+	echo "$(date -u "+%F %H:%M") : Clocked CPU MHz: $cpu_mhz" >> "$log"
 	rm /tmp/{ex_status.var,wget.log} &> /dev/null
 	set_keys
 
@@ -172,6 +194,7 @@ set_keys() {
 	"us" "United States" \
 	"de" "German" \
 	"el" "Greek" \
+	"hu" "Hungarian" \
 	"es" "Spanish" \
 	"fr" "French" \
 	"it" "Italian" \
@@ -192,6 +215,7 @@ set_keys() {
 	
 	export keyboard
 	localectl set-keymap "$keyboard"
+	echo "$(date -u "+%F %H:%M") : Set keymap to: $keyboard" >> "$log"
 	set_locale
 
 }
@@ -209,6 +233,7 @@ set_locale() {
 	"de_DE.UTF-8" "German" \
 	"el_GR.UTF-8" "Greek" \
 	"en_GB.UTF-8" "Great Britain" \
+	"hu_HU.UTF-8" "Hungary" \
 	"it_IT.UTF-8" "Italian" \
 	"lv_LV.UTF-8" "Latvian" \
 	"en_MX.UTF-8" "Mexico" \
@@ -227,6 +252,7 @@ set_locale() {
 		fi
 	fi
 
+	echo "$(date -u "+%F %H:%M") : Set locale to: $LOCALE" >> "$log"
 	set_zone
 
 }
@@ -254,6 +280,7 @@ set_zone() {
 		fi
 	fi
 
+	echo "$(date -u "+%F %H:%M") : Set timezone to: $ZONE" >> "$log"
 	prepare_drives
 
 }
@@ -261,9 +288,9 @@ set_zone() {
 prepare_drives() {
 
 	op_title="$part_op_msg"
-	
-	df | grep "$ARCH" &> /dev/null
-	if [ "$?" -eq "0" ]; then
+	tmp_menu=/tmp/part.sh
+
+	if (df | grep "$ARCH" &> /dev/null); then
 		umount -R "$ARCH" &> /dev/null &
 		pid=$! pri=0.1 msg="$wait_load \n\n \Z1> \Z2umount -R $ARCH\Zn" load
 		swapoff -a &> /dev/null &
@@ -278,25 +305,24 @@ prepare_drives() {
 	if [ "$?" -gt "0" ] || [ "$PART" == "$menu_msg" ]; then
 		main_menu
 	elif [ "$PART" != "$method2" ]; then
-		LANG=en_US.UTF-8
 		dev_menu="           Device: | Size: | Type:  |"
 		if "$screen_h" ; then
-			cat <<-EOF > /tmp/part.sh
+			cat <<-EOF > "$tmp_menu"
 					dialog --colors --backtitle "$backtitle" --title "$title" --ok-button "$ok" --cancel-button "$cancel" --menu "$drive_msg \n\n $dev_menu" 16 60 5 \\
 				EOF
 		else
-			cat <<-EOF > /tmp/part.sh
+			cat <<-EOF > "$tmp_menu"
 					dialog --colors --title "$title" --ok-button "$ok" --cancel-button "$cancel" --menu "$drive_msg \n\n $dev_menu" 16 60 5 \\
 				EOF
 		fi
 
-		cat <<-EOF >> /tmp/part.sh
+		cat <<-EOF >> "$tmp_menu"
 			$(lsblk -nio NAME,SIZE,TYPE | egrep "disk|raid[0-9]+$" | sed 's/[^[:alnum:]_., ]//g' | sort -k 1,1 | uniq | awk '{print "\""$1"\"""  ""\"| "$2" | "$3" |==>\""" \\"}' | column -t)
 			3>&1 1>&2 2>&3
 		EOF
 
-		DRIVE=$(bash /tmp/part.sh)
-		rm /tmp/part.sh
+		DRIVE=$(bash "$tmp_menu")
+		rm "$tmp_menu"
 		
 		if [ -z "$DRIVE" ]; then
 			prepare_drives
@@ -306,10 +332,12 @@ prepare_drives() {
 			PART_PREFIX="p"
 		fi
 
-		drive_byte=$(fdisk -l | grep -w "$DRIVE" | awk '{print $5}')
+		drive_byte=$(lsblk -nibo NAME,SIZE | grep -w "$DRIVE" | awk '{print $2}')
 		drive_mib=$((drive_byte/1024/1024))
 		drive_gigs=$((drive_mib/1024))
 		f2fs=$(cat /sys/block/"$DRIVE"/queue/rotational)
+		echo "$(date -u "+%F %H:%M") : Drive size in MB: $drive_mib" >> "$log"
+		echo "$(date -u "+%F %H:%M") : F2FS state: $f2fs" >> "$log"
 		fs_select
 
 		if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$swap_msg0" 10 60) then
@@ -339,18 +367,22 @@ prepare_drives() {
 					fi
 				fi
 			done
+
+			echo "$(date -u "+%F %H:%M") : Swapspace size set to: $SWAPSPACE" >> "$log"
 		fi
 			
 		if (efivar -l &> /dev/null); then
 			if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$efi_msg0" 10 60) then
-					GPT=true 
-					UEFI=true 
+				GPT=true
+				UEFI=true
+				echo "$(date -u "+%F %H:%M") : UEFI boot activated" >> "$log"
 			fi
 		fi
 
 		if ! "$UEFI" ; then 
 			if (dialog --defaultno --yes-button "$yes" --no-button "$no" --yesno "\n$gpt_msg" 10 60) then 
 				GPT=true
+				echo "$(date -u "+%F %H:%M") : GPT partition scheme activated" >> "$log"
 			fi
 		fi
 
@@ -374,27 +406,29 @@ prepare_drives() {
 			(sgdisk --zap-all /dev/"$DRIVE"
 			wipefs -a /dev/"$DRIVE") &> /dev/null &
 			pid=$! pri=0.1 msg="\n$frmt_load \n\n \Z1> \Z2sgdisk --zap-all /dev/$DRIVE\Zn" load
+			echo "$(date -u "+%F %H:%M") : Format device: /dev/$DRIVE" >> "$log"
 		else
 			prepare_drives
 		fi
 	fi
 	
-	LANG="$set_lang"
-
 	case "$PART" in
-		"$method0") auto_part	
+		"$method0")	echo "$(date -u "+%F %H:%M") : Begin auto_part function" >> "$log"
+				auto_part
 		;;
-		"$method1") auto_encrypt
+		"$method1")	echo "$(date -u "+%F %H:%M") : Begin auto_encrypt function" >> "$log"
+				auto_encrypt
 		;;
 		"$method2")	points=$(echo -e "$points_orig\n$custom $custom-mountpoint")
-					part_menu
+				echo "$(date -u "+%F %H:%M") : Begin part_menu function" >> "$log"
+				part_menu
 		;;
 	esac
 
 	if ! "$mounted" ; then
 		dialog --ok-button "$ok" --msgbox "\n$part_err_msg" 10 60
+		echo "$(date -u "+%F %H:%M") : Failed to mount root filesystem for unknown reason" >> "$log"
 		prepare_drives
-	
 	else
 		prepare_base
 	fi
@@ -414,6 +448,7 @@ auto_part() {
 				mkswap /dev/"$SWAP"
 				swapon /dev/"$SWAP") &> /dev/null &
 				pid=$! pri=0.1 msg="\n$swap_load \n\n \Z1> \Z2mkswap /dev/$SWAP\Zn" load
+				echo "$(date -u "+%F %H:%M") : Created and activate swapspace: $SWAP" >> "$log"
 			else
 				echo -e "n\n\n\n512M\nef00\nn\n\n\n\n\nw\ny" | gdisk /dev/"$DRIVE" &> /dev/null &
 				pid=$! pri=0.1 msg="\n$load_var0 \n\n \Z1> \Z2gdisk /dev/$DRIVE\Zn" load
@@ -429,6 +464,7 @@ auto_part() {
 				mkswap /dev/"$SWAP"
 				swapon /dev/"$SWAP") &> /dev/null &
 				pid=$! pri=0.1 msg="\n$swap_load \n\n \Z1> \Z2mkswap /dev/$SWAP\Zn" load
+				echo "$(date -u "+%F %H:%M") : Created and activate swapspace: $SWAP" >> "$log"
 			else
 				echo -e "o\ny\nn\n1\n\n+212M\n\nn\n2\n\n+1M\nEF02\nn\n3\n\n\n\nw\ny" | gdisk /dev/"$DRIVE" &> /dev/null &
 				pid=$! pri=0.1 msg="\n$load_var0 \n\n \Z1> \Z2gdisk /dev/$DRIVE\Zn" load
@@ -445,6 +481,7 @@ auto_part() {
 			mkswap /dev/"$SWAP"
 			swapon /dev/"$SWAP") &> /dev/null &
 			pid=$! pri=0.1 msg="\n$swap_load \n\n \Z1> \Z2mkswap /dev/$SWAP\Zn" load
+			echo "$(date -u "+%F %H:%M") : Created and activate swapspace: $SWAP" >> "$log"
 
 		else
 			echo -e "o\nn\np\n1\n\n+212M\nn\np\n2\n\n\nw" | fdisk /dev/"$DRIVE" &> /dev/null &
@@ -454,6 +491,9 @@ auto_part() {
 		ROOT="${DRIVE}${PART_PREFIX}2"
 	fi
 	
+	echo "$(date -u "+%F %H:%M") : Create boot partition: $BOOT" >> "$log"
+	echo "$(date -u "+%F %H:%M") : Create root partition: $ROOT" >> "$log"
+	
 	if "$UEFI" ; then
 		(sgdisk --zap-all /dev/"$BOOT"
 		wipefs -a /dev/"$BOOT"
@@ -461,11 +501,16 @@ auto_part() {
 		pid=$! pri=0.1 msg="\n$efi_load1 \n\n \Z1> \Z2mkfs.vfat -F32 /dev/$BOOT\Zn" load
 		esp_part="$BOOT"
 		esp_mnt=/boot
+		echo "$(date -u "+%F %H:%M") : ESP part set to: $esp_part" >> "$log"
+		echo "$(date -u "+%F %H:%M") : ESP mnt set to: $esp_mnt" >> "$log"
+		echo "$(date -u "+%F %H:%M") : Created boot filesystem: vfat" >> "$log"
 	else
 		(sgdisk --zap-all /dev/"$BOOT"
 		wipefs -a /dev/"$BOOT"
 		mkfs.ext4 -O \^64bit /dev/"$BOOT") &> /dev/null &
 		pid=$! pri=0.1 msg="\n$boot_load \n\n \Z1> \Z2mkfs.ext4 /dev/$BOOT\Zn" load
+		echo "$(date -u "+%F %H:%M") : Boot set to: /boot" >> "$log"
+		echo "$(date -u "+%F %H:%M") : Created boot filesystem: ext4" >> "$log"
 	fi
 		
 	case "$FS" in
@@ -479,12 +524,15 @@ auto_part() {
 		;;
 	esac
 	pid=$! pri=0.6 msg="\n$load_var1 \n\n \Z1> \Z2mkfs.$FS /dev/$ROOT\Zn" load
+	echo "$(date -u "+%F %H:%M") : Create root filesystem: $FS" >> "$log"
 
 	(mount /dev/"$ROOT" "$ARCH"
 	echo "$?" > /tmp/ex_status.var
 	mkdir $ARCH/boot
 	mount /dev/"$BOOT" "$ARCH"/boot) &> /dev/null &
 	pid=$! pri=0.1 msg="\n$mnt_load \n\n \Z1> \Z2mount /dev/$ROOT $ARCH\Zn" load
+	echo "$(date -u "+%F %H:%M") : Root filesystem mounted: $ARCH" >> "$log"
+	echo "$(date -u "+%F %H:%M") : Boot filesystem mounted: $ARCH/boot" >> "$log"
 
 	if [ "$(</tmp/ex_status.var)" -eq "0" ]; then
 		mounted=true
@@ -499,16 +547,17 @@ auto_encrypt() {
 	op_title="$partload_op_msg"
 	if (dialog --defaultno --yes-button "$yes" --no-button "$no" --yesno "\n$encrypt_var0" 10 60) then
 		while [ "$input" != "$input_chk" ]
-    	  do
-    		input=$(dialog --nocancel --clear --insecure --passwordbox "$encrypt_var1" 12 55 --stdout)
-    		input_chk=$(dialog --nocancel --clear --insecure --passwordbox "$encrypt_var2" 12 55 --stdout)
-    	    if [ -z "$input" ]; then
-       			dialog --ok-button "$ok" --msgbox "\n$passwd_msg0" 10 60
+		  do
+			input=$(dialog --nocancel --clear --insecure --passwordbox "$encrypt_var1" 12 55 --stdout)
+			input_chk=$(dialog --nocancel --clear --insecure --passwordbox "$encrypt_var2" 12 55 --stdout)
+			
+			if [ -z "$input" ]; then
+				dialog --ok-button "$ok" --msgbox "\n$passwd_msg0" 10 60
 		 		input_chk=default
-		 	elif [ "$input" != "$input_chk" ]; then
-          		dialog --ok-button "$ok" --msgbox "\n$passwd_msg1" 10 60
-         	fi
-    	 done
+			elif [ "$input" != "$input_chk" ]; then
+		  		dialog --ok-button "$ok" --msgbox "\n$passwd_msg1" 10 60
+		 	fi
+		 done
 	else
 		prepare_drives
 	fi
@@ -532,28 +581,37 @@ auto_encrypt() {
 		ROOT="${DRIVE}${PART_PREFIX}2"
 	fi
 
+	echo "$(date -u "+%F %H:%M") : Create boot partition: $BOOT" >> "$log"
+	echo "$(date -u "+%F %H:%M") : Create root partition: $ROOT" >> "$log"
 	(sgdisk --zap-all /dev/"$ROOT"
 	sgdisk --zap-all /dev/"$BOOT"
 	wipefs -a /dev/"$ROOT"
 	wipefs -a /dev/"$BOOT") &> /dev/null &
 	pid=$! pri=0.1 msg="\n$frmt_load \n\n \Z1> \Z2wipefs -a /dev/$ROOT\Zn" load
-	
+	echo "$(date -u "+%F %H:%M") : Wipe boot partition" >> "$log"
+	echo "$(date -u "+%F %H:%M") : Wipe root partition" >> "$log"
+
 	(lvm pvcreate /dev/"$ROOT"
 	lvm vgcreate lvm /dev/"$ROOT") &> /dev/null &
 	pid=$! pri=0.1 msg="\n$pv_load \n\n \Z1> \Z2lvm pvcreate /dev/$ROOT\Zn" load
+	echo "$(date -u "+%F %H:%M") : Create physical root volume: /dev/$ROOT" >> "$log"
 
 	if "$SWAP" ; then
 		lvm lvcreate -L "${SWAPSPACE}M" -n swap lvm &> /dev/null &
 		pid=$! pri=0.1 msg="\n$swap_load \n\n \Z1> \Z2lvm lvcreate -L ${SWAPSPACE}M -n swap lvm\Zn" load
+		echo "$(date -u "+%F %H:%M") : Create logical swapspace" >> "$log"
 	fi
 
 	(lvm lvcreate -L 500M -n tmp lvm
 	lvm lvcreate -l 100%FREE -n lvroot lvm) &> /dev/null &
 	pid=$! pri=0.1 msg="\n$lv_load \n\n \Z1> \Z2lvm lvcreate -l 100%FREE -n lvroot lvm\Zn" load
+	echo "$(date -u "+%F %H:%M") : Create logical root volume: lvroot" >> "$log"
+	echo "$(date -u "+%F %H:%M") : Create logical tmp filesystem: tmp" >> "$log"
 
 	(printf "$input" | cryptsetup luksFormat -c aes-xts-plain64 -s 512 /dev/lvm/lvroot -
 	printf "$input" | cryptsetup open --type luks /dev/lvm/lvroot root -) &> /dev/null &
 	pid=$! pri=0.2 msg="\n$encrypt_load \n\n \Z1> \Z2cryptsetup luksFormat -c aes-xts-plain64 -s 512 /dev/lvm/lvroot\Zn" load
+	echo "$(date -u "+%F %H:%M") : Encrypt logical volume: lvroot" >> "$log"
 	unset input input_chk ; input_chk=default
 	wipefs -a /dev/mapper/root &> /dev/null
 	
@@ -566,15 +624,18 @@ auto_encrypt() {
 		;;
 	esac
 	pid=$! pri=1 msg="\n$load_var1 \n\n \Z1> \Z2mkfs.$FS /dev/mapper/root\Zn" load
+	echo "$(date -u "+%F %H:%M") : Create root filesystem: $FS" >> "$log"
 	
 	if "$UEFI" ; then
 		mkfs.vfat -F32 /dev/"$BOOT" &> /dev/null &
 		pid=$! pri=0.2 msg="\n$efi_load1 \n\n \Z1> \Z2mkfs.vfat -F32 /dev/$BOOT\Zn" load
 		esp_part="/dev/$BOOT"
 		esp_mnt=/boot
+		echo "$(date -u "+%F %H:%M") : Create boot filesystem: vfat" >> "$log"
 	else
 		mkfs.ext4 -O \^64bit /dev/"$BOOT" &> /dev/null &
 		pid=$! pri=0.2 msg="\n$boot_load \n\n \Z1> \Z2mkfs.ext4 /dev/$BOOT\Zn" load
+		echo "$(date -u "+%F %H:%M") : Create boot filesystem: ext4" >> "$log"
 	fi
 
 	(mount /dev/mapper/root "$ARCH"
@@ -582,6 +643,8 @@ auto_encrypt() {
 	mkdir $ARCH/boot
 	mount /dev/"$BOOT" "$ARCH"/boot) &> /dev/null &
 	pid=$! pri=0.1 msg="\n$mnt_load \n\n \Z1> \Z2mount /dev/mapper/root $ARCH\Zn" load
+	echo "$(date -u "+%F %H:%M") : Mount root filesystem: $ARCH" >> "$log"
+	echo "$(date -u "+%F %H:%M") : Mount boot filesystem: $ARCH/boot" >> "$log"
 
 	if [ $(</tmp/ex_status.var) -eq "0" ]; then
 		mounted=true
@@ -666,9 +729,9 @@ part_menu() {
 	<"$tmp_list" column -t >> "$tmp_menu"
 	echo "\"$done_msg\" \"$write\" 3>&1 1>&2 2>&3" >> "$tmp_menu"
 	echo "if [ \"\$?\" -eq \"3\" ]; then clear ; echo \"$done_msg\" ; fi" >> "$tmp_menu"
-	part=$(bash "$tmp_menu" | sed 's/ //g')
+	part=$(bash "$tmp_menu" | sed 's/^\s\+//g;s/\s\+$//g')
+	if (<<<"$part" grep "$done_msg" &> /dev/null) then part="$done_msg" ; fi
 	rm $tmp_menu $tmp_list
-	if (<<<"$part" grep "$done_msg") then part="$done_msg" ; fi
 	part_class
 
 }
@@ -1194,8 +1257,8 @@ prepare_base() {
 		while (true)
 		  do
 			net_util=$(dialog --ok-button "$ok" --cancel-button "$cancel" --menu "$wifi_util_msg" 14 64 3 \
-				"netctl"			"$net_util_msg0" \
 				"networkmanager" 		"$net_util_msg1" \
+				"netctl"			"$net_util_msg0" \
 				"$none" "-" 3>&1 1>&2 2>&3)
 		
 			if [ "$?" -gt "0" ]; then
@@ -1269,10 +1332,11 @@ graphics() {
 	fi
 	
 	DE=$(dialog --ok-button "$ok" --cancel-button "$cancel" --menu "$environment_msg" 18 60 11 \
-		"Arch-Anywhere-Xfce" "$de15" \
-		"budgie"		"$de17" \
+		"AA-Xfce"	"$de15" \
+		"AA-Openbox"	"$de18" \
+		"budgie"	"$de17" \
 		"cinnamon"      "$de5" \
-		"deepin"		"$de14" \
+		"deepin"	"$de14" \
 		"gnome"         "$de4" \
 		"KDE plasma"    "$de6" \
 		"lxde"          "$de2" \
@@ -1280,13 +1344,13 @@ graphics() {
 		"mate"          "$de1" \
 		"xfce4"         "$de0" \
 		"awesome"       "$de9" \
-		"bspwm"			"$de13" \
+		"bspwm"		"$de13" \
 		"dwm"           "$de12" \
 		"enlightenment" "$de7" \
 		"fluxbox"       "$de11" \
 		"i3"            "$de10" \
 		"openbox"       "$de8" \
-		"xmonad"		"$de16"  3>&1 1>&2 2>&3)
+		"xmonad"	"$de16"  3>&1 1>&2 2>&3)
 	if [ "$?" -gt "0" ]; then 
 		if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$desktop_cancel_msg" 10 60) then	
 			install_base
@@ -1296,87 +1360,92 @@ graphics() {
 	source "$lang_file"
 
 	case "$DE" in
-		"Arch-Anywhere-Xfce") 	DE="xfce4 xfce4-goodies gvfs zsh zsh-syntax-highlighting"
-								start_term="exec startxfce4" de_config=true
+		"AA-Xfce") 	env="$DE"
+				DE="xfce4 xfce4-goodies gvfs zsh zsh-syntax-highlighting htop lynx xscreensaver"
+				start_term="exec startxfce4"
+		;;
+		"AA-Openbox")	env="$DE"
+				DE="openbox thunar thunar-volman xfce4-terminal xfce4-panel xfce4-whiskermenu-plugin xcompmgr transset-df obconf lxappearance-obconf wmctrl gxmessage xfce4-pulseaudio-plugin xfdesktop xdotool htop lynx xscreensaver"
+				start_term="exec openbox-session"
 		;;
 		"xfce4") 	if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$extra_msg0" 10 60) then
-						DE="xfce4 xfce4-goodies"
-					fi
-					start_term="exec startxfce4"
+					DE="xfce4 xfce4-goodies"
+				fi
+				start_term="exec startxfce4"
 		;;
 		"budgie")	if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$extra_msg6" 10 60) then
-						DE="budgie-desktop gnome arc-icon-theme arc-gtk-theme elementary-icon-theme"
-					else
-						DE="budgie-desktop"
-					fi
-					start_term="export XDG_CURRENT_DESKTOP=Budgie:GNOME ; exec budgie-desktop"
+					DE="budgie-desktop gnome"
+				else
+					DE="budgie-desktop"
+				fi
+				start_term="export XDG_CURRENT_DESKTOP=Budgie:GNOME ; exec budgie-desktop"
 		;;
 		"gnome")	if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$extra_msg1" 10 60) then
-						DE="gnome gnome-extra"
-					fi
-					 start_term="exec gnome-session"
+					DE="gnome gnome-extra"
+				fi
+				 start_term="exec gnome-session"
 		;;
 		"mate")		if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$gtk3_var" 10 60) then 
-						if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$extra_msg2" 10 60) then
-							DE="mate-gtk3 mate-extra-gtk3 gtk3-print-backends"
-						else
-							DE="mate-gtk3"
-						fi
-						GTK3=true
+					if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$extra_msg2" 10 60) then
+						DE="mate-gtk3 mate-extra-gtk3 gtk3-print-backends"
 					else
-						if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$extra_msg2" 10 60) then
-							DE="mate mate-extra gtk-engine-murrine"
-						else
-							DE="mate gtk-engine-murrine"
-						fi
+						DE="mate-gtk3"
 					fi
-					 start_term="exec mate-session"
+					GTK3=true
+				else
+					if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$extra_msg2" 10 60) then
+						DE="mate mate-extra gtk-engine-murrine"
+					else
+						DE="mate gtk-engine-murrine"
+					fi
+				fi
+				 start_term="exec mate-session"
 		;;
 		"KDE plasma")	if (dialog --defaultno --yes-button "$yes" --no-button "$no" --yesno "\n$extra_msg3" 10 60) then
-							DE="plasma-desktop sddm konsole dolphin plasma-nm plasma-pa libxshmfence kscreen"
+					DE="plasma-desktop sddm konsole dolphin plasma-nm plasma-pa libxshmfence kscreen"
 							
-							if "$LAPTOP" ; then
-								DE+=" powerdevil"
-							fi
-						else
-							DE="plasma kde-applications"
-						fi
+					if "$LAPTOP" ; then
+						DE+=" powerdevil"
+					fi
+				else
+					DE="plasma kde-applications"
+				fi
 						
-						if [ -n "$kdel" ]; then
-							DE+=" kde-l10n-$kdel"
-						fi
+				if [ -n "$kdel" ]; then
+					DE+=" kde-l10n-$kdel"
+				fi
 
-						DM="sddm"
-						enable_dm=true
-						start_term="exec startkde"
+				DM="sddm"
+				enable_dm=true
+				start_term="exec startkde"
 		;;
 		"deepin")	if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$extra_msg4" 10 60) then
-						DE="deepin deepin-extra"
-					fi
- 					start_term="exec startdde"
+					DE="deepin deepin-extra"
+				fi
+ 				start_term="exec startdde"
  		;;
  		"xmonad")	if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$extra_msg5" 10 60) then 
-                        			DE="xmonad xmonad-contrib"
-                    			fi
-                    			start_term="exec xmonad"
+                        		DE="xmonad xmonad-contrib"
+                    		fi
+                    		start_term="exec xmonad"
 		;;	
-		"cinnamon") DE+=" gnome-terminal file-roller p7zip zip unrar"
-					start_term="exec cinnamon-session" 
+		"cinnamon")	DE+=" gnome-terminal file-roller p7zip zip unrar"
+				start_term="exec cinnamon-session" 
 		;;
-		"lxde") 	if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$gtk3_var" 10 60) then 
-                        DE="lxde-gtk3"
-                    	GTK3=true
-                    fi
-					start_term="exec startlxde" 
+		"lxde") if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$gtk3_var" 10 60) then 
+				DE="lxde-gtk3"
+				GTK3=true
+			fi
+			start_term="exec startlxde" 
 		;;
-		"lxqt") 	start_term="exec startlxqt" 
-					DE="lxqt oxygen-icons breeze-icons"
+		"lxqt") start_term="exec startlxqt" 
+			DE="lxqt oxygen-icons breeze-icons"
 		;;
 		"enlightenment") 	start_term="exec enlightenment_start"
-							DE="enlightenment terminology"
+					DE="enlightenment terminology"
 		;;
 		"bspwm")	start_term="sxhkd & ; exec bspwm"
-					DE="bspwm sxhkd"
+				DE="bspwm sxhkd"
 		;;
 		"fluxbox")	start_term="exec startfluxbox" 
 		;;
@@ -1389,8 +1458,6 @@ graphics() {
 		"i3") 		start_term="exec i3" 
 		;;
 	esac
-
-	env=$(<<<"$DE" awk '{print $1,$2}')
 
 	while (true)
 	  do
@@ -1514,7 +1581,7 @@ graphics() {
 		fi
 	done
 	
-	DE="$DE xdg-user-dirs xorg-server xorg-server-utils xorg-xinit xterm ttf-dejavu gvfs pulseaudio pulseaudio-alsa alsa-utils unzip $GPU"
+	DE="$DE xdg-user-dirs xorg-server xorg-server-utils xorg-xinit xterm arc-icon-theme arc-gtk-theme elementary-icon-theme ttf-dejavu gvfs pulseaudio pavucontrol pulseaudio-alsa alsa-utils unzip screenfetch $GPU"
 		
 	if [ "$net_util" == "networkmanager" ] ; then
 		if (<<<"$DE" grep "plasma" &> /dev/null); then
@@ -1563,6 +1630,7 @@ graphics() {
 	
 	base_install+=" $DE"
 	desktop=true x=19
+	echo "$(date -u "+%F %H:%M") : Base install packages set: $base_install" >> "$log"
 	install_base
 
 }
@@ -1572,49 +1640,60 @@ install_base() {
 
 	op_title="$install_op_msg"
 	pacman -Sy --print-format='%s' $(echo "$base_install") | awk '{s+=$1} END {print s/1024/1024}' >/tmp/size &
-	pid=$! pri=0.1 msg="\n$pacman_load \n\n \Z1> \Z2pacman -Sy --print-format\Zn" load
+	pid=$! pri=0.6 msg="\n$pacman_load \n\n \Z1> \Z2pacman -Sy\Zn" load
 	download_size=$(</tmp/size) ; rm /tmp/size
 	export software_size="$download_size Mib"
 	cal_rate
 	
 	if (dialog --yes-button "$install" --no-button "$cancel" --yesno "\n$install_var" "$x" 65); then
 		tmpfile=$(mktemp)
-		
-		(pacman-key --init
-		pacman-key --populate archlinux) &> /dev/null &
-		pid=$! pri=1 msg="\n$keys_load\n\n \Z1> \Z2pacman-key --init ; pacman-key --populate archlinux\Zn" load
+		echo "$(date -u "+%F %H:%M") : Begin base install" >> "$log"
 
 		if [ "$kernel" == "linux" ]; then
 			base_install="$(pacman -Sqg base) $base_install"
-			(pacstrap "$ARCH" --force $(echo "$base_install") ; echo "$?" > /tmp/ex_status) &> "$tmpfile" &
-			pid=$! pri=$(echo "$down" | sed 's/\..*$//') msg="\n$install_load_var" load_log
 		else
 			base_install="$(pacman -Sqg base | sed 's/^linux//') $base_install"
-			(pacstrap "$ARCH" --force $(echo "$base_install") ; echo "$?" > /tmp/ex_status) &> "$tmpfile" &
-			pid=$! pri=$(echo "$down" | sed 's/\..*$//') msg="\n$install_load_var" load_log
 		fi
+		
+		(pacstrap "$ARCH" --force $(echo "$base_install") ; echo "$?" > /tmp/ex_status) &> "$tmpfile" &
+		pid=$! pri=$(echo "$down" | sed 's/\..*$//') msg="\n$install_load_var" load_log
 
 		genfstab -U -p "$ARCH" >> "$ARCH"/etc/fstab
-
+		<"$tmpfile" >> "$log"
+		rm "$tmpfile"
+	
 		if [ $(</tmp/ex_status) -eq "0" ]; then
 			INSTALLED=true
+			echo "$(date -u "+%F %H:%M") : Install Complete" >> "$log"
+			echo "$(date -u "+%F %H:%M") : Generate fstab:\n$(<$ARCH/etc/fstab)" >> "$log"
 		else
-			mv "$tmpfile" /tmp/arch-anywhere.log
 			dialog --ok-button "$ok" --msgbox "\n$failed_msg" 10 60
-			reset ; tail /tmp/arch-anywhere.log ; exit 1
+			echo "$(date -u "+%F %H:%M") : Install failed: please report to developer" >> "$log"
+			reset ; tail "$log" ; exit 1
 		fi
 						
 		if "$intel" && ! "$VM" ; then
-			arch-chroot "$ARCH" pacman -Sy intel-ucode &>/dev/null &
-			pid=$! pri=0.5 msg="\n$intel_load \n\n \Z1> \Z2pacman -S intel-ucode\Zn" load
+			if (dialog --yes-button "$install" --no-button "$cancel" --yesno "\n$ucode_msg" 11 60); then
+				arch-chroot "$ARCH" pacman -Sy intel-ucode &> "$log" &
+				pid=$! pri=1 msg="\n$wait_load \n\n \Z1> \Z2pacman -Sy intel-ucode\Zn" load
+
+				if [ -f "$ARCH/boot/intel-ucode.img" ]; then
+					ucode=true
+					echo "$(date -u "+%F %H:%M") : Installed intel-ucode" >> "$log"
+				else
+					dialog --ok-button "$ok" --msgbox "\n$ucode_failed_msg" 10 60
+					echo "$(date -u "+%F %H:%M") : intel-ucode install failed" >> "$log"
+				fi
+			fi
 		fi
-		
+
 		case "$bootloader" in
 			grub) grub_config ;;
 			syslinux) syslinux_config ;;
 			systemd-boot) systemd_config ;;
 		esac
 
+		echo "$(date -u "+%F %H:%M") : Configured bootloader: $bootloader" >> "$log"
 		configure_system
 	else
 		if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$exit_msg" 10 60) then
@@ -1666,6 +1745,17 @@ syslinux_config() {
 		cp -r "$ARCH"/usr/lib/syslinux/efi64/* ${ARCH}${esp_mnt}/EFI/syslinux/
 		cp "$aa_dir"/boot/loader/syslinux/syslinux_efi.cfg ${ARCH}${esp_mnt}/EFI/syslinux/syslinux.cfg
 		cp "$aa_dir"/boot/splash.png ${ARCH}${esp_mnt}/EFI/syslinux
+		
+		if [ "$kernel" == "linux-lts" ]; then
+			sed -i 's/vmlinuz-linux/vmlinuz-linux-lts/' ${ARCH}${esp_mnt}/EFI/syslinux/syslinux.cfg
+			sed -i 's/initramfs-linux.img/initramfs-linux-lts.img/' ${ARCH}${esp_mnt}/EFI/syslinux/syslinux.cfg
+			sed -i 's/initramfs-linux-fallback.img/initramfs-linux-lts-fallback.img/' ${ARCH}${esp_mnt}/EFI/syslinux/syslinux.cfg
+		elif [ "$kernel" == "linux-grsec" ]; then
+			sed -i 's/vmlinuz-linux/vmlinuz-linux-grsec/' ${ARCH}${esp_mnt}/EFI/syslinux/syslinux.cfg
+			sed -i 's/initramfs-linux.img/initramfs-linux-grsec.img/' ${ARCH}${esp_mnt}/EFI/syslinux/syslinux.cfg
+			sed -i 's/initramfs-linux-fallback.img/initramfs-linux-grsec-fallback.img/' ${ARCH}${esp_mnt}/EFI/syslinux/syslinux.cfg
+		fi
+
 		arch-chroot "$ARCH" efibootmgr -c -d /dev/"$esp_part" -p "$esp_part_int" -l /EFI/syslinux/syslinux.efi -L "Syslinux") &> /dev/null &
 		pid=$! pri=0.1 msg="\n$syslinux_load \n\n \Z1> \Z2syslinux install efi mode...\Zn" load
 			
@@ -1675,8 +1765,14 @@ syslinux_config() {
 			sed -i "s|APPEND.*$|APPEND root=/dev/$ROOT|" ${ARCH}${esp_mnt}/EFI/syslinux/syslinux.cfg
 		fi
 
-		if "$intel" ; then
-			sed -i "s|../../initramfs-linux.img|../../intel-ucode.img,../../initramfs-linux.img|" ${ARCH}${esp_mnt}/EFI/syslinux/syslinux.cfg
+		if "$ucode" ; then
+			if [ "$kernel" == "linux" ]; then
+				sed -i "s|../../initramfs-linux.img|../../intel-ucode.img,../../initramfs-linux.img|" ${ARCH}${esp_mnt}/EFI/syslinux/syslinux.cfg
+			elif [ "$kernel" == "linux-lts" ]; then
+				sed -i "s|../../initramfs-linux-lts.img|../../intel-ucode.img,../../initramfs-linux-lts.img|" ${ARCH}${esp_mnt}/EFI/syslinux/syslinux.cfg
+			else
+				sed -i "s|../../initramfs-linux-grsec.img|../../intel-ucode.img,../../initramfs-linux-grsec.img|" ${ARCH}${esp_mnt}/EFI/syslinux/syslinux.cfg
+			fi
 		fi
 		
 		if "$drm" ; then
@@ -1689,14 +1785,30 @@ syslinux_config() {
 		cp "$aa_dir"/boot/splash.png "$ARCH"/boot/syslinux/) &> /dev/null &
 		pid=$! pri=0.1 msg="\n$syslinux_load \n\n \Z1> \Z2syslinux-install_update -i -a -m -c $ARCH\Zn" load
 		
+		if [ "$kernel" == "linux-lts" ]; then
+			sed -i 's/vmlinuz-linux/vmlinuz-linux-lts/' ${ARCH}/boot/syslinux/syslinux.cfg
+			sed -i 's/initramfs-linux.img/initramfs-linux-lts.img/' ${ARCH}/boot/syslinux/syslinux.cfg
+			sed -i 's/initramfs-linux-fallback.img/initramfs-linux-lts-fallback.img/' ${ARCH}/boot/syslinux/syslinux.cfg
+		elif [ "$kernel" == "linux-grsec" ]; then
+			sed -i 's/vmlinuz-linux/vmlinuz-linux-grsec/' ${ARCH}/boot/syslinux/syslinux.cfg
+			sed -i 's/initramfs-linux.img/initramfs-linux-grsec.img/' ${ARCH}/boot/syslinux/syslinux.cfg
+			sed -i 's/initramfs-linux-fallback.img/initramfs-linux-grsec-fallback.img/' ${ARCH}/boot/syslinux/syslinux.cfg
+		fi
+
 		if "$crypted" ; then
 			sed -i "s|APPEND.*$|APPEND root=/dev/mapper/root cryptdevice=/dev/lvm/lvroot:root rw|" "$ARCH"/boot/syslinux/syslinux.cfg
 		else
 			sed -i "s|APPEND.*$|APPEND root=/dev/$ROOT|" "$ARCH"/boot/syslinux/syslinux.cfg
 		fi
 
-		if "$intel" ; then
-			sed -i "s|../initramfs-linux.img|../intel-ucode.img,../initramfs-linux.img|" "$ARCH"/boot/syslinux/syslinux.cfg
+		if "$ucode" ; then
+			if [ "$kernel" == "linux" ]; then
+				sed -i "s|../initramfs-linux.img|../intel-ucode.img,../initramfs-linux.img|" "$ARCH"/boot/syslinux/syslinux.cfg
+			elif [ "$kernel" == "linux-lts" ]; then
+				sed -i "s|../initramfs-linux-lts.img|../intel-ucode.img,../initramfs-linux-lts.img|" "$ARCH"/boot/syslinux/syslinux.cfg
+			else
+				sed -i "s|../initramfs-linux-grsec.img|../intel-ucode.img,../initramfs-linux-grsec.img|" "$ARCH"/boot/syslinux/syslinux.cfg
+			fi
 		fi
 
 		if "$drm" ; then
@@ -1711,9 +1823,16 @@ systemd_config() {
 	esp_mnt=$(<<<$esp_mnt sed "s!$ARCH!!")
 	(arch-chroot "$ARCH" bootctl --path="$esp_mnt" install
 	cp /usr/share/systemd/bootctl/loader.conf ${ARCH}${esp_mnt}/loader/
-	echo "timeout 4" >> ${ARCH}${esp_mnt}/loader/loader.conf
-	echo -e "title          Arch Linux\nlinux          /vmlinuz-linux\ninitrd         /initramfs-linux.img" > ${ARCH}${esp_mnt}/loader/entries/arch.conf) &> /dev/null &
+	echo "timeout 4" >> ${ARCH}${esp_mnt}/loader/loader.conf) &> /dev/null &
 	pid=$! pri=0.1 msg="\n$syslinux_load \n\n \Z1> \Z2bootctl --path="$esp_mnt" install\Zn" load
+	
+	if [ "$kernel" == "linux" ]; then
+		echo -e "title          Arch Linux\nlinux          /vmlinuz-linux\ninitrd         /initramfs-linux.img" > ${ARCH}${esp_mnt}/loader/entries/arch.conf
+	elif [ "$kernel" == "linux-lts" ]; then
+		echo -e "title          Arch Linux\nlinux          /vmlinuz-linux-lts\ninitrd         /initramfs-linux-lts.img" > ${ARCH}${esp_mnt}/loader/entries/arch.conf
+	else
+		echo -e "title          Arch Linux\nlinux          /vmlinuz-linux-grsec\ninitrd         /initramfs-linux-grsec.img" > ${ARCH}${esp_mnt}/loader/entries/arch.conf
+	fi
 	
 	if "$crypted" ; then
 		echo "options		cryptdevice=/dev/lvm/lvroot:root root=/dev/mapper/root quiet rw" >> ${ARCH}${esp_mnt}/loader/entries/arch.conf
@@ -1721,7 +1840,7 @@ systemd_config() {
 		echo "options		root=PARTUUID=$(blkid -s PARTUUID -o value $(df | grep -m1 "$ARCH" | awk '{print $1}')) rw" >> ${ARCH}${esp_mnt}/loader/entries/arch.conf
 	fi
 
-	if "$intel" ; then
+	if "$ucode" ; then
 		sed -i '/initrd/i\initrd  \/intel-ucode.img' ${ARCH}${esp_mnt}/loader/entries/arch.conf
 	fi
 
@@ -1737,7 +1856,8 @@ configure_system() {
 	
 	if [ "$bootloader" == "syslinux" ] || [ "$bootloader" == "systemd-boot" ] && "$UEFI" ; then
 		if [ "$esp_mnt" != "/boot" ]; then
-			( if [ "$kernel" == "linux" ]; then
+			(mkdir "$ARCH"/etc/pacman.d/hooks
+			if [ "$kernel" == "linux" ]; then
 				echo -e "$linux_hook\nExec = /usr/bin/cp /boot/{vmlinuz-linux,initramfs-linux.img,initramfs-linux-fallback.img} ${esp_mnt}" > "$ARCH"/etc/pacman.d/hooks/linux-esp.hook
 				cp "$ARCH"/boot/{vmlinuz-linux,initramfs-linux.img,initramfs-linux-fallback.img} ${ARCH}${esp_mnt}
 			elif [ "$kernel" == "linux-lts" ]; then
@@ -1748,7 +1868,7 @@ configure_system() {
 				cp "$ARCH"/boot/{vmlinuz-linux-grsec,initramfs-linux-grsec.img,initramfs-linux-grsec-fallback.img} ${ARCH}${esp_mnt}
 			fi 
 			
-			if "$intel" ; then
+			if "$ucode" ; then
 				echo -e "$intel_hook\nExec = /usr/bin/cp /boot/intel-ucode.img ${esp_mnt}" > "$ARCH"/etc/pacman.d/hooks/intel-esp.hook
 				cp "$ARCH"/boot/intel-ucode.img ${ARCH}${esp_mnt}
 			fi ) &
@@ -1760,11 +1880,19 @@ configure_system() {
 		sed -i 's/MODULES=""/MODULES="nvidia nvidia_modeset nvidia_uvm nvidia_drm"/' "$ARCH"/etc/mkinitcpio.conf
 		sed -i 's!FILES=""!FILES="/etc/modprobe.d/nvidia.conf"!' "$ARCH"/etc/mkinitcpio.conf
 		echo "options nvidia_drm modeset=1" > "$ARCH"/etc/modprobe.d/nvidia.conf
+		
+		if [ ! -d "$ARCH"/etc/pacman.d/hooks ]; then
+			mkdir "$ARCH"/etc/pacman.d/hooks
+		fi
+		
 		echo -e "$nvidia_hook\nExec=/usr/bin/mkinitcpio -p $kernel" > "$ARCH"/etc/pacman.d/hooks/nvidia.hook
+		
 		if ! "$crypted" && ! "$enable_f2fs" ; then
 			arch-chroot "$ARCH" mkinitcpio -p "$kernel" &>/dev/null &
 			pid=$! pri=1 msg="\n$kernel_config_load \n\n \Z1> \Z2mkinitcpio -p $kernel\Zn" load
 		fi
+
+		echo "$(date -u "+%F %H:%M") : Enable nvidia drm" >> "$log"
 	fi
 
 	if "$enable_f2fs" ; then
@@ -1773,6 +1901,7 @@ configure_system() {
 			arch-chroot "$ARCH" mkinitcpio -p "$kernel" &>/dev/null &
 			pid=$! pri=1 msg="\n$f2fs_config_load \n\n \Z1> \Z2mkinitcpio -p $kernel\Zn" load
 		fi
+		echo "$(date -u "+%F %H:%M") : Configure system for f2fs" >> "$log"
 	fi
 
 	if "$crypted" && "$UEFI" ; then
@@ -1792,62 +1921,72 @@ configure_system() {
 		sed -i 's/HOOKS=.*/HOOKS="base udev autodetect keyboard keymap consolefont modconf block encrypt lvm2 filesystems fsck"/' "$ARCH"/etc/mkinitcpio.conf
 		arch-chroot "$ARCH" mkinitcpio -p "$kernel") &> /dev/null &
 		pid=$! pri=1 msg="\n$encrypt_load1 \n\n \Z1> \Z2mkinitcpio -p $kernel\Zn" load
+		echo "$(date -u "+%F %H:%M") : Configure system for encryption" >> "$log"
 	fi
 
 	(sed -i -e "s/#$LOCALE/$LOCALE/" "$ARCH"/etc/locale.gen
 	echo LANG="$LOCALE" > "$ARCH"/etc/locale.conf
 	arch-chroot "$ARCH" locale-gen) &> /dev/null &
 	pid=$! pri=0.1 msg="\n$locale_load_var \n\n \Z1> \Z2LANG=$LOCALE ; locale-gen\Zn" load
+	echo "$(date -u "+%F %H:%M") : Set system locale: $LOCALE" >> "$log"
 	
 	if [ "$keyboard" != "$default" ]; then
 		echo "KEYMAP=$keyboard" > "$ARCH"/etc/vconsole.conf
 		if "$desktop" ; then
 			echo -e "Section \"InputClass\"\nIdentifier \"system-keyboard\"\nMatchIsKeyboard \"on\"\nOption \"XkbLayout\" \"$keyboard\"\nEndSection" > "$ARCH"/etc/X11/xorg.conf.d/00-keyboard.conf
 		fi
+		echo "$(date -u "+%F %H:%M") : Set system keymap: $keyboard" >> "$log"
 	fi
 
-	(arch-chroot "$ARCH" ln -sf /usr/share/zoneinfo/"$ZONE" /etc/localtime
-	sleep 0.5) &
+	(arch-chroot "$ARCH" ln -sf /usr/share/zoneinfo/"$ZONE" /etc/localtime ; sleep 0.5) &
 	pid=$! pri=0.1 msg="\n$zone_load_var \n\n \Z1> \Z2ln -sf $ZONE /etc/localtime\Zn" load
+	echo "$(date -u "+%F %H:%M") : Set system timezone: $ZONE" >> "$log"
 
 	case "$net_util" in
 		networkmanager)	arch-chroot "$ARCH" systemctl enable NetworkManager.service &>/dev/null
-		pid=$! pri=0.1 msg="\n$nwmanager_msg0 \n\n \Z1> \Z2systemctl enable NetworkManager.service\Zn" load
+				pid=$! pri=0.1 msg="\n$nwmanager_msg0 \n\n \Z1> \Z2systemctl enable NetworkManager.service\Zn" load
+				echo "$(date -u "+%F %H:%M") : Enable networkmanager" >> "$log"
 		;;
 		netctl)	arch-chroot "$ARCH" systemctl enable netctl.service &>/dev/null &
-    	pid=$! pri=0.1 msg="\n$nwmanager_msg1 \n\n \Z1> \Z2systemctl enable netctl.service\Zn" load
+		  	pid=$! pri=0.1 msg="\n$nwmanager_msg1 \n\n \Z1> \Z2systemctl enable netctl.service\Zn" load
+		  	echo "$(date -u "+%F %H:%M") : Enable netctl" >> "$log"
 		;;
 	esac
 
-    if "$enable_bt" ; then
+	if "$enable_bt" ; then
  	   	arch-chroot "$ARCH" systemctl enable bluetooth &>/dev/null &
-    	pid=$! pri=0.1 msg="\n$btenable_msg \n\n \Z1> \Z2systemctl enable bluetooth.service\Zn" load
-    fi
+		pid=$! pri=0.1 msg="\n$btenable_msg \n\n \Z1> \Z2systemctl enable bluetooth.service\Zn" load
+		echo "$(date -u "+%F %H:%M") : Enable bluetooth" >> "$log"
+	fi
 	
 	if "$desktop" ; then
 		echo "$start_term" > "$ARCH"/etc/skel/.xinitrc
 		echo "$start_term" > "$ARCH"/root/.xinitrc
+		echo "$(date -u "+%F %H:%M") : Create xinitrc: $start_term" >> "$log"
 	fi
 	
 	if "$enable_dm" ; then 
 		arch-chroot "$ARCH" systemctl enable "$DM".service &> /dev/null &
 		pid=$! pri="0.1" msg="$wait_load \n\n \Z1> \Z2systemctl enable "$DM"\Zn" load
+		echo "$(date -u "+%F %H:%M") : Enable $DM" >> "$log"
 	fi
 		
 	if "$VM" ; then
 		case "$virt" in
 			vbox)	arch-chroot "$ARCH" systemctl enable vboxservice &>/dev/null &
-					pid=$! pri=0.1 msg="\n$vbox_enable_msg \n\n \Z1> \Z2systemctl enable vboxservice\Zn" load
+				pid=$! pri=0.1 msg="\n$vbox_enable_msg \n\n \Z1> \Z2systemctl enable vboxservice\Zn" load
+				echo "$(date -u "+%F %H:%M") : Enable vboxservice" >> "$log"
 			;;
 			vmware)	(arch-chroot "$ARCH" systemctl enable vmware-vmblock-fuse
-					mkdir "$ARCH"/etc/init.d
-					for x in {0..6}; do mkdir -p "$ARCH"/etc/init.d/rc${x}.d; done) &>/dev/null &
-					pid=$! pri=0.1 msg="\n$vbox_enable_msg \n\n \Z1> \Z2systemctl enable vboxservice\Zn" load
+				mkdir "$ARCH"/etc/init.d
+				for x in {0..6}; do mkdir -p "$ARCH"/etc/init.d/rc${x}.d; done) &>/dev/null &
+				pid=$! pri=0.1 msg="\n$vbox_enable_msg \n\n \Z1> \Z2systemctl enable vboxservice\Zn" load
+				echo "$(date -u "+%F %H:%M") : Enable vmware" >> "$log"
 			;;
 		esac
 	fi
 
-	if "$de_config" ; then	
+	if [ ! -z "$env" ]; then	
 		config_env &
 		pid=$! pri="0.1" msg="$wait_load \n\n \Z1> \Z2arch-anywhere config_env\Zn" load
 	fi	
@@ -1857,15 +1996,19 @@ configure_system() {
 			sed -i '/\[multilib]$/ {
 			N
 			/Include/s/#//g}' /mnt/etc/pacman.conf
+			echo "$(date -u "+%F %H:%M") : Include multilib" >> "$log"
 		fi
 	fi
 	
 	if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n\n$dhcp_msg" 11 60) then
 		arch-chroot "$ARCH" systemctl enable dhcpcd.service &> /dev/null &
 		pid=$! pri=0.1 msg="\n$dhcp_load \n\n \Z1> \Z2systemctl enable dhcpcd\Zn" load
+		echo "$(date -u "+%F %H:%M") : Enable dhcp" >> "$log"
 	fi
-	
-	if [ "$sh" == "/usr/bin/zsh" ]; then
+
+	if [ "$sh" == "/bin/bash" ]; then
+		cp "$ARCH"/etc/skel/.bash_profile "$ARCH"/root/
+	elif [ "$sh" == "/usr/bin/zsh" ]; then
 		cp "$aa_dir"/extra/.zshrc "$ARCH"/root/
 		cp "$aa_dir"/extra/.zshrc "$ARCH"/etc/skel/
 	elif [ "$shell" == "fish" ]; then
@@ -1889,15 +2032,48 @@ config_env() {
 
 	sh="/usr/bin/zsh"
 	arch-chroot "$ARCH" chsh -s /usr/bin/zsh &> /dev/null
+	cp -r "$aa_dir"/pkg/arch-wiki-*.pkg.tar.xz "$ARCH"/var/cache/pacman/pkg
+	cp -r "$aa_dir"/pkg/fetchmirrors-*.pkg.tar.xz "$ARCH"/var/cache/pacman/pkg
+	arch-chroot "$ARCH" pacman --noconfirm -U /var/cache/pacman/pkg/$(ls "$aa_dir"/pkg/arch-wiki-*.pkg.tar.xz | sed 's!.*/!!') &>/dev/null
+	arch-chroot "$ARCH" pacman --noconfirm -U /var/cache/pacman/pkg/$(ls "$aa_dir"/pkg/fetchmirrors-*.pkg.tar.xz | sed 's!.*/!!') &>/dev/null
+	cp -r "$aa_dir"/extra/desktop/ttf-zekton-rg "$ARCH"/usr/share/fonts
 	cp "$aa_dir"/extra/.zshrc "$ARCH"/root/
-	mkdir "$ARCH"/root/.config/ &> /dev/null
-	cp -r "$aa_dir"/extra/desktop/.config/{xfce4,Thunar} "$ARCH"/root/.config/
-	cp -r "$aa_dir"/extra/{.zshrc,desktop/.config/} "$ARCH"/etc/skel/
+	cp "$aa_dir"/extra/.zshrc "$ARCH"/etc/skel/
+	cp "$aa_dir"/extra/desktop/arch-anywhere-icon.png "$ARCH"/root/.face
 	cp "$aa_dir"/extra/desktop/arch-anywhere-icon.png "$ARCH"/etc/skel/.face
-	cp -r "$aa_dir"/extra/desktop/AshOS-Dark-2.0 "$ARCH"/usr/share/themes/
-	cp "$aa_dir"/extra/desktop/arch-anywhere-wallpaper.png "$ARCH"/usr/share/backgrounds/xfce/
-	cp "$ARCH"/usr/share/backgrounds/xfce/arch-anywhere-wallpaper.png "$ARCH"/usr/share/backgrounds/xfce/xfce-teal.jpg
-	cp "$aa_dir"/extra/desktop/arch-anywhere-icon.png "$ARCH"/usr/share/pixmaps/
+	cp -r "$aa_dir"/extra/desktop/{arch-anywhere-wallpaper.png,arch-anywhere-icon.png} "$ARCH"/usr/share/pixmaps
+	
+	case "$env" in
+		AA-Xfce)
+			for file in $(ls -A "$aa_dir/extra/desktop/xfce4"); do
+				cp -r "$aa_dir/extra/desktop/xfce4/$file" "$ARCH"/root/
+				cp -r "$aa_dir/extra/desktop/xfce4/$file" "$ARCH"/etc/skel/
+			done
+			cp -r "$aa_dir"/extra/desktop/AshOS-Dark-2.0 "$ARCH"/usr/share/themes/
+			cp -r "$aa_dir"/extra/desktop/arch-anywhere-wallpaper.png "$ARCH"/usr/share/backgrounds/xfce/
+			cp "$ARCH"/usr/share/backgrounds/xfce/arch-anywhere-wallpaper.png "$ARCH"/usr/share/backgrounds/xfce/xfce-teal.jpg
+		;;
+		AA-Openbox)
+			for file in $(ls -A "$aa_dir/extra/desktop/openbox"); do
+				cp -r "$aa_dir/extra/desktop/openbox/$file" "$ARCH"/root/
+				cp -r "$aa_dir/extra/desktop/openbox/$file" "$ARCH"/etc/skel/
+			done
+			cp -r "$aa_dir"/extra/desktop/Arc/openbox-3 "$ARCH"/usr/share/themes/Arc
+			cp -r "$aa_dir"/extra/desktop/Arc-Dark/openbox-3 "$ARCH"/usr/share/themes/Arc-Dark
+			cp -r "$aa_dir"/extra/desktop/Arc-Darker/openbox-3 "$ARCH"/usr/share/themes/Arc-Darker
+			cp -r "$aa_dir"/extra/desktop/obpower.sh "$ARCH"/usr/bin/obpower
+			chmod +x "$ARCH"/usr/bin/obpower
+			cp -r "$aa_dir"/pkg/opensnap-*.pkg.tar.xz "$ARCH"/var/cache/pacman/pkg
+			arch-chroot "$ARCH" pacman --noconfirm -U /var/cache/pacman/pkg/$(ls /usr/share/arch-anywhere/pkg/opensnap-*.pkg.tar.xz | sed 's!.*/!!') &>/dev/null
+			if [ "$virt" == "vbox" ]; then
+				echo "VBoxClient-all &" >> "$ARCH"/etc/skel/.config/openbox/autostart
+				echo "VBoxClient-all &" >> "$ARCH"/root/.config/openbox/autostart
+			fi
+		;;
+	esac
+
+	echo "$(date -u "+%F %H:%M") : Configured: $env" >> "$log"
+	arch-chroot "$ARCH" fc-cache -f
 
 }
 
@@ -1912,56 +2088,137 @@ set_hostname() {
 	fi
 	
 	echo "$hostname" > "$ARCH"/etc/hostname
+	arch-chroot "$ARCH" chsh -s "$sh" &>/dev/null
+	echo "$(date -u "+%F %H:%M") : Hostname set: $hostname" >> "$log"
+	user=root
 	op_title="$passwd_op_msg"
-	
-	while [ "$input" != "$input_chk" ]
-	  do
-		input=$(dialog --nocancel --clear --insecure --passwordbox "$root_passwd_msg0" 11 55 --stdout)
-    	input_chk=$(dialog --nocancel --clear --insecure --passwordbox "$root_passwd_msg1" 11 55 --stdout)
-	 	
-	 	if [ -z "$input" ]; then
-	 		dialog --ok-button "$ok" --msgbox "\n$passwd_msg0" 10 55
-	 		input_chk=default
-	 	
-	 	elif [ "$input" != "$input_chk" ]; then
-	 	     dialog --ok-button "$ok" --msgbox "\n$passwd_msg1" 10 55
-	 	fi
-	done
-
-	(printf "$input\n$input" | arch-chroot "$ARCH" passwd ; arch-chroot "$ARCH" chsh -s "$sh") &> /dev/null &
-	pid=$! pri=0.1 msg="$wait_load \n\n \Z1> \Z2passwd root\Zn" load
-	unset input input_chk ; input_chk=default
+	set_password
 	add_user
 
 }
 
 add_user() {
 
-	op_title="$user_op_msg"
-	if ! "$menu_enter" ; then
-		if ! (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$user_msg0" 10 60) then
-			install_software
-		fi
+	while (true)
+	  do
+		op_title="$user_op_msg"
+		user=$(dialog --extra-button --extra-label "$edit" --ok-button "$new_user" --cancel-button "$done_msg" --menu "$user_menu_msg" 13 55 4 \
+			$(for i in $(grep "100" "$ARCH"/etc/passwd | cut -d: -f1) ; do 
+				echo "$i $(grep -w "$i" "$ARCH"/etc/passwd | cut -d: -f7)"
+			done) \
+			"root" "$(grep -w "root" "$ARCH"/etc/passwd | cut -d: -f7)" 3>&1 1>&2 2>&3)
+
+		case "$?" in
+			1)
+				break
+			;;
+			0)
+				unset user
+				while (true)
+				  do
+					user=$(dialog --inputbox "\n$user_msg1" 12 55 "" 3>&1 1>&2 2>&3 | sed 's/ //g')
+					
+					if [ -z "$user" ]; then
+						break
+					elif (grep -w "$user" "$ARCH"/etc/passwd &>/dev/null); then
+						dialog --ok-button "$ok" --msgbox "\n$user_err_msg1" 10 60
+					elif (<<<$user grep "^[0-9]\|[ABCDEFGHIJKLMNOPQRSTUVWXYZ\[\$\!\'\"\`\\|%&#@()_-+=<>~;:/?.,^{}]\|]" &> /dev/null); then
+						dialog --ok-button "$ok" --msgbox "\n$user_err_msg" 10 60
+					else
+						arch-chroot "$ARCH" useradd -m -g users -G audio,network,power,storage,optical -s "$sh" "$user" &>/dev/null &
+						pid=$! pri=0.1 msg="$wait_load \n\n \Z1> \Z2useradd -m -g users -G ... -s $sh $user\Zn" load
+						echo "$(date -u "+%F %H:%M") : Added user: $user" >> "$log"
+						set_password
+
+						if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$sudo_var" 10 60) then
+							(sed -i '/%wheel ALL=(ALL) ALL/s/^#//' $ARCH/etc/sudoers
+							arch-chroot "$ARCH" usermod -a -G wheel "$user") &> /dev/null &
+							pid=$! pri=0.1 msg="$wait_load \n\n \Z1> \Z2usermod -a -G wheel $user\Zn" load
+							echo "$(date -u "+%F %H:%M") : Sudo enabled for: $user" >> "$log"
+						fi
+						break
+					fi
+				done
+			;;
+			*)
+				while (true)
+				  do
+					op_title="$user_op_msg1"
+					usr_shell=$(grep -w "$user" "$ARCH"/etc/passwd | cut -d: -f7)
+					if (grep -w "$user" "$ARCH"/etc/group | grep "wheel" &>/dev/null); then
+						sudo="$yes"
+					else
+						sudo="$no"
+					fi
+					source "$lang_file"
+					
+					if [ "$user" == "root" ]; then
+						user_edit=$(dialog --ok-button "$select" --cancel-button "$done_msg" --menu "$user_edit_var" 12 55 2 \
+							"$change_pass" "->" \
+							"$change_sh" "->" 3>&1 1>&2 2>&3)
+					else
+						user_edit=$(dialog --ok-button "$select" --cancel-button "$done_msg" --menu "$user_edit_var" 14 55 4 \
+							"$change_pass" "->" \
+							"$change_sh" "->" \
+							"$change_su" "->" \
+							"$del_user" "->" 3>&1 1>&2 2>&3)
+					fi
+
+					case "$user_edit" in
+						"$change_pass")
+							set_password
+						;;
+						"$change_sh")
+							chsh=$(dialog --ok-button "$select" --cancel-button "$Done" --menu "$user_shell_var" 12 55 3 \
+								$(for i in $(arch-chroot "$ARCH" chsh -l | sed 's!.*/!!' | uniq) ; do
+									echo "$i ->"
+								done) 3>&1 1>&2 2>&3)
+							if [ "$?" -eq "0" ]; then
+								arch-chroot "$ARCH" chsh "$user" -s /usr/bin/"$chsh" &>/dev/null
+							fi
+						;;
+						"$change_su")
+							if [ "$sudo" == "$yes" ]; then
+								if (dialog --defaultno --yes-button "$yes" --no-button "$no" --yesno "\n$sudo_var1" 10 60) then
+									arch-chroot "$ARCH" gpasswd -d "$user" wheel &>/dev/null
+								fi
+							else
+								if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$sudo_var" 10 60) then
+									arch-chroot "$ARCH" usermod -a -G wheel "$user" &>/dev/null
+								fi
+							fi
+						;;
+						"$del_user")
+							if (dialog --defaultno --yes-button "$yes" --no-button "$no" --yesno "\n$deluser_var" 10 60) then
+								arch-chroot "$ARCH" userdel --remove "$user" &>/dev/null
+								break
+							fi
+						;;
+						*)
+							break
+						;;
+					esac
+				done
+			;;
+		esac
+	done
+
+	if "$menu_enter" ; then
+		reboot_system
+	else	
+		install_software
 	fi
 
-	user=$(dialog --nocancel --inputbox "\n$user_msg1" 12 55 "" 3>&1 1>&2 2>&3 | sed 's/ //g')
-	if [ -z "$user" ]; then
-		dialog --ok-button "$ok" --msgbox "\n$user_err_msg" 10 60
-		add_user
-	elif (<<<$user grep "^[0-9]\|[ABCDEFGHIJKLMNOPQRSTUVWXYZ\[\$\!\'\"\`\\|%&#@()_-+=<>~;:/?.,^{}]\|]" &> /dev/null); then
-		dialog --ok-button "$ok" --msgbox "\n$user_err_msg" 10 60
-		add_user
-	fi
+}
 
-	arch-chroot "$ARCH" useradd -m -g users -G audio,network,power,storage,optical -s "$sh" "$user" &>/dev/null &
-	pid=$! pri=0.1 msg="$wait_load \n\n \Z1> \Z2useradd -m -g users -G ... -s $sh $user\Zn" load
+set_password() {
 
 	source "$lang_file"
 	op_title="$passwd_op_msg"
 	while [ "$input" != "$input_chk" ]
 	  do
 		input=$(dialog --nocancel --clear --insecure --passwordbox "$user_var0" 11 55 --stdout)
-    	input_chk=$(dialog --nocancel --clear --insecure --passwordbox "$user_var1" 11 55 --stdout)
+	    	input_chk=$(dialog --nocancel --clear --insecure --passwordbox "$user_var1" 11 55 --stdout)
 		 
 		if [ -z "$input" ]; then
 			dialog --ok-button "$ok" --msgbox "\n$passwd_msg0" 10 55
@@ -1974,19 +2231,8 @@ add_user() {
 	(printf "$input\n$input" | arch-chroot "$ARCH" passwd "$user") &> /dev/null &
 	pid=$! pri=0.1 msg="$wait_load \n\n \Z1> \Z2passwd $user\Zn" load
 	unset input input_chk ; input_chk=default
+	echo "$(date -u "+%F %H:%M") : Password set: $user" >> "$log"
 	op_title="$user_op_msg"
-	
-	if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$sudo_var" 10 60) then
-		(sed -i '/%wheel ALL=(ALL) ALL/s/^#//' $ARCH/etc/sudoers
-		arch-chroot "$ARCH" usermod -a -G wheel "$user") &> /dev/null &
-		pid=$! pri=0.1 msg="$wait_load \n\n \Z1> \Z2usermod -a -G wheel $user\Zn" load
-	fi
-
-	if "$menu_enter" ; then
-		reboot_system
-	else	
-		install_software
-	fi
 
 }
 
@@ -1995,10 +2241,10 @@ install_software() {
 	op_title="$software_op_msg"
 	if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$software_msg0" 10 60) then
 		
-		until "$software_selected"
+		while (true)
 		  do
 			unset software
-			err=false
+			add_soft=true
 			if ! "$skip" ; then
 				software_menu=$(dialog --extra-button --extra-label "$install" --ok-button "$select" --cancel-button "$cancel" --menu "$software_type_msg" 20 63 11 \
 					"$aar" "$aar_msg" \
@@ -2016,15 +2262,12 @@ install_software() {
 				
 				if [ "$ex" -eq "1" ]; then
 					if (dialog --yes-button "$yes" --no-button "$no" --defaultno --yesno "\n$software_warn_msg" 10 60) then
-						software_selected=true
-						err=true
-						unset software_menu
+						break
 					else
-						err=true
+						add_soft=false
 					fi
 				elif [ "$ex" -eq "3" ]; then
 					software_menu="$done_msg"
-					skip=true
 				elif [ "$software_menu" == "$aar" ]; then
 					if ! (<"$ARCH"/etc/pacman.conf grep "arch-anywhere"); then
 						if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$aar_add_msg" 10 60) then
@@ -2038,16 +2281,21 @@ install_software() {
 
 			case "$software_menu" in
 				"$aar")
-					software=$(dialog --ok-button "$ok" --cancel-button "$cancel" --checklist "$software_msg1" 14 60 4 \
+					software=$(dialog --ok-button "$ok" --cancel-button "$cancel" --checklist "$software_msg1" 17 60 7 \
 						"arch-wiki-cli"		"$aar0" ON \
 						"downgrade"		"$aar6" OFF \
+						"dolphin-libre"	"$aar7" OFF \
 						"fetchmirrors"		"$aar1" ON \
 						"octopi"		"$aar4" OFF \
 						"pacaur"		"$aar2" OFF \
 						"pamac-aur"		"$aar5" OFF \
 						"yaourt"		"$aar3" OFF 3>&1 1>&2 2>&3)
 					if [ "$?" -gt "0" ]; then
-						err=true
+						add_soft=false
+					fi
+					
+					if (<<<"$software" grep "dolphin-libre") then
+						software=$(<<<"$software" sed 's/dolphin-libre/dolphin-libreoffice-templates/')
 					fi
 				;;
 				"$audio")
@@ -2063,7 +2311,7 @@ install_software() {
 						"pianobar"		"$audio9" OFF \
 						"pavucontrol"	"$audio8" OFF 3>&1 1>&2 2>&3)
 					if [ "$?" -gt "0" ]; then
-						err=true
+						add_soft=false
 					fi
 				;;
 				"$internet")
@@ -2081,7 +2329,7 @@ install_software() {
 						"transmission-gtk"		"$net8" OFF \
 						"hexchat"			"$net11" OFF 3>&1 1>&2 2>&3)
 					if [ "$?" -gt "0" ]; then
-						err=true
+						add_soft=false
 					fi
 					
 					if (<<<"$software" grep "firefox" &>/dev/null) && [ -n "$bro" ]; then
@@ -2105,7 +2353,7 @@ install_software() {
 						"warsow"		"$game8" OFF \
 						"xonotic"		"$game9" OFF 3>&1 1>&2 2>&3)
 					if [ "$?" -gt "0" ]; then
-						err=true
+						add_soft=false
 					fi
 				;;
 				"$graphic")
@@ -2118,7 +2366,7 @@ install_software() {
 						"imagemagick"	"$graphic4" OFF \
 						"pinta"			"$graphic5" OFF 3>&1 1>&2 2>&3)
 					if [ "$?" -gt "0" ]; then
-						err=true
+						add_soft=false
 					fi
 				;;
 				"$multimedia")
@@ -2133,7 +2381,7 @@ install_software() {
 						"totem"					"$media5" OFF \
 						"vlc"         	   			"$media6" OFF 3>&1 1>&2 2>&3)
 					if [ "$?" -gt "0" ]; then
-						err=true
+						add_soft=false
 					fi
 					
 					if (<<<"$software" grep "multimedia-codecs") then
@@ -2148,7 +2396,7 @@ install_software() {
 						"libreoffice-fresh"		"$office4" OFF \
 						"libreoffice-still"		"$office5" OFF 3>&1 1>&2 2>&3)
 					if [ "$?" -gt "0" ]; then
-						err=true
+						add_soft=false
 					fi
 
 					if (<<<"$software" grep "libreoffice-fresh" &>/dev/null) && [ -n "$lib" ]; then
@@ -2170,7 +2418,7 @@ install_software() {
 						"xfce4-terminal"    "$term6" OFF \
 						"yakuake"           "$term7" OFF 3>&1 1>&2 2>&3)
 					if [ "$?" -gt "0" ]; then
-						err=true
+						add_soft=false
 					fi
 				;;
 				"$text_editor")
@@ -2184,7 +2432,7 @@ install_software() {
 						"neovim"		"$edit5" OFF \
 						"vim"			"$edit6" OFF 3>&1 1>&2 2>&3)
 					if [ "$?" -gt "0" ]; then
-						err=true
+						add_soft=false
 					fi
 				;;
 				"$system")
@@ -2213,14 +2461,15 @@ install_software() {
 						"wget"			"$sys18" ON \
 						"xfe"			"$sys23" OFF 3>&1 1>&2 2>&3)
 					if [ "$?" -gt "0" ]; then
-						err=true
+						add_soft=false
 					fi
 				;;
 				"$done_msg")
 					if [ -z "$final_software" ]; then
 						if (dialog --yes-button "$yes" --no-button "$no" --defaultno --yesno "\n$software_warn_msg" 10 60) then
-							software_selected=true
-							err=true
+							break
+						else
+							add_soft=false
 						fi
 					else
 						download=$(echo "$final_software" | sed 's/\"//g' | tr ' ' '\n' | nl | sort -u -k2 | sort -n | cut -f2- | sed 's/$/ /g' | tr -d '\n')
@@ -2240,21 +2489,25 @@ install_software() {
 						
 						if (dialog --yes-button "$install" --no-button "$cancel" --yesno "\n$software_confirm_var1" "$height" 65) then
 							tmpfile=$(mktemp)
-						    arch-chroot "$ARCH" pacman --noconfirm -Sy $(echo "$download") &> "$tmpfile" &
-						    pid=$! pri=$(<<<"$down" sed 's/\..*$//') msg="\n$software_load_var" load_log
-	  					    rm "$tmpfile"
-	  					    unset final_software
-	  					    software_selected=true err=true
+							echo "$(date -u "+%F %H:%M") : Add software list: $download" >> "$log"
+							echo "$(date -u "+%F %H:%M") : Begin installing software" >> "$log"
+							arch-chroot "$ARCH" pacman --noconfirm -Sy $(echo "$download") &> "$tmpfile" &
+							pid=$! pri=$(<<<"$down" sed 's/\..*$//') msg="\n$software_load_var" load_log
+							echo "$(date -u "+%F %H:%M") : Finished installing software" >> "$log"
+							<"$tmpfile" >> "$log"
+							rm "$tmpfile"
+							unset final_software
+							break
 						else
 							unset final_software
-							err=true
+							add_soft=false
 						fi
 					fi
 				;;
 			esac
 			
-			if ! "$err" ; then
-				if [ -z "$software" ] && [ "$software_menu" != "$done_msg" ]; then
+			if "$add_soft" ; then
+				if [ -z "$software" ]; then
 					if ! (dialog --yes-button "$yes" --no-button "$no" --defaultno --yesno "\n$software_noconfirm_msg ${software_menu}?" 10 60) then
 						skip=true
 					fi
@@ -2280,7 +2533,6 @@ install_software() {
 				fi
 			fi
 		done
-		err=false
 	fi
 	
 	if ! "$pac_update" ; then
@@ -2290,10 +2542,12 @@ install_software() {
 
 		arch-chroot "$ARCH" pacman -Sy &> /dev/null &
 		pid=$! pri=0.8 msg="\n$pacman_load \n\n \Z1> \Z2pacman -Sy\Zn" load
+		echo "$(date -u "+%F %H:%M") : Updated pacman databases" >> "$log"
 		pac_update=true
 	fi
 
 	software_selected=false
+	echo "$(date -u "+%F %H:%M") : Install finished" >> "$log"
 	reboot_system
 
 }
@@ -2308,38 +2562,44 @@ reboot_system() {
 			fi
 		fi
 
-		reboot_menu=$(dialog --nocancel --ok-button "$ok" --menu "$complete_msg" 15 60 6 \
+		reboot_menu=$(dialog --nocancel --ok-button "$ok" --menu "$complete_msg" 16 60 7 \
 			"$reboot0" "-" \
 			"$reboot6" "-" \
 			"$reboot2" "-" \
 			"$reboot1" "-" \
+			"$reboot4" "-" \
 			"$reboot3" "-" \
 			"$reboot5" "-" 3>&1 1>&2 2>&3)
 		
 		case "$reboot_menu" in
-			"$reboot0")		umount -R "$ARCH"
-							reset ; reboot ; exit
+			"$reboot0")	umount -R "$ARCH"
+					reset ; reboot ; exit
 			;;
-			"$reboot6")		umount -R "$ARCH"
-							reset ; poweroff ; exit
+			"$reboot6")	umount -R "$ARCH"
+					reset ; poweroff ; exit
 			;;
-			"$reboot1")		umount -R "$ARCH"
-							reset ; exit
+			"$reboot1")	umount -R "$ARCH"
+					reset ; exit
 			;;
-			"$reboot2")		clear
-							echo -e "$arch_chroot_msg" 
-							echo "/root" > /tmp/chroot_dir.var
-							arch_anywhere_chroot
-							clear
+			"$reboot2")	clear
+					echo -e "$arch_chroot_msg" 
+					echo "/root" > /tmp/chroot_dir.var
+					arch_anywhere_chroot
+					clear
 			;;
-			"$reboot3")		if (dialog --yes-button "$yes" --no-button "$no" --yesno "$user_exists_msg" 10 60); then
-								menu_enter=true
-								add_user	
-							else
-								reboot_system
-							fi
+			"$reboot3")	if (dialog --yes-button "$yes" --no-button "$no" --yesno "$user_exists_msg" 10 60); then
+						menu_enter=true
+						add_user	
+					else
+						reboot_system
+					fi
 			;;
-			"$reboot5")		install_software
+			"$reboot5")	install_software
+			;;
+			"$reboot4")	clear
+					less "$log"
+					clear
+					reboot_system
 			;;
 		esac
 
@@ -2416,9 +2676,9 @@ main_menu() {
 arch_anywhere_chroot() {
 
 	local char=
-    local input=
-    local -a history=( )
-    local -i histindex=0
+	local input=
+	local -a history=( )
+	local -i histindex=0
 	trap ctrl_c INT
 	working_dir=$(</tmp/chroot_dir.var)
 	
@@ -2586,3 +2846,4 @@ else
 	aa_conf="$aa_dir"/etc/arch-anywhere.conf
 fi
 init
+# vim: ai:ts=8:sw=8:sts=8:noet
