@@ -77,68 +77,76 @@ init() {
 update_mirrors() {
 
 	op_title="$welcome_op_msg"
-	if ! (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$intro_msg" 10 60) then
-		reset ; exit
+	
+	## Check if user entered from menu
+	if ! "$menu_enter" ; then
+		if ! (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$intro_msg" 10 60) then
+			reset ; exit
+		fi
 	fi
 
-	if ! (</etc/pacman.d/mirrorlist grep "rankmirrors" &>/dev/null) then
+	## Until connected loop
+	until ping -c1 8.8.8.8 &>/dev/null
+	  do
+		if [ -n "$wifi_network" ]; then
+			if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$wifi_msg0" 10 60) then
+				wifi-menu
+				if [ "$?" -gt "0" ]; then
+					dialog --ok-button "$ok" --msgbox "\n$wifi_msg1" 10 60
+					echo "$(date -u "+%F %H:%M") : Failed to connect to wifi: Exit 1" >> "$log"
+					setterm -background black -store ; reset ; echo "$connect_err1" | sed 's/\\Z1//;s/\\Zn//' ; exit 1
+				else
+					echo "$(date -u "+%F %H:%M") : Connected to: $wifi_network" >> "$log"
+				fi
+			else
+				unset wifi_network
+			fi
+		else
+			dialog --ok-button "$ok" --msgbox "\n$connect_err0" 10 60
+			echo "$(date -u "+%F %H:%M") : Failed to connect to wifi: Exit 1" >> "$log"
+			setterm -background black -store ; reset ; echo -e "$connect_err1" | sed 's/\\Z1//;s/\\Zn//' ;  exit 1
+		fi
+	done
+
+	if ! "$menu_enter" && ! (</etc/pacman.d/mirrorlist grep "rankmirrors" &>/dev/null); then
 		op_title="$mirror_op_msg"
 		code=$(dialog --nocancel --ok-button "$ok" --menu "$mirror_msg1" 17 60 10 \
 			"$default" "->" \
 			$countries 3>&1 1>&2 2>&3)
 
-		if [ "$code" == "$default" ]; then
-			(wget -4 --no-check-certificate --append-output=/dev/null "https://git.archlinux.org/svntogit/packages.git/plain/trunk/mirrorlist?h=packages/pacman-mirrorlist" -O /tmp/mirrorlist.bak
-			echo "$?" > /tmp/ex_status.var 
-			head -n10 /tmp/mirrorlist.bak | sed 's/#//' > /etc/pacman.d/mirrorlist.bak 
-			sleep 0.5) &> /dev/null &
-			pid=$! pri=0.1 msg="\n$mirror_load0 \n\n \Z1> \Z2wget -O /etc/pacman.d/mirrorlist archlinux.org/mirrorlist/all\Zn" load
-		elif [ "$code" == "AL" ]; then
-			(wget -4 --no-check-certificate --append-output=/dev/null "https://www.archlinux.org/mirrorlist/all/" -O /etc/pacman.d/mirrorlist.bak
-			echo "$?" > /tmp/ex_status.var ; sleep 0.5) &> /dev/null &
-			pid=$! pri=0.1 msg="\n$mirror_load0 \n\n \Z1> \Z2wget -O /etc/pacman.d/mirrorlist archlinux.org/mirrorlist/all\Zn" load
-		elif [ "$code" == "AS" ]; then
-			(wget -4 --no-check-certificate --append-output=/dev/null "https://www.archlinux.org/mirrorlist/all/https/" -O /etc/pacman.d/mirrorlist.bak
-			echo "$?" > /tmp/ex_status.var ; sleep 0.5) &> /dev/null &
-			pid=$! pri=0.1 msg="\n$mirror_load0 \n\n \Z1> \Z2wget -O /etc/pacman.d/mirrorlist archlinux.org/mirrorlist/all/https\Zn" load
+		case "$code" in
+			"$default")
+				mirror_url="https://www.archlinux.org/mirrorlist/all/"
+			;;
+			"AL")	## All mirrors
+				mirror_url="https://www.archlinux.org/mirrorlist/all/"
+			;;
+			"AS")	## All https mirrors
+				mirror_url="https://www.archlinux.org/mirrorlist/all/https/"
+			*)	## User selected country
+				mirror_url="https://www.archlinux.org/mirrorlist/?country=$code&protocol=http"
+			;;
+		esac
+
+		if [ "$code" == "$default"
+			curl -s "$mirror_url" | sed '10,1000d;s/#//' >/etc/pacman.d/mirrorlist.bak &
 		else
-			(wget -4 --no-check-certificate --append-output=/dev/null "https://www.archlinux.org/mirrorlist/?country=$code&protocol=http" -O /etc/pacman.d/mirrorlist.bak
-			echo "$?" > /tmp/ex_status.var ; sleep 0.5) &> /dev/null &
-			pid=$! pri=0.1 msg="\n$mirror_load0 \n\n \Z1> \Z2wget -O /etc/pacman.d/mirrorlist archlinux.org/mirrorlist/?country=$code\Zn" load
+			curl -s "$mirror_url" >/etc/pacman.d/mirrorlist.bak &
 		fi
-
-		echo "$(date -u "+%F %H:%M") : Updated Mirrors From: $code" >> "$log"
+		pid=$! pri=0.1 msg="\n$mirror_load0 \n\n \Z1> \Z2wget -O /etc/pacman.d/mirrorlist archlinux.org/mirrorlist/?country=$code\Zn" load
 		
-		while [ "$(</tmp/ex_status.var)" -gt "0" ]
-		  do
-			if [ -n "$wifi_network" ]; then
-				if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$wifi_msg0" 10 60) then
-					wifi-menu
-					if [ "$?" -gt "0" ]; then
-						dialog --ok-button "$ok" --msgbox "\n$wifi_msg1" 10 60
-						echo "$(date -u "+%F %H:%M") : Failed to connect to wifi: Exit 1" >> "$log"
-						setterm -background black -store ; reset ; echo "$connect_err1" | sed 's/\\Z1//;s/\\Zn//' ; exit 1
-					else
-						echo "0" > /tmp/ex_status.var
-						echo "$(date -u "+%F %H:%M") : Connected to: $wifi_network" >> "$log"
-					fi
-				else
-					unset wifi_network
-				fi
-			else
-				dialog --ok-button "$ok" --msgbox "\n$connect_err0" 10 60
-				echo "$(date -u "+%F %H:%M") : Failed to connect to wifi: Exit 1" >> "$log"
-				setterm -background black -store ; reset ; echo -e "$connect_err1" | sed 's/\\Z1//;s/\\Zn//' ;  exit 1
-			fi
-		done
-
-		sed -i 's/#//' /etc/pacman.d/mirrorlist.bak
-		rankmirrors -n 6 /etc/pacman.d/mirrorlist.bak > /etc/pacman.d/mirrorlist &
-	 	pid=$! pri=0.8 msg="\n$mirror_load1 \n\n \Z1> \Z2rankmirrors -n 6 /etc/pacman.d/mirrorlist\Zn" load
-
-	 	echo "$(date -u "+%F %H:%M") : Ranked mirrorlist: /etc/pacman.d/mirrorlist" >> "$log"
+		if (grep "Server" /etc/pacman.d/mirrorlist.bak); then
+			echo "$(date -u "+%F %H:%M") : Updated Mirrors From: $code" >> "$log"
+			sed -i 's/#//' /etc/pacman.d/mirrorlist.bak
+			rankmirrors -n 6 /etc/pacman.d/mirrorlist.bak > /etc/pacman.d/mirrorlist &
+		 	pid=$! pri=0.8 msg="\n$mirror_load1 \n\n \Z1> \Z2rankmirrors -n 6 /etc/pacman.d/mirrorlist\Zn" load
+		else
+			dialog --ok-button "$ok" --msgbox "\n$connect_err0" 10 60
+			echo "$(date -u "+%F %H:%M") : Failed to connect to wifi: Exit 1" >> "$log"
+			setterm -background black -store ; reset ; echo -e "$connect_err1" | sed 's/\\Z1//;s/\\Zn//' ;  exit 1
+		fi
 	fi
-
+	
 	check_connection
 
 }
@@ -147,9 +155,8 @@ check_connection() {
 	
 	op_title="$connection_op_msg"
 	(test_mirror=$(</etc/pacman.d/mirrorlist grep "^Server" | awk 'NR==1{print $3}' | sed 's/$.*//')
-	test_pkg=bluez-utils
-	test_pkg_ver=$(curl -s https://www.archlinux.org/packages/extra/i686/$test_pkg/ | grep "<title>" | awk '{print $5}')
-	test_link="${test_mirror}extra/os/i686/${test_pkg}-${test_pkg_ver}-i686.pkg.tar.xz"
+	test_pkg=$(curl -s https://www.archlinux.org/packages/extra/i686/bluez-utils/ | grep "<title>" | awk '{print $5}')
+	test_link="${test_mirror}extra/os/i686/${test_pkg}-i686.pkg.tar.xz"
 	wget -4 --no-check-certificate --append-output=/tmp/wget.log -O /dev/null "${test_link}") &
 	pid=$! pri=0.3 msg="\n$connection_load \n\n \Z1> \Z2wget -O /dev/null test_link/test1Mb.db\Zn" load
 	
@@ -181,8 +188,11 @@ check_connection() {
 	export connection_speed connection_rate cpu_sleep
 	echo "$(date -u "+%F %H:%M") : Ranked connection speed: $connection_speed $connection_rate" >> "$log"
 	echo "$(date -u "+%F %H:%M") : Clocked CPU MHz: $cpu_mhz" >> "$log"
-	rm /tmp/{ex_status.var,wget.log} &> /dev/null
-	set_keys
+	rm /tmp/wget.log &> /dev/null
+	
+	if ! "$menu_enter" ; then
+		set_keys
+	fi
 
 }
 
@@ -216,7 +226,10 @@ set_keys() {
 	export keyboard
 	localectl set-keymap "$keyboard"
 	echo "$(date -u "+%F %H:%M") : Set keymap to: $keyboard" >> "$log"
-	set_locale
+	
+	if ! "$menu_enter" ; then
+		set_locale
+	fi
 
 }
 
@@ -253,7 +266,10 @@ set_locale() {
 	fi
 
 	echo "$(date -u "+%F %H:%M") : Set locale to: $LOCALE" >> "$log"
-	set_zone
+	
+	if ! "$menu_enter" ; then
+		set_zone
+	fi
 
 }
 
@@ -281,7 +297,10 @@ set_zone() {
 	fi
 
 	echo "$(date -u "+%F %H:%M") : Set timezone to: $ZONE" >> "$log"
-	prepare_drives
+	
+	if ! "$menu_enter" ; then
+		prepare_drives
+	fi
 
 }
 
@@ -1306,10 +1325,7 @@ prepare_base() {
 	
 	elif "$INSTALLED" ; then
 		dialog --ok-button "$ok" --msgbox "\n$install_err_msg0" 10 60
-		main_menu
-	
 	else
-
 		if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$install_err_msg1" 10 60) then
 			prepare_drives
 		else
@@ -1629,9 +1645,312 @@ graphics() {
 	fi
 	
 	base_install+=" $DE"
-	desktop=true x=19
+	desktop=true
 	echo "$(date -u "+%F %H:%M") : Base install packages set: $base_install" >> "$log"
-	install_base
+	install_software
+
+}
+
+install_software() {
+
+	op_title="$software_op_msg"
+	if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$software_msg0" 10 60) then
+		
+		while (true)
+		  do
+			unset software
+			add_soft=true
+			if ! "$skip" ; then
+				software_menu=$(dialog --extra-button --extra-label "$install" --ok-button "$select" --cancel-button "$cancel" --menu "$software_type_msg" 20 63 11 \
+					"$aar" "$aar_msg" \
+					"$audio" "$audio_msg" \
+					"$games" "$games_msg" \
+					"$graphic" "$graphic_msg" \
+					"$internet" "$internet_msg" \
+					"$multimedia" "$multimedia_msg" \
+					"$office" "$office_msg" \
+					"$terminal" "$terminal_msg" \
+					"$text_editor" "$text_editor_msg" \
+					"$system" "$system_msg" \
+					"$done_msg" "$install \Z2============>\Zn" 3>&1 1>&2 2>&3)
+				ex="$?"
+				
+				if [ "$ex" -eq "1" ]; then
+					if (dialog --yes-button "$yes" --no-button "$no" --defaultno --yesno "\n$software_warn_msg" 10 60) then
+						break
+					else
+						add_soft=false
+					fi
+				elif [ "$ex" -eq "3" ]; then
+					software_menu="$done_msg"
+				elif [ "$software_menu" == "$aar" ]; then
+					if ! (<"$ARCH"/etc/pacman.conf grep "arch-anywhere"); then
+						if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$aar_add_msg" 10 60) then
+							echo -e "\n[arch-anywhere]\nServer = $aa_repo\nSigLevel = Never" >> "$ARCH"/etc/pacman.conf
+						fi
+					fi
+				fi
+			else
+				skip=false
+			fi
+
+			case "$software_menu" in
+				"$aar")
+					software=$(dialog --ok-button "$ok" --cancel-button "$cancel" --checklist "$software_msg1" 17 60 7 \
+						"arch-wiki-cli"		"$aar0" ON \
+						"downgrade"		"$aar6" OFF \
+						"dolphin-libre"	"$aar7" OFF \
+						"fetchmirrors"		"$aar1" ON \
+						"octopi"		"$aar4" OFF \
+						"pacaur"		"$aar2" OFF \
+						"pamac-aur"		"$aar5" OFF \
+						"yaourt"		"$aar3" OFF 3>&1 1>&2 2>&3)
+					if [ "$?" -gt "0" ]; then
+						add_soft=false
+					fi
+					
+					if (<<<"$software" grep "dolphin-libre") then
+						software=$(<<<"$software" sed 's/dolphin-libre/dolphin-libreoffice-templates/')
+					fi
+				;;
+				"$audio")
+					software=$(dialog --ok-button "$ok" --cancel-button "$cancel" --checklist "$software_msg1" 20 60 10 \
+						"audacity"		"$audio0" OFF \
+						"audacious"		"$audio1" OFF \
+						"cmus"			"$audio2" OFF \
+						"jack2"         "$audio3" OFF \
+						"projectm"		"$audio4" OFF \
+						"lmms"			"$audio5" OFF \
+						"mpd"			"$audio6" OFF \
+						"ncmpcpp"		"$audio7" OFF \
+						"pianobar"		"$audio9" OFF \
+						"pavucontrol"	"$audio8" OFF 3>&1 1>&2 2>&3)
+					if [ "$?" -gt "0" ]; then
+						add_soft=false
+					fi
+				;;
+				"$internet")
+					software=$(dialog --ok-button "$ok" --cancel-button "$cancel" --checklist "$software_msg1" 19 60 9 \
+						"chromium"			"$net0" OFF \
+						"elinks"			"$net3" OFF \
+						"filezilla"			"$net1" OFF \
+						"firefox"			"$net2" OFF \
+						"irssi"				"$net9" OFF \
+						"lynx"				"$net3" OFF \
+						"minitube"			"$net4" OFF \
+						"opera"				"$net5" OFF \
+						"thunderbird"			"$net6" OFF \
+						"transmission-cli" 		"$net7" OFF \
+						"transmission-gtk"		"$net8" OFF \
+						"hexchat"			"$net11" OFF 3>&1 1>&2 2>&3)
+					if [ "$?" -gt "0" ]; then
+						add_soft=false
+					fi
+					
+					if (<<<"$software" grep "firefox" &>/dev/null) && [ -n "$bro" ]; then
+						software+=" firefox-i18n-$bro"
+					fi
+					
+					if (<<<"$software" grep "thunderbird" &>/dev/null) && [ -n "$bro" ] && [ "$bro" != "lv" ]; then
+							software+=" thunderbird-i18n-$bro"
+					fi
+				;;
+				"$games")
+					software=$(dialog --ok-button "$ok" --cancel-button "$cancel" --checklist "$software_msg1" 20 70 10 \
+						"alienarena"	"$game0" OFF \
+						"bsd-games"		"$game1" OFF \
+						"bzflag"		"$game2" OFF \
+						"flightgear"	"$game3" OFF \
+						"gnuchess"      "$game4" OFF \
+						"supertux"		"$game5" OFF \
+						"supertuxkart"	"$game6" OFF \
+						"urbanterror"	"$game7" OFF \
+						"warsow"		"$game8" OFF \
+						"xonotic"		"$game9" OFF 3>&1 1>&2 2>&3)
+					if [ "$?" -gt "0" ]; then
+						add_soft=false
+					fi
+				;;
+				"$graphic")
+					software=$(dialog --ok-button "$ok" --cancel-button "$cancel" --checklist "$software_msg1" 17 63 7 \
+						"blender"		"$graphic0" OFF \
+						"darktable"		"$graphic1" OFF \
+						"feh"			"$graphic6" OFF \
+						"gimp"			"$graphic2" OFF \
+						"graphviz"		"$graphic3" OFF \
+						"imagemagick"	"$graphic4" OFF \
+						"pinta"			"$graphic5" OFF 3>&1 1>&2 2>&3)
+					if [ "$?" -gt "0" ]; then
+						add_soft=false
+					fi
+				;;
+				"$multimedia")
+					software=$(dialog --ok-button "$ok" --cancel-button "$cancel" --checklist "$software_msg1" 17 63 7 \
+						"handbrake"				"$media0" OFF \
+						"mplayer"				"$media1" OFF \
+						"mpv"					"$media7" OFF \
+						"multimedia-codecs"			"$media8" OFF \
+						"pitivi"				"$media2" OFF \
+						"simplescreenrecorder"			"$media3" OFF \
+						"smplayer"				"$media4" OFF \
+						"totem"					"$media5" OFF \
+						"vlc"         	   			"$media6" OFF 3>&1 1>&2 2>&3)
+					if [ "$?" -gt "0" ]; then
+						add_soft=false
+					fi
+					
+					if (<<<"$software" grep "multimedia-codecs") then
+						software=$(<<<"$software" sed 's/multimedia-codecs/gst-plugins-bad gst-plugins-base gst-plugins-good gst-plugins-ugly ffmpegthumbnailer gst-libav/')
+					fi
+				;;
+				"$office")
+					software=$(dialog --ok-button "$ok" --cancel-button "$cancel" --checklist "$software_msg1" 16 63 6 \
+						"abiword"               "$office0" OFF \
+						"calligra"              "$office1" OFF \
+						"gnumeric"				"$office3" OFF \
+						"libreoffice-fresh"		"$office4" OFF \
+						"libreoffice-still"		"$office5" OFF 3>&1 1>&2 2>&3)
+					if [ "$?" -gt "0" ]; then
+						add_soft=false
+					fi
+
+					if (<<<"$software" grep "libreoffice-fresh" &>/dev/null) && [ -n "$lib" ]; then
+						software+=" libreoffice-fresh-$lib"
+					fi
+					
+					if (<<<"$software" grep "libreoffice-still" &>/dev/null) && [ -n "$lib" ]; then
+						software+=" libreoffice-still-$lib"
+					fi
+				;;
+				"$terminal")
+					software=$(dialog --ok-button "$ok" --cancel-button "$cancel" --checklist "$software_msg1" 18 63 8 \
+						"fbterm"			"$term0" OFF \
+						"guake"             "$term1" OFF \
+						"kmscon"			"$term2" OFF \
+						"pantheon-terminal"	"$term3" OFF \
+						"rxvt-unicode"      "$term4" OFF \
+						"terminator"        "$term5" OFF \
+						"xfce4-terminal"    "$term6" OFF \
+						"yakuake"           "$term7" OFF 3>&1 1>&2 2>&3)
+					if [ "$?" -gt "0" ]; then
+						add_soft=false
+					fi
+				;;
+				"$text_editor")
+					software=$(dialog --ok-button "$ok" --cancel-button "$cancel" --checklist "$software_msg1" 18 60 8 \
+						"atom"			"$edit7" OFF \
+						"emacs"			"$edit0" OFF \
+						"geany"			"$edit1" OFF \
+						"gedit"			"$edit2" OFF \
+						"gvim"			"$edit3" OFF \
+						"mousepad"		"$edit4" OFF \
+						"neovim"		"$edit5" OFF \
+						"vim"			"$edit6" OFF 3>&1 1>&2 2>&3)
+					if [ "$?" -gt "0" ]; then
+						add_soft=false
+					fi
+				;;
+				"$system")
+					software=$(dialog --ok-button "$ok" --cancel-button "$cancel" --checklist "$software_msg1" 20 65 10 \
+						"apache"		"$sys1" OFF \
+						"bleachbit"		"$sys22" OFF \
+						"conky"			"$sys2" OFF \
+						"dmenu"			"$sys19" OFF \
+						"git"			"$sys3" OFF \
+						"gparted"		"$sys4" OFF \
+						"gpm"			"$sys5" OFF \
+						"htop"			"$sys6" OFF \
+						"inxi"			"$sys7" OFF \
+						"k3b"			"$sys8" OFF \
+						"nmap"			"$sys9" OFF \
+						"openssh"		"$sys10" OFF \
+						"pcmanfm"		"$sys21" OFF \
+						"ranger"		"$sys20" OFF \
+						"screen"		"$sys11" OFF \
+						"screenfetch"		"$sys12" ON \
+						"scrot"			"$sys13" OFF \
+						"tmux"			"$sys14" OFF \
+						"tuxcmd"		"$sys15" OFF \
+						"virtualbox"		"$sys16" OFF \
+						"ufw"			"$sys17" ON \
+						"wget"			"$sys18" ON \
+						"xfe"			"$sys23" OFF 3>&1 1>&2 2>&3)
+					if [ "$?" -gt "0" ]; then
+						add_soft=false
+					fi
+				;;
+				"$done_msg")
+					if [ -z "$final_software" ]; then
+						if (dialog --yes-button "$yes" --no-button "$no" --defaultno --yesno "\n$software_warn_msg" 10 60) then
+							break
+						else
+							add_soft=false
+						fi
+					else
+						download=$(echo "$final_software" | sed 's/\"//g' | tr ' ' '\n' | nl | sort -u -k2 | sort -n | cut -f2- | sed 's/$/ /g' | tr -d '\n')
+						export download_list=$(echo "$download" |  sed -e 's/^[ \t]*//')
+						pacman -Sy --print-format='%s' $(echo "$download") | awk '{s+=$1} END {print s/1024/1024}' >/tmp/size &
+						pid=$! pri=0.1 msg="$wait_load \n\n \Z1> \Z2pacman -S --print-format\Zn" load
+						download_size=$(</tmp/size) ; rm /tmp/size
+						export software_size=$(echo "$download_size Mib")
+						export software_int=$(echo "$download" | wc -w)
+						cal_rate
+
+						if [ "$software_int" -lt "20" ]; then
+							height=17
+						else
+							height=20
+						fi
+						
+						if (dialog --yes-button "$install" --no-button "$cancel" --yesno "\n$software_confirm_var1" "$height" 65) then
+							echo "$(date -u "+%F %H:%M") : Add software list: $download" >> "$log"
+							base_install+=" $download"
+							unset final_software
+							break
+						else
+							unset final_software
+							add_soft=false
+						fi
+					fi
+				;;
+			esac
+			
+			if "$add_soft" ; then
+				if [ -z "$software" ]; then
+					if ! (dialog --yes-button "$yes" --no-button "$no" --defaultno --yesno "\n$software_noconfirm_msg ${software_menu}?" 10 60) then
+						skip=true
+					fi
+				else
+					add_software=$(echo "$software" | sed 's/\"//g')
+					software_list=$(echo "$add_software" | sed -e 's/^[ \t]*//')
+					pacman -Sy --print-format='%s' $(echo "$add_software") | awk '{s+=$1} END {print s/1024/1024}' >/tmp/size &
+					pid=$! pri=0.1 msg="$wait_load \n\n \Z1> \Z2pacman -Sy --print-format\Zn" load
+					
+					download_size=$(</tmp/size) ; rm /tmp/size
+					software_size=$(echo "$download_size Mib")
+					software_int=$(echo "$add_software" | wc -w)
+					source "$lang_file"
+				
+					if [ "$software_int" -lt "15" ]; then
+						height=14
+					else
+						height=16
+					fi
+
+					if (dialog --yes-button "$add" --no-button "$cancel" --yesno "\n$software_confirm_var0" "$height" 60) then
+						final_software+="$software "
+					fi
+				fi
+			fi
+		done
+	fi
+	
+	software_selected=false
+	echo "$(date -u "+%F %H:%M") : Install finished" >> "$log"
+	
+	if ! "$menu_enter" ; then
+		install_base
+	fi
 
 }
 
@@ -1644,8 +1963,14 @@ install_base() {
 	download_size=$(</tmp/size) ; rm /tmp/size
 	export software_size="$download_size Mib"
 	cal_rate
+
+	if [ (wc -w <<<"$base_install") -gt "30" ]; then
+		height="25"
+	else
+		height="20"
+	fi
 	
-	if (dialog --yes-button "$install" --no-button "$cancel" --yesno "\n$install_var" "$x" 65); then
+	if (dialog --yes-button "$install" --no-button "$cancel" --yesno "\n$install_var" "$height" 65); then
 		tmpfile=$(mktemp)
 		echo "$(date -u "+%F %H:%M") : Begin base install" >> "$log"
 
@@ -2006,6 +2331,14 @@ configure_system() {
 		echo "$(date -u "+%F %H:%M") : Enable dhcp" >> "$log"
 	fi
 
+	if [ -f "$ARCH"/var/lib/pacman/db.lck ]; then
+		rm "$ARCH"/var/lib/pacman/db.lck &> /dev/null
+	fi
+
+	arch-chroot "$ARCH" pacman -Sy &> /dev/null &
+	pid=$! pri=0.8 msg="\n$pacman_load \n\n \Z1> \Z2pacman -Sy\Zn" load
+	echo "$(date -u "+%F %H:%M") : Updated pacman databases" >> "$log"
+	
 	if [ "$sh" == "/bin/bash" ]; then
 		cp "$ARCH"/etc/skel/.bash_profile "$ARCH"/root/
 	elif [ "$sh" == "/usr/bin/zsh" ]; then
@@ -2071,6 +2404,8 @@ config_env() {
 			fi
 		;;
 	esac
+<<<<<<< HEAD
+=======
 
 	echo "$(date -u "+%F %H:%M") : Configured: $env" >> "$log"
 	arch-chroot "$ARCH" fc-cache -f
@@ -2227,6 +2562,167 @@ set_password() {
 			dialog --ok-button "$ok" --msgbox "\n$passwd_msg1" 10 55
 		fi
 	done
+>>>>>>> 413275f67a95cf564c8ff8cff71338d73d7def51
+
+	echo "$(date -u "+%F %H:%M") : Configured: $env" >> "$log"
+	arch-chroot "$ARCH" fc-cache -f
+
+}
+
+set_hostname() {
+
+	op_title="$host_op_msg"
+	hostname=$(dialog --ok-button "$ok" --nocancel --inputbox "\n$host_msg" 12 55 "arch-anywhere" 3>&1 1>&2 2>&3 | sed 's/ //g')
+	
+	if (<<<$hostname grep "^[0-9]\|[\[\$\!\'\"\`\\|%&#@()+=<>~;:/?.,^{}]\|]" &> /dev/null); then
+		dialog --ok-button "$ok" --msgbox "\n$host_err_msg" 10 60
+		set_hostname
+	fi
+	
+	echo "$hostname" > "$ARCH"/etc/hostname
+	arch-chroot "$ARCH" chsh -s "$sh" &>/dev/null
+	echo "$(date -u "+%F %H:%M") : Hostname set: $hostname" >> "$log"
+	user=root
+	op_title="$passwd_op_msg"
+	set_password
+	add_user
+
+}
+
+add_user() {
+
+	while (true)	# Begin user menu while loop
+	  do
+		op_title="$user_op_msg"
+
+		## Create main user dialog menu from users in $ARCH/etc/passwd include root user
+		user=$(dialog --extra-button --extra-label "$edit" --ok-button "$new_user" --cancel-button "$done_msg" --menu "$user_menu_msg" 13 55 4 \
+			$(for i in $(grep "100" "$ARCH"/etc/passwd | cut -d: -f1) ; do 
+				echo "$i $(grep -w "$i" "$ARCH"/etc/passwd | cut -d: -f7)"
+			done) \
+			"root" "$(grep -w "root" "$ARCH"/etc/passwd | cut -d: -f7)" 3>&1 1>&2 2>&3)
+
+		## Check exit status of main user dialog menu
+		case "$?" in
+			1)	## if user selects cancel
+				break
+			;;
+			0)	## if user selects add new user
+				unset user
+				while (true)
+				  do
+					## prompt user for username
+					user=$(dialog --inputbox "\n$user_msg1" 12 55 "" 3>&1 1>&2 2>&3)
+					
+					if [ "$?" -gt "0" ]; then
+						break
+					elif [ -z "$user" ]; then
+						dialog --ok-button "$ok" --msgbox "\n$user_err_msg2" 10 60
+					elif (grep -w "$user" "$ARCH"/etc/passwd &>/dev/null); then
+						dialog --ok-button "$ok" --msgbox "\n$user_err_msg1" 10 60
+					elif (<<<$user grep "^[0-9]\|[ABCDEFGHIJKLMNOPQRSTUVWXYZ\[\$\!\'\"\`\\|%&#@()_-+=<>~;:/?.,^{}]\|]" &> /dev/null); then
+						dialog --ok-button "$ok" --msgbox "\n$user_err_msg" 10 60
+					else
+						arch-chroot "$ARCH" useradd -m -g users -G audio,network,power,storage,optical -s "$sh" "$user" &>/dev/null &
+						pid=$! pri=0.1 msg="$wait_load \n\n \Z1> \Z2useradd -m -g users -G ... -s $sh $user\Zn" load
+						echo "$(date -u "+%F %H:%M") : Added user: $user" >> "$log"
+						set_password
+
+						if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$sudo_var" 10 60) then
+							(sed -i '/%wheel ALL=(ALL) ALL/s/^#//' $ARCH/etc/sudoers
+							arch-chroot "$ARCH" usermod -a -G wheel "$user") &> /dev/null &
+							pid=$! pri=0.1 msg="$wait_load \n\n \Z1> \Z2usermod -a -G wheel $user\Zn" load
+							echo "$(date -u "+%F %H:%M") : Sudo enabled for: $user" >> "$log"
+						fi
+						break
+					fi
+				done
+			;;
+			*)
+				while (true)
+				  do
+					op_title="$user_op_msg1"
+					usr_shell=$(grep -w "$user" "$ARCH"/etc/passwd | cut -d: -f7)
+					if (grep -w "$user" "$ARCH"/etc/group | grep "wheel" &>/dev/null); then
+						sudo="$yes"
+					else
+						sudo="$no"
+					fi
+					source "$lang_file"
+					
+					if [ "$user" == "root" ]; then
+						user_edit=$(dialog --ok-button "$select" --cancel-button "$done_msg" --menu "$user_edit_var" 12 55 2 \
+							"$change_pass" "->" \
+							"$change_sh" "->" 3>&1 1>&2 2>&3)
+					else
+						user_edit=$(dialog --ok-button "$select" --cancel-button "$done_msg" --menu "$user_edit_var" 14 55 4 \
+							"$change_pass" "->" \
+							"$change_sh" "->" \
+							"$change_su" "->" \
+							"$del_user" "->" 3>&1 1>&2 2>&3)
+					fi
+
+					case "$user_edit" in
+						"$change_pass")
+							set_password
+						;;
+						"$change_sh")
+							chsh=$(dialog --ok-button "$select" --cancel-button "$cancel" --menu "$user_shell_var" 12 55 3 \
+								$(for i in $(arch-chroot "$ARCH" chsh -l | sed 's!.*/!!' | uniq) ; do
+									echo "$i ->"
+								done) 3>&1 1>&2 2>&3)
+							if [ "$?" -eq "0" ]; then
+								arch-chroot "$ARCH" chsh "$user" -s /usr/bin/"$chsh" &>/dev/null
+							fi
+						;;
+						"$change_su")
+							if [ "$sudo" == "$yes" ]; then
+								if (dialog --defaultno --yes-button "$yes" --no-button "$no" --yesno "\n$sudo_var1" 10 60) then
+									arch-chroot "$ARCH" gpasswd -d "$user" wheel &>/dev/null
+								fi
+							else
+								if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$sudo_var" 10 60) then
+									arch-chroot "$ARCH" usermod -a -G wheel "$user" &>/dev/null
+								fi
+							fi
+						;;
+						"$del_user")
+							if (dialog --defaultno --yes-button "$yes" --no-button "$no" --yesno "\n$deluser_var" 10 60) then
+								arch-chroot "$ARCH" userdel --remove "$user" &>/dev/null
+								break
+							fi
+						;;
+						*)
+							break
+						;;
+					esac
+				done
+			;;
+		esac
+	done
+
+	if ! "$menu_enter" ; then
+		reboot_system
+	fi
+
+}
+
+set_password() {
+
+	source "$lang_file"
+	op_title="$passwd_op_msg"
+	while [ "$input" != "$input_chk" ]
+	  do
+		input=$(dialog --nocancel --clear --insecure --passwordbox "$user_var0" 11 55 --stdout)
+	    	input_chk=$(dialog --nocancel --clear --insecure --passwordbox "$user_var1" 11 55 --stdout)
+		 
+		if [ -z "$input" ]; then
+			dialog --ok-button "$ok" --msgbox "\n$passwd_msg0" 10 55
+			input_chk=default
+		elif [ "$input" != "$input_chk" ]; then
+			dialog --ok-button "$ok" --msgbox "\n$passwd_msg1" 10 55
+		fi
+	done
 
 	(printf "$input\n$input" | arch-chroot "$ARCH" passwd "$user") &> /dev/null &
 	pid=$! pri=0.1 msg="$wait_load \n\n \Z1> \Z2passwd $user\Zn" load
@@ -2236,380 +2732,70 @@ set_password() {
 
 }
 
-install_software() {
-
-	op_title="$software_op_msg"
-	if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$software_msg0" 10 60) then
-		
-		while (true)
-		  do
-			unset software
-			add_soft=true
-			if ! "$skip" ; then
-				software_menu=$(dialog --extra-button --extra-label "$install" --ok-button "$select" --cancel-button "$cancel" --menu "$software_type_msg" 20 63 11 \
-					"$aar" "$aar_msg" \
-					"$audio" "$audio_msg" \
-					"$games" "$games_msg" \
-					"$graphic" "$graphic_msg" \
-					"$internet" "$internet_msg" \
-					"$multimedia" "$multimedia_msg" \
-					"$office" "$office_msg" \
-					"$terminal" "$terminal_msg" \
-					"$text_editor" "$text_editor_msg" \
-					"$system" "$system_msg" \
-					"$done_msg" "$install \Z2============>\Zn" 3>&1 1>&2 2>&3)
-				ex="$?"
-				
-				if [ "$ex" -eq "1" ]; then
-					if (dialog --yes-button "$yes" --no-button "$no" --defaultno --yesno "\n$software_warn_msg" 10 60) then
-						break
-					else
-						add_soft=false
-					fi
-				elif [ "$ex" -eq "3" ]; then
-					software_menu="$done_msg"
-				elif [ "$software_menu" == "$aar" ]; then
-					if ! (<"$ARCH"/etc/pacman.conf grep "arch-anywhere"); then
-						if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$aar_add_msg" 10 60) then
-							echo -e "\n[arch-anywhere]\nServer = $aa_repo\nSigLevel = Never" >> "$ARCH"/etc/pacman.conf
-						fi
-					fi
-				fi
-			else
-				skip=false
-			fi
-
-			case "$software_menu" in
-				"$aar")
-					software=$(dialog --ok-button "$ok" --cancel-button "$cancel" --checklist "$software_msg1" 17 60 7 \
-						"arch-wiki-cli"		"$aar0" ON \
-						"downgrade"		"$aar6" OFF \
-						"dolphin-libre"	"$aar7" OFF \
-						"fetchmirrors"		"$aar1" ON \
-						"octopi"		"$aar4" OFF \
-						"pacaur"		"$aar2" OFF \
-						"pamac-aur"		"$aar5" OFF \
-						"yaourt"		"$aar3" OFF 3>&1 1>&2 2>&3)
-					if [ "$?" -gt "0" ]; then
-						add_soft=false
-					fi
-					
-					if (<<<"$software" grep "dolphin-libre") then
-						software=$(<<<"$software" sed 's/dolphin-libre/dolphin-libreoffice-templates/')
-					fi
-				;;
-				"$audio")
-					software=$(dialog --ok-button "$ok" --cancel-button "$cancel" --checklist "$software_msg1" 20 60 10 \
-						"audacity"		"$audio0" OFF \
-						"audacious"		"$audio1" OFF \
-						"cmus"			"$audio2" OFF \
-						"jack2"         "$audio3" OFF \
-						"projectm"		"$audio4" OFF \
-						"lmms"			"$audio5" OFF \
-						"mpd"			"$audio6" OFF \
-						"ncmpcpp"		"$audio7" OFF \
-						"pianobar"		"$audio9" OFF \
-						"pavucontrol"	"$audio8" OFF 3>&1 1>&2 2>&3)
-					if [ "$?" -gt "0" ]; then
-						add_soft=false
-					fi
-				;;
-				"$internet")
-					software=$(dialog --ok-button "$ok" --cancel-button "$cancel" --checklist "$software_msg1" 19 60 9 \
-						"chromium"			"$net0" OFF \
-						"elinks"			"$net3" OFF \
-						"filezilla"			"$net1" OFF \
-						"firefox"			"$net2" OFF \
-						"irssi"				"$net9" OFF \
-						"lynx"				"$net3" OFF \
-						"minitube"			"$net4" OFF \
-						"opera"				"$net5" OFF \
-						"thunderbird"			"$net6" OFF \
-						"transmission-cli" 		"$net7" OFF \
-						"transmission-gtk"		"$net8" OFF \
-						"hexchat"			"$net11" OFF 3>&1 1>&2 2>&3)
-					if [ "$?" -gt "0" ]; then
-						add_soft=false
-					fi
-					
-					if (<<<"$software" grep "firefox" &>/dev/null) && [ -n "$bro" ]; then
-						software+=" firefox-i18n-$bro"
-					fi
-					
-					if (<<<"$software" grep "thunderbird" &>/dev/null) && [ -n "$bro" ] && [ "$bro" != "lv" ]; then
-							software+=" thunderbird-i18n-$bro"
-					fi
-				;;
-				"$games")
-					software=$(dialog --ok-button "$ok" --cancel-button "$cancel" --checklist "$software_msg1" 20 70 10 \
-						"alienarena"	"$game0" OFF \
-						"bsd-games"		"$game1" OFF \
-						"bzflag"		"$game2" OFF \
-						"flightgear"	"$game3" OFF \
-						"gnuchess"      "$game4" OFF \
-						"supertux"		"$game5" OFF \
-						"supertuxkart"	"$game6" OFF \
-						"urbanterror"	"$game7" OFF \
-						"warsow"		"$game8" OFF \
-						"xonotic"		"$game9" OFF 3>&1 1>&2 2>&3)
-					if [ "$?" -gt "0" ]; then
-						add_soft=false
-					fi
-				;;
-				"$graphic")
-					software=$(dialog --ok-button "$ok" --cancel-button "$cancel" --checklist "$software_msg1" 17 63 7 \
-						"blender"		"$graphic0" OFF \
-						"darktable"		"$graphic1" OFF \
-						"feh"			"$graphic6" OFF \
-						"gimp"			"$graphic2" OFF \
-						"graphviz"		"$graphic3" OFF \
-						"imagemagick"	"$graphic4" OFF \
-						"pinta"			"$graphic5" OFF 3>&1 1>&2 2>&3)
-					if [ "$?" -gt "0" ]; then
-						add_soft=false
-					fi
-				;;
-				"$multimedia")
-					software=$(dialog --ok-button "$ok" --cancel-button "$cancel" --checklist "$software_msg1" 17 63 7 \
-						"handbrake"				"$media0" OFF \
-						"mplayer"				"$media1" OFF \
-						"mpv"					"$media7" OFF \
-						"multimedia-codecs"			"$media8" OFF \
-						"pitivi"				"$media2" OFF \
-						"simplescreenrecorder"			"$media3" OFF \
-						"smplayer"				"$media4" OFF \
-						"totem"					"$media5" OFF \
-						"vlc"         	   			"$media6" OFF 3>&1 1>&2 2>&3)
-					if [ "$?" -gt "0" ]; then
-						add_soft=false
-					fi
-					
-					if (<<<"$software" grep "multimedia-codecs") then
-						software=$(<<<"$software" sed 's/multimedia-codecs/gst-plugins-bad gst-plugins-base gst-plugins-good gst-plugins-ugly ffmpegthumbnailer gst-libav/')
-					fi
-				;;
-				"$office")
-					software=$(dialog --ok-button "$ok" --cancel-button "$cancel" --checklist "$software_msg1" 16 63 6 \
-						"abiword"               "$office0" OFF \
-						"calligra"              "$office1" OFF \
-						"gnumeric"				"$office3" OFF \
-						"libreoffice-fresh"		"$office4" OFF \
-						"libreoffice-still"		"$office5" OFF 3>&1 1>&2 2>&3)
-					if [ "$?" -gt "0" ]; then
-						add_soft=false
-					fi
-
-					if (<<<"$software" grep "libreoffice-fresh" &>/dev/null) && [ -n "$lib" ]; then
-						software+=" libreoffice-fresh-$lib"
-					fi
-					
-					if (<<<"$software" grep "libreoffice-still" &>/dev/null) && [ -n "$lib" ]; then
-						software+=" libreoffice-still-$lib"
-					fi
-				;;
-				"$terminal")
-					software=$(dialog --ok-button "$ok" --cancel-button "$cancel" --checklist "$software_msg1" 18 63 8 \
-						"fbterm"			"$term0" OFF \
-						"guake"             "$term1" OFF \
-						"kmscon"			"$term2" OFF \
-						"pantheon-terminal"	"$term3" OFF \
-						"rxvt-unicode"      "$term4" OFF \
-						"terminator"        "$term5" OFF \
-						"xfce4-terminal"    "$term6" OFF \
-						"yakuake"           "$term7" OFF 3>&1 1>&2 2>&3)
-					if [ "$?" -gt "0" ]; then
-						add_soft=false
-					fi
-				;;
-				"$text_editor")
-					software=$(dialog --ok-button "$ok" --cancel-button "$cancel" --checklist "$software_msg1" 18 60 8 \
-						"atom"			"$edit7" OFF \
-						"emacs"			"$edit0" OFF \
-						"geany"			"$edit1" OFF \
-						"gedit"			"$edit2" OFF \
-						"gvim"			"$edit3" OFF \
-						"mousepad"		"$edit4" OFF \
-						"neovim"		"$edit5" OFF \
-						"vim"			"$edit6" OFF 3>&1 1>&2 2>&3)
-					if [ "$?" -gt "0" ]; then
-						add_soft=false
-					fi
-				;;
-				"$system")
-					software=$(dialog --ok-button "$ok" --cancel-button "$cancel" --checklist "$software_msg1" 20 65 10 \
-						"apache"		"$sys1" OFF \
-						"bleachbit"		"$sys22" OFF \
-						"conky"			"$sys2" OFF \
-						"dmenu"			"$sys19" OFF \
-						"git"			"$sys3" OFF \
-						"gparted"		"$sys4" OFF \
-						"gpm"			"$sys5" OFF \
-						"htop"			"$sys6" OFF \
-						"inxi"			"$sys7" OFF \
-						"k3b"			"$sys8" OFF \
-						"nmap"			"$sys9" OFF \
-						"openssh"		"$sys10" OFF \
-						"pcmanfm"		"$sys21" OFF \
-						"ranger"		"$sys20" OFF \
-						"screen"		"$sys11" OFF \
-						"screenfetch"		"$sys12" ON \
-						"scrot"			"$sys13" OFF \
-						"tmux"			"$sys14" OFF \
-						"tuxcmd"		"$sys15" OFF \
-						"virtualbox"		"$sys16" OFF \
-						"ufw"			"$sys17" ON \
-						"wget"			"$sys18" ON \
-						"xfe"			"$sys23" OFF 3>&1 1>&2 2>&3)
-					if [ "$?" -gt "0" ]; then
-						add_soft=false
-					fi
-				;;
-				"$done_msg")
-					if [ -z "$final_software" ]; then
-						if (dialog --yes-button "$yes" --no-button "$no" --defaultno --yesno "\n$software_warn_msg" 10 60) then
-							break
-						else
-							add_soft=false
-						fi
-					else
-						download=$(echo "$final_software" | sed 's/\"//g' | tr ' ' '\n' | nl | sort -u -k2 | sort -n | cut -f2- | sed 's/$/ /g' | tr -d '\n')
-						export download_list=$(echo "$download" |  sed -e 's/^[ \t]*//')
-						arch-chroot "$ARCH" pacman -Sy --print-format='%s' $(echo "$download") | awk '{s+=$1} END {print s/1024/1024}' >/tmp/size &
-						pid=$! pri=0.1 msg="$wait_load \n\n \Z1> \Z2pacman -S --print-format\Zn" load
-						download_size=$(</tmp/size) ; rm /tmp/size
-						export software_size=$(echo "$download_size Mib")
-						export software_int=$(echo "$download" | wc -w)
-						cal_rate
-
-						if [ "$software_int" -lt "20" ]; then
-							height=17
-						else
-							height=20
-						fi
-						
-						if (dialog --yes-button "$install" --no-button "$cancel" --yesno "\n$software_confirm_var1" "$height" 65) then
-							tmpfile=$(mktemp)
-							echo "$(date -u "+%F %H:%M") : Add software list: $download" >> "$log"
-							echo "$(date -u "+%F %H:%M") : Begin installing software" >> "$log"
-							arch-chroot "$ARCH" pacman --noconfirm -Sy $(echo "$download") &> "$tmpfile" &
-							pid=$! pri=$(<<<"$down" sed 's/\..*$//') msg="\n$software_load_var" load_log
-							echo "$(date -u "+%F %H:%M") : Finished installing software" >> "$log"
-							<"$tmpfile" >> "$log"
-							rm "$tmpfile"
-							unset final_software
-							break
-						else
-							unset final_software
-							add_soft=false
-						fi
-					fi
-				;;
-			esac
-			
-			if "$add_soft" ; then
-				if [ -z "$software" ]; then
-					if ! (dialog --yes-button "$yes" --no-button "$no" --defaultno --yesno "\n$software_noconfirm_msg ${software_menu}?" 10 60) then
-						skip=true
-					fi
-				else
-					add_software=$(echo "$software" | sed 's/\"//g')
-					software_list=$(echo "$add_software" | sed -e 's/^[ \t]*//')
-					arch-chroot "$ARCH" pacman -Sy --print-format='%s' $(echo "$add_software") | awk '{s+=$1} END {print s/1024/1024}' >/tmp/size &
-					pid=$! pri=0.1 msg="$wait_load \n\n \Z1> \Z2pacman -Sy --print-format\Zn" load
-					download_size=$(</tmp/size) ; rm /tmp/size
-					software_size=$(echo "$download_size Mib")
-					software_int=$(echo "$add_software" | wc -w)
-					source "$lang_file"
-				
-					if [ "$software_int" -lt "15" ]; then
-						height=14
-					else
-						height=16
-					fi
-
-					if (dialog --yes-button "$add" --no-button "$cancel" --yesno "\n$software_confirm_var0" "$height" 60) then
-						final_software="$software $final_software"
-					fi
-				fi
-			fi
-		done
-	fi
-	
-	if ! "$pac_update" ; then
-		if [ -f "$ARCH"/var/lib/pacman/db.lck ]; then
-			rm "$ARCH"/var/lib/pacman/db.lck &> /dev/null
-		fi
-
-		arch-chroot "$ARCH" pacman -Sy &> /dev/null &
-		pid=$! pri=0.8 msg="\n$pacman_load \n\n \Z1> \Z2pacman -Sy\Zn" load
-		echo "$(date -u "+%F %H:%M") : Updated pacman databases" >> "$log"
-		pac_update=true
-	fi
-
-	software_selected=false
-	echo "$(date -u "+%F %H:%M") : Install finished" >> "$log"
-	reboot_system
-
-}
-
 reboot_system() {
 
 	op_title="$complete_op_msg"
+	## Check if system is installed
 	if "$INSTALLED" ; then
+		## Check if user has installed bootloader, if no promtp to exit to commandline
 		if [ "$bootloader" == "$none" ]; then
 			if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$complete_no_boot_msg" 10 60) then
 				reset ; exit
 			fi
 		fi
 
-		reboot_menu=$(dialog --nocancel --ok-button "$ok" --menu "$complete_msg" 16 60 7 \
-			"$reboot0" "-" \
-			"$reboot6" "-" \
-			"$reboot2" "-" \
-			"$reboot1" "-" \
-			"$reboot4" "-" \
-			"$reboot3" "-" \
-			"$reboot5" "-" 3>&1 1>&2 2>&3)
+		## Begin reboot menu loop
+		while (true)
+		  do
+			## Prompt for user input
+			reboot_menu=$(dialog --nocancel --ok-button "$ok" --menu "$complete_msg" 16 60 7 \
+				"$reboot0" "-" \
+				"$reboot6" "-" \
+				"$reboot2" "-" \
+				"$reboot1" "-" \
+				"$reboot4" "-" \
+				"$reboot3" "-" \
+				"$reboot5" "-" 3>&1 1>&2 2>&3)
 		
-		case "$reboot_menu" in
-			"$reboot0")	umount -R "$ARCH"
-					reset ; reboot ; exit
-			;;
-			"$reboot6")	umount -R "$ARCH"
-					reset ; poweroff ; exit
-			;;
-			"$reboot1")	umount -R "$ARCH"
-					reset ; exit
-			;;
-			"$reboot2")	clear
-					echo -e "$arch_chroot_msg" 
-					echo "/root" > /tmp/chroot_dir.var
-					arch_anywhere_chroot
-					clear
-			;;
-			"$reboot3")	if (dialog --yes-button "$yes" --no-button "$no" --yesno "$user_exists_msg" 10 60); then
+			## Execute user input
+			case "$reboot_menu" in
+				"$reboot0")	## Reboot system
+						umount -R "$ARCH"
+						reset ; reboot ; exit
+				;;
+				"$reboot6")	## Poweroff system
+						umount -R "$ARCH"
+						reset ; poweroff ; exit
+				;;
+				"$reboot1")	## Unmount system and exit to command line
+						umount -R "$ARCH"
+						reset ; exit
+				;;
+				"$reboot2")	## Arch Anywhere Chroot function
+						clear
+						echo -e "$arch_chroot_msg" 
+						echo "/root" > /tmp/chroot_dir.var
+						arch_anywhere_chroot
+						clear
+				;;
+				"$reboot3")	## Edit users
 						menu_enter=true
 						add_user	
-					else
-						reboot_system
-					fi
-			;;
-			"$reboot5")	install_software
-			;;
-			"$reboot4")	clear
-					less "$log"
-					clear
-					reboot_system
-			;;
-		esac
-
+				;;
+				"$reboot5")	## Software menu
+						menu_enter=true
+						install_software
+				;;
+				"$reboot4")	## Show install log
+						clear ; less "$log" clear
+				;;
+			esac
+		done
 	else
-
+		## Warn user install not complete, prompt for reboot
 		if (dialog --yes-button "$yes" --no-button "$no" --yesno "$not_complete_msg" 10 60) then
-			umount -R $ARCH
+			umount -R "$ARCH"
 			reset ; reboot ; exit
-		else
-			main_menu
 		fi
 	fi
 
@@ -2618,58 +2804,68 @@ reboot_system() {
 main_menu() {
 
 	op_title="$menu_op_msg"
-	menu_item=$(dialog --nocancel --ok-button "$ok" --menu "$menu" 20 60 9 \
-		"$menu13" "-" \
-		"$menu0"  "-" \
-		"$menu1"  "-" \
-		"$menu2"  "-" \
-		"$menu3"  "-" \
-		"$menu4"  "-" \
-		"$menu5"  "-" \
-		"$menu11" "-" \
-		"$menu12" "-" 3>&1 1>&2 2>&3)
 
-	case "$menu_item" in
-		"$menu0")	set_locale
-		;;
-		"$menu1")	set_zone
-		;;
-		"$menu2")	set_keys
-		;;
-		"$menu3")	if "$mounted" ; then 
+	while (true)
+	  do
+		menu_enter=false
+		menu_item=$(dialog --nocancel --ok-button "$ok" --menu "$menu" 20 60 9 \
+			"$menu13" "-" \
+			"$menu0"  "-" \
+			"$menu1"  "-" \
+			"$menu2"  "-" \
+			"$menu3"  "-" \
+			"$menu4"  "-" \
+			"$menu5"  "-" \
+			"$menu11" "-" \
+			"$menu12" "-" 3>&1 1>&2 2>&3)
+
+		case "$menu_item" in
+			"$menu0")	## Set system locale
+					menu_enter=true
+					set_locale
+			;;
+			"$menu1")	## Set system timezone
+					menu_enter=true
+					set_zone
+			;;
+			"$menu2")	## Set system keymap
+					menu_enter=true
+					set_keys
+			;;
+			"$menu3")	## Prepare drives check if mounted
+					if "$mounted" ; then 
 						if (dialog --yes-button "$yes" --no-button "$no" --defaultno --yesno "\n$menu_err_msg3" 10 60); then
 							mounted=false ; prepare_drives
-						else
-							main_menu
 						fi
-					fi
- 					prepare_drives 
-		;;
-		"$menu4") 	update_mirrors
-		;;
-		"$menu5")	prepare_base
-		;;
-		"$menu11") 	reboot_system
-		;;
-		"$menu12") 	if "$INSTALLED" ; then
-						dialog --ok-button "$ok" --msgbox "\n$menu_err_msg4" 10 60
-						reset ; exit
 					else
-						if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$menu_exit_msg" 10 60) then
-							reset ; exit
-						else
-							main_menu
-						fi
+						prepare_drives
 					fi
-		;;
-		"$menu13")	echo -e "alias arch-anywhere=exit ; echo -e '$return_msg'" > /tmp/.zshrc
+			;;
+			"$menu4") 	menu_enter=true
+					## Update mirrorlist
+					update_mirrors
+			;;
+			"$menu5")	## Begin base install
+					prepare_base
+			;;
+			"$menu11") 	## Reboot system function
+					reboot_system
+			;;
+			"$menu12") 	## Exit installer
+					if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$menu_exit_msg" 10 60) then
+						reset ; exit
+					fi
+			;;
+			"$menu13")	## Start command line session
+					echo -e "alias arch-anywhere=exit ; echo -e '$return_msg'" > /tmp/.zshrc
 					clear
 					ZDOTDIR=/tmp/ zsh
 					rm /tmp/.zshrc
 					clear
-					main_menu
-		;;
-	esac
+			;;
+		esac
+	## End main menu loop
+	done
 
 }
 
@@ -2688,66 +2884,61 @@ arch_anywhere_chroot() {
 		  do
 			if [ "$char" == $'\x1b' ]; then
 				while IFS= read -r -n 2 -s rest
-          		  do
-                	char+="$rest"
-                	break
-            	done
-        	fi
+				  do
+					char+="$rest"
+					break
+				done
+			fi
 
 			if [ "$char" == $'\x1b[D' ]; then
 				pos=-1
-
 			elif [ "$char" == $'\x1b[C' ]; then
 				pos=1
-
 			elif [[ $char == $'\177' ]];  then
 				input="${input%?}"
 				echo -ne "\r\033[K${Yellow}<${Red}root${Yellow}@${Green}${hostname}-chroot${Yellow}>: $working_dir>${Red}# ${ColorOff}${input}"
-			
+			## User input up
 			elif [ "$char" == $'\x1b[A' ]; then
-            # Up
-            	if [ $histindex -gt 0 ]; then
-                	histindex+=-1
-                	input=$(echo -ne "${history[$histindex]}")
+				if [ $histindex -gt 0 ]; then
+					histindex+=-1
+					input=$(echo -ne "${history[$histindex]}")
+					echo -ne "\r\033[K${Yellow}<${Red}root${Yellow}@${Green}${hostname}-chroot${Yellow}>: $working_dir>${Red}# ${ColorOff}${history[$histindex]}"
+				fi
+			## User input down
+	        	elif [ "$char" == $'\x1b[B' ]; then
+		            	if [ $histindex -lt $((${#history[@]} - 1)) ]; then
+					histindex+=1
+					input=$(echo -ne "${history[$histindex]}")
 					echo -ne "\r\033[K${Yellow}<${Red}root${Yellow}@${Green}${hostname}-chroot${Yellow}>: $working_dir>${Red}# ${ColorOff}${history[$histindex]}"
 				fi  
-        	elif [ "$char" == $'\x1b[B' ]; then
-            # Down
-            	if [ $histindex -lt $((${#history[@]} - 1)) ]; then
-                	histindex+=1
-                	input=$(echo -ne "${history[$histindex]}")
-                	echo -ne "\r\033[K${Yellow}<${Red}root${Yellow}@${Green}${hostname}-chroot${Yellow}>: $working_dir>${Red}# ${ColorOff}${history[$histindex]}"
-				fi  
-        	elif [ -z "$char" ]; then
-            # Newline
+			### Newline
+	        	elif [ -z "$char" ]; then
 				echo
-            	history+=( "$input" )
-            	histindex=${#history[@]}
+			    	history+=( "$input" )
+		            	histindex=${#history[@]}
 				break
-        	else
-            	echo -n "$char"
-            	input+="$char"
-        	fi  
+			else
+				echo -n "$char"
+				input+="$char"
+			fi  
 		done
     	
 		if [ "$input" == "arch-anywhere" ] || [ "$input" == "exit" ]; then
-        	rm /tmp/chroot_dir.var &> /dev/null
+			rm /tmp/chroot_dir.var &> /dev/null
 			clear
 			break
-	    elif (<<<"$input" grep "^cd " &> /dev/null); then 
-	    	ch_dir=$(<<<$input cut -c4-)
-	        arch-chroot "$ARCH" /bin/bash -c "cd $working_dir ; cd $ch_dir ; pwd > /etc/chroot_dir.var"
-	        mv "$ARCH"/etc/chroot_dir.var /tmp/
+		elif (<<<"$input" grep "^cd " &> /dev/null); then 
+			ch_dir=$(<<<$input cut -c4-)
+			arch-chroot "$ARCH" /bin/bash -c "cd $working_dir ; cd $ch_dir ; pwd > /etc/chroot_dir.var"
+			mv "$ARCH"/etc/chroot_dir.var /tmp/
 			working_dir=$(</tmp/chroot_dir.var)
 		elif  (<<<"$input" grep "^help" &> /dev/null); then
 			echo -e "$arch_chroot_msg"
-		else
-	    	arch-chroot "$ARCH" /bin/bash -c "cd $working_dir ; $input"
-	    fi   
-	input=
+			else
+			arch-chroot "$ARCH" /bin/bash -c "cd $working_dir ; $input"
+		fi   
+		input=
 	done
-
-	reboot_system
 
 }
 
