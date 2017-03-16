@@ -123,6 +123,7 @@ update_mirrors() {
 			;;
 			"AS")	## All https mirrors
 				mirror_url="https://www.archlinux.org/mirrorlist/all/https/"
+			;;
 			*)	## User selected country
 				mirror_url="https://www.archlinux.org/mirrorlist/?country=$code&protocol=http"
 			;;
