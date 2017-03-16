@@ -1965,7 +1965,7 @@ install_base() {
 	export software_size="$download_size Mib"
 	cal_rate
 
-	if [ (wc -w <<<"$base_install") -gt "30" ]; then
+	if [ $(wc -w <<<"$base_install") -gt "30" ]; then
 		height="25"
 	else
 		height="20"
