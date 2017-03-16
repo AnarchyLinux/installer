@@ -1157,19 +1157,22 @@ prepare_base() {
 	
 	op_title="$install_op_msg"
 	if "$mounted" ; then	
-		install_menu=$(dialog --ok-button "$ok" --cancel-button "$cancel" --menu "$install_type_msg" 14 64 5 \
-			"Arch-Linux-Base" 			"$base_msg0" \
-			"Arch-Linux-Base-Devel" 	"$base_msg1" \
-			"Arch-Linux-GrSec"			"$grsec_msg" \
-			"Arch-Linux-LTS-Base" 		"$LTS_msg0" \
-			"Arch-Linux-LTS-Base-Devel" "$LTS_msg1" 3>&1 1>&2 2>&3)
-		if [ "$?" -gt "0" ]; then
-			if (dialog --defaultno --yes-button "$yes" --no-button "$no" --yesno "\n$exit_msg" 10 60) then
-				main_menu
+		while (true)
+		  do
+			install_menu=$(dialog --ok-button "$ok" --cancel-button "$cancel" --menu "$install_type_msg" 14 64 5 \
+				"Arch-Linux-Base" 			"$base_msg0" \
+				"Arch-Linux-Base-Devel" 	"$base_msg1" \
+				"Arch-Linux-GrSec"			"$grsec_msg" \
+				"Arch-Linux-LTS-Base" 		"$LTS_msg0" \
+				"Arch-Linux-LTS-Base-Devel" "$LTS_msg1" 3>&1 1>&2 2>&3)
+			if [ "$?" -gt "0" ]; then
+				if (dialog --defaultno --yes-button "$yes" --no-button "$no" --yesno "\n$exit_msg" 10 60) then
+					main_menu
+				fi
 			else
-				prepare_base
+				break
 			fi
-		fi
+		done
 
 		case "$install_menu" in
 			"Arch-Linux-Base")
@@ -1984,9 +1987,13 @@ install_base() {
 	cal_rate
 
 	if [ $(wc -w <<<"$base_install") -gt "30" ]; then
-		height="25"
-	else
+		height="24"
+	elif [ $(wc -w <<<"$base_install") -gt "25" ]; then
 		height="20"
+	elif [ $(wc -w <<<"$base_install") -gt "20" ]; then
+		height="18"
+	else
+		height="16"
 	fi
 	
 	if (dialog --yes-button "$install" --no-button "$cancel" --yesno "\n$install_var" "$height" 65); then
