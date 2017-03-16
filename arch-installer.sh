@@ -2340,7 +2340,15 @@ configure_system() {
 	if [ ! -z "$env" ]; then	
 		config_env &
 		pid=$! pri="0.1" msg="$wait_load \n\n \Z1> \Z2arch-anywhere config_env\Zn" load
-	fi	
+	fi
+
+	if [ -f "$ARCH"/var/lib/pacman/db.lck ]; then
+		rm "$ARCH"/var/lib/pacman/db.lck &> /dev/null
+	fi
+
+	arch-chroot "$ARCH" pacman -Sy &> /dev/null &
+	pid=$! pri=0.8 msg="\n$pacman_load \n\n \Z1> \Z2pacman -Sy\Zn" load
+	echo "$(date -u "+%F %H:%M") : Updated pacman databases" >> "$log"
 	
 	if [ "$arch" == "x86_64" ]; then
 		if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n\n$multilib_msg" 11 60) then
@@ -2356,14 +2364,6 @@ configure_system() {
 		pid=$! pri=0.1 msg="\n$dhcp_load \n\n \Z1> \Z2systemctl enable dhcpcd\Zn" load
 		echo "$(date -u "+%F %H:%M") : Enable dhcp" >> "$log"
 	fi
-
-	if [ -f "$ARCH"/var/lib/pacman/db.lck ]; then
-		rm "$ARCH"/var/lib/pacman/db.lck &> /dev/null
-	fi
-
-	arch-chroot "$ARCH" pacman -Sy &> /dev/null &
-	pid=$! pri=0.8 msg="\n$pacman_load \n\n \Z1> \Z2pacman -Sy\Zn" load
-	echo "$(date -u "+%F %H:%M") : Updated pacman databases" >> "$log"
 	
 	if [ "$sh" == "/bin/bash" ]; then
 		cp "$ARCH"/etc/skel/.bash_profile "$ARCH"/root/
