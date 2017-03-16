@@ -2547,7 +2547,7 @@ add_user() {
 								done) 3>&1 1>&2 2>&3)
 							if [ "$?" -eq "0" ]; then
 								case "$chsh" in
-									sh|bash)
+									"sh"|"bash")
 										arch-chroot "$ARCH" chsh "$user" -s /bin/"$chsh" &>/dev/null
 									;;
 									*)	
