@@ -125,7 +125,7 @@ update_mirrors() {
 				mirror_url="https://www.archlinux.org/mirrorlist/all/https/"
 			;;
 			*)	## User selected country
-				mirror_url="https://www.archlinux.org/mirrorlist/?country=$code&protocol=http"
+				mirror_url="https://www.archlinux.org/mirrorlist/?country=$code"
 			;;
 		esac
 
@@ -134,9 +134,9 @@ update_mirrors() {
 		else
 			curl -s "$mirror_url" >/etc/pacman.d/mirrorlist.bak &
 		fi
-		pid=$! pri=0.1 msg="\n$mirror_load0 \n\n \Z1> \Z2wget -O /etc/pacman.d/mirrorlist archlinux.org/mirrorlist/?country=$code\Zn" load
+		pid=$! pri=0.1 msg="\n$mirror_load0 \n\n \Z1> \Z2curl $mirror_url\Zn" load
 		
-		if (grep "Server" /etc/pacman.d/mirrorlist.bak); then
+		if (grep "Server" /etc/pacman.d/mirrorlist.bak &>/dev/null); then
 			echo "$(date -u "+%F %H:%M") : Updated Mirrors From: $code" >> "$log"
 			sed -i 's/#//' /etc/pacman.d/mirrorlist.bak
 			rankmirrors -n 6 /etc/pacman.d/mirrorlist.bak > /etc/pacman.d/mirrorlist &
@@ -156,7 +156,7 @@ check_connection() {
 	
 	op_title="$connection_op_msg"
 	(test_mirror=$(</etc/pacman.d/mirrorlist grep "^Server" | awk 'NR==1{print $3}' | sed 's/$.*//')
-	test_pkg=$(curl -s https://www.archlinux.org/packages/extra/i686/bluez-utils/ | grep "<title>" | awk '{print $5}')
+	test_pkg=$(curl -s https://www.archlinux.org/packages/extra/i686/bluez-utils/ | grep "<title>" | awk '{print $4"-"$5}')
 	test_link="${test_mirror}extra/os/i686/${test_pkg}-i686.pkg.tar.xz"
 	wget -4 --no-check-certificate --append-output=/tmp/wget.log -O /dev/null "${test_link}") &
 	pid=$! pri=0.3 msg="\n$connection_load \n\n \Z1> \Z2wget -O /dev/null test_link/test1Mb.db\Zn" load
@@ -1344,35 +1344,40 @@ graphics() {
 	op_title="$de_op_msg"
 	if ! (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$desktop_msg" 10 60) then
 		if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$desktop_cancel_msg" 10 60) then	
-			x="17" ; install_base
+			install_software
 		fi	
 	fi
 	
-	DE=$(dialog --ok-button "$ok" --cancel-button "$cancel" --menu "$environment_msg" 18 60 11 \
-		"AA-Xfce"	"$de15" \
-		"AA-Openbox"	"$de18" \
-		"budgie"	"$de17" \
-		"cinnamon"      "$de5" \
-		"deepin"	"$de14" \
-		"gnome"         "$de4" \
-		"KDE plasma"    "$de6" \
-		"lxde"          "$de2" \
-		"lxqt"          "$de3" \
-		"mate"          "$de1" \
-		"xfce4"         "$de0" \
-		"awesome"       "$de9" \
-		"bspwm"		"$de13" \
-		"dwm"           "$de12" \
-		"enlightenment" "$de7" \
-		"fluxbox"       "$de11" \
-		"i3"            "$de10" \
-		"openbox"       "$de8" \
-		"xmonad"	"$de16"  3>&1 1>&2 2>&3)
-	if [ "$?" -gt "0" ]; then 
-		if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$desktop_cancel_msg" 10 60) then	
-			install_base
+	while (true)
+	  do
+		DE=$(dialog --ok-button "$ok" --cancel-button "$cancel" --menu "$environment_msg" 18 60 11 \
+			"AA-Xfce"	"$de15" \
+			"AA-Openbox"	"$de18" \
+			"budgie"	"$de17" \
+			"cinnamon"      "$de5" \
+			"deepin"	"$de14" \
+			"gnome"         "$de4" \
+			"KDE plasma"    "$de6" \
+			"lxde"          "$de2" \
+			"lxqt"          "$de3" \
+			"mate"          "$de1" \
+			"xfce4"         "$de0" \
+			"awesome"       "$de9" \
+			"bspwm"		"$de13" \
+			"dwm"           "$de12" \
+			"enlightenment" "$de7" \
+			"fluxbox"       "$de11" \
+			"i3"            "$de10" \
+			"openbox"       "$de8" \
+			"xmonad"	"$de16"  3>&1 1>&2 2>&3)
+		if [ "$?" -gt "0" ]; then 
+			if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$desktop_cancel_msg" 10 60) then	
+				install_software
+			fi
+		else
+			break
 		fi
-	fi
+	done
 
 	source "$lang_file"
 
@@ -1522,7 +1527,7 @@ graphics() {
 		
 		if [ "$ex" -gt "0" ]; then
 			if (dialog --yes-button "$yes" --no-button "$no" --yesno "$desktop_cancel_msg" 10 60) then
-				install_base
+				install_software
 			fi
 		elif [ "$GPU" == "NVIDIA" ]; then
 			GPU=$(dialog --ok-button "$ok" --cancel-button "$cancel" --menu "$nvidia_msg" 15 60 4 \
@@ -1889,7 +1894,7 @@ install_software() {
 						fi
 					else
 						download=$(echo "$final_software" | sed 's/\"//g' | tr ' ' '\n' | nl | sort -u -k2 | sort -n | cut -f2- | sed 's/$/ /g' | tr -d '\n')
-						export download_list=$(echo "$download" |  sed -e 's/^[ \t]*//')
+						download_list=$(echo "$download" |  sed -e 's/^[ \t]*//')
 						pacman -Sy --print-format='%s' $(echo "$download") | awk '{s+=$1} END {print s/1024/1024}' >/tmp/size &
 						pid=$! pri=0.1 msg="$wait_load \n\n \Z1> \Z2pacman -S --print-format\Zn" load
 						download_size=$(</tmp/size) ; rm /tmp/size
