@@ -1667,7 +1667,7 @@ install_software() {
 			unset software
 			add_soft=true
 			if ! "$skip" ; then
-				software_menu=$(dialog --extra-button --extra-label "$install" --ok-button "$select" --cancel-button "$cancel" --menu "$software_type_msg" 20 63 11 \
+				software_menu=$(dialog --extra-button --extra-label "$done_msg" --ok-button "$select" --cancel-button "$cancel" --menu "$software_type_msg" 20 63 11 \
 					"$aar" "$aar_msg" \
 					"$audio" "$audio_msg" \
 					"$games" "$games_msg" \
@@ -1895,28 +1895,10 @@ install_software() {
 					else
 						download=$(echo "$final_software" | sed 's/\"//g' | tr ' ' '\n' | nl | sort -u -k2 | sort -n | cut -f2- | sed 's/$/ /g' | tr -d '\n')
 						download_list=$(echo "$download" |  sed -e 's/^[ \t]*//')
-						pacman -Sy --print-format='%s' $(echo "$download") | awk '{s+=$1} END {print s/1024/1024}' >/tmp/size &
-						pid=$! pri=0.1 msg="$wait_load \n\n \Z1> \Z2pacman -S --print-format\Zn" load
-						download_size=$(</tmp/size) ; rm /tmp/size
-						export software_size=$(echo "$download_size Mib")
-						export software_int=$(echo "$download" | wc -w)
-						cal_rate
-
-						if [ "$software_int" -lt "20" ]; then
-							height=17
-						else
-							height=20
-						fi
-						
-						if (dialog --yes-button "$install" --no-button "$cancel" --yesno "\n$software_confirm_var1" "$height" 65) then
-							echo "$(date -u "+%F %H:%M") : Add software list: $download" >> "$log"
-							base_install+=" $download"
-							unset final_software
-							break
-						else
-							unset final_software
-							add_soft=false
-						fi
+						echo "$(date -u "+%F %H:%M") : Add software list: $download" >> "$log"
+						base_install+=" $download_list"
+						unset final_software
+						break
 					fi
 				;;
 			esac
@@ -2513,7 +2495,14 @@ add_user() {
 									echo "$i ->"
 								done) 3>&1 1>&2 2>&3)
 							if [ "$?" -eq "0" ]; then
-								arch-chroot "$ARCH" chsh "$user" -s /usr/bin/"$chsh" &>/dev/null
+								case "$chsh" in
+									sh|bash)
+										arch-chroot "$ARCH" chsh "$user" -s /bin/"$chsh" &>/dev/null
+									;;
+									*)	
+										arch-chroot "$ARCH" chsh "$user" -s /usr/bin/"$chsh" &>/dev/null
+									;;
+								esac
 							fi
 						;;
 						"$change_su")
