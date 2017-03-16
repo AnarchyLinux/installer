@@ -2169,7 +2169,7 @@ add_user() {
 							set_password
 						;;
 						"$change_sh")
-							chsh=$(dialog --ok-button "$select" --cancel-button "$Done" --menu "$user_shell_var" 12 55 3 \
+							chsh=$(dialog --ok-button "$select" --cancel-button "$cancel" --menu "$user_shell_var" 12 55 3 \
 								$(for i in $(arch-chroot "$ARCH" chsh -l | sed 's!.*/!!' | uniq) ; do
 									echo "$i ->"
 								done) 3>&1 1>&2 2>&3)
