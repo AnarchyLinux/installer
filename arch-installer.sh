@@ -129,7 +129,7 @@ update_mirrors() {
 			;;
 		esac
 
-		if [ "$code" == "$default"
+		if [ "$code" == "$default" ]; then
 			curl -s "$mirror_url" | sed '10,1000d;s/#//' >/etc/pacman.d/mirrorlist.bak &
 		else
 			curl -s "$mirror_url" >/etc/pacman.d/mirrorlist.bak &
@@ -2405,8 +2405,6 @@ config_env() {
 			fi
 		;;
 	esac
-<<<<<<< HEAD
-=======
 
 	echo "$(date -u "+%F %H:%M") : Configured: $env" >> "$log"
 	arch-chroot "$ARCH" fc-cache -f
@@ -2563,7 +2561,6 @@ set_password() {
 			dialog --ok-button "$ok" --msgbox "\n$passwd_msg1" 10 55
 		fi
 	done
->>>>>>> 413275f67a95cf564c8ff8cff71338d73d7def51
 
 	echo "$(date -u "+%F %H:%M") : Configured: $env" >> "$log"
 	arch-chroot "$ARCH" fc-cache -f
