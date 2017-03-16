@@ -2103,10 +2103,10 @@ add_user() {
 	  do
 		op_title="$user_op_msg"
 		user=$(dialog --extra-button --extra-label "$edit" --ok-button "$new_user" --cancel-button "$done_msg" --menu "$user_menu_msg" 13 55 4 \
-			$(for i in $(grep 100 "$ARCH"/etc/passwd | cut -d: -f1) ; do 
-				echo "$i $(grep "$i" "$ARCH"/etc/passwd | cut -d: -f7)"
+			$(for i in $(grep "100" "$ARCH"/etc/passwd | cut -d: -f1) ; do 
+				echo "$i $(grep -w "$i" "$ARCH"/etc/passwd | cut -d: -f7)"
 			done) \
-			"root" "$(grep "root" "$ARCH"/etc/passwd | cut -d: -f7)" 3>&1 1>&2 2>&3)
+			"root" "$(grep -w "root" "$ARCH"/etc/passwd | cut -d: -f7)" 3>&1 1>&2 2>&3)
 
 		case "$?" in
 			1)
@@ -2120,7 +2120,7 @@ add_user() {
 					
 					if [ -z "$user" ]; then
 						break
-					elif (grep "$user" "$ARCH"/etc/passwd &>/dev/null); then
+					elif (grep -w "$user" "$ARCH"/etc/passwd &>/dev/null); then
 						dialog --ok-button "$ok" --msgbox "\n$user_err_msg1" 10 60
 					elif (<<<$user grep "^[0-9]\|[ABCDEFGHIJKLMNOPQRSTUVWXYZ\[\$\!\'\"\`\\|%&#@()_-+=<>~;:/?.,^{}]\|]" &> /dev/null); then
 						dialog --ok-button "$ok" --msgbox "\n$user_err_msg" 10 60
@@ -2144,9 +2144,8 @@ add_user() {
 				while (true)
 				  do
 					op_title="$user_op_msg1"
-					usr_shell=$(<"$ARCH"/etc/passwd grep "$user" | cut -d: -f7)
-					usr_groups=$(arch-chroot "$ARCH" groups "$user")
-					if (<"$ARCH"/etc/group grep "$user" | grep "wheel" &>/dev/null); then
+					usr_shell=$(grep -w "$user" "$ARCH"/etc/passwd | cut -d: -f7)
+					if (grep -w "$user" "$ARCH"/etc/group | grep "wheel" &>/dev/null); then
 						sudo="$yes"
 					else
 						sudo="$no"
