@@ -2099,10 +2099,10 @@ set_hostname() {
 
 add_user() {
 
-	op_title="$user_op_msg"
 	while (true)
 	  do
-		user=$(dialog --extra-button --extra-label "$edit" --ok-button "$new_user" --cancel-button "$done_msg" --menu "$user_menu_msg" 13 60 4 \
+		op_title="$user_op_msg"
+		user=$(dialog --extra-button --extra-label "$edit" --ok-button "$new_user" --cancel-button "$done_msg" --menu "$user_menu_msg" 13 55 4 \
 			$(for i in $(grep 100 "$ARCH"/etc/passwd | cut -d: -f1) ; do 
 				echo "$i $(grep "$i" "$ARCH"/etc/passwd | cut -d: -f7)"
 			done) \
@@ -2120,6 +2120,8 @@ add_user() {
 					
 					if [ -z "$user" ]; then
 						break
+					elif (grep "$user" "$ARCH"/etc/passwd &>/dev/null); then
+						dialog --ok-button "$ok" --msgbox "\n$user_err_msg1" 10 60
 					elif (<<<$user grep "^[0-9]\|[ABCDEFGHIJKLMNOPQRSTUVWXYZ\[\$\!\'\"\`\\|%&#@()_-+=<>~;:/?.,^{}]\|]" &> /dev/null); then
 						dialog --ok-button "$ok" --msgbox "\n$user_err_msg" 10 60
 					else
@@ -2141,6 +2143,7 @@ add_user() {
 			*)
 				while (true)
 				  do
+					op_title="$user_op_msg1"
 					usr_shell=$(<"$ARCH"/etc/passwd grep "$user" | cut -d: -f7)
 					usr_groups=$(arch-chroot "$ARCH" groups "$user")
 					if (<"$ARCH"/etc/group grep "$user" | grep "wheel" &>/dev/null); then
@@ -2149,18 +2152,25 @@ add_user() {
 						sudo="$no"
 					fi
 					source "$lang_file"
-					user_edit=$(dialog --ok-button "$select" --cancel-button "$done" --menu "$user_edit_var" 14 55 4 \
-						"$change_pass" "->" \
-						"$change_sh" "->" \
-						"$change_su" "->" \
-						"$del_user" "->" 3>&1 1>&2 2>&3)
+					
+					if [ "$user" == "root" ]; then
+						user_edit=$(dialog --ok-button "$select" --cancel-button "$done_msg" --menu "$user_edit_var" 12 55 2 \
+							"$change_pass" "->" \
+							"$change_sh" "->" 3>&1 1>&2 2>&3)
+					else
+						user_edit=$(dialog --ok-button "$select" --cancel-button "$done_msg" --menu "$user_edit_var" 14 55 4 \
+							"$change_pass" "->" \
+							"$change_sh" "->" \
+							"$change_su" "->" \
+							"$del_user" "->" 3>&1 1>&2 2>&3)
+					fi
 
 					case "$user_edit" in
 						"$change_pass")
 							set_password
 						;;
 						"$change_sh")
-							chsh=$(dialog --ok-button "$select" --cancel-button "$Done" --menu "$user_shell_var" 10 45 3 \
+							chsh=$(dialog --ok-button "$select" --cancel-button "$Done" --menu "$user_shell_var" 12 55 3 \
 								$(for i in $(arch-chroot "$ARCH" chsh -l | sed 's!.*/!!' | uniq) ; do
 									echo "$i ->"
 								done) 3>&1 1>&2 2>&3)
@@ -2169,19 +2179,20 @@ add_user() {
 							fi
 						;;
 						"$change_su")
-							if (<"$ARCH"/etc/group grep "$user" | grep "wheel" &>/dev/null); then
-								if (dialog --defaultno --yes-button "$yes" --no-button "$no" --yesno "\n$sudo_var" 10 60) then
-									arch-chroot "$ARCH" deluser "$user" wheel &>/dev/null
+							if [ "$sudo" == "$yes" ]; then
+								if (dialog --defaultno --yes-button "$yes" --no-button "$no" --yesno "\n$sudo_var1" 10 60) then
+									arch-chroot "$ARCH" gpasswd -d "$user" wheel &>/dev/null
 								fi
 							else
-								if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$sudo_var1" 10 60) then
+								if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$sudo_var" 10 60) then
 									arch-chroot "$ARCH" usermod -a -G wheel "$user" &>/dev/null
 								fi
 							fi
 						;;
 						"$del_user")
 							if (dialog --defaultno --yes-button "$yes" --no-button "$no" --yesno "\n$deluser_var" 10 60) then
-								deluser --remove-home "$user" &>/dev/null
+								arch-chroot "$ARCH" userdel --remove "$user" &>/dev/null
+								break
 							fi
 						;;
 						*)
