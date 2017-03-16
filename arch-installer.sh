@@ -1895,10 +1895,41 @@ install_software() {
 					else
 						download=$(echo "$final_software" | sed 's/\"//g' | tr ' ' '\n' | nl | sort -u -k2 | sort -n | cut -f2- | sed 's/$/ /g' | tr -d '\n')
 						download_list=$(echo "$download" |  sed -e 's/^[ \t]*//')
-						echo "$(date -u "+%F %H:%M") : Add software list: $download" >> "$log"
-						base_install+=" $download_list"
-						unset final_software
-						break
+
+						if ! "$menu_enter" ; then
+							echo "$(date -u "+%F %H:%M") : Add software list: $download" >> "$log"
+							base_install+=" $download_list"
+							unset final_software
+							break
+						else
+							pacman -Sy --print-format='%s' $(echo "$download") | awk '{s+=$1} END {print s/1024/1024}' >/tmp/size &
+							pid=$! pri=0.1 msg="$wait_load \n\n \Z1> \Z2pacman -S --print-format\Zn" load
+							download_size=$(</tmp/size) ; rm /tmp/size
+							export software_size=$(echo "$download_size Mib")
+							export software_int=$(echo "$download" | wc -w)
+							cal_rate
+
+							if [ "$software_int" -lt "20" ]; then
+								height=17
+							else
+								height=20
+							fi
+						
+							if (dialog --yes-button "$install" --no-button "$cancel" --yesno "\n$software_confirm_var1" "$height" 65) then
+								tmpfile=$(mktemp)
+								arch-chroot "$ARCH" pacman --noconfirm -Sy $(echo "$download") &> "$tmpfile" &
+								pid=$! pri=$(<<<"$down" sed 's/\..*$//') msg="\n$software_load_var" load_log
+								echo "$(date -u "+%F %H:%M") : Finished installing software" >> "$log"
+								<"$tmpfile" >> "$log"
+								rm "$tmpfile"
+								unset final_software
+								break
+							else
+								unset final_software
+								add_soft=false
+							fi
+						fi
+						
 					fi
 				;;
 			esac
