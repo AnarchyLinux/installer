@@ -2475,169 +2475,6 @@ set_hostname() {
 
 add_user() {
 
-	while (true)
-	  do
-		op_title="$user_op_msg"
-		user=$(dialog --extra-button --extra-label "$edit" --ok-button "$new_user" --cancel-button "$done_msg" --menu "$user_menu_msg" 13 55 4 \
-			$(for i in $(grep "100" "$ARCH"/etc/passwd | cut -d: -f1) ; do 
-				echo "$i $(grep -w "$i" "$ARCH"/etc/passwd | cut -d: -f7)"
-			done) \
-			"root" "$(grep -w "root" "$ARCH"/etc/passwd | cut -d: -f7)" 3>&1 1>&2 2>&3)
-
-		case "$?" in
-			1)
-				break
-			;;
-			0)
-				unset user
-				while (true)
-				  do
-					user=$(dialog --inputbox "\n$user_msg1" 12 55 "" 3>&1 1>&2 2>&3 | sed 's/ //g')
-					
-					if [ -z "$user" ]; then
-						break
-					elif (grep -w "$user" "$ARCH"/etc/passwd &>/dev/null); then
-						dialog --ok-button "$ok" --msgbox "\n$user_err_msg1" 10 60
-					elif (<<<$user grep "^[0-9]\|[ABCDEFGHIJKLMNOPQRSTUVWXYZ\[\$\!\'\"\`\\|%&#@()_-+=<>~;:/?.,^{}]\|]" &> /dev/null); then
-						dialog --ok-button "$ok" --msgbox "\n$user_err_msg" 10 60
-					else
-						arch-chroot "$ARCH" useradd -m -g users -G audio,network,power,storage,optical -s "$sh" "$user" &>/dev/null &
-						pid=$! pri=0.1 msg="$wait_load \n\n \Z1> \Z2useradd -m -g users -G ... -s $sh $user\Zn" load
-						echo "$(date -u "+%F %H:%M") : Added user: $user" >> "$log"
-						set_password
-
-						if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$sudo_var" 10 60) then
-							(sed -i '/%wheel ALL=(ALL) ALL/s/^#//' $ARCH/etc/sudoers
-							arch-chroot "$ARCH" usermod -a -G wheel "$user") &> /dev/null &
-							pid=$! pri=0.1 msg="$wait_load \n\n \Z1> \Z2usermod -a -G wheel $user\Zn" load
-							echo "$(date -u "+%F %H:%M") : Sudo enabled for: $user" >> "$log"
-						fi
-						break
-					fi
-				done
-			;;
-			*)
-				while (true)
-				  do
-					op_title="$user_op_msg1"
-					usr_shell=$(grep -w "$user" "$ARCH"/etc/passwd | cut -d: -f7)
-					if (grep -w "$user" "$ARCH"/etc/group | grep "wheel" &>/dev/null); then
-						sudo="$yes"
-					else
-						sudo="$no"
-					fi
-					source "$lang_file"
-					
-					if [ "$user" == "root" ]; then
-						user_edit=$(dialog --ok-button "$select" --cancel-button "$done_msg" --menu "$user_edit_var" 12 55 2 \
-							"$change_pass" "->" \
-							"$change_sh" "->" 3>&1 1>&2 2>&3)
-					else
-						user_edit=$(dialog --ok-button "$select" --cancel-button "$done_msg" --menu "$user_edit_var" 14 55 4 \
-							"$change_pass" "->" \
-							"$change_sh" "->" \
-							"$change_su" "->" \
-							"$del_user" "->" 3>&1 1>&2 2>&3)
-					fi
-
-					case "$user_edit" in
-						"$change_pass")
-							set_password
-						;;
-						"$change_sh")
-							chsh=$(dialog --ok-button "$select" --cancel-button "$cancel" --menu "$user_shell_var" 12 55 3 \
-								$(for i in $(arch-chroot "$ARCH" chsh -l | sed 's!.*/!!' | uniq) ; do
-									echo "$i ->"
-								done) 3>&1 1>&2 2>&3)
-							if [ "$?" -eq "0" ]; then
-								case "$chsh" in
-									"sh"|"bash")
-										arch-chroot "$ARCH" chsh "$user" -s /bin/"$chsh" &>/dev/null
-									;;
-									*)	
-										arch-chroot "$ARCH" chsh "$user" -s /usr/bin/"$chsh" &>/dev/null
-									;;
-								esac
-							fi
-						;;
-						"$change_su")
-							if [ "$sudo" == "$yes" ]; then
-								if (dialog --defaultno --yes-button "$yes" --no-button "$no" --yesno "\n$sudo_var1" 10 60) then
-									arch-chroot "$ARCH" gpasswd -d "$user" wheel &>/dev/null
-								fi
-							else
-								if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$sudo_var" 10 60) then
-									arch-chroot "$ARCH" usermod -a -G wheel "$user" &>/dev/null
-								fi
-							fi
-						;;
-						"$del_user")
-							if (dialog --defaultno --yes-button "$yes" --no-button "$no" --yesno "\n$deluser_var" 10 60) then
-								arch-chroot "$ARCH" userdel --remove "$user" &>/dev/null
-								break
-							fi
-						;;
-						*)
-							break
-						;;
-					esac
-				done
-			;;
-		esac
-	done
-
-	if "$menu_enter" ; then
-		reboot_system
-	else	
-		install_software
-	fi
-
-}
-
-set_password() {
-
-	source "$lang_file"
-	op_title="$passwd_op_msg"
-	while [ "$input" != "$input_chk" ]
-	  do
-		input=$(dialog --nocancel --clear --insecure --passwordbox "$user_var0" 11 55 --stdout)
-	    	input_chk=$(dialog --nocancel --clear --insecure --passwordbox "$user_var1" 11 55 --stdout)
-		 
-		if [ -z "$input" ]; then
-			dialog --ok-button "$ok" --msgbox "\n$passwd_msg0" 10 55
-			input_chk=default
-		elif [ "$input" != "$input_chk" ]; then
-			dialog --ok-button "$ok" --msgbox "\n$passwd_msg1" 10 55
-		fi
-	done
-
-	echo "$(date -u "+%F %H:%M") : Configured: $env" >> "$log"
-	arch-chroot "$ARCH" fc-cache -f
-
-}
-
-set_hostname() {
-
-	op_title="$host_op_msg"
-	hostname=$(dialog --ok-button "$ok" --nocancel --inputbox "\n$host_msg" 12 55 "arch-anywhere" 3>&1 1>&2 2>&3 | sed 's/ //g')
-	
-	if (<<<$hostname grep "^[0-9]\|[\[\$\!\'\"\`\\|%&#@()+=<>~;:/?.,^{}]\|]" &> /dev/null); then
-		dialog --ok-button "$ok" --msgbox "\n$host_err_msg" 10 60
-		set_hostname
-	fi
-	
-	echo "$hostname" > "$ARCH"/etc/hostname
-	arch-chroot "$ARCH" chsh -s "$sh" &>/dev/null
-	echo "$(date -u "+%F %H:%M") : Hostname set: $hostname" >> "$log"
-	user=root
-	op_title="$passwd_op_msg"
-	set_password
-	add_user
-
-}
-
-add_user() {
-
 	while (true)	# Begin user menu while loop
 	  do
 		op_title="$user_op_msg"
@@ -2714,12 +2551,19 @@ add_user() {
 							set_password
 						;;
 						"$change_sh")
-							chsh=$(dialog --ok-button "$select" --cancel-button "$cancel" --menu "$user_shell_var" 12 55 3 \
+							user_sh=$(dialog --ok-button "$select" --cancel-button "$cancel" --menu "$user_shell_var" 12 55 3 \
 								$(for i in $(arch-chroot "$ARCH" chsh -l | sed 's!.*/!!' | uniq) ; do
 									echo "$i ->"
 								done) 3>&1 1>&2 2>&3)
 							if [ "$?" -eq "0" ]; then
-								arch-chroot "$ARCH" chsh "$user" -s /usr/bin/"$chsh" &>/dev/null
+								case "$user_sh" in
+									"sh"|"bash")
+										arch-chroot "$ARCH" chsh "$user" -s /bin/"$user_sh" &>/dev/null
+									;;
+									*)	
+										arch-chroot "$ARCH" chsh "$user" -s /usr/bin/"$user_sh" &>/dev/null
+									;;
+								esac
 							fi
 						;;
 						"$change_su")
