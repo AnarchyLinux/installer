@@ -401,9 +401,11 @@ add_software() {
 				"$system")
 					software=$(dialog --ok-button "$ok" --cancel-button "$cancel" --checklist "$software_msg1" 20 65 10 \
 						"apache"		"$sys1" OFF \
+						"bc"			"$sys25" OFF \
 						"bleachbit"		"$sys22" OFF \
 						"conky"			"$sys2" OFF \
 						"dmenu"			"$sys19" OFF \
+						"galculator"	"$sys24" OFF \
 						"git"			"$sys3" OFF \
 						"gparted"		"$sys4" OFF \
 						"gpm"			"$sys5" OFF \
@@ -415,11 +417,11 @@ add_software() {
 						"pcmanfm"		"$sys21" OFF \
 						"ranger"		"$sys20" OFF \
 						"screen"		"$sys11" OFF \
-						"screenfetch"		"$sys12" ON \
+						"screenfetch"	"$sys12" ON \
 						"scrot"			"$sys13" OFF \
 						"tmux"			"$sys14" OFF \
 						"tuxcmd"		"$sys15" OFF \
-						"virtualbox"		"$sys16" OFF \
+						"virtualbox"	"$sys16" OFF \
 						"ufw"			"$sys17" ON \
 						"wget"			"$sys18" ON \
 						"xfe"			"$sys23" OFF 3>&1 1>&2 2>&3)

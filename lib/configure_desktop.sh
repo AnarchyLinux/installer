@@ -63,27 +63,27 @@ graphics() {
 				start_term="exec startxfce4"
 		;;
 		"AA-Openbox")	env="$DE"
-				DE="openbox thunar thunar-volman xfce4-terminal xfce4-panel xfce4-whiskermenu-plugin xcompmgr transset-df obconf lxappearance-obconf wmctrl gxmessage xfce4-pulseaudio-plugin xfdesktop xdotool htop lynx xscreensaver"
-				start_term="exec openbox-session"
+						DE="openbox thunar thunar-volman xfce4-terminal xfce4-panel xfce4-whiskermenu-plugin xcompmgr transset-df obconf lxappearance-obconf wmctrl gxmessage xfce4-pulseaudio-plugin xfdesktop xdotool htop lynx xscreensaver"
+						start_term="exec openbox-session"
 		;;
 		"xfce4") 	if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$extra_msg0" 10 60) then
-					DE="xfce4 xfce4-goodies"
-				fi
-				start_term="exec startxfce4"
+						DE="xfce4 xfce4-goodies"
+					fi
+					start_term="exec startxfce4"
 		;;
 		"budgie")	if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$extra_msg6" 10 60) then
-					DE="budgie-desktop gnome"
-				else
-					DE="budgie-desktop"
-				fi
-				start_term="export XDG_CURRENT_DESKTOP=Budgie:GNOME ; exec budgie-desktop"
+						DE="budgie-desktop gnome"
+					else
+						DE="budgie-desktop"
+					fi
+					start_term="export XDG_CURRENT_DESKTOP=Budgie:GNOME ; exec budgie-desktop"
 		;;
 		"gnome")	if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$extra_msg1" 10 60) then
-					DE="gnome gnome-extra"
-				fi
-				 start_term="exec gnome-session"
+						DE="gnome gnome-extra"
+					fi
+					 start_term="exec gnome-session"
 		;;
-		"mate")		if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$gtk3_var" 10 60) then
+		"mate")	if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$gtk3_var" 10 60) then
 					if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$extra_msg2" 10 60) then
 						DE="mate-gtk3 mate-extra-gtk3 gtk3-print-backends"
 					else
@@ -97,38 +97,38 @@ graphics() {
 						DE="mate gtk-engine-murrine"
 					fi
 				fi
-				 start_term="exec mate-session"
+				start_term="exec mate-session"
 		;;
 		"KDE plasma")	if (dialog --defaultno --yes-button "$yes" --no-button "$no" --yesno "\n$extra_msg3" 10 60) then
-					DE="plasma-desktop sddm konsole dolphin plasma-nm plasma-pa libxshmfence kscreen"
+							DE="plasma-desktop sddm konsole dolphin plasma-nm plasma-pa libxshmfence kscreen"
 
-					if "$LAPTOP" ; then
-						DE+=" powerdevil"
-					fi
-				else
-					DE="plasma kde-applications"
-				fi
+							if "$LAPTOP" ; then
+								DE+=" powerdevil"
+							fi
+						else
+							DE="plasma kde-applications"
+						fi
 
-				if [ -n "$kdel" ]; then
-					DE+=" kde-l10n-$kdel"
-				fi
+						if [ -n "$kdel" ]; then
+							DE+=" kde-l10n-$kdel"
+						fi
 
-				DM="sddm"
-				enable_dm=true
-				start_term="exec startkde"
+						DM="sddm"
+						enable_dm=true
+						start_term="exec startkde"
 		;;
 		"deepin")	if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$extra_msg4" 10 60) then
-					DE="deepin deepin-extra"
-				fi
- 				start_term="exec startdde"
+						DE="deepin deepin-extra"
+					fi
+ 					start_term="exec startdde"
  		;;
  		"xmonad")	if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$extra_msg5" 10 60) then
-                        		DE="xmonad xmonad-contrib"
-                    		fi
-                    		start_term="exec xmonad"
+                   		DE="xmonad xmonad-contrib"
+                    fi
+                    start_term="exec xmonad"
 		;;
 		"cinnamon")	DE+=" gnome-terminal file-roller p7zip zip unrar"
-				start_term="exec cinnamon-session"
+					start_term="exec cinnamon-session"
 		;;
 		"lxde") if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$gtk3_var" 10 60) then
 				DE="lxde-gtk3"
@@ -137,13 +137,13 @@ graphics() {
 			start_term="exec startlxde"
 		;;
 		"lxqt") start_term="exec startlxqt"
-			DE="lxqt oxygen-icons breeze-icons"
+				DE="lxqt oxygen-icons breeze-icons"
 		;;
 		"enlightenment") 	start_term="exec enlightenment_start"
-					DE="enlightenment terminology"
+							DE="enlightenment terminology"
 		;;
 		"bspwm")	start_term="sxhkd & ; exec bspwm"
-				DE="bspwm sxhkd"
+					DE="bspwm sxhkd"
 		;;
 		"fluxbox")	start_term="exec startfluxbox"
 		;;
