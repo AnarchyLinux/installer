@@ -26,26 +26,27 @@ graphics() {
 
 	while (true)
 	  do
-		DE=$(dialog --ok-button "$ok" --cancel-button "$cancel" --menu "$environment_msg" 18 60 11 \
-			"AA-Xfce"	"$de15" \
-			"AA-Openbox"	"$de18" \
-			"budgie"	"$de17" \
-			"cinnamon"      "$de5" \
-			"deepin"	"$de14" \
-			"gnome"         "$de4" \
-			"KDE plasma"    "$de6" \
-			"lxde"          "$de2" \
-			"lxqt"          "$de3" \
-			"mate"          "$de1" \
-			"xfce4"         "$de0" \
-			"awesome"       "$de9" \
-			"bspwm"		"$de13" \
-			"dwm"           "$de12" \
-			"enlightenment" "$de7" \
-			"fluxbox"       "$de11" \
-			"i3"            "$de10" \
-			"openbox"       "$de8" \
-			"xmonad"	"$de16"  3>&1 1>&2 2>&3)
+		DE=$(dialog --ok-button "$ok" --cancel-button "$cancel" --menu "$environment_msg" 22 60 15 \
+			"AA-Xfce"			"$de15" \
+			"AA-Openbox"		"$de18" \
+			"budgie"			"$de17" \
+			"cinnamon"      	"$de5" \
+			"deepin"			"$de14" \
+			"gnome"         	"$de4" \
+			"gnome-flashback"	"$de19" \
+			"KDE plasma"    	"$de6" \
+			"lxde"          	"$de2" \
+			"lxqt"          	"$de3" \
+			"mate"          	"$de1" \
+			"xfce4"         	"$de0" \
+			"awesome"       	"$de9" \
+			"bspwm"				"$de13" \
+			"dwm"           	"$de12" \
+			"enlightenment" 	"$de7" \
+			"fluxbox"       	"$de11" \
+			"i3"            	"$de10" \
+			"openbox"       	"$de8" \
+			"xmonad"			"$de16"  3>&1 1>&2 2>&3)
 		if [ "$?" -gt "0" ]; then
 			if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$desktop_cancel_msg" 10 60) then
 				return
@@ -82,6 +83,11 @@ graphics() {
 						DE="gnome gnome-extra"
 					fi
 					 start_term="exec gnome-session"
+		;;
+		"gnome-flashback")	if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$extra_msg1" 10 60) then
+								DE+=" gnome-backgrounds gnome-control-center gnome-screensaver gnome-applets sensors-applet"
+							fi
+							start_term="export XDG_CURRENT_DESKTOP=GNOME-Flashback:GNOME ; exec gnome-session --session=gnome-flashback-metacity"
 		;;
 		"mate")	if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$gtk3_var" 10 60) then
 					if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$extra_msg2" 10 60) then
