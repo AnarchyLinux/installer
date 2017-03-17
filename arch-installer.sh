@@ -49,7 +49,6 @@ init() {
 	source "$aa_conf"
 	language
 	source "$lang_file"
-	export log=/tmp/arch-anywhere.log
 	export reload=true
 
 }
