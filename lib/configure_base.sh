@@ -1,4 +1,19 @@
 #!/bin/bash
+###############################################################
+### Arch Linux Anywhere Install Script
+### configure_base.sh
+###
+### Copyright (C) 2017 Dylan Schacht
+###
+### By: Dylan Schacht (deadhead)
+### Email: deadhead3492@gmail.com
+### Webpage: http://arch-anywhere.org
+###
+### Any questions, comments, or bug reports may be sent to above
+### email address. Enjoy, and keep on using Arch.
+###
+### License: GPL v2.0
+###############################################################
 
 prepare_base() {
 
