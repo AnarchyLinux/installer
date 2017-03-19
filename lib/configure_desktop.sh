@@ -94,7 +94,6 @@ graphics() {
 					else
 						DE="mate gtk-engine-murrine"
 					fi
-				GTK3=false
 				start_term="exec mate-session"
 		;;
 		"KDE plasma")	if (dialog --defaultno --yes-button "$yes" --no-button "$no" --yesno "\n$extra_msg3" 10 60) then
