@@ -89,15 +89,7 @@ graphics() {
 							fi
 							start_term="export XDG_CURRENT_DESKTOP=GNOME-Flashback:GNOME ; exec gnome-session --session=gnome-flashback-metacity"
 		;;
-		"mate")	if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$gtk3_var" 10 60) then
-					if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$extra_msg2" 10 60) then
-						DE="mate-gtk3 mate-extra-gtk3 gtk3-print-backends"
-					else
-						DE="mate-gtk3"
-					fi
-					GTK3=true
-				else
-					if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$extra_msg2" 10 60) then
+		"mate")	if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$extra_msg2" 10 60) then
 						DE="mate mate-extra gtk-engine-murrine"
 					else
 						DE="mate gtk-engine-murrine"
