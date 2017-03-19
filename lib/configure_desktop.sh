@@ -348,7 +348,6 @@ config_env() {
 				cp -r "$aa_dir/extra/desktop/xfce4/$file" "$ARCH"/root/
 				cp -r "$aa_dir/extra/desktop/xfce4/$file" "$ARCH"/etc/skel/
 			done
-			cp -r "$aa_dir"/extra/desktop/AshOS-Dark-2.0 "$ARCH"/usr/share/themes/
 			cp -r "$aa_dir"/extra/desktop/arch-anywhere-wallpaper.png "$ARCH"/usr/share/backgrounds/xfce/
 			cp "$ARCH"/usr/share/backgrounds/xfce/arch-anywhere-wallpaper.png "$ARCH"/usr/share/backgrounds/xfce/xfce-teal.jpg
 		;;
