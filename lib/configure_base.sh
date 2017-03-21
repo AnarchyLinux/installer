@@ -460,12 +460,9 @@ add_software() {
 							fi
 
 							if (dialog --yes-button "$install" --no-button "$cancel" --yesno "\n$software_confirm_var1" "$height" 65) then
-								tmpfile=$(mktemp)
-								arch-chroot "$ARCH" pacman --noconfirm -Sy $(echo "$download") &> "$tmpfile" &
+								arch-chroot "$ARCH" pacman --noconfirm -Sy $(echo "$download") &>>"$log" &
 								pid=$! pri=$(<<<"$down" sed 's/\..*$//') msg="\n$software_load_var" load_log
 								echo "$(date -u "+%F %H:%M") : Finished installing software" >> "$log"
-								<"$tmpfile" >> "$log"
-								rm "$tmpfile"
 								unset final_software
 								break
 							else
