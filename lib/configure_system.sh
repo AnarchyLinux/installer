@@ -151,7 +151,7 @@ configure_system() {
 		esac
 	fi
 
-	if [ ! -z "$env" ]; then
+	if [ ! -z "$config_env" ]; then
 		config_env &
 		pid=$! pri="0.1" msg="$wait_load \n\n \Z1> \Z2arch-anywhere config_env\Zn" load
 	fi

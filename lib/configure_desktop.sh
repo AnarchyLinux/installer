@@ -26,26 +26,26 @@ graphics() {
 
 	while (true)
 	  do
-		DE=$(dialog --ok-button "$ok" --cancel-button "$cancel" --menu "$environment_msg" 22 60 15 \
-			"AA-Xfce"			"$de15" \
-			"AA-Openbox"		"$de18" \
-			"budgie"			"$de17" \
-			"cinnamon"      	"$de5" \
-			"deepin"			"$de14" \
-			"gnome"         	"$de4" \
-			"gnome-flashback"	"$de19" \
-			"KDE plasma"    	"$de6" \
-			"lxde"          	"$de2" \
-			"lxqt"          	"$de3" \
-			"mate"          	"$de1" \
-			"xfce4"         	"$de0" \
-			"awesome"       	"$de9" \
-			"bspwm"				"$de13" \
-			"dwm"           	"$de12" \
-			"enlightenment" 	"$de7" \
-			"fluxbox"       	"$de11" \
-			"i3"            	"$de10" \
-			"openbox"       	"$de8" \
+		desktop=$(dialog --ok-button "$done_msg" --cancel-button "$cancel" --checklist "$environment_msg" 24 60 15 \
+			"AA-Xfce"			"$de15" OFF \
+			"AA-Openbox"		"$de18" OFF \
+			"budgie"			"$de17" OFF \
+			"cinnamon"      	"$de5" OFF \
+			"deepin"			"$de14" OFF \
+			"gnome"         	"$de4" OFF \
+			"gnome-flashback"	"$de19" OFF \
+			"KDE plasma"    	"$de6" OFF \
+			"lxde"          	"$de2" OFF \
+			"lxqt"          	"$de3" OFF \
+			"mate"          	"$de1" OFF \
+			"xfce4"         	"$de0" OFF \
+			"awesome"       	"$de9" OFF \
+			"bspwm"				"$de13" OFF \
+			"dwm"           	"$de12" OFF \
+			"enlightenment" 	"$de7" OFF \
+			"fluxbox"       	"$de11" OFF \
+			"i3"            	"$de10" OFF \
+			"openbox"       	"$de8" OFF \
 			"xmonad"			"$de16"  3>&1 1>&2 2>&3)
 		if [ "$?" -gt "0" ]; then
 			if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$desktop_cancel_msg" 10 60) then
@@ -54,105 +54,125 @@ graphics() {
 		else
 			break
 		fi
+
+		if [ -z "$desktop" ]; then
+			if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$desktop_cancel_msg" 10 60) then
+				return
+			else
+				break
+			fi
+		fi
 	done
 
 	source "$lang_file"
 
-	case "$DE" in
-		"AA-Xfce") 	env="$DE"
-				DE="xfce4 xfce4-goodies gvfs zsh zsh-syntax-highlighting htop lynx xscreensaver"
-				start_term="exec startxfce4"
-		;;
-		"AA-Openbox")	env="$DE"
-						DE="openbox thunar thunar-volman xfce4-terminal xfce4-panel xfce4-whiskermenu-plugin xcompmgr transset-df obconf lxappearance-obconf wmctrl gxmessage xfce4-pulseaudio-plugin xfdesktop xdotool htop lynx xscreensaver"
-						start_term="exec openbox-session"
-		;;
-		"xfce4") 	if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$extra_msg0" 10 60) then
-						DE="xfce4 xfce4-goodies"
-					fi
+	for env in $(echo "$desktop")
+	  do
+		case "$env" in
+			"AA-Xfce") 	config_env="$DE"
+					DE+="xfce4 xfce4-goodies gvfs zsh zsh-syntax-highlighting htop lynx xscreensaver "
 					start_term="exec startxfce4"
-		;;
-		"budgie")	if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$extra_msg6" 10 60) then
-						DE="budgie-desktop gnome"
-					else
-						DE="budgie-desktop"
-					fi
-					start_term="export XDG_CURRENT_DESKTOP=Budgie:GNOME ; exec budgie-desktop"
-		;;
-		"gnome")	if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$extra_msg1" 10 60) then
-						DE="gnome gnome-extra"
-					fi
-					 start_term="exec gnome-session"
-		;;
-		"gnome-flashback")	if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$extra_msg1" 10 60) then
-								DE+=" gnome-backgrounds gnome-control-center gnome-screensaver gnome-applets sensors-applet"
-							fi
-							start_term="export XDG_CURRENT_DESKTOP=GNOME-Flashback:GNOME ; exec gnome-session --session=gnome-flashback-metacity"
-		;;
-		"mate")	if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$extra_msg2" 10 60) then
-						DE="mate mate-extra gtk-engine-murrine"
-					else
-						DE="mate gtk-engine-murrine"
-					fi
-				start_term="exec mate-session"
-		;;
-		"KDE plasma")	if (dialog --defaultno --yes-button "$yes" --no-button "$no" --yesno "\n$extra_msg3" 10 60) then
-							DE="plasma-desktop sddm konsole dolphin plasma-nm plasma-pa libxshmfence kscreen"
-
-							if "$LAPTOP" ; then
-								DE+=" powerdevil"
-							fi
-						else
-							DE="plasma kde-applications"
+			;;
+			"AA-Openbox")	config_env="$DE"
+							DE+="openbox thunar thunar-volman xfce4-terminal xfce4-panel xfce4-whiskermenu-plugin xcompmgr transset-df obconf lxappearance-obconf wmctrl gxmessage xfce4-pulseaudio-plugin xfdesktop xdotool htop lynx xscreensaver "
+							start_term="exec openbox-session"
+			;;
+			"xfce4") 	DE+="xfce4 "
+						if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$extra_msg0" 10 60) then
+							DE+="xfce4-goodies "
 						fi
-
-						if [ -n "$kdel" ]; then
-							DE+=" kde-l10n-$kdel"
+						start_term="exec startxfce4"
+			;;
+			"budgie")	DE+="budgie-desktop "
+						if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$extra_msg6" 10 60) then
+							DE+="gnome "
 						fi
-
-						DM="sddm"
-						enable_dm=true
-						start_term="exec startkde"
-		;;
-		"deepin")	if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$extra_msg4" 10 60) then
-						DE="deepin deepin-extra"
+						start_term="export XDG_CURRENT_DESKTOP=Budgie:GNOME ; exec budgie-desktop"
+			;;
+			"gnome")	DE+="gnome "
+						if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$extra_msg1" 10 60) then
+							DE+="gnome-extra "
+						fi
+						 start_term="exec gnome-session"
+			;;
+			"gnome-flashback")	DE+="gnome-flashback "
+								if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$extra_msg1" 10 60) then
+									DE+="gnome-backgrounds gnome-control-center gnome-screensaver gnome-applets sensors-applet "
+								fi
+								start_term="export XDG_CURRENT_DESKTOP=GNOME-Flashback:GNOME ; exec gnome-session --session=gnome-flashback-metacity"
+			;;
+			"mate")	if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$extra_msg2" 10 60) then
+						DE+="mate mate-extra gtk-engine-murrine "
+					else
+						DE+="mate gtk-engine-murrine "
 					fi
- 					start_term="exec startdde"
- 		;;
- 		"xmonad")	if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$extra_msg5" 10 60) then
-                   		DE="xmonad xmonad-contrib"
-                    fi
-                    start_term="exec xmonad"
-		;;
-		"cinnamon")	DE+=" gnome-terminal file-roller p7zip zip unrar"
-					start_term="exec cinnamon-session"
-		;;
-		"lxde") if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$gtk3_var" 10 60) then
-				DE="lxde-gtk3"
-				GTK3=true
-			fi
-			start_term="exec startlxde"
-		;;
-		"lxqt") start_term="exec startlxqt"
-				DE="lxqt oxygen-icons breeze-icons"
-		;;
-		"enlightenment") 	start_term="exec enlightenment_start"
-							DE="enlightenment terminology"
-		;;
-		"bspwm")	start_term="sxhkd & ; exec bspwm"
-					DE="bspwm sxhkd"
-		;;
-		"fluxbox")	start_term="exec startfluxbox"
-		;;
-		"openbox")	start_term="exec openbox-session"
-		;;
-		"awesome") 	start_term="exec awesome"
-		;;
-		"dwm") 		start_term="exec dwm"
-		;;
-		"i3") 		start_term="exec i3"
-		;;
-	esac
+					start_term="exec mate-session"
+			;;
+			"KDE plasma")	if (dialog --defaultno --yes-button "$yes" --no-button "$no" --yesno "\n$extra_msg3" 10 60) then
+								DE+="plasma-desktop sddm konsole dolphin plasma-nm plasma-pa libxshmfence kscreen "
+    
+								if "$LAPTOP" ; then
+									DE+="powerdevil "
+								fi
+							else
+								DE+="plasma kde-applications "
+							fi
+    
+							if [ -n "$kdel" ]; then
+								DE+=" kde-l10n-$kdel"
+							fi
+    
+							start_term="exec startkde"
+			;;
+			"deepin")	DE+="deepin "
+						if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$extra_msg4" 10 60) then
+							DE+="deepin-extra "
+						fi
+ 	 					start_term="exec startdde"
+ 	 		;;
+ 	 		"xmonad")	DE+="xmonad "
+ 	 					if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$extra_msg5" 10 60) then
+                       		DE="xmonad-contrib "
+                        fi
+                        start_term="exec xmonad"
+			;;
+			"cinnamon")	DE+="cinnamon gnome-terminal file-roller p7zip zip unrar "
+						start_term="exec cinnamon-session"
+			;;
+			"lxde") if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$gtk3_var" 10 60) then
+						DE=+"lxde-gtk3 "
+						GTK3=true
+					else
+						DE+="lxde "
+					fi
+					start_term="exec startlxde"
+			;;
+			"lxqt") start_term="exec startlxqt"
+					DE+="lxqt oxygen-icons breeze-icons "
+			;;
+			"enlightenment") 	start_term="exec enlightenment_start"
+								DE+="enlightenment terminology "
+			;;
+			"bspwm")	start_term="sxhkd & ; exec bspwm"
+						DE+="bspwm sxhkd "
+			;;
+			"fluxbox")	start_term="exec startfluxbox"
+						DE+="fluxbox "
+			;;
+			"openbox")	start_term="exec openbox-session"
+						DE+="openbox "
+			;;
+			"awesome") 	start_term="exec awesome"
+						DE+="awesome "
+			;;
+			"dwm") 		start_term="exec dwm"
+						DE+="dwm "
+			;;
+			"i3") 		start_term="exec i3"
+						DE+="i3 "
+			;;
+		esac
+	done
 
 	while (true)
 	  do
@@ -161,9 +181,9 @@ graphics() {
 	  			vbox)	dialog --ok-button "$ok" --msgbox "\n$vbox_msg" 10 60
 						GPU="virtualbox-guest-utils"
 						if [ "$kernel" == "linux" ]; then
-							GPU+=" virtualbox-guest-modules-arch"
+							GPU+="virtualbox-guest-modules-arch "
 						else
-							GPU+=" virtualbox-guest-dkms"
+							GPU+="virtualbox-guest-dkms "
 						fi
 	  			;;
 	  			vmware)	dialog --ok-button "$ok" --msgbox "\n$vmware_msg" 10 60
@@ -219,7 +239,7 @@ graphics() {
         			    	else
         			    		GPU="nvidia-340xx"
         			    	fi
-        			    	GPU+=" nvidia-340xx-libgl nvidia-340xx-utils"
+        			    	GPU+="nvidia-340xx-libgl nvidia-340xx-utils "
         			    	break
         			    fi
 					elif (<"$aa_dir"/etc/nvidia304.xx grep "$pci_id" &>/dev/null); then
@@ -229,7 +249,7 @@ graphics() {
            					else
            						GPU="nvidia-304xx"
            					fi
-           					GPU+=" nvidia-304xx-libgl nvidia-304xx-utils"
+           					GPU+="nvidia-304xx-libgl nvidia-304xx-utils "
            					break
 			        	fi
 			        else
@@ -243,7 +263,7 @@ graphics() {
 							if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$nvidia_modeset_msg" 10 60) then
 								drm=true
 							fi
-							GPU+=" nvidia-libgl nvidia-utils"
+							GPU+="nvidia-libgl nvidia-utils "
             				break
             			fi
 			        fi
@@ -255,14 +275,14 @@ graphics() {
 					if [ "$kernel" == "lts" ]; then
 						GPU="nvidia-lts nvidia-libgl nvidia-utils"
 					else
-						GPU+=" ${GPU}-libgl ${GPU}-utils"
+						GPU+="${GPU}-libgl ${GPU}-utils "
 					fi
 					break
 				else
 					if [ "$kernel" == "lts" ]; then
 						GPU="${GPU}-lts ${GPU}-libgl ${GPU}-utils"
 					else
-						GPU+=" ${GPU}-libgl ${GPU}-utils"
+						GPU+="${GPU}-libgl ${GPU}-utils "
 					fi
 					break
 				fi
@@ -271,58 +291,56 @@ graphics() {
 			GPU="$default_GPU mesa-libgl"
 			break
 		else
-			GPU+=" mesa-libgl"
+			GPU+="mesa-libgl "
 			break
 		fi
 	done
 
-	DE="$DE xdg-user-dirs xorg-server xorg-server-utils xorg-xinit xterm arc-icon-theme arc-gtk-theme elementary-icon-theme ttf-dejavu gvfs pulseaudio pavucontrol pulseaudio-alsa alsa-utils unzip screenfetch $GPU"
-
+	DE+="xdg-user-dirs xorg-server xorg-server-utils xorg-xinit xterm arc-icon-theme arc-gtk-theme elementary-icon-theme ttf-dejavu gvfs pulseaudio pavucontrol pulseaudio-alsa alsa-utils unzip screenfetch $GPU "
+	
 	if [ "$net_util" == "networkmanager" ] ; then
 		if (<<<"$DE" grep "plasma" &> /dev/null); then
-			DE+=" plasma-nm"
+			DE+="plasma-nm "
 		else
-			DE+=" network-manager-applet"
+			DE+="network-manager-applet "
 		fi
 	fi
 
 	if (dialog --defaultno --yes-button "$yes" --no-button "$no" --yesno "\n$touchpad_msg" 10 60) then
 		if (<<<"$DE" grep "gnome" &> /dev/null); then
-			DE+=" xf86-input-libinput"
+			DE+="xf86-input-libinput "
 		else
-			DE+=" xf86-input-synaptics"
+			DE+="xf86-input-synaptics "
 		fi
 	fi
 
 	if "$enable_bt" ; then
 		if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$blueman_msg" 10 60) then
-			DE+=" blueman"
+			DE+="blueman "
 		fi
 	fi
 
-	if ! "$enable_dm" ; then
-		if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$dm_msg" 10 60) then
-			DM=$(dialog --ok-button "$ok" --cancel-button "$cancel" --menu "$dm_msg1" 13 64 4 \
-				"lightdm"	"$dm1" \
-				"gdm"		"$dm0" \
-				"lxdm"		"$dm2" \
-				"sddm"		"$dm3" 3>&1 1>&2 2>&3)
-			if [ "$?" -eq "0" ]; then
-				if [ "$DM" == "lightdm" ]; then
-					DE+=" $DM lightdm-gtk-greeter"
-				elif [ "$DM" == "lxdm" ] && "$GTK3"; then
-					DE+=" ${DM}-gtk3"
-				else
-					DE+=" $DM"
-				fi
-				enable_dm=true
+	if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$dm_msg" 10 60) then
+		DM=$(dialog --ok-button "$ok" --cancel-button "$cancel" --menu "$dm_msg1" 13 64 4 \
+			"lightdm"	"$dm1" \
+			"gdm"		"$dm0" \
+			"lxdm"		"$dm2" \
+			"sddm"		"$dm3" 3>&1 1>&2 2>&3)
+		if [ "$?" -eq "0" ]; then
+			if [ "$DM" == "lightdm" ]; then
+				DE+="$DM lightdm-gtk-greeter "
+			elif [ "$DM" == "lxdm" ] && "$GTK3"; then
+				DE+="${DM}-gtk3 "
+			else
+				DE+="$DM "
 			fi
-		else
-			dialog --ok-button "$ok" --msgbox "\n$startx_msg" 10 60
+			enable_dm=true
 		fi
+	else
+		dialog --ok-button "$ok" --msgbox "\n$startx_msg" 10 60
 	fi
 
-	base_install+=" $DE"
+	base_install+="$DE "
 	desktop=true
 
 }
@@ -331,10 +349,6 @@ config_env() {
 
 	sh="/usr/bin/zsh"
 	arch-chroot "$ARCH" chsh -s /usr/bin/zsh &> /dev/null
-	cp -r "$aa_dir"/pkg/arch-wiki-*.pkg.tar.xz "$ARCH"/var/cache/pacman/pkg
-	cp -r "$aa_dir"/pkg/fetchmirrors-*.pkg.tar.xz "$ARCH"/var/cache/pacman/pkg
-	arch-chroot "$ARCH" pacman --noconfirm -U /var/cache/pacman/pkg/$(ls "$aa_dir"/pkg/arch-wiki-*.pkg.tar.xz | sed 's!.*/!!') &>/dev/null
-	arch-chroot "$ARCH" pacman --noconfirm -U /var/cache/pacman/pkg/$(ls "$aa_dir"/pkg/fetchmirrors-*.pkg.tar.xz | sed 's!.*/!!') &>/dev/null
 	cp -r "$aa_dir"/extra/desktop/ttf-zekton-rg "$ARCH"/usr/share/fonts
 	cp "$aa_dir"/extra/.zshrc "$ARCH"/root/
 	cp "$aa_dir"/extra/.zshrc "$ARCH"/etc/skel/
@@ -342,7 +356,7 @@ config_env() {
 	cp "$aa_dir"/extra/desktop/arch-anywhere-icon.png "$ARCH"/etc/skel/.face
 	cp -r "$aa_dir"/extra/desktop/{arch-anywhere-wallpaper.png,arch-anywhere-icon.png} "$ARCH"/usr/share/pixmaps
 
-	case "$env" in
+	case "$config_env" in
 		AA-Xfce)
 			for file in $(ls -A "$aa_dir/extra/desktop/xfce4"); do
 				cp -r "$aa_dir/extra/desktop/xfce4/$file" "$ARCH"/root/
@@ -370,7 +384,7 @@ config_env() {
 		;;
 	esac
 
-	echo "$(date -u "+%F %H:%M") : Configured: $env" >> "$log"
+	echo "$(date -u "+%F %H:%M") : Configured: $config_env" >> "$log"
 	arch-chroot "$ARCH" fc-cache -f
 
 }
