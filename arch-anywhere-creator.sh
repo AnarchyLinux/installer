@@ -139,7 +139,17 @@ builds() {
 		cd arch-wiki-cli
 		makepkg -s
 	fi
-	
+
+	if [ ! -d /tmp/fetchpkg ]; then
+		### Build fetchpkg
+		cd /tmp
+		wget "https://aur.archlinux.org/cgit/aur.git/snapshot/fetchpkg.tar.gz"
+		tar -xf fetchpkg.tar.gz
+		cd fetchpkg
+		makepkg -s
+	fi
+
+
 	if [ ! -d /tmp/opensnap ]; then
 		### Build opensnap
 		cd /tmp
@@ -216,6 +226,7 @@ prepare_sys() {
 	sudo cp -r /tmp/fetchmirrors/*.pkg.tar.xz "$customiso"/arch/"$sys"/squashfs-root/usr/share/arch-anywhere/pkg
 	sudo cp -r /tmp/arch-wiki-cli/*.pkg.tar.xz "$customiso"/arch/"$sys"/squashfs-root/usr/share/arch-anywhere/pkg
 	sudo cp -r /tmp/opensnap/*.pkg.tar.xz "$customiso"/arch/"$sys"/squashfs-root/usr/share/arch-anywhere/pkg
+	sudo cp -r /tmp/fetchpkg/*.pkg.tar.xz "$customiso"/arch/"$sys"/squashfs-root/usr/share/arch-anywhere/pkg
 	sudo cp "$aa"/boot/{hostname,issue} "$customiso"/arch/"$sys"/squashfs-root/etc/
 	sudo cp -r "$aa"/boot/loader/ "$customiso"/arch/"$sys"/squashfs-root/usr/share/arch-anywhere/boot/
 	sudo cp "$aa"/boot/splash.png "$customiso"/arch/"$sys"/squashfs-root/usr/share/arch-anywhere/boot/
