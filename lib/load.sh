@@ -68,9 +68,9 @@ load_log() {
     	        	pos=0
     	        	int=$((int+1))
     	        fi
-    	        log=$(tail -n 1 "$log" | sed 's/.pkg.tar.xz//')
+    	        log_msg=$(tail -1 "$log" | sed 's/.pkg.tar.xz//')
     	        echo "$int"
-    	        echo -e "XXX$msg \n \Z1> \Z2$log\Zn\nXXX"
+    	        echo -e "XXX$msg \n \Z1> \Z2$log_msg\Zn\nXXX"
     	        pos=$((pos+1))
     	    done
             echo 100
