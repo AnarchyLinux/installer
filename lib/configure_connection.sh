@@ -40,7 +40,7 @@ update_mirrors() {
 			fi
 		else
 			dialog --ok-button "$ok" --msgbox "\n$connect_err0" 10 60
-			echo "$(date -u "+%F %H:%M") : Failed to connect to wifi: Exit 1" >> "$log"
+			echo "$(date -u "+%F %H:%M") : Failed to connect to network: Exit 1" >> "$log"
 			setterm -background black -store ; reset ; echo -e "$connect_err1" | sed 's/\\Z1//;s/\\Zn//' ;  exit 1
 		fi
 	done
