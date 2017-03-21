@@ -60,9 +60,17 @@ install_base() {
 				reset ; tail "$log" ; exit 1
 			fi
     
+			(cp -r "$aa_dir"/pkg/arch-wiki-*.pkg.tar.xz "$ARCH"/var/cache/pacman/pkg
+			cp -r "$aa_dir"/pkg/fetchmirrors-*.pkg.tar.xz "$ARCH"/var/cache/pacman/pkg
+			cp -r "$aa_dir"/pkg/fetchpkg-*.pkg.tar.xz "$ARCH"/var/cache/pacman/pkg
+			arch-chroot "$ARCH" pacman --noconfirm -U /var/cache/pacman/pkg/$(ls "$aa_dir"/pkg/arch-wiki-*.pkg.tar.xz | sed 's!.*/!!')
+			arch-chroot "$ARCH" pacman --noconfirm -U /var/cache/pacman/pkg/$(ls "$aa_dir"/pkg/fetchmirrors-*.pkg.tar.xz | sed 's!.*/!!')
+			arch-chroot "$ARCH" pacman --noconfirm -U /var/cache/pacman/pkg/$(ls "$aa_dir"/pkg/fetchpkg-*.pkg.tar.xz | sed 's!.*/!!')) &>/dev/null &
+			pid=$! pri=1 msg="\n$wait_load \n\n \Z1> \Z2pacman -U arch-wiki-cli fetchmirrors fetchpkg\Zn" load
+
 			if "$intel" && ! "$VM" ; then
 				if (dialog --yes-button "$install" --no-button "$cancel" --yesno "\n$ucode_msg" 11 60); then
-					arch-chroot "$ARCH" pacman -Sy intel-ucode &> "$log" &
+					arch-chroot "$ARCH" pacman -Sy intel-ucode &>/dev/null &
 					pid=$! pri=1 msg="\n$wait_load \n\n \Z1> \Z2pacman -Sy intel-ucode\Zn" load
     
 					if [ -f "$ARCH/boot/intel-ucode.img" ]; then
