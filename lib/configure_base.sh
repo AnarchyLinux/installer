@@ -37,19 +37,19 @@ prepare_base() {
 
 	case "$install_menu" in
 		"Arch-Linux-Base")
-			base_install="linux-headers sudo" kernel="linux"
+			base_install="linux-headers sudo arch-wiki-cli fetchpkg fetchmirrors lynx wget " kernel="linux"
 		;;
 		"Arch-Linux-Base-Devel")
-			base_install="base-devel linux-headers" kernel="linux"
+			base_install="base-devel linux-headers arch-wiki-cli fetchpkg fetchmirrors lynx wget " kernel="linux"
 		;;
 		"Arch-Linux-GrSec")
-			base_install="base-devel linux-grsec linux-grsec-headers" kernel="linux-grsec"
+			base_install="base-devel linux-grsec linux-grsec-headers arch-wiki-cli fetchpkg fetchmirrors lynx wget " kernel="linux-grsec"
 		;;
 		"Arch-Linux-LTS-Base")
-			base_install="linux-lts linux-lts-headers sudo" kernel="linux-lts"
+			base_install="linux-lts linux-lts-headers sudo arch-wiki-cli fetchpkg fetchmirrors lynx wget " kernel="linux-lts"
 		;;
 		"Arch-Linux-LTS-Base-Devel")
-			base_install="base-devel linux-lts linux-lts-headers" kernel="linux-lts"
+			base_install="base-devel linux-lts linux-lts-headers arch-wiki-cli fetchpkg fetchmirrors lynx wget " kernel="linux-lts"
 		;;
 	esac
 
@@ -68,8 +68,8 @@ prepare_base() {
 			fi
 		else
 			case "$shell" in
-                                    bash) sh="/bin/bash" shell="bash-completion"
-                                    ;;
+                bash) sh="/bin/bash" shell="bash-completion"
+                ;;
 				fish) 	sh="/bin/bash"
 				;;
 				zsh) sh="/usr/bin/$shell" shell="zsh zsh-syntax-highlighting"
@@ -78,7 +78,7 @@ prepare_base() {
 				;;
 			esac
 
-			base_install+=" $shell"
+			base_install+="$shell "
 			break
 		fi
 	done
@@ -120,15 +120,15 @@ prepare_base() {
 						break
 					fi
 				else
-					base_install+=" $bootloader"
+					base_install+="$bootloader "
 					break
 				fi
 			else
-				base_install+=" $bootloader"
+				base_install+="$bootloader "
 				break
 			fi
 		elif [ "$bootloader" == "grub" ]; then
-			base_install+=" $bootloader"
+			base_install+="$bootloader "
 			break
 		else
 			if (dialog --defaultno --yes-button "$yes" --no-button "$no" --yesno "\n$grub_warn_msg0" 10 60) then
@@ -151,41 +151,53 @@ prepare_base() {
 			fi
 		else
 			if [ "$net_util" == "netctl" ] || [ "$net_util" == "networkmanager" ]; then
-				base_install+=" $net_util dialog" enable_nm=true
+				base_install+="$net_util dialog " enable_nm=true
 			fi
 			break
 		fi
 	done
 
+	if [ "$arch" == "x86_64" ]; then
+        if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n\n$multilib_msg" 11 60) then
+            multilib=true
+            echo "$(date -u "+%F %H:%M") : Include multilib" >> "$log"
+        fi
+    fi
+
+    if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n\n$dhcp_msg" 11 60) then
+        dhcp=true
+        echo "$(date -u "+%F %H:%M") : Enable dhcp" >> "$log"
+    fi
+
 	if "$wifi" ; then
-		base_install+=" wireless_tools wpa_supplicant wpa_actiond"
+		base_install+="wireless_tools wpa_supplicant wpa_actiond "
 	else
 		if (dialog --defaultno --yes-button "$yes" --no-button "$no" --yesno "\n$wifi_option_msg" 10 60) then
-			base_install+=" wireless_tools wpa_supplicant wpa_actiond"
+			base_install+="wireless_tools wpa_supplicant wpa_actiond "
 		fi
 	fi
-
+	
 	if "$bluetooth" ; then
 		if (dialog --defaultno --yes-button "$yes" --no-button "$no" --yesno "\n$bluetooth_msg" 10 60) then
-			base_install+=" bluez bluez-utils pulseaudio-bluetooth"
+			base_install+="bluez bluez-utils pulseaudio-bluetooth "
 			enable_bt=true
 		fi
 	fi
 
 	if (dialog --defaultno --yes-button "$yes" --no-button "$no" --yesno "\n$pppoe_msg" 10 60) then
-		base_install+=" rp-pppoe"
+		base_install+="rp-pppoe "
 	fi
 
 	if (dialog --defaultno --yes-button "$yes" --no-button "$no" --yesno "\n$os_prober_msg" 10 60) then
-		base_install+=" os-prober"
+		base_install+="os-prober "
 	fi
 
 	if "$enable_f2fs" ; then
-		base_install+=" f2fs-tools"
+		base_install+="f2fs-tools "
 	fi
 
 	if "$UEFI" ; then
-		base_install+=" efibootmgr"
+		base_install+="efibootmgr "
 	fi
 
 }
@@ -200,7 +212,7 @@ add_software() {
 			unset software
 			add_soft=true
 			if ! "$skip" ; then
-				software_menu=$(dialog --extra-button --extra-label "$done_msg" --ok-button "$select" --cancel-button "$cancel" --menu "$software_type_msg" 20 63 11 \
+				software_menu=$(dialog --extra-button --extra-label "$install" --ok-button "$select" --cancel-button "$cancel" --menu "$software_type_msg" 20 63 11 \
 					"$aar" "$aar_msg" \
 					"$audio" "$audio_msg" \
 					"$games" "$games_msg" \
@@ -222,21 +234,6 @@ add_software() {
 					fi
 				elif [ "$ex" -eq "3" ]; then
 					software_menu="$done_msg"
-				elif [ "$software_menu" == "$aar" ]; then
-					if "$menu_enter" ; then
-						if ! (<"$ARCH"/etc/pacman.conf grep "arch-anywhere"); then
-							if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$aar_add_msg" 10 60) then
-								echo -e "\n[arch-anywhere]\nServer = $aa_repo\nSigLevel = Never" >> "$ARCH"/etc/pacman.conf
-							fi
-						fi
-					else
-						if ! (</etc/pacman.conf grep "arch-anywhere"); then
-							if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$aar_add_msg" 10 60) then
-								echo -e "\n[arch-anywhere]\nServer = $aa_repo\nSigLevel = Never" >> /etc/pacman.conf
-								add_repo=true
-							fi
-						fi
-					fi
 				fi
 			else
 				skip=false
@@ -284,7 +281,6 @@ add_software() {
 						"filezilla"			"$net1" OFF \
 						"firefox"			"$net2" OFF \
 						"irssi"				"$net9" OFF \
-						"lynx"				"$net3" OFF \
 						"minitube"			"$net4" OFF \
 						"opera"				"$net5" OFF \
 						"thunderbird"			"$net6" OFF \
@@ -423,7 +419,6 @@ add_software() {
 						"tuxcmd"		"$sys15" OFF \
 						"virtualbox"	"$sys16" OFF \
 						"ufw"			"$sys17" ON \
-						"wget"			"$sys18" ON \
 						"xfe"			"$sys23" OFF 3>&1 1>&2 2>&3)
 					if [ "$?" -gt "0" ]; then
 						add_soft=false
@@ -442,7 +437,7 @@ add_software() {
 
 						if ! "$menu_enter" ; then
 							echo "$(date -u "+%F %H:%M") : Add software list: $download" >> "$log"
-							base_install+=" $download_list"
+							base_install+="$download_list "
 							unset final_software
 							break
 						else

@@ -26,7 +26,7 @@ graphics() {
 
 	while (true)
 	  do
-		desktop=$(dialog --ok-button "$done_msg" --cancel-button "$cancel" --checklist "$environment_msg" 24 60 15 \
+		de=$(dialog --ok-button "$done_msg" --cancel-button "$cancel" --checklist "$environment_msg" 24 60 15 \
 			"AA-Xfce"			"$de15" OFF \
 			"AA-Openbox"		"$de18" OFF \
 			"budgie"			"$de17" OFF \
@@ -46,35 +46,30 @@ graphics() {
 			"fluxbox"       	"$de11" OFF \
 			"i3"            	"$de10" OFF \
 			"openbox"       	"$de8" OFF \
-			"xmonad"			"$de16"  3>&1 1>&2 2>&3)
-		if [ "$?" -gt "0" ]; then
+			"xmonad"			"$de16" OFF 3>&1 1>&2 2>&3)
+		if [ -z "$de" ]; then
 			if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$desktop_cancel_msg" 10 60) then
 				return
 			fi
+		elif (grep "AA-Xfce" <<<"$de" &>/dev/null) && (grep "AA-Openbox" <<<"$de" &>/dev/null); then
+			de=$(sed 's/AA-Xfce//' <<<"$de")
+			break
 		else
 			break
-		fi
-
-		if [ -z "$desktop" ]; then
-			if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$desktop_cancel_msg" 10 60) then
-				return
-			else
-				break
-			fi
 		fi
 	done
 
 	source "$lang_file"
 
-	for env in $(echo "$desktop")
+	for env in $(echo "$de")
 	  do
 		case "$env" in
-			"AA-Xfce") 	config_env="$DE"
-					DE+="xfce4 xfce4-goodies gvfs zsh zsh-syntax-highlighting htop lynx xscreensaver "
-					start_term="exec startxfce4"
+			"AA-Xfce") 	config_DE+="$env "
+						DE+="xfce4 xfce4-goodies gvfs zsh zsh-syntax-highlighting htop xscreensaver "
+						start_term="exec startxfce4"
 			;;
-			"AA-Openbox")	config_env="$DE"
-							DE+="openbox thunar thunar-volman xfce4-terminal xfce4-panel xfce4-whiskermenu-plugin xcompmgr transset-df obconf lxappearance-obconf wmctrl gxmessage xfce4-pulseaudio-plugin xfdesktop xdotool htop lynx xscreensaver "
+			"AA-Openbox")	config_DE+="$env "
+							DE+="openbox thunar thunar-volman xfce4-terminal xfce4-panel xfce4-whiskermenu-plugin xcompmgr transset-df obconf lxappearance-obconf wmctrl gxmessage xfce4-pulseaudio-plugin xfdesktop xdotool htop xscreensaver opensnap ristretto "
 							start_term="exec openbox-session"
 			;;
 			"xfce4") 	DE+="xfce4 "
@@ -179,7 +174,7 @@ graphics() {
 	  	if "$VM" ; then
 	  		case "$virt" in
 	  			vbox)	dialog --ok-button "$ok" --msgbox "\n$vbox_msg" 10 60
-						GPU="virtualbox-guest-utils"
+						GPU="virtualbox-guest-utils "
 						if [ "$kernel" == "linux" ]; then
 							GPU+="virtualbox-guest-modules-arch "
 						else
@@ -296,7 +291,7 @@ graphics() {
 		fi
 	done
 
-	DE+="xdg-user-dirs xorg-server xorg-server-utils xorg-xinit xterm arc-icon-theme arc-gtk-theme elementary-icon-theme ttf-dejavu gvfs pulseaudio pavucontrol pulseaudio-alsa alsa-utils unzip screenfetch $GPU "
+	DE+="$GPU xdg-user-dirs xorg-server xorg-server-utils xorg-xinit xterm arc-icon-theme arc-gtk-theme elementary-icon-theme ttf-dejavu gvfs pulseaudio pavucontrol pulseaudio-alsa alsa-utils unzip screenfetch "
 	
 	if [ "$net_util" == "networkmanager" ] ; then
 		if (<<<"$DE" grep "plasma" &> /dev/null); then
@@ -356,35 +351,32 @@ config_env() {
 	cp "$aa_dir"/extra/desktop/arch-anywhere-icon.png "$ARCH"/etc/skel/.face
 	cp -r "$aa_dir"/extra/desktop/{arch-anywhere-wallpaper.png,arch-anywhere-icon.png} "$ARCH"/usr/share/pixmaps
 
-	case "$config_env" in
-		AA-Xfce)
-			for file in $(ls -A "$aa_dir/extra/desktop/xfce4"); do
-				cp -r "$aa_dir/extra/desktop/xfce4/$file" "$ARCH"/root/
-				cp -r "$aa_dir/extra/desktop/xfce4/$file" "$ARCH"/etc/skel/
-			done
-			cp -r "$aa_dir"/extra/desktop/arch-anywhere-wallpaper.png "$ARCH"/usr/share/backgrounds/xfce/
-			cp "$ARCH"/usr/share/backgrounds/xfce/arch-anywhere-wallpaper.png "$ARCH"/usr/share/backgrounds/xfce/xfce-teal.jpg
-		;;
-		AA-Openbox)
-			for file in $(ls -A "$aa_dir/extra/desktop/openbox"); do
-				cp -r "$aa_dir/extra/desktop/openbox/$file" "$ARCH"/root/
-				cp -r "$aa_dir/extra/desktop/openbox/$file" "$ARCH"/etc/skel/
-			done
-			cp -r "$aa_dir"/extra/desktop/Arc/openbox-3 "$ARCH"/usr/share/themes/Arc
-			cp -r "$aa_dir"/extra/desktop/Arc-Dark/openbox-3 "$ARCH"/usr/share/themes/Arc-Dark
-			cp -r "$aa_dir"/extra/desktop/Arc-Darker/openbox-3 "$ARCH"/usr/share/themes/Arc-Darker
-			cp -r "$aa_dir"/extra/desktop/obpower.sh "$ARCH"/usr/bin/obpower
-			chmod +x "$ARCH"/usr/bin/obpower
-			cp -r "$aa_dir"/pkg/opensnap-*.pkg.tar.xz "$ARCH"/var/cache/pacman/pkg
-			arch-chroot "$ARCH" pacman --noconfirm -U /var/cache/pacman/pkg/$(ls /usr/share/arch-anywhere/pkg/opensnap-*.pkg.tar.xz | sed 's!.*/!!') &>/dev/null
-			if [ "$virt" == "vbox" ]; then
-				echo "VBoxClient-all &" >> "$ARCH"/etc/skel/.config/openbox/autostart
-				echo "VBoxClient-all &" >> "$ARCH"/root/.config/openbox/autostart
-			fi
-		;;
-	esac
+	if (grep "AA-Xfce" <<<"$config_DE" &>/dev/null); then
+		for file in $(ls -A "$aa_dir/extra/desktop/xfce4"); do
+			cp -r "$aa_dir/extra/desktop/xfce4/$file" "$ARCH"/root/
+			cp -r "$aa_dir/extra/desktop/xfce4/$file" "$ARCH"/etc/skel/
+		done
+		cp -r "$aa_dir"/extra/desktop/arch-anywhere-wallpaper.png "$ARCH"/usr/share/backgrounds/xfce/
+		cp "$ARCH"/usr/share/backgrounds/xfce/arch-anywhere-wallpaper.png "$ARCH"/usr/share/backgrounds/xfce/xfce-teal.jpg
+	fi
 
-	echo "$(date -u "+%F %H:%M") : Configured: $config_env" >> "$log"
+	if (grep "AA-Openbox" <<<"$config_DE" &>/dev/null); then
+		for file in $(ls -A "$aa_dir/extra/desktop/openbox"); do
+			cp -r "$aa_dir/extra/desktop/openbox/$file" "$ARCH"/root/
+			cp -r "$aa_dir/extra/desktop/openbox/$file" "$ARCH"/etc/skel/
+		done
+		cp -r "$aa_dir"/extra/desktop/Arc/openbox-3 "$ARCH"/usr/share/themes/Arc
+		cp -r "$aa_dir"/extra/desktop/Arc-Dark/openbox-3 "$ARCH"/usr/share/themes/Arc-Dark
+		cp -r "$aa_dir"/extra/desktop/Arc-Darker/openbox-3 "$ARCH"/usr/share/themes/Arc-Darker
+		cp -r "$aa_dir"/extra/desktop/obpower.sh "$ARCH"/usr/bin/obpower
+		chmod +x "$ARCH"/usr/bin/obpower
+		if [ "$virt" == "vbox" ]; then
+			echo "VBoxClient-all &" >> "$ARCH"/etc/skel/.config/openbox/autostart
+			echo "VBoxClient-all &" >> "$ARCH"/root/.config/openbox/autostart
+		fi
+	fi
+
+	echo "$(date -u "+%F %H:%M") : Configured: $config_DE" >> "$log"
 	arch-chroot "$ARCH" fc-cache -f
 
 }

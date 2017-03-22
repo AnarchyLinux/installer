@@ -18,8 +18,9 @@
 install_base() {
 
 	op_title="$install_op_msg"
+	base_install=$(<<<"$base_install" tr " " "\n" | sort | uniq | tr "\n" " ")
 	pacman -Sy --print-format='%s' $(echo "$base_install") | awk '{s+=$1} END {print s/1024/1024}' >/tmp/size &
-	pid=$! pri=0.6 msg="\n$pacman_load \n\n \Z1> \Z2pacman -Sy\Zn" load
+	pid=$! pri=0.6 msg="\n$pacman_load \n\n \Z1> \Z2pacman -Sy\Zn" load	
 	download_size=$(</tmp/size) ; rm /tmp/size
 	export software_size="$download_size Mib"
 	cal_rate
@@ -60,14 +61,6 @@ install_base() {
 				reset ; tail "$log" ; exit 1
 			fi
     
-			(cp -r "$aa_dir"/pkg/arch-wiki-*.pkg.tar.xz "$ARCH"/var/cache/pacman/pkg
-			cp -r "$aa_dir"/pkg/fetchmirrors-*.pkg.tar.xz "$ARCH"/var/cache/pacman/pkg
-			cp -r "$aa_dir"/pkg/fetchpkg-*.pkg.tar.xz "$ARCH"/var/cache/pacman/pkg
-			arch-chroot "$ARCH" pacman --noconfirm -U /var/cache/pacman/pkg/$(ls "$aa_dir"/pkg/arch-wiki-*.pkg.tar.xz | sed 's!.*/!!')
-			arch-chroot "$ARCH" pacman --noconfirm -U /var/cache/pacman/pkg/$(ls "$aa_dir"/pkg/fetchmirrors-*.pkg.tar.xz | sed 's!.*/!!')
-			arch-chroot "$ARCH" pacman --noconfirm -U /var/cache/pacman/pkg/$(ls "$aa_dir"/pkg/fetchpkg-*.pkg.tar.xz | sed 's!.*/!!')) &>/dev/null &
-			pid=$! pri=1 msg="\n$wait_load \n\n \Z1> \Z2pacman -U arch-wiki-cli fetchmirrors fetchpkg\Zn" load
-
 			if "$intel" && ! "$VM" ; then
 				if (dialog --yes-button "$install" --no-button "$cancel" --yesno "\n$ucode_msg" 11 60); then
 					arch-chroot "$ARCH" pacman -Sy intel-ucode &>/dev/null &

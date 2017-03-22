@@ -151,7 +151,7 @@ configure_system() {
 		esac
 	fi
 
-	if [ ! -z "$config_env" ]; then
+	if [ -n "$config_DE" ]; then
 		config_env &
 		pid=$! pri="0.1" msg="$wait_load \n\n \Z1> \Z2arch-anywhere config_env\Zn" load
 	fi
@@ -160,16 +160,16 @@ configure_system() {
 		echo -e "\n[arch-anywhere]\nServer = $aa_repo\nSigLevel = Never" >> "$ARCH"/etc/pacman.conf
 	fi
 
-	if [ "$arch" == "x86_64" ]; then
-		if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n\n$multilib_msg" 11 60) then
-			sed -i '/\[multilib]$/ {
-			N
-			/Include/s/#//g}' /mnt/etc/pacman.conf
-			echo "$(date -u "+%F %H:%M") : Include multilib" >> "$log"
-		fi
+	if "$multilib" ; then
+		sed -i '/\[multilib]$/ {
+		N
+		/Include/s/#//g}' "$ARCH"/etc/pacman.conf
+		echo "$(date -u "+%F %H:%M") : Include multilib" >> "$log"
 	fi
 
-	if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n\n$dhcp_msg" 11 60) then
+	sudo sed -i -e '$a\\n[arch-anywhere]\nServer = http://arch-anywhere.org/repo/$arch\nSigLevel = Never' "$ARCH"/etc/pacman.conf
+	
+	if "$dhcp" ; then
 		arch-chroot "$ARCH" systemctl enable dhcpcd.service &> /dev/null &
 		pid=$! pri=0.1 msg="\n$dhcp_load \n\n \Z1> \Z2systemctl enable dhcpcd\Zn" load
 		echo "$(date -u "+%F %H:%M") : Enable dhcp" >> "$log"
