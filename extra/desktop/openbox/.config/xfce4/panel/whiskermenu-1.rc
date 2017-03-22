@@ -1,5 +1,5 @@
-favorites=exo-terminal-emulator.desktop,htop.desktop,exo-file-manager.desktop,arch-wiki.desktop,exo-web-browser.desktop,pavucontrol.desktop,obconf.desktop
-recent=xscreensaver-properties.desktop,xterm.desktop,panel-preferences.desktop,obconf.desktop,exo-preferred-applications.desktop,xfce-backdrop-settings.desktop,exo-web-browser.desktop,exo-file-manager.desktop,exo-terminal-emulator.desktop
+favorites=exo-terminal-emulator.desktop,exo-file-manager.desktop,htop.desktop,fetchpkg.desktop,arch-wiki.desktop,exo-web-browser.desktop,pavucontrol.desktop,thunar-volman-settings.desktop,obconf.desktop
+recent=htop.desktop,thunar-volman-settings.desktop,xscreensaver-properties.desktop,xterm.desktop,panel-preferences.desktop,obconf.desktop,exo-preferred-applications.desktop,xfce-backdrop-settings.desktop,exo-web-browser.desktop,exo-file-manager.desktop
 button-title=Menu
 button-icon=/usr/share/pixmaps/arch-anywhere-icon.png
 button-single-row=false
