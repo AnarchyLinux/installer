@@ -140,39 +140,12 @@ builds() {
 		makepkg -s
 	fi
 
-	if [ ! -d /tmp/fetchpkg ]; then
-		### Build fetchpkg
-		cd /tmp
-		wget "https://aur.archlinux.org/cgit/aur.git/snapshot/fetchpkg.tar.gz"
-		tar -xf fetchpkg.tar.gz
-		cd fetchpkg
-		makepkg -s
-	fi
-
-
-	if [ ! -d /tmp/opensnap ]; then
-		### Build opensnap
-		cd /tmp
-		wget "https://aur.archlinux.org/cgit/aur.git/snapshot/opensnap.tar.gz"
-		tar -xf opensnap.tar.gz
-		cd opensnap
-		makepkg -s
-	fi
-
 	if [ ! -d /tmp/arc-openbox-master ]; then
 		### Build Arc Openbox theme
 		cd /tmp
 		wget "https://github.com/dglava/arc-openbox/archive/master.zip"
 		unzip master.zip
 	fi
-
-#	if [ ! -d /tmp/v86d ]; then
-#		cd /tmp
-#		wget "https://aur.archlinux.org/cgit/aur.git/snapshot/v86d.tar.gz"
-#		tar -xf v86d.tar.gz
-#		cd v86d
-#		makepkg -s
-#	fi
 
 	prepare_sys
 
@@ -202,6 +175,7 @@ prepare_sys() {
 	sudo cp "$aa"/etc/{vconsole.conf,locale.gen} "$customiso"/arch/"$sys"/squashfs-root/etc
 #	sudo cp "$aa"/etc/uvesafb.conf "$customiso"/arch/"$sys"/squashfs-root/etc/modules-load.d/
 	sudo arch-chroot squashfs-root /bin/bash locale-gen
+	sudo sed -i -e '$a\\n[arch-anywhere]\nServer = http://arch-anywhere.org/repo/$arch\nSigLevel = Never' "$customiso"/arch/"$sys"/squashfs-root/etc/pacman.conf
 
 ### Copy over main arch anywhere config, installer script, and arch-wiki,  make executeable
 	sudo cp "$aa"/etc/arch-anywhere.conf "$customiso"/arch/"$sys"/squashfs-root/etc/
@@ -210,7 +184,7 @@ prepare_sys() {
 	sudo chmod +x "$customiso"/arch/"$sys"/squashfs-root/usr/bin/{arch-anywhere,sysinfo,iptest}
 
 ### Create arch-anywhere directory and lang directory copy over all lang files
-	sudo mkdir -p "$customiso"/arch/"$sys"/squashfs-root/usr/share/arch-anywhere/{lang,pkg,extra,boot,etc}
+	sudo mkdir -p "$customiso"/arch/"$sys"/squashfs-root/usr/share/arch-anywhere/{lang,extra,boot,etc}
 	sudo cp "$aa"/lang/* "$customiso"/arch/"$sys"/squashfs-root/usr/share/arch-anywhere/lang
 
 ### Create shell function library
@@ -223,10 +197,6 @@ prepare_sys() {
 	sudo cp "$aa"/extra/.zshrc-sys "$customiso"/arch/"$sys"/squashfs-root/usr/share/arch-anywhere/extra/.zshrc
 	sudo cp -r "$aa"/extra/desktop "$customiso"/arch/"$sys"/squashfs-root/usr/share/arch-anywhere/extra/
 	sudo cp -r /tmp/arc-openbox-master/{Arc,Arc-Dark,Arc-Darker} "$customiso"/arch/"$sys"/squashfs-root/usr/share/arch-anywhere/extra/desktop
-	sudo cp -r /tmp/fetchmirrors/*.pkg.tar.xz "$customiso"/arch/"$sys"/squashfs-root/usr/share/arch-anywhere/pkg
-	sudo cp -r /tmp/arch-wiki-cli/*.pkg.tar.xz "$customiso"/arch/"$sys"/squashfs-root/usr/share/arch-anywhere/pkg
-	sudo cp -r /tmp/opensnap/*.pkg.tar.xz "$customiso"/arch/"$sys"/squashfs-root/usr/share/arch-anywhere/pkg
-	sudo cp -r /tmp/fetchpkg/*.pkg.tar.xz "$customiso"/arch/"$sys"/squashfs-root/usr/share/arch-anywhere/pkg
 	sudo cp "$aa"/boot/{hostname,issue} "$customiso"/arch/"$sys"/squashfs-root/etc/
 	sudo cp -r "$aa"/boot/loader/ "$customiso"/arch/"$sys"/squashfs-root/usr/share/arch-anywhere/boot/
 	sudo cp "$aa"/boot/splash.png "$customiso"/arch/"$sys"/squashfs-root/usr/share/arch-anywhere/boot/
