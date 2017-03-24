@@ -829,24 +829,27 @@ fs_select() {
 				"ext3"      "$fs1" \
 				"ext2"      "$fs2" \
 				"btrfs"     "$fs3" \
-				"f2fs"		"$fs6" \
+				"f2fs"	    "$fs6" \
 				"jfs"       "$fs4" \
-				"reiserfs"  "$fs5" 3>&1 1>&2 2>&3)
+				"reiserfs"  "$fs5" \
+				"xfs"       "$fs8" 3>&1 1>&2 2>&3)
 		elif "$btrfs" ; then
-				FS=$(dialog --nocancel --menu "$fs_msg" 16 65 6 \
+			FS=$(dialog --nocancel --menu "$fs_msg" 16 65 6 \
 				"ext4"      "$fs0" \
 				"ext3"      "$fs1" \
 				"ext2"      "$fs2" \
 				"btrfs"     "$fs3" \
 				"jfs"       "$fs4" \
-				"reiserfs"  "$fs5" 3>&1 1>&2 2>&3)
+				"reiserfs"  "$fs5" \
+				"xfs"       "$fs8" 3>&1 1>&2 2>&3)
 		else
-			FS=$(dialog --nocancel --menu "$fs_msg" 15 65 5 \
+		        FS=$(dialog --nocancel --menu "$fs_msg" 15 65 5 \
 				"ext4"      "$fs0" \
 				"ext3"      "$fs1" \
 				"ext2"      "$fs2" \
 				"jfs"       "$fs4" \
-				"reiserfs"  "$fs5" 3>&1 1>&2 2>&3)
+				"reiserfs"  "$fs5" \
+				"xfs"       "$fs8" 3>&1 1>&2 2>&3)
 				btrfs=true
 		fi
 	fi
