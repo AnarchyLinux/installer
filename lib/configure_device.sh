@@ -824,7 +824,7 @@ fs_select() {
 		vfat=false
 	else
 		if [ "$f2fs" -eq "0" ]; then
-			FS=$(dialog --nocancel --menu "$fs_msg" 17 65 7 \
+			FS=$(dialog --nocancel --menu "$fs_msg" 17 65 8 \
 				"ext4"      "$fs0" \
 				"ext3"      "$fs1" \
 				"ext2"      "$fs2" \
@@ -834,7 +834,7 @@ fs_select() {
 				"reiserfs"  "$fs5" \
 				"xfs"       "$fs8" 3>&1 1>&2 2>&3)
 		elif "$btrfs" ; then
-			FS=$(dialog --nocancel --menu "$fs_msg" 16 65 6 \
+			FS=$(dialog --nocancel --menu "$fs_msg" 16 65 7 \
 				"ext4"      "$fs0" \
 				"ext3"      "$fs1" \
 				"ext2"      "$fs2" \
@@ -843,7 +843,7 @@ fs_select() {
 				"reiserfs"  "$fs5" \
 				"xfs"       "$fs8" 3>&1 1>&2 2>&3)
 		else
-		        FS=$(dialog --nocancel --menu "$fs_msg" 15 65 5 \
+			FS=$(dialog --nocancel --menu "$fs_msg" 15 65 6 \
 				"ext4"      "$fs0" \
 				"ext3"      "$fs1" \
 				"ext2"      "$fs2" \
