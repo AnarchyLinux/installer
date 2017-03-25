@@ -26,7 +26,7 @@ graphics() {
 
 	while (true)
 	  do
-		de=$(dialog --ok-button "$done_msg" --cancel-button "$cancel" --checklist "$environment_msg" 24 60 15 \
+		de=$(dialog --separate-output --ok-button "$done_msg" --cancel-button "$cancel" --checklist "$environment_msg" 24 60 15 \
 			"AA-Xfce"			"$de15" OFF \
 			"AA-Openbox"		"$de18" OFF \
 			"budgie"			"$de17" OFF \
@@ -61,7 +61,7 @@ graphics() {
 
 	source "$lang_file"
 
-	for env in $(echo "$de")
+	while read env
 	  do
 		case "$env" in
 			"AA-Xfce") 	config_DE+="$env "
@@ -167,7 +167,7 @@ graphics() {
 						DE+="i3 "
 			;;
 		esac
-	done
+	done <<< $de
 
 	while (true)
 	  do
