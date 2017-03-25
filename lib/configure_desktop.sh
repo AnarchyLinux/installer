@@ -258,7 +258,7 @@ graphics() {
 							if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$nvidia_modeset_msg" 10 60) then
 								drm=true
 							fi
-							GPU+="nvidia-libgl nvidia-utils "
+							GPU+=" nvidia-libgl nvidia-utils "
             				break
             			fi
 			        fi
@@ -277,7 +277,7 @@ graphics() {
 					if [ "$kernel" == "lts" ]; then
 						GPU="${GPU}-lts ${GPU}-libgl ${GPU}-utils"
 					else
-						GPU+="${GPU}-libgl ${GPU}-utils "
+						GPU+=" ${GPU}-libgl ${GPU}-utils "
 					fi
 					break
 				fi
@@ -286,7 +286,7 @@ graphics() {
 			GPU="$default_GPU mesa-libgl"
 			break
 		else
-			GPU+="mesa-libgl "
+			GPU+=" mesa-libgl"
 			break
 		fi
 	done
