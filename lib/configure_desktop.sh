@@ -114,7 +114,7 @@ graphics() {
 							fi
     
 							if [ -n "$kdel" ]; then
-								DE+=" kde-l10n-$kdel"
+								DE+="kde-l10n-$kdel "
 							fi
     
 							start_term="exec startkde"
