@@ -55,9 +55,6 @@ update_mirrors() {
 			"$default")
 				mirror_url="https://www.archlinux.org/mirrorlist/all/"
 			;;
-			"AL")	## All mirrors
-				mirror_url="https://www.archlinux.org/mirrorlist/all/"
-			;;
 			"AS")	## All https mirrors
 				mirror_url="https://www.archlinux.org/mirrorlist/all/https/"
 			;;
