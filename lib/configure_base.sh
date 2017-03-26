@@ -234,6 +234,14 @@ add_software() {
 					fi
 				elif [ "$ex" -eq "3" ]; then
 					software_menu="$done_msg"
+				elif [ "$software_menu" == "$aar" ] && ! "$aa_repo" ; then
+					if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$aar_add_msg" 10 60) then
+						sed -i -e '$a\\n[arch-anywhere]\nServer = http://arch-anywhere.org/repo/$arch\nSigLevel = Never' /etc/pacman.conf
+						aa_repo=true
+
+					else
+						continue
+					fi
 				fi
 			else
 				skip=false

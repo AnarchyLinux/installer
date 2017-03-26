@@ -167,8 +167,10 @@ configure_system() {
 		echo "$(date -u "+%F %H:%M") : Include multilib" >> "$log"
 	fi
 
-	sudo sed -i -e '$a\\n[arch-anywhere]\nServer = http://arch-anywhere.org/repo/$arch\nSigLevel = Never' "$ARCH"/etc/pacman.conf
-	
+	if "$aa_repo" ; then
+		sed -i -e '$a\\n[arch-anywhere]\nServer = http://arch-anywhere.org/repo/$arch\nSigLevel = Never' "$ARCH"/etc/pacman.conf
+	fi
+
 	if "$dhcp" ; then
 		arch-chroot "$ARCH" systemctl enable dhcpcd.service &> /dev/null &
 		pid=$! pri=0.1 msg="\n$dhcp_load \n\n \Z1> \Z2systemctl enable dhcpcd\Zn" load
