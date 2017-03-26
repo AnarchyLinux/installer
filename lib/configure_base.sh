@@ -37,19 +37,19 @@ prepare_base() {
 
 	case "$install_menu" in
 		"Arch-Linux-Base")
-			base_install="linux-headers sudo arch-wiki-cli fetchpkg fetchmirrors lynx wget " kernel="linux"
+			base_install="linux-headers sudo " kernel="linux"
 		;;
 		"Arch-Linux-Base-Devel")
-			base_install="base-devel linux-headers arch-wiki-cli fetchpkg fetchmirrors lynx wget " kernel="linux"
+			base_install="base-devel linux-headers " kernel="linux"
 		;;
 		"Arch-Linux-GrSec")
-			base_install="base-devel linux-grsec linux-grsec-headers arch-wiki-cli fetchpkg fetchmirrors lynx wget " kernel="linux-grsec"
+			base_install="base-devel linux-grsec linux-grsec-headers " kernel="linux-grsec"
 		;;
 		"Arch-Linux-LTS-Base")
-			base_install="linux-lts linux-lts-headers sudo arch-wiki-cli fetchpkg fetchmirrors lynx wget " kernel="linux-lts"
+			base_install="linux-lts linux-lts-headers sudo " kernel="linux-lts"
 		;;
 		"Arch-Linux-LTS-Base-Devel")
-			base_install="base-devel linux-lts linux-lts-headers arch-wiki-cli fetchpkg fetchmirrors lynx wget " kernel="linux-lts"
+			base_install="base-devel linux-lts linux-lts-headers " kernel="linux-lts"
 		;;
 	esac
 
@@ -242,10 +242,11 @@ add_software() {
 			case "$software_menu" in
 				"$aar")
 					software=$(dialog --ok-button "$ok" --cancel-button "$cancel" --checklist "$software_msg1" 17 60 7 \
-						"arch-wiki-cli"		"$aar0" ON \
+						"arch-wiki-cli"	"$aar0" ON \
 						"downgrade"		"$aar6" OFF \
-						"dolphin-libre"		"$aar7" OFF \
-						"fetchmirrors"		"$aar1" ON \
+						"dolphin-libre"	"$aar7" OFF \
+						"fetchmirrors"	"$aar1" ON \
+						"fetchpkg"		"$aar8" ON \
 						"octopi"		"$aar4" OFF \
 						"pacaur"		"$aar2" OFF \
 						"pamac-aur"		"$aar5" OFF \
@@ -281,6 +282,7 @@ add_software() {
 						"filezilla"			"$net1" OFF \
 						"firefox"			"$net2" OFF \
 						"irssi"				"$net9" OFF \
+						"lynx"				"$net3" OFF \
 						"minitube"			"$net4" OFF \
 						"opera"				"$net5" OFF \
 						"thunderbird"			"$net6" OFF \
@@ -419,6 +421,7 @@ add_software() {
 						"tuxcmd"		"$sys15" OFF \
 						"virtualbox"	"$sys16" OFF \
 						"ufw"			"$sys17" ON \
+						"wget"			"$sys18" ON \
 						"xfe"			"$sys23" OFF 3>&1 1>&2 2>&3)
 					if [ "$?" -gt "0" ]; then
 						add_soft=false
