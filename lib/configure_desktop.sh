@@ -65,11 +65,11 @@ graphics() {
 	  do
 		case "$env" in
 			"AA-Xfce") 	config_DE+="$env "
-						DE+="xfce4 xfce4-goodies gvfs zsh zsh-syntax-highlighting htop xscreensaver "
+						DE+="xfce4 xfce4-goodies gvfs zsh zsh-syntax-highlighting arc-icon-theme arc-gtk-theme elementary-icon-theme htop xscreensaver arch-wiki-cli lynx fetchmirrors fetchpkg "
 						start_term="exec startxfce4"
 			;;
 			"AA-Openbox")	config_DE+="$env "
-							DE+="openbox thunar thunar-volman xfce4-terminal xfce4-panel xfce4-whiskermenu-plugin xcompmgr transset-df obconf lxappearance-obconf wmctrl gxmessage xfce4-pulseaudio-plugin xfdesktop xdotool htop xscreensaver opensnap ristretto "
+							DE+="openbox thunar thunar-volman xfce4-terminal xfce4-panel xfce4-whiskermenu-plugin arc-icon-theme arc-gtk-theme elementary-icon-theme xcompmgr transset-df obconf lxappearance-obconf wmctrl gxmessage xfce4-pulseaudio-plugin xfdesktop xdotool htop xscreensaver opensnap ristretto arch-wiki-cli lynx fetchmirrors fetchpkg "
 							start_term="exec openbox-session"
 			;;
 			"xfce4") 	DE+="xfce4 "
@@ -291,7 +291,7 @@ graphics() {
 		fi
 	done
 
-	DE+="$GPU xdg-user-dirs xorg-server xorg-server-utils xorg-xinit xterm arc-icon-theme arc-gtk-theme elementary-icon-theme ttf-dejavu gvfs pulseaudio pavucontrol pulseaudio-alsa alsa-utils unzip screenfetch "
+	DE+="$GPU xdg-user-dirs xorg-server xorg-server-utils xorg-xinit xterm ttf-dejavu gvfs pulseaudio pavucontrol pulseaudio-alsa alsa-utils unzip "
 	
 	if [ "$net_util" == "networkmanager" ] ; then
 		if (<<<"$DE" grep "plasma" &> /dev/null); then
