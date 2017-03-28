@@ -235,7 +235,7 @@ graphics() {
         			    	else
         			    		GPU="nvidia-340xx"
         			    	fi
-        			    	GPU+="nvidia-340xx-libgl nvidia-340xx-utils "
+        			    	GPU+=" nvidia-340xx-libgl nvidia-340xx-utils "
         			    	break
         			    fi
 					elif (<"$aa_dir"/etc/nvidia304.xx grep "$pci_id" &>/dev/null); then
@@ -245,7 +245,7 @@ graphics() {
            					else
            						GPU="nvidia-304xx"
            					fi
-           					GPU+="nvidia-304xx-libgl nvidia-304xx-utils "
+           					GPU+=" nvidia-304xx-libgl nvidia-304xx-utils "
            					break
 			        	fi
 			        else
@@ -271,7 +271,7 @@ graphics() {
 					if [ "$kernel" == "lts" ]; then
 						GPU="nvidia-lts nvidia-libgl nvidia-utils"
 					else
-						GPU+="${GPU}-libgl ${GPU}-utils "
+						GPU+=" ${GPU}-libgl ${GPU}-utils "
 					fi
 					break
 				else
