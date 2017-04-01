@@ -60,21 +60,24 @@ install_base() {
 				echo "$(date -u "+%F %H:%M") : Install failed: please report to developer" >> "$log"
 				reset ; tail "$log" ; exit 1
 			fi
-    
-			if "$intel" && ! "$VM" ; then
-				if (dialog --yes-button "$install" --no-button "$cancel" --yesno "\n$ucode_msg" 11 60); then
-					arch-chroot "$ARCH" pacman -Sy intel-ucode &>/dev/null &
-					pid=$! pri=1 msg="\n$wait_load \n\n \Z1> \Z2pacman -Sy intel-ucode\Zn" load
-    
-					if [ -f "$ARCH/boot/intel-ucode.img" ]; then
-						ucode=true
-						echo "$(date -u "+%F %H:%M") : Installed intel-ucode" >> "$log"
-					else
-						dialog --ok-button "$ok" --msgbox "\n$ucode_failed_msg" 10 60
-						echo "$(date -u "+%F %H:%M") : intel-ucode install failed" >> "$log"
-					fi
-				fi
-			fi
+ 
+### Intel microcode is broken as fuck its done nothing but piss me off
+### If you want to try fixing this be my guest but its a buggy piece of crap and I'm done with it
+###
+#			if "$intel" && ! "$VM" ; then
+#				if (dialog --yes-button "$install" --no-button "$cancel" --yesno "\n$ucode_msg" 11 60); then
+#					arch-chroot "$ARCH" pacman -Sy intel-ucode &>/dev/null &
+#					pid=$! pri=1 msg="\n$wait_load \n\n \Z1> \Z2pacman -Sy intel-ucode\Zn" load
+#   
+#					if [ -f "$ARCH/boot/intel-ucode.img" ]; then
+#						ucode=true
+#						echo "$(date -u "+%F %H:%M") : Installed intel-ucode" >> "$log"
+#					else
+#						dialog --ok-button "$ok" --msgbox "\n$ucode_failed_msg" 10 60
+#						echo "$(date -u "+%F %H:%M") : intel-ucode install failed" >> "$log"
+#					fi
+#				fi
+#			fi
     
 			case "$bootloader" in
 				grub) grub_config ;;
