@@ -16,7 +16,7 @@
 ###############################################################
 
 # Set the version here
-export version="arch-anywhere-2.2.7-1-dual.iso"
+export version="arch-anywhere-2.2.8-x86_64.iso"
 
 # Set the ISO label here
 export iso_label="ARCH_ANY227"
