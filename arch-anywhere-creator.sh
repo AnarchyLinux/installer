@@ -76,7 +76,7 @@ if [ "$iso_ver" != "$iso" ]; then
 	if [ -z "$iso" ]; then
 		echo -en "\nNo archiso found under $aa\nWould you like to download now? [y/N]: "
 		read input
-    
+
 		case "$input" in
 			y|Y|yes|Yes|yY|Yy|yy|YY) update=true
 			;;
@@ -87,7 +87,7 @@ if [ "$iso_ver" != "$iso" ]; then
 	else
 		echo -en "An updated version of the archiso is available for download\n'$iso_ver'\nDownload now? [y/N]: "
 		read input
-		
+
 		case "$input" in
 			y|Y|yes|Yes|yY|Yy|yy|YY) update=true
 			;;
@@ -96,7 +96,7 @@ if [ "$iso_ver" != "$iso" ]; then
 			;;
 		esac
 	fi
-	
+
 	if "$update" ; then
 		cd "$aa"
 		wget "$archiso_link"
@@ -109,11 +109,11 @@ if [ "$iso_ver" != "$iso" ]; then
 fi
 
 init() {
-	
+
 	if [ -d "$customiso" ]; then
 		sudo rm -rf "$customiso"
 	fi
-	
+
 	# Extract archiso to mntdir and continue with build
 	7z x "$iso" -o"$customiso"
 	builds
@@ -152,7 +152,7 @@ builds() {
 }
 
 prepare_sys() {
-	
+
 ### Set system architecture
 	sys=x86_64
 
@@ -179,6 +179,7 @@ prepare_sys() {
 ### Copy over main arch anywhere config, installer script, and arch-wiki,  make executeable
 	sudo cp "$aa"/etc/arch-anywhere.conf "$customiso"/arch/"$sys"/squashfs-root/etc/
 	sudo cp "$aa"/arch-installer.sh "$customiso"/arch/"$sys"/squashfs-root/usr/bin/arch-anywhere
+	sudo cp "$aa"/packages "$customiso"/arch/"$sys"/squashfs-root/etc/
 	sudo cp "$aa"/extra/{sysinfo,iptest} "$customiso"/arch/"$sys"/squashfs-root/usr/bin/
 	sudo chmod +x "$customiso"/arch/"$sys"/squashfs-root/usr/bin/{arch-anywhere,sysinfo,iptest}
 
@@ -210,21 +211,21 @@ prepare_sys() {
 	sudo mksquashfs squashfs-root airootfs.sfs -b 1024k -comp xz
 	sudo rm -r squashfs-root
 	md5sum airootfs.sfs > airootfs.md5
-	
+
 ### Begin configure boot function
 	configure_boot
 
 }
 
 configure_boot() {
-	
+
 	archiso_label=$(<"$customiso"/loader/entries/archiso-x86_64.conf awk 'NR==5{print $NF}' | sed 's/.*=//')
 	archiso_hex=$(<<<"$archiso_label" xxd -p)
 	iso_hex=$(<<<"$iso_label" xxd -p)
 	cp "$aa"/boot/splash.png "$customiso"/arch/boot/syslinux
 	cp "$aa"/boot/iso/archiso_head.cfg "$customiso"/arch/boot/syslinux
 	sed -i "s/$archiso_label/$iso_label/" "$customiso"/loader/entries/archiso-x86_64.conf
-	sed -i "s/$archiso_label/$iso_label/" "$customiso"/arch/boot/syslinux/archiso_sys.cfg 
+	sed -i "s/$archiso_label/$iso_label/" "$customiso"/arch/boot/syslinux/archiso_sys.cfg
 	sed -i "s/$archiso_label/$iso_label/" "$customiso"/arch/boot/syslinux/archiso_pxe.cfg
 	cd "$customiso"/EFI/archiso/
 	echo -e "Replacing label hex in efiboot.img...\n$archiso_label $archiso_hex > $iso_label $iso_hex"
