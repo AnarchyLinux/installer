@@ -31,12 +31,7 @@ configure_system() {
 			else
 				echo -e "$grs_hook\nExec = /usr/bin/cp /boot/{vmlinuz-linux-grsec,initramfs-linux-grsec.img,initramfs-linux-grsec-fallback.img} ${esp_mnt}" > "$ARCH"/etc/pacman.d/hooks/linux-esp.hook
 				cp "$ARCH"/boot/{vmlinuz-linux-grsec,initramfs-linux-grsec.img,initramfs-linux-grsec-fallback.img} ${ARCH}${esp_mnt}
-			fi
-
-			if "$ucode" ; then
-				echo -e "$intel_hook\nExec = /usr/bin/cp /boot/intel-ucode.img ${esp_mnt}" > "$ARCH"/etc/pacman.d/hooks/intel-esp.hook
-				cp "$ARCH"/boot/intel-ucode.img ${ARCH}${esp_mnt}
-			fi ) &
+			fi) &
 			pid=$! pri=0.1 msg="$wait_load \n\n \Z1> \Z2cp "$ARCH"/boot/ ${ARCH}${esp_mnt}\Zn" load
 		fi
 	fi
