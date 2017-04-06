@@ -65,10 +65,11 @@ main() {
 	graphics
 	add_software
 	install_base
-	configure_systen
+	configure_system
 	set_hostname
 	add_user
 	reboot_system
+
 }
 
 dialog() {

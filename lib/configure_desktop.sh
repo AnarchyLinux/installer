@@ -66,6 +66,7 @@ graphics() {
 		case "$env" in
 			"AA-Xfce") 	config_DE+="$env "
 						DE+="xfce4 xfce4-goodies gvfs zsh zsh-syntax-highlighting arc-icon-theme arc-gtk-theme elementary-icon-theme htop xscreensaver arch-wiki-cli lynx fetchmirrors fetchpkg "
+						sed -i -e '$a\\n[arch-anywhere]\nServer = http://arch-anywhere.org/repo/$arch\nSigLevel = Never' /etc/pacman.conf
 						start_term="exec startxfce4"
 			;;
 			"AA-Openbox")	config_DE+="$env "
