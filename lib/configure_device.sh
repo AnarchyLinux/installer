@@ -471,7 +471,7 @@ part_class() {
 		unset DRIVE ROOT
 		return
 	else
-        part_size=$(<<<"$device_list" grep -w "$part" | awk '{print $2}')
+		part_size=$(<<<"$device_list" grep -w "$part" | awk '{print $2}')
 		part_type=$(<<<"$device_list" grep -w "$part" | awk '{print $3}')
 		part_fs=$(<<<"$device_list" grep -w "$part" | awk '{print $4}')
 		part_mount=$(df | grep -w "$part" | awk '{print $6}' | sed 's/mnt\/\?//')
