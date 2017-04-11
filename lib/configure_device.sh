@@ -420,7 +420,9 @@ part_menu() {
 		test -z "$dev_mnt" && dev_mnt=$empty_value
 
 		if [ "$dev_fs" != "$empty_value" ] && (<<<"$device" egrep -v "md[0-9]+$" &> /dev/null); then
-			if (fdisk -l | grep "gpt" &>/dev/null) then
+			parent_device=$(lsblk -dnro PKNAME /dev/$device)
+			pt_type=$(blkid -s PTTYPE -o value /dev/$parent_device)
+			if [ "$pt_type" == "gpt" ]; then
 				part_type_uuid=$(fdisk -l -o Device,Type-UUID | grep -w "$device" | awk '{print $2}')
 
 				if [ $part_type_uuid == "0FC63DAF-8483-4772-8E79-3D69D8477DE4" ] ||
