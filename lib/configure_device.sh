@@ -645,7 +645,7 @@ part_class() {
 							if [ $(</tmp/ex_status.var) -eq "0" ]; then
 								mounted=true
 								ROOT="$part"
-								DRIVE=$(<<<$part sed 's/[0-9]\+$//;/[0-9]/s/p$//')
+								DRIVE=$(lsblk -dnro PKNAME /dev/$part)
 							else
 								dialog --ok-button "$ok" --msgbox "\n$part_err_msg1" 10 60
 								return
