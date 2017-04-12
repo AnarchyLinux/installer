@@ -62,7 +62,7 @@ prepare_drives() {
 				drive_byte=$(lsblk -nibo NAME,SIZE | grep -w "$DRIVE" | awk '{print $2}')
 				drive_mib=$((drive_byte/1024/1024))
 				drive_gigs=$((drive_mib/1024))
-				f2fs=$(cat /sys/block/"$DRIVE"/queue/rotational)
+				f2fs=$(lsblk -dnro ROTA /dev/$DRIVE)
 				echo "$(date -u "+%F %H:%M") : Drive size in MB: $drive_mib" >> "$log"
 				echo "$(date -u "+%F %H:%M") : F2FS state: $f2fs" >> "$log"
 				fs_select
@@ -420,7 +420,9 @@ part_menu() {
 		test -z "$dev_mnt" && dev_mnt=$empty_value
 
 		if [ "$dev_fs" != "$empty_value" ] && (<<<"$device" egrep -v "md[0-9]+$" &> /dev/null); then
-			if (fdisk -l | grep "gpt" &>/dev/null) then
+			parent_device=$(lsblk -dnro PKNAME /dev/$device)
+			pt_type=$(blkid -s PTTYPE -o value /dev/$parent_device)
+			if [ "$pt_type" == "gpt" ]; then
 				part_type_uuid=$(fdisk -l -o Device,Type-UUID | grep -w "$device" | awk '{print $2}')
 
 				if [ $part_type_uuid == "0FC63DAF-8483-4772-8E79-3D69D8477DE4" ] ||
@@ -469,7 +471,7 @@ part_class() {
 		unset DRIVE ROOT
 		return
 	else
-        part_size=$(<<<"$device_list" grep -w "$part" | awk '{print $2}')
+		part_size=$(<<<"$device_list" grep -w "$part" | awk '{print $2}')
 		part_type=$(<<<"$device_list" grep -w "$part" | awk '{print $3}')
 		part_fs=$(<<<"$device_list" grep -w "$part" | awk '{print $4}')
 		part_mount=$(df | grep -w "$part" | awk '{print $6}' | sed 's/mnt\/\?//')
@@ -614,11 +616,7 @@ part_class() {
 			case "$part_size" in
 				[4-9]G|[1-9][0-9]*G|[4-9].*G|[4-9],*G|T)
 					if (dialog --yes-button "$yes" --no-button "$no" --defaultno --yesno "\n$root_var" 13 60) then
-						if (<<<"$part" egrep "md[0-9]+$" &> /dev/null); then
-							f2fs=$(cat /sys/block/$part/queue/rotational)
-						else
-							f2fs=$(cat /sys/block/$(echo $part | sed 's/[0-9]\+$//;/[0-9]/s/p$//')/queue/rotational)
-						fi
+						f2fs=$(lsblk -dnro ROTA /dev/$part)
 						fs_select
 
 						if [ "$?" -gt "0" ]; then
@@ -649,7 +647,7 @@ part_class() {
 							if [ $(</tmp/ex_status.var) -eq "0" ]; then
 								mounted=true
 								ROOT="$part"
-								DRIVE=$(<<<$part sed 's/[0-9]\+$//;/[0-9]/s/p$//')
+								DRIVE=$(lsblk -dnro PKNAME /dev/$part)
 							else
 								dialog --ok-button "$ok" --msgbox "\n$part_err_msg1" 10 60
 								return
@@ -730,7 +728,7 @@ part_class() {
 
 			if [ "$mnt" != "SWAP" ]; then
 				if (dialog --yes-button "$yes" --no-button "$no" --defaultno --yesno "\n$part_frmt_msg" 11 50) then
-					f2fs=$(cat /sys/block/$(echo $part | sed 's/[0-9]\+$//;/[0-9]/s/p$//')/queue/rotational)
+					f2fs=$(lsblk -dnro ROTA /dev/$part)
 
 					if [ "$mnt" == "/boot" ] || [ "$mnt" == "/boot/EFI" ] || [ "$mnt" == "/boot/efi" ]; then
 						f2fs=1
