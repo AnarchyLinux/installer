@@ -137,7 +137,7 @@ graphics() {
 						start_term="exec cinnamon-session"
 			;;
 			"lxde") if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$gtk3_var" 10 60) then
-						DE=+"lxde-gtk3 "
+						DE+="lxde-gtk3 "
 						GTK3=true
 					else
 						DE+="lxde "
