@@ -401,8 +401,8 @@ part_menu() {
 	until [ "$int" -gt "$device_count" ]
 	do
 		device=$(<<<"$device_list" awk '{print $1}' | awk "NR==$int")
+		parent_device=$(lsblk -dnro PKNAME /dev/$device)
 		dev_size=$(<<<"$device_list" grep -w "$device" | awk '{print $2}')
-		dev_type=$(<<<"$device_list" grep -w "$device" | awk '{print $3}')
 		dev_fs=$(<<<"$device_list" grep -w "$device" | awk '{print $4}')
 		dev_mnt=$(df | grep -w "$device" | awk '{print $6}' | sed 's/mnt\/\?//')
 
@@ -419,34 +419,10 @@ part_menu() {
 		test -z "$dev_used" && dev_used=$empty_value
 		test -z "$dev_mnt" && dev_mnt=$empty_value
 
-		if [ "$dev_fs" != "$empty_value" ] && (<<<"$device" egrep -v "md[0-9]+$" &> /dev/null); then
-			parent_device=$(lsblk -dnro PKNAME /dev/$device)
-			pt_type=$(blkid -s PTTYPE -o value /dev/$parent_device)
-			if [ "$pt_type" == "gpt" ]; then
-				part_type_uuid=$(fdisk -l -o Device,Type-UUID /dev/$parent_device | grep -w "$device" | awk '{print $2}')
-
-				if [ $part_type_uuid == "0FC63DAF-8483-4772-8E79-3D69D8477DE4" ] ||
-				   [ $part_type_uuid == "44479540-F297-41B2-9AF7-D131D5F0458A" ] ||
-				   [ $part_type_uuid == "4F68BCE3-E8CD-4DB1-96E7-FBCAF984B709" ]; then
-					dev_type="Linux"
-				elif [ $part_type_uuid == "0657FD6D-A4AB-43C4-84E5-0933C84B4F4F" ]; then
-					dev_type="Linux/SWAP"
-				elif [ $part_type_uuid == "C12A7328-F81F-11D2-BA4B-00A0C93EC93B" ]; then
-					dev_type="EFI/ESP"
-				else
-					dev_type=$part_type_uuid
-				fi
-			else
-				part_type_id=$(fdisk -l -o Device,Id /dev/$parent_device | grep -w "$device" | awk '{print $2}')
-
-				if [ $part_type_id == "83" ]; then
-					dev_type="Linux"
-				elif [ $part_type_id == "82" ]; then
-					dev_type="Linux/SWAP"
-				else
-					dev_type=$part_type_id
-				fi
-			fi
+		if [ -z "$parent_device" ]; then
+			dev_type=$(<<<"$device_list" grep -w "$device" | awk '{print $3}')
+		else
+			dev_type=$(fdisk -lo Device,Type /dev/$parent_device | grep -w "$device" | cut -d ' ' -f 2- | sed -e 's/^[[:space:]]*//;s/[[:space:]]*$//')
 		fi
 
 		echo "\"$device\" \"$dev_size $dev_used $dev_fs $dev_mnt $dev_type\" \\" >> "$tmp_list"
