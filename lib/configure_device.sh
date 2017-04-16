@@ -422,7 +422,7 @@ part_menu() {
 		if [ -z "$parent_device" ]; then
 			dev_type=$(<<<"$device_list" grep -w "$device" | awk '{print $3}')
 		else
-			dev_type=$(fdisk -lo Device,Type /dev/$parent_device | grep -w "$device" | cut -d ' ' -f 2- | sed -e 's/^[[:space:]]*//;s/[[:space:]]*$//')
+			dev_type=$(fdisk -lo Device,Type /dev/$parent_device | grep -w "$device" | cut -d ' ' -f 2- | sed -e 's/^[[:space:]]*//;s/[[:space:]]*$//;s/ /_/g')
 		fi
 
 		echo "\"$device\" \"$dev_size $dev_used $dev_fs $dev_mnt $dev_type\" \\" >> "$tmp_list"
