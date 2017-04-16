@@ -415,7 +415,7 @@ part_menu() {
 			fi
 		fi
 
-		test -z "$dev_fs" && dev_fs=$empty_value
+		test -z "$dev_fs" || test "$dev_fs" == "linux_raid_member" && dev_fs=$empty_value
 		test -z "$dev_used" && dev_used=$empty_value
 		test -z "$dev_mnt" && dev_mnt=$empty_value
 
