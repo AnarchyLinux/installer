@@ -28,6 +28,9 @@ configure_system() {
 			elif [ "$kernel" == "linux-lts" ]; then
 				echo -e "$lts_hook\nExec = /usr/bin/cp /boot/{vmlinuz-linux-lts,initramfs-linux-lts.img,initramfs-linux-lts-fallback.img} ${esp_mnt}" > "$ARCH"/etc/pacman.d/hooks/linux-esp.hook
 				cp "$ARCH"/boot/{vmlinuz-linux-lts,initramfs-linux-lts.img,initramfs-linux-lts-fallback.img} ${ARCH}${esp_mnt}
+			elif [ "$kernel" == "linux-zen" ]; then
+                                echo -e "$zen_hook\nExec = /usr/bin/cp /boot/{vmlinuz-linux-zen,initramfs-linux-zen.img,initramfs-linux-zen-fallback.img} ${esp_mnt}" > "$ARCH"/etc/pacman.d/hooks/linux-esp.hook
+                                cp "$ARCH"/boot/{vmlinuz-linux-zen,initramfs-linux-zen.img,initramfs-linux-zen-fallback.img} ${ARCH}${esp_mnt}
 			else
 				echo -e "$grs_hook\nExec = /usr/bin/cp /boot/{vmlinuz-linux-grsec,initramfs-linux-grsec.img,initramfs-linux-grsec-fallback.img} ${esp_mnt}" > "$ARCH"/etc/pacman.d/hooks/linux-esp.hook
 				cp "$ARCH"/boot/{vmlinuz-linux-grsec,initramfs-linux-grsec.img,initramfs-linux-grsec-fallback.img} ${ARCH}${esp_mnt}
