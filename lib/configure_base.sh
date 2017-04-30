@@ -21,11 +21,13 @@ prepare_base() {
 	while (true)
 	  do
 		install_menu=$(dialog --ok-button "$ok" --cancel-button "$cancel" --menu "$install_type_msg" 14 64 5 \
-			"Arch-Linux-Base" 			"$base_msg0" \
+			"Arch-Linux-Base" 		"$base_msg0" \
 			"Arch-Linux-Base-Devel" 	"$base_msg1" \
-			"Arch-Linux-GrSec"			"$grsec_msg" \
+			"Arch-Linux-GrSec"		"$grsec_msg" \
 			"Arch-Linux-LTS-Base" 		"$LTS_msg0" \
-			"Arch-Linux-LTS-Base-Devel" "$LTS_msg1" 3>&1 1>&2 2>&3)
+			"Arch-Linux-LTS-Base-Devel"	"$LTS_msg1" \
+			"Arch-Linux-Zen"		"$zen_msg0" \
+			"Arch-Linux-Zen-Devel"		"$zen_msg1" 3>&1 1>&2 2>&3)
 		if [ "$?" -gt "0" ]; then
 			if (dialog --defaultno --yes-button "$yes" --no-button "$no" --yesno "\n$exit_msg" 10 60) then
 				main_menu
@@ -50,6 +52,12 @@ prepare_base() {
 		;;
 		"Arch-Linux-LTS-Base-Devel")
 			base_install="base-devel linux-lts linux-lts-headers " kernel="linux-lts"
+		;;
+		"Arch-Linux-Zen")
+			base_install="linux-zen linux-zen-headers " kernel="linux-zen"
+		;;
+		"Arch-Linux-Zen-Devel")
+			base_install="base-devel linux-zen linux-zen-headers " kernel="linux-zen"
 		;;
 	esac
 

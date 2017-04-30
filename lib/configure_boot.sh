@@ -64,6 +64,10 @@ syslinux_config() {
 			sed -i 's/vmlinuz-linux/vmlinuz-linux-grsec/' ${ARCH}${esp_mnt}/EFI/syslinux/syslinux.cfg
 			sed -i 's/initramfs-linux.img/initramfs-linux-grsec.img/' ${ARCH}${esp_mnt}/EFI/syslinux/syslinux.cfg
 			sed -i 's/initramfs-linux-fallback.img/initramfs-linux-grsec-fallback.img/' ${ARCH}${esp_mnt}/EFI/syslinux/syslinux.cfg
+		elif [ "$kernel" == "linux-zen" ]; then
+			sed -i 's/vmlinuz-linux/vmlinuz-linux-zen/' ${ARCH}${esp_mnt}/EFI/syslinux/syslinux.cfg
+			sed -i 's/initramfs-linux.img/initramfs-linux-zen.img/' ${ARCH}${esp_mnt}/EFI/syslinux/syslinux.cfg
+			sed -i 's/initramfs-linux-fallback.img/initramfs-linux-zen-fallback.img/' ${ARCH}${esp_mnt}/EFI/syslinux/syslinux.cfg
 		fi
 
 		arch-chroot "$ARCH" efibootmgr -c -d /dev/"$esp_part" -p "$esp_part_int" -l /EFI/syslinux/syslinux.efi -L "Syslinux") &> /dev/null &
@@ -93,6 +97,10 @@ syslinux_config() {
 			sed -i 's/vmlinuz-linux/vmlinuz-linux-grsec/' ${ARCH}/boot/syslinux/syslinux.cfg
 			sed -i 's/initramfs-linux.img/initramfs-linux-grsec.img/' ${ARCH}/boot/syslinux/syslinux.cfg
 			sed -i 's/initramfs-linux-fallback.img/initramfs-linux-grsec-fallback.img/' ${ARCH}/boot/syslinux/syslinux.cfg
+		elif [ "$kernel" == "linux-zen" ]; then
+			sed -i 's/vmlinuz-linux/vmlinuz-linux-zen/' ${ARCH}/boot/syslinux/syslinux.cfg
+			sed -i 's/initramfs-linux.img/initramfs-linux-zen.img/' ${ARCH}/boot/syslinux/syslinux.cfg
+			sed -i 's/initramfs-linux-fallback.img/initramfs-linux-zen-fallback.img/' ${ARCH}/boot/syslinux/syslinux.cfg
 		fi
 
 		if "$crypted" ; then
@@ -120,6 +128,8 @@ systemd_config() {
 		echo -e "title          Arch Linux\nlinux          /vmlinuz-linux\ninitrd         /initramfs-linux.img" > ${ARCH}${esp_mnt}/loader/entries/arch.conf
 	elif [ "$kernel" == "linux-lts" ]; then
 		echo -e "title          Arch Linux\nlinux          /vmlinuz-linux-lts\ninitrd         /initramfs-linux-lts.img" > ${ARCH}${esp_mnt}/loader/entries/arch.conf
+	elif [ "$kernel" == "linux-zen" ]; then
+		echo -e "title          Arch Linux\nlinux          /vmlinuz-linux-zen\ninitrd         /initramfs-linux-zen.img" > ${ARCH}${esp_mnt}/loader/entries/arch.conf
 	else
 		echo -e "title          Arch Linux\nlinux          /vmlinuz-linux-grsec\ninitrd         /initramfs-linux-grsec.img" > ${ARCH}${esp_mnt}/loader/entries/arch.conf
 	fi
