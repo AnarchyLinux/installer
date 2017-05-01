@@ -28,12 +28,12 @@ configure_system() {
 			elif [ "$kernel" == "linux-lts" ]; then
 				echo -e "$lts_hook\nExec = /usr/bin/cp /boot/{vmlinuz-linux-lts,initramfs-linux-lts.img,initramfs-linux-lts-fallback.img} ${esp_mnt}" > "$ARCH"/etc/pacman.d/hooks/linux-esp.hook
 				cp "$ARCH"/boot/{vmlinuz-linux-lts,initramfs-linux-lts.img,initramfs-linux-lts-fallback.img} ${ARCH}${esp_mnt}
+			elif [ "$kernel" == "linux-hardened" ]; then
+				echo -e "$hardened_hook\nExec = /usr/bin/cp /boot/{vmlinuz-linux-hardened,initramfs-linux-hardened.img,initramfs-linux-hardened-fallback.img} ${esp_mnt}" > "$ARCH"/etc/pacman.d/hooks/linux-esp.hook
+				cp "$ARCH"/boot/{vmlinuz-linux-hardened,initramfs-linux-hardened.img,initramfs-linux-hardened-fallback.img} ${ARCH}${esp_mnt}
 			elif [ "$kernel" == "linux-zen" ]; then
                                 echo -e "$zen_hook\nExec = /usr/bin/cp /boot/{vmlinuz-linux-zen,initramfs-linux-zen.img,initramfs-linux-zen-fallback.img} ${esp_mnt}" > "$ARCH"/etc/pacman.d/hooks/linux-esp.hook
                                 cp "$ARCH"/boot/{vmlinuz-linux-zen,initramfs-linux-zen.img,initramfs-linux-zen-fallback.img} ${ARCH}${esp_mnt}
-			else
-				echo -e "$grs_hook\nExec = /usr/bin/cp /boot/{vmlinuz-linux-grsec,initramfs-linux-grsec.img,initramfs-linux-grsec-fallback.img} ${esp_mnt}" > "$ARCH"/etc/pacman.d/hooks/linux-esp.hook
-				cp "$ARCH"/boot/{vmlinuz-linux-grsec,initramfs-linux-grsec.img,initramfs-linux-grsec-fallback.img} ${ARCH}${esp_mnt}
 			fi) &
 			pid=$! pri=0.1 msg="$wait_load \n\n \Z1> \Z2cp "$ARCH"/boot/ ${ARCH}${esp_mnt}\Zn" load
 		fi
