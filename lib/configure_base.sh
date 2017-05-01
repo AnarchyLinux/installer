@@ -23,7 +23,8 @@ prepare_base() {
 		install_menu=$(dialog --ok-button "$ok" --cancel-button "$cancel" --menu "$install_type_msg" 14 64 5 \
 			"Arch-Linux-Base" 		"$base_msg0" \
 			"Arch-Linux-Base-Devel" 	"$base_msg1" \
-			"Arch-Linux-GrSec"		"$grsec_msg" \
+			"Arch-Linux-Hardened"		"$hardened_msg0" \
+			"Arch-Linux-Hardened-Devel"	"$hardened_msg1" \
 			"Arch-Linux-LTS-Base" 		"$LTS_msg0" \
 			"Arch-Linux-LTS-Base-Devel"	"$LTS_msg1" \
 			"Arch-Linux-Zen"		"$zen_msg0" \
@@ -44,8 +45,11 @@ prepare_base() {
 		"Arch-Linux-Base-Devel")
 			base_install="base-devel linux-headers " kernel="linux"
 		;;
-		"Arch-Linux-GrSec")
-			base_install="base-devel linux-grsec linux-grsec-headers " kernel="linux-grsec"
+		"Arch-Linux-Hardened")
+			base_install="linux-hardened linux-hardened-headers " kernel="linux-hardened"
+		;;
+		"Arch-Linux-Hardened-Devel")
+			base_install="base-devel linux-hardened linux-hardened-headers " kernel="linux-hardened"
 		;;
 		"Arch-Linux-LTS-Base")
 			base_install="linux-lts linux-lts-headers sudo " kernel="linux-lts"

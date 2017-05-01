@@ -60,10 +60,10 @@ syslinux_config() {
 			sed -i 's/vmlinuz-linux/vmlinuz-linux-lts/' ${ARCH}${esp_mnt}/EFI/syslinux/syslinux.cfg
 			sed -i 's/initramfs-linux.img/initramfs-linux-lts.img/' ${ARCH}${esp_mnt}/EFI/syslinux/syslinux.cfg
 			sed -i 's/initramfs-linux-fallback.img/initramfs-linux-lts-fallback.img/' ${ARCH}${esp_mnt}/EFI/syslinux/syslinux.cfg
-		elif [ "$kernel" == "linux-grsec" ]; then
-			sed -i 's/vmlinuz-linux/vmlinuz-linux-grsec/' ${ARCH}${esp_mnt}/EFI/syslinux/syslinux.cfg
-			sed -i 's/initramfs-linux.img/initramfs-linux-grsec.img/' ${ARCH}${esp_mnt}/EFI/syslinux/syslinux.cfg
-			sed -i 's/initramfs-linux-fallback.img/initramfs-linux-grsec-fallback.img/' ${ARCH}${esp_mnt}/EFI/syslinux/syslinux.cfg
+		elif [ "$kernel" == "linux-hardened" ]; then
+			sed -i 's/vmlinuz-linux/vmlinuz-linux-hardened/' ${ARCH}${esp_mnt}/EFI/syslinux/syslinux.cfg
+			sed -i 's/initramfs-linux.img/initramfs-linux-hardened.img/' ${ARCH}${esp_mnt}/EFI/syslinux/syslinux.cfg
+			sed -i 's/initramfs-linux-fallback.img/initramfs-linux-hardened-fallback.img/' ${ARCH}${esp_mnt}/EFI/syslinux/syslinux.cfg
 		elif [ "$kernel" == "linux-zen" ]; then
 			sed -i 's/vmlinuz-linux/vmlinuz-linux-zen/' ${ARCH}${esp_mnt}/EFI/syslinux/syslinux.cfg
 			sed -i 's/initramfs-linux.img/initramfs-linux-zen.img/' ${ARCH}${esp_mnt}/EFI/syslinux/syslinux.cfg
@@ -93,10 +93,10 @@ syslinux_config() {
 			sed -i 's/vmlinuz-linux/vmlinuz-linux-lts/' ${ARCH}/boot/syslinux/syslinux.cfg
 			sed -i 's/initramfs-linux.img/initramfs-linux-lts.img/' ${ARCH}/boot/syslinux/syslinux.cfg
 			sed -i 's/initramfs-linux-fallback.img/initramfs-linux-lts-fallback.img/' ${ARCH}/boot/syslinux/syslinux.cfg
-		elif [ "$kernel" == "linux-grsec" ]; then
-			sed -i 's/vmlinuz-linux/vmlinuz-linux-grsec/' ${ARCH}/boot/syslinux/syslinux.cfg
-			sed -i 's/initramfs-linux.img/initramfs-linux-grsec.img/' ${ARCH}/boot/syslinux/syslinux.cfg
-			sed -i 's/initramfs-linux-fallback.img/initramfs-linux-grsec-fallback.img/' ${ARCH}/boot/syslinux/syslinux.cfg
+		elif [ "$kernel" == "linux-hardened" ]; then
+			sed -i 's/vmlinuz-linux/vmlinuz-linux-hardened/' ${ARCH}/boot/syslinux/syslinux.cfg
+			sed -i 's/initramfs-linux.img/initramfs-linux-hardened.img/' ${ARCH}/boot/syslinux/syslinux.cfg
+			sed -i 's/initramfs-linux-fallback.img/initramfs-linux-hardened-fallback.img/' ${ARCH}/boot/syslinux/syslinux.cfg
 		elif [ "$kernel" == "linux-zen" ]; then
 			sed -i 's/vmlinuz-linux/vmlinuz-linux-zen/' ${ARCH}/boot/syslinux/syslinux.cfg
 			sed -i 's/initramfs-linux.img/initramfs-linux-zen.img/' ${ARCH}/boot/syslinux/syslinux.cfg
@@ -128,10 +128,10 @@ systemd_config() {
 		echo -e "title          Arch Linux\nlinux          /vmlinuz-linux\ninitrd         /initramfs-linux.img" > ${ARCH}${esp_mnt}/loader/entries/arch.conf
 	elif [ "$kernel" == "linux-lts" ]; then
 		echo -e "title          Arch Linux\nlinux          /vmlinuz-linux-lts\ninitrd         /initramfs-linux-lts.img" > ${ARCH}${esp_mnt}/loader/entries/arch.conf
+	elif [ "$kernel" == "linux-hardened" ]; then
+		echo -e "title          Arch Linux\nlinux          /vmlinuz-linux-hardened\ninitrd         /initramfs-linux-hardened.img" > ${ARCH}${esp_mnt}/loader/entries/arch.conf
 	elif [ "$kernel" == "linux-zen" ]; then
 		echo -e "title          Arch Linux\nlinux          /vmlinuz-linux-zen\ninitrd         /initramfs-linux-zen.img" > ${ARCH}${esp_mnt}/loader/entries/arch.conf
-	else
-		echo -e "title          Arch Linux\nlinux          /vmlinuz-linux-grsec\ninitrd         /initramfs-linux-grsec.img" > ${ARCH}${esp_mnt}/loader/entries/arch.conf
 	fi
 
 	if "$crypted" ; then
