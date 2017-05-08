@@ -30,6 +30,7 @@ language() {
 		"Indonesian" "bahasa Indonesia" \
 		"Italian" "Italiano" \
 		"Latvian" "Latviešu" \
+		"Lithuanian" "Lietuvių" \
 		"Polish" "Polski" \
 		"Portuguese" "Português" \
 		"Portuguese-Brazilian" "Português do Brasil" \
@@ -49,6 +50,7 @@ language() {
 		"Indonesian") export lang_file="$aa_dir"/lang/arch-installer-indonesia.conf lib=id bro=id kdel=id ;;
 		"Italian") export lang_file="$aa_dir"/lang/arch-installer-italian.conf lib=it bro=it kdel=it ;;
 		"Latvian") export lang_file="$aa_dir"/lang/arch-installer-latvian.conf lib=lv bro=lv kdel=lv ;;
+		"Lithuanian") export lang_file="$aa_dir"/lang/arch-installer-lithuanian.conf lib=lt bro=lt kdel=lt ;;
 		"Polish") export lang_file="$aa_dir"/lang/arch-installer-polish.conf lib=pl bro=pl kdel=pl ;;
 		"Portuguese") export lang_file="$aa_dir"/lang/arch-installer-portuguese.conf lib=pt bro=pt-pt kdel=pt ;;
 		"Portuguese-Brazilian") export lang_file="$aa_dir"/lang/arch-installer-portuguese-br.conf lib=pt-BR bro=pt-br kdel=pt_br ;;
