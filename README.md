@@ -8,7 +8,7 @@ The Arch Anywhere ISO also contains a built in Arch Wiki allowing users to brows
 
 Arch Anywhere aims to provide a polished Arch Linux install experience while leaving open every possible install avenue for the user to choose from.
 
-This is a dual ISO containing support for both i686 (32 bit) and x86_64 (64 bit) systems.
+This is a ISO containing support only for x86_64 (64 bit) systems.
 
 ### Official Arch Linux Anywhere ISO:
 
