@@ -1,0 +1,7 @@
+# This is an example to choose which package you want install
+# This packages are used when you choose the "Own-Packages" option in desktop menu
+#
+# DE+="gnome-shell guake gnome-control-center gnome-tweak-tool mpv lollypop atom nemo chromium transmission-gtk eog gitg "
+# start_term="exec gnome-session"
+DE+="gnome-shell guake gnome-control-center gnome-tweak-tool "
+start_term="exec gnome-session"

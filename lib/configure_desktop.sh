@@ -29,6 +29,7 @@ graphics() {
 		de=$(dialog --separate-output --ok-button "$done_msg" --cancel-button "$cancel" --checklist "$environment_msg" 24 60 15 \
 			"AA-Xfce"			"$de15" OFF \
 			"AA-Openbox"		"$de18" OFF \
+			"Own-Packages"      "$de19" OFF \
 			"budgie"			"$de17" OFF \
 			"cinnamon"      	"$de5" OFF \
 			"deepin"			"$de14" OFF \
@@ -74,6 +75,8 @@ graphics() {
 							sed -i -e '$a\\n[arch-anywhere]\nServer = http://arch-anywhere.org/repo/$arch\nSigLevel = Never' /etc/pacman.conf
 							start_term="exec openbox-session"
 			;;
+			"Own-Packages") source /etc/packages
+			;;
 			"xfce4") 	DE+="xfce4 "
 						if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$extra_msg0" 10 60) then
 							DE+="xfce4-goodies "
@@ -107,18 +110,18 @@ graphics() {
 			;;
 			"KDE plasma")	if (dialog --defaultno --yes-button "$yes" --no-button "$no" --yesno "\n$extra_msg3" 10 60) then
 								DE+="plasma-desktop sddm konsole dolphin plasma-nm plasma-pa libxshmfence kscreen "
-    
+
 								if "$LAPTOP" ; then
 									DE+="powerdevil "
 								fi
 							else
 								DE+="plasma kde-applications "
 							fi
-    
+
 							if [ -n "$kdel" ]; then
 								DE+="kde-l10n-$kdel "
 							fi
-    
+
 							start_term="exec startkde"
 			;;
 			"deepin")	DE+="deepin "
@@ -294,7 +297,7 @@ graphics() {
 	done
 
 	DE+="$GPU xdg-user-dirs xorg-server xorg-server-utils xorg-xinit xterm ttf-dejavu gvfs pulseaudio pavucontrol pulseaudio-alsa alsa-utils unzip "
-	
+
 	if [ "$net_util" == "networkmanager" ] ; then
 		if (<<<"$DE" grep "plasma" &> /dev/null); then
 			DE+="plasma-nm "
