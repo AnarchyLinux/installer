@@ -23,7 +23,7 @@ update_mirrors() {
 	fi
 
 	## Until connected loop
-	until wget -q --spider google.com &>/dev/null
+	until wget -q --spider github.com &>/dev/null
 	  do
 		if [ -n "$wifi_network" ]; then
 			if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$wifi_msg0" 10 60) then
