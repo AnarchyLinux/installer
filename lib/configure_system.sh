@@ -81,7 +81,7 @@ configure_system() {
 			echo "/dev/mapper/swap     none            swap          sw                    0       0" >> "$ARCH"/etc/fstab
 			echo "swap	/dev/lvm/swap	/dev/urandom	swap,cipher=aes-xts-plain64,size=256" >> "$ARCH"/etc/crypttab
 		fi
-		sed -i 's/HOOKS=.*/HOOKS="base udev autodetect keymap keyboard consolefont modconf block encrypt lvm2 filesystems fsck"/' "$ARCH"/etc/mkinitcpio.conf
+		sed -i 's/HOOKS=.*/HOOKS="base udev autodetect keyboard keymap consolefont modconf block encrypt lvm2 filesystems fsck"/' "$ARCH"/etc/mkinitcpio.conf
 		arch-chroot "$ARCH" mkinitcpio -p "$kernel") &> /dev/null &
 		pid=$! pri=1 msg="\n$encrypt_load1 \n\n \Z1> \Z2mkinitcpio -p $kernel\Zn" load
 		echo "$(date -u "+%F %H:%M") : Configure system for encryption" >> "$log"
