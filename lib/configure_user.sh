@@ -44,7 +44,7 @@ add_user() {
 						dialog --ok-button "$ok" --msgbox "\n$user_err_msg2" 10 60
 					elif (grep -w "$user" "$ARCH"/etc/passwd &>/dev/null); then
 						dialog --ok-button "$ok" --msgbox "\n$user_err_msg1" 10 60
-					elif (<<<$user grep "^[0-9]\|[A-Z\[\$\!\'\"\`\\|%&#@()_-+=<>~;:/?.,^{}]\|]" &> /dev/null); then
+					elif (<<<"$user" egrep "^[0-9]\|[A-Z\[\$\!\'\"\`\\|%&#@()_-+=<>~;:/?.,^{}]\|]" &> /dev/null); then
 						dialog --ok-button "$ok" --msgbox "\n$user_err_msg" 10 60
 					else
 						arch-chroot "$ARCH" useradd -m -g users -G audio,network,power,storage,optical -s "$sh" "$user" &>/dev/null &
