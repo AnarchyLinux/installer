@@ -454,6 +454,10 @@ part_class() {
 		part_mount=$(df | grep -w "$part" | awk '{print $6}' | sed 's/mnt\/\?//')
 	fi
 
+	if [ "$part_type" == "lvm" ]; then
+		part=${part/-//}
+	fi
+
 	if [ "$part_fs" == "linux_raid_member" ]; then # do nothing
 		part_menu
 	elif ([ "$part_type" == "disk" ]) || ( (<<<"$part_type" egrep "raid[0-9]+" &> /dev/null) && [ -z "$part_fs" ] ); then # Partition
