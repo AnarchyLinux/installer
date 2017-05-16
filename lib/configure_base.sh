@@ -390,7 +390,6 @@ add_software() {
 				;;
 				"$terminal")
 					software=$(dialog --ok-button "$ok" --cancel-button "$cancel" --checklist "$software_msg1" 18 63 8 \
-						"fbterm"			"$term0" OFF \
 						"guake"             "$term1" OFF \
 						"kmscon"			"$term2" OFF \
 						"pantheon-terminal"	"$term3" OFF \
