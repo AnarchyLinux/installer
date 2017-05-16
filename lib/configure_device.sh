@@ -387,7 +387,7 @@ part_menu() {
 	op_title="$manual_op_msg"
 	unset part
 	dev_menu="|  Device:  |  Size:  |  Used:  |  FS:  |  Mount:  |  Type:  |"
-	device_list=$(lsblk -nio NAME,SIZE,TYPE,FSTYPE | egrep -v "$USB|loop[0-9]+|sr[0-9]+|fd[0-9]+" | sed 's/[^[:alnum:]_., ]//g' | column -t | sort -k 1,1 | uniq)
+	device_list=$(lsblk -no NAME,SIZE,TYPE,FSTYPE | egrep -v "$USB|loop[0-9]+|sr[0-9]+|fd[0-9]+" | sed 's/[^[:alnum:]_-., ]//g' | column -t | sort -k 1,1 | uniq)
 	device_count=$(<<<"$device_list" wc -l)
 
 	if "$screen_h" ; then
@@ -401,8 +401,8 @@ part_menu() {
 	until [ "$int" -gt "$device_count" ]
 	do
 		device=$(<<<"$device_list" awk '{print $1}' | awk "NR==$int")
-		parent_device=$(lsblk -dnro PKNAME /dev/$device)
 		dev_size=$(<<<"$device_list" grep -w "$device" | awk '{print $2}')
+		dev_type=$(<<<"$device_list" grep -w "$device" | awk '{print $3}')
 		dev_fs=$(<<<"$device_list" grep -w "$device" | awk '{print $4}')
 		dev_mnt=$(df | grep -w "$device" | awk '{print $6}' | sed 's/mnt\/\?//')
 
@@ -419,6 +419,7 @@ part_menu() {
 		test -z "$dev_used" && dev_used=$empty_value
 		test -z "$dev_mnt" && dev_mnt=$empty_value
 
+		parent_device=$(lsblk -dnro PKNAME /dev/${device/-//})
 		if [ -z "$parent_device" ]; then
 			dev_type=$(<<<"$device_list" grep -w "$device" | awk '{print $3}')
 		else
@@ -451,6 +452,10 @@ part_class() {
 		part_type=$(<<<"$device_list" grep -w "$part" | awk '{print $3}')
 		part_fs=$(<<<"$device_list" grep -w "$part" | awk '{print $4}')
 		part_mount=$(df | grep -w "$part" | awk '{print $6}' | sed 's/mnt\/\?//')
+	fi
+
+	if [ "$part_type" == "lvm" ]; then
+		part=${part/-//}
 	fi
 
 	if [ "$part_fs" == "linux_raid_member" ]; then # do nothing
@@ -623,7 +628,12 @@ part_class() {
 							if [ $(</tmp/ex_status.var) -eq "0" ]; then
 								mounted=true
 								ROOT="$part"
-								DRIVE=$(lsblk -dnro PKNAME /dev/$part)
+								if [ "$part_type" == "lvm" ]; then
+									lvm_pv=$(lvdisplay -m | grep -A 20 /dev/$part | grep "Physical volume" | sed 's/^\s\+//g;s/\s\+/ /g' | cut -d ' ' -f 3)
+									DRIVE=$(lsblk -dnro PKNAME $lvm_pv)
+								else
+									DRIVE=$(lsblk -dnro PKNAME /dev/$part)
+								fi
 							else
 								dialog --ok-button "$ok" --msgbox "\n$part_err_msg1" 10 60
 								return
