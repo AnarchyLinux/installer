@@ -628,7 +628,12 @@ part_class() {
 							if [ $(</tmp/ex_status.var) -eq "0" ]; then
 								mounted=true
 								ROOT="$part"
-								DRIVE=$(lsblk -dnro PKNAME /dev/$part)
+								if [ "$part_type" == "lvm" ]; then
+									lvm_pv=$(lvdisplay -m | grep -A 20 /dev/$part | grep "Physical volume" | sed 's/^\s\+//g;s/\s\+/ /g' | cut -d ' ' -f 3)
+									DRIVE=$(lsblk -dnro PKNAME $lvm_pv)
+								else
+									DRIVE=$(lsblk -dnro PKNAME /dev/$part)
+								fi
 							else
 								dialog --ok-button "$ok" --msgbox "\n$part_err_msg1" 10 60
 								return
