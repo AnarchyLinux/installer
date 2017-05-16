@@ -97,8 +97,8 @@ configure_system() {
 	else
                 (sed -i 's/HOOKS=.*/HOOKS="base udev autodetect keyboard keymap consolefont modconf block lvm2 filesystems fsck"/' "$ARCH"/etc/mkinitcpio.conf
                 arch-chroot "$ARCH" mkinitcpio -p "$kernel") &> /dev/null &
-                pid=$! pri=1 msg="\n$encrypt_load1 \n\n \Z1> \Z2mkinitcpio -p $kernel\Zn" load
-                echo "$(date -u "+%F %H:%M") : Configure system for encryption" >> "$log"
+                pid=$! pri=1 msg="\n$kernel_config_load \n\n \Z1> \Z2mkinitcpio -p $kernel\Zn" load
+                echo "$(date -u "+%F %H:%M") : Configure system with the default mkinitcpio hooks" >> "$log"
 	fi
 
 	(sed -i -e "s/#$LOCALE/$LOCALE/" "$ARCH"/etc/locale.gen
