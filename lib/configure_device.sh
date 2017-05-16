@@ -401,8 +401,8 @@ part_menu() {
 	until [ "$int" -gt "$device_count" ]
 	do
 		device=$(<<<"$device_list" awk '{print $1}' | awk "NR==$int")
-		parent_device=$(lsblk -dnro PKNAME /dev/$device)
 		dev_size=$(<<<"$device_list" grep -w "$device" | awk '{print $2}')
+		dev_type=$(<<<"$device_list" grep -w "$device" | awk '{print $3}')
 		dev_fs=$(<<<"$device_list" grep -w "$device" | awk '{print $4}')
 		dev_mnt=$(df | grep -w "$device" | awk '{print $6}' | sed 's/mnt\/\?//')
 
@@ -419,6 +419,7 @@ part_menu() {
 		test -z "$dev_used" && dev_used=$empty_value
 		test -z "$dev_mnt" && dev_mnt=$empty_value
 
+		parent_device=$(lsblk -dnro PKNAME /dev/${device/-//})
 		if [ -z "$parent_device" ]; then
 			dev_type=$(<<<"$device_list" grep -w "$device" | awk '{print $3}')
 		else
