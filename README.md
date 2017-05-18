@@ -22,10 +22,12 @@ http://arch-anywhere.org/
 ### Features:
 
 * Supported Linux installs:
-	Choose from base or base-devel Arch Linux install <br />
-	Latest Arch Linux kernel <br />
-	LTS Linux kernel (long term support) <br />
-	GreSec Linux kernel (security hardened Linux) <br />
+
+    Choose from base or base-devel Arch Linux install <br />
+    Arch Linux kernel <br />
+    Arch Linux Hardened kernel <br />
+    LTS Linux kernel (long term support) <br />
+    Zen Linux kernel <br />
 
 * Supported partitioning methods include:
 
