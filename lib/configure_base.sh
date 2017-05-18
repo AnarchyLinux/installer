@@ -128,7 +128,7 @@ prepare_base() {
 						mkfs.ext4 -O \^64bit /dev/"$BOOT"
 						mount /dev/"$BOOT" "$mnt") &> /dev/null &
 						pid=$! pri=0.1 msg="\n$boot_load \n\n \Z1> \Z2mkfs.ext4 -O ^64bit /dev/$BOOT\Zn" load
-						base_install+=" $bootloader"
+						base_install+="$bootloader "
 						break
 					fi
 				else
