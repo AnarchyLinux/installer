@@ -42,7 +42,7 @@ add_user() {
 						break
 					elif [ -z "$user" ]; then
 						dialog --ok-button "$ok" --msgbox "\n$user_err_msg2" 10 60
-					elif (grep -w "$user" "$ARCH"/etc/passwd &>/dev/null); then
+					elif (grep "^$user:" "$ARCH"/etc/passwd &>/dev/null); then
 						dialog --ok-button "$ok" --msgbox "\n$user_err_msg1" 10 60
 					elif (<<<"$user" egrep "^[0-9]\|[A-Z\[\$\!\'\"\`\\|%&#@()_-+=<>~;:/?.,^{}]\|]" &> /dev/null); then
 						dialog --ok-button "$ok" --msgbox "\n$user_err_msg" 10 60
