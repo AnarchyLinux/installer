@@ -58,7 +58,7 @@ prepare_base() {
 			base_install="base-devel linux-lts linux-lts-headers " kernel="linux-lts"
 		;;
 		"Arch-Linux-Zen")
-			base_install="linux-zen linux-zen-headers " kernel="linux-zen"
+			base_install="linux-zen linux-zen-headers sudo " kernel="linux-zen"
 		;;
 		"Arch-Linux-Zen-Devel")
 			base_install="base-devel linux-zen linux-zen-headers " kernel="linux-zen"
