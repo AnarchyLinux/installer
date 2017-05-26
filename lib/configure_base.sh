@@ -46,7 +46,7 @@ prepare_base() {
 			base_install="base-devel linux-headers " kernel="linux"
 		;;
 		"Arch-Linux-Hardened")
-			base_install="linux-hardened linux-hardened-headers " kernel="linux-hardened"
+			base_install="linux-hardened linux-hardened-headers sudo " kernel="linux-hardened"
 		;;
 		"Arch-Linux-Hardened-Devel")
 			base_install="base-devel linux-hardened linux-hardened-headers " kernel="linux-hardened"
