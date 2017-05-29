@@ -65,6 +65,7 @@ install_base() {
 				grub) grub_config ;;
 				syslinux) syslinux_config ;;
 				systemd-boot) systemd_config ;;
+				efistub) efistub_config ;;
 			esac
     
 			echo "$(date -u "+%F %H:%M") : Configured bootloader: $bootloader" >> "$log"

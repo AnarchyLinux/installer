@@ -145,3 +145,29 @@ systemd_config() {
 	fi
 
 }
+
+efistub_config() {
+
+	initramfs="initramfs-linux.img"
+	if [ "$kernel" == "linux-lts" ]; then
+		initramfs="initramfs-linux-lts.img"
+	elif [ "$kernel" == "linux-hardened" ]; then
+		initramfs="initramfs-linux-hardened.img"
+	elif [ "$kernel" == "linux-zen" ]; then
+		initramfs="initramfs-linux-zen.img"
+	fi
+
+	efi_root="root=/dev/$ROOT"
+	if "$crypted" ; then
+		root="cryptdevice=/dev/lvm/lvroot:root root=/dev/mapper/root"
+	fi
+
+	efi_drm=""
+	if "$drm" ; then
+		efi_drm="nvidia-drm.modeset=1"
+	fi
+
+	# -p: boot partition number (is always "1")
+	efibootmgr -d /dev/$DRIVE -p 1 -c -L "Arch Linux" -l \vmlinuz-linux -u "$efi_root rw initrd=/$initramfs $drm"
+
+}
