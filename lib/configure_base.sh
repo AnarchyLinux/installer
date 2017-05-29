@@ -102,6 +102,7 @@ prepare_base() {
 				"grub"			"$loader_msg" \
 				"syslinux"		"$loader_msg1" \
 				"systemd-boot"	"$loader_msg2" \
+				"efistub"	    "$loader_msg3" \
 				"$none" "-" 3>&1 1>&2 2>&3)
 			ex="$?"
 		else
@@ -117,6 +118,8 @@ prepare_base() {
 				main_menu
 			fi
 		elif [ "$bootloader" == "systemd-boot" ]; then
+			break
+		elif [ "$bootloader" == "efistub" ]; then
 			break
 		elif [ "$bootloader" == "syslinux" ]; then
 			if ! "$UEFI" ; then
