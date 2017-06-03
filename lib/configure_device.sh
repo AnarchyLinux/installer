@@ -716,7 +716,7 @@ part_class() {
 				if (dialog --yes-button "$yes" --no-button "$no" --defaultno --yesno "\n$part_frmt_msg" 11 50) then
 					f2fs=$(lsblk -dnro ROTA /dev/$part)
 
-					if [ "$mnt" == "/boot" ] || [ "$mnt" == "/boot/EFI" ] || [ "$mnt" == "/boot/efi" ]; then
+					if [ "$mnt" == "/boot/EFI" ] || [ "$mnt" == "/boot/efi" ]; then
 						f2fs=1
 						btrfs=false
 					fi
