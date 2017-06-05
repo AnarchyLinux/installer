@@ -79,7 +79,7 @@ configure_system() {
 	if "$crypted" && "$UEFI" ; then
 		echo "/dev/$BOOT              $esp_mnt        vfat         rw,relatime,fmask=0022,dmask=0022,codepage=437,iocharset=iso8859-1,shortname=mixed,errors=remount-ro        0       2" > "$ARCH"/etc/fstab
 	elif "$crypted" ; then
-		echo "/dev/$BOOT              /boot           $FS         defaults        0       2" > "$ARCH"/etc/fstab
+		echo "/dev/$BOOT              /boot           ext4        defaults        0       2" > "$ARCH"/etc/fstab
 	fi
 
 	if "$crypted" ; then
