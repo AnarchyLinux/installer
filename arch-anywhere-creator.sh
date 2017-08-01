@@ -34,7 +34,7 @@ if [ ! -f /usr/bin/7z ] || [ ! -f /usr/bin/mksquashfs ] || [ ! -f /usr/bin/xorri
 	until "$depends"
 	  do
 		echo
-		echo -n "ISO creation requires arch-install-scripts, lynx, mksquashfs-tools, libisoburn, and wget, would you like to install missing dependencies now? [y/N]: "
+		echo -n "ISO creation requires arch-install-scripts, lynx, squashfs-tools, libisoburn, p7zip, vim, and wget, would you like to install missing dependencies now? [y/N]: "
 		read input
 
 		case "$input" in
