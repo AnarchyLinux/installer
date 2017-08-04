@@ -427,6 +427,8 @@ add_software() {
 						"dmenu"			"$sys19" OFF \
 						"galculator"	"$sys24" OFF \
 						"git"			"$sys3" OFF \
+						"gnome-packagekit"	"$sys26" ON \
+						"gnome-software"	"$sys27" OFF \
 						"gparted"		"$sys4" OFF \
 						"gpm"			"$sys5" OFF \
 						"htop"			"$sys6" OFF \
