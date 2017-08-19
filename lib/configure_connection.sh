@@ -83,7 +83,8 @@ update_mirrors() {
 	fi
 
 	if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$mirror_msg2" 10 60) then
-		vim /etc/pacman.d/mirrorlist
+		[ -z "$EDITOR" ] && EDITOR="vim"
+		$EDITOR /etc/pacman.d/mirrorlist
 	fi
 }
 
