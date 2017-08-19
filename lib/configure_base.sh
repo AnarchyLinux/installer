@@ -20,7 +20,7 @@ prepare_base() {
 	op_title="$install_op_msg"
 	while (true)
 	  do
-		install_menu=$(dialog --ok-button "$ok" --cancel-button "$cancel" --menu "$install_type_msg" 14 64 5 \
+		install_menu=$(dialog --ok-button "$ok" --cancel-button "$cancel" --menu "$install_type_msg" 17 69 8 \
 			"Arch-Linux-Base" 		"$base_msg0" \
 			"Arch-Linux-Base-Devel" 	"$base_msg1" \
 			"Arch-Linux-Hardened"		"$hardened_msg0" \
@@ -84,7 +84,22 @@ prepare_base() {
                 ;;
 				fish) 	sh="/bin/bash"
 				;;
-				zsh) sh="/usr/bin/$shell" shell="zsh zsh-syntax-highlighting"
+				zsh) 	shrc=$(dialog --ok-button "$ok" --cancel-button "$cancel" --menu "$shrc_msg" 13 64 3 \
+								"$default"	"$shrc_msg1" \
+								"oh-my-zsh"	"$shrc_msg2" \
+								"$none"		"$shrc_msg3" 3>&1 1>&2 2>&3)
+								if [ "$?" -gt "0" ]; then
+									shrc="$default"
+								fi
+
+								sh="/usr/bin/$shell" shell="zsh zsh-syntax-highlighting"
+								
+								if [ "$shrc" == "oh-my-zsh" ]; then
+									if ! (grep "arch-anywhere" </etc/pacman.conf &>/dev/null); then
+										sed -i -e '$a\\n[arch-anywhere]\nServer = http://arch-anywhere.org/repo/$arch\nSigLevel = Never' /etc/pacman.conf
+									fi
+									shell+="oh-my-zsh"
+								fi
 				;;
 				*) sh="/bin/$shell"
 				;;
@@ -251,7 +266,9 @@ add_software() {
 					software_menu="$done_msg"
 				elif [ "$software_menu" == "$aar" ] && ! "$aa_repo" ; then
 					if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$aar_add_msg" 10 60) then
-						sed -i -e '$a\\n[arch-anywhere]\nServer = http://arch-anywhere.org/repo/$arch\nSigLevel = Never' /etc/pacman.conf
+						if ! (grep "arch-anywhere" </etc/pacman.conf &>/dev/null); then
+							sed -i -e '$a\\n[arch-anywhere]\nServer = http://arch-anywhere.org/repo/$arch\nSigLevel = Never' /etc/pacman.conf
+						fi
 						aa_repo=true
 
 					else

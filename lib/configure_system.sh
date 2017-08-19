@@ -200,8 +200,16 @@ configure_system() {
 	if [ "$sh" == "/bin/bash" ]; then
 		cp "$ARCH"/etc/skel/.bash_profile "$ARCH"/root/
 	elif [ "$sh" == "/usr/bin/zsh" ]; then
-		cp "$aa_dir"/extra/.zshrc "$ARCH"/root/
-		cp "$aa_dir"/extra/.zshrc "$ARCH"/etc/skel/
+		if [ "$shrc" == "$default" ]; then
+			cp "$aa_dir"/extra/.zshrc-default "$ARCH"/root/
+			cp "$aa_dir"/extra/.zshrc-default "$ARCH"/etc/skel/
+		elif [ "$shrc" == "oh-my-zsh" ]; then
+			cp "$aa_dir"/extra/.zshrc-oh-my "$ARCH"/root/
+			cp "$aa_dir"/extra/.zshrc-oh-my "$ARCH"/etc/skel/
+		else
+			touch "$ARCH"/root/.zshrc
+			touch "$ARCH"/etc/skel/.zshrc
+		fi
 	elif [ "$shell" == "fish" ]; then
 		echo "exec fish" >> "$aa_dir"/extra/.bashrc-root
 		echo "exec fish" >> "$aa_dir"/extra/.bashrc
