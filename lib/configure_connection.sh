@@ -82,6 +82,9 @@ update_mirrors() {
 		fi
 	fi
 
+	if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$mirror_msg2" 10 60) then
+		vim /etc/pacman.d/mirrorlist
+	fi
 }
 
 check_connection() {
