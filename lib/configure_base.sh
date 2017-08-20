@@ -98,7 +98,7 @@ prepare_base() {
 									if ! (grep "arch-anywhere" </etc/pacman.conf &>/dev/null); then
 										sed -i -e '$a\\n[arch-anywhere]\nServer = http://arch-anywhere.org/repo/$arch\nSigLevel = Never' /etc/pacman.conf
 									fi
-									shell+="oh-my-zsh"
+									shell+=" oh-my-zsh-git"
 								fi
 				;;
 				*) sh="/bin/$shell"
