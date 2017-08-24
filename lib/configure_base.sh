@@ -84,21 +84,26 @@ prepare_base() {
                 ;;
 				fish) 	sh="/bin/bash"
 				;;
-				zsh) 	shrc=$(dialog --ok-button "$ok" --cancel-button "$cancel" --menu "$shrc_msg" 13 64 3 \
+				zsh) 	shrc=$(dialog --ok-button "$ok" --cancel-button "$cancel" --menu "$shrc_msg" 13 65 4 \
 								"$default"	"$shrc_msg1" \
 								"oh-my-zsh"	"$shrc_msg2" \
+								"grml-zsh-config"	"$shrc_msg4" \
 								"$none"		"$shrc_msg3" 3>&1 1>&2 2>&3)
 								if [ "$?" -gt "0" ]; then
 									shrc="$default"
 								fi
 
-								sh="/usr/bin/$shell" shell="zsh zsh-syntax-highlighting"
+								sh="/usr/bin/$shell" shell="zsh"
 								
 								if [ "$shrc" == "oh-my-zsh" ]; then
 									if ! (grep "arch-anywhere" </etc/pacman.conf &>/dev/null); then
 										sed -i -e '$a\\n[arch-anywhere]\nServer = http://arch-anywhere.org/repo/$arch\nSigLevel = Never' /etc/pacman.conf
 									fi
-									shell+=" oh-my-zsh-git"
+									shell+=" oh-my-zsh-git zsh-syntax-highlighting"
+								elif [ "$shrc" == "grml-zsh-config" ]; then
+									shell+=" grml-zsh-config zsh-completions"
+								else
+									shell+=" zsh-syntax-highlighting"
 								fi
 				;;
 				*) sh="/bin/$shell"
@@ -384,7 +389,9 @@ add_software() {
 					if [ "$?" -gt "0" ]; then
 						add_soft=false
 					fi
-
+					if (<<<"$software" grep "vlc") then
+						software+=" qt4 phonon-qt4-vlc"
+					fi
 					if (<<<"$software" grep "multimedia-codecs") then
 						software=$(<<<"$software" sed 's/multimedia-codecs/gst-plugins-bad gst-plugins-base gst-plugins-good gst-plugins-ugly ffmpegthumbnailer gst-libav/')
 					fi
