@@ -93,17 +93,15 @@ prepare_base() {
 									shrc="$default"
 								fi
 
-								sh="/usr/bin/$shell" shell="zsh"
+								sh="/usr/bin/$shell" shell="zsh zsh-syntax-highlighting"
 								
 								if [ "$shrc" == "oh-my-zsh" ]; then
 									if ! (grep "arch-anywhere" </etc/pacman.conf &>/dev/null); then
 										sed -i -e '$a\\n[arch-anywhere]\nServer = http://arch-anywhere.org/repo/$arch\nSigLevel = Never' /etc/pacman.conf
 									fi
-									shell+=" oh-my-zsh-git zsh-syntax-highlighting"
+									shell+=" oh-my-zsh-git"
 								elif [ "$shrc" == "grml-zsh-config" ]; then
 									shell+=" grml-zsh-config zsh-completions"
-								else
-									shell+=" zsh-syntax-highlighting"
 								fi
 				;;
 				*) sh="/bin/$shell"
