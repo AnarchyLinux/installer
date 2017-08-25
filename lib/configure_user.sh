@@ -47,24 +47,31 @@ add_user() {
 					elif (<<<"$user" egrep "^[0-9]\|[A-Z\[\$\!\'\"\`\\|%&#@()_-+=<>~;:/?.,^{}]\|]" &> /dev/null); then
 						dialog --ok-button "$ok" --msgbox "\n$user_err_msg" 10 60
 					else
-						full_user=$(dialog --cancel-button "$cancel" --ok-button "$ok" --inputbox "\n$user_msg2" 12 55 "" 3>&1 1>&2 2>&3)
-						if [ "$?" -gt "0" ]; then
-							break
-						else
-							if [ "$full_user" == "" ]; then
-								arch-chroot "$ARCH" useradd -m -g users -G audio,network,power,storage,optical -s "$sh" "$user" &>/dev/null &
+						while (true)
+						  do
+							full_user=$(dialog --cancel-button "$cancel" --ok-button "$ok" --inputbox "\n$user_msg2" 12 55 3>&1 1>&2 2>&3)
+							if [ "$?" != "0" ]; then
+								break
+							elif (<<<"$full_user" grep "," &> /dev/null) then
+								dialog --ok-button "$ok" --msgbox "\n$fulluser_err_msg" 10 60
+							elif [ "$(grep -w "$full_user" "$ARCH"/etc/passwd | cut -d: -f5 | cut -d, -f1)" == "$full_user" ]; then
+								dialog --ok-button "$ok" --msgbox "\n$fulluser_err_msg1" 10 60
 							else
-								arch-chroot "$ARCH" useradd -m -g users -G audio,network,power,storage,optical -c "$full_user" -s "$sh" "$user" &>/dev/null &
+								if [ "$full_user" == "" ]; then
+									arch-chroot "$ARCH" useradd -m -g users -G audio,network,power,storage,optical -s "$sh" "$user" &>/dev/null &
+								else
+									arch-chroot "$ARCH" useradd -m -g users -G audio,network,power,storage,optical -c "$full_user" -s "$sh" "$user" &>/dev/null &
+								fi
+								set_password
+								echo "$(date -u "+%F %H:%M") : Added user: $user" >> "$log"
+									if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$sudo_var" 10 60) then
+									(sed -i '/%wheel ALL=(ALL) ALL/s/^#//' $ARCH/etc/sudoers
+									arch-chroot "$ARCH" usermod -a -G wheel "$user") &> /dev/null &
+								fi
+								break
 							fi
-							set_password
-							echo "$(date -u "+%F %H:%M") : Added user: $user" >> "$log"
-
-							if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$sudo_var" 10 60) then
-								(sed -i '/%wheel ALL=(ALL) ALL/s/^#//' $ARCH/etc/sudoers
-								arch-chroot "$ARCH" usermod -a -G wheel "$user") &> /dev/null &
-							fi
-							break
-						fi
+						done
+						break
 					fi
 				done
 			;;
@@ -130,15 +137,23 @@ add_user() {
 							fi
 						;;
 						"$change_fn")
-							fullnameuser=$(dialog --cancel-button "$cancel" --ok-button "$ok" --inputbox "\n$chfull_user_var" 12 55 "" 3>&1 1<&2 2>&3)
-							if [ $? == 0 ]; then
-								if [ "$fullnameuser" == "" ]; then
-									full_user="$user"
+							while (true)
+							  do
+								full_user=$(dialog --cancel-button "$cancel" --ok-button "$ok" --inputbox "\n$user_msg2" 12 55 3>&1 1>&2 2>&3)
+								if [ "$?" != "0" ]; then
+									break
+								elif (<<<"$full_user" grep "," &> /dev/null) then
+									dialog --ok-button "$ok" --msgbox "\n$fulluser_err_msg" 10 60
+								elif [ "$(grep -w "$full_user" "$ARCH"/etc/passwd | cut -d: -f5 | cut -d, -f1)" == "$full_user" ]; then
+									dialog --ok-button "$ok" --msgbox "\n$fulluser_err_msg1" 10 60
 								else
-									full_user="$fullnameuser"
+									if [ "$full_user" == "" ]; then
+										full_user="$user"
+									fi
+									arch-chroot "$ARCH" chfn -f "$full_user" "$user" &>/dev/null
+									break
 								fi
-								arch-chroot "$ARCH" chfn -f "$full_user" "$user" &>/dev/null
-							fi
+							done
 						;;
 						"$del_user")
 							if (dialog --defaultno --yes-button "$yes" --no-button "$no" --yesno "\n$deluser_var" 10 60) then
@@ -181,3 +196,4 @@ set_password() {
 	op_title="$user_op_msg"
 
 }
+
