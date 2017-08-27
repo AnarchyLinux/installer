@@ -78,3 +78,5 @@ load_log() {
 	} | dialog --gauge "$msg" 10 79 0
 
 }
+
+# vim: ai:ts=8:sw=8:sts=8:noet

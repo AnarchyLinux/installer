@@ -123,3 +123,5 @@ set_zone() {
 	echo "$(date -u "+%F %H:%M") : Set timezone to: $ZONE" >> "$log"
 
 }
+
+# vim: ai:ts=8:sw=8:sts=8:noet

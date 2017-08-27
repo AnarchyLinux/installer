@@ -171,3 +171,5 @@ efistub_config() {
 	efibootmgr -d /dev/$DRIVE -p 1 -c -L "Arch Linux" -l \vmlinuz-linux -u "$efi_root rw initrd=/$initramfs $drm"
 
 }
+
+# vim: ai:ts=8:sw=8:sts=8:noet

@@ -61,3 +61,5 @@ language() {
 	esac
 
 }
+
+# vim: ai:ts=8:sw=8:sts=8:noet
