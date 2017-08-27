@@ -206,6 +206,9 @@ configure_system() {
 		elif [ "$shrc" == "oh-my-zsh" ]; then
 			cp "$aa_dir"/extra/.zshrc-oh-my "$ARCH"/root/.zshrc
 			cp "$aa_dir"/extra/.zshrc-oh-my "$ARCH"/etc/skel/.zshrc
+		elif [ "$shrc" == "grml-zsh-config" ]; then
+			cp "$aa_dir"/extra/.zshrc-grml "$ARCH"/root/.zshrc
+			cp "$aa_dir"/extra/.zshrc-grml "$ARCH"/etc/skel/.zshrc
 		else
 			touch "$ARCH"/root/.zshrc
 			touch "$ARCH"/etc/skel/.zshrc

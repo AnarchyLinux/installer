@@ -47,14 +47,30 @@ add_user() {
 					elif (<<<"$user" egrep "^[0-9]\|[A-Z\[\$\!\'\"\`\\|%&#@()_-+=<>~;:/?.,^{}]\|]" &> /dev/null); then
 						dialog --ok-button "$ok" --msgbox "\n$user_err_msg" 10 60
 					else
-						arch-chroot "$ARCH" useradd -m -g users -G audio,network,power,storage,optical -s "$sh" "$user" &>/dev/null &
-						set_password
-						echo "$(date -u "+%F %H:%M") : Added user: $user" >> "$log"
-
-						if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$sudo_var" 10 60) then
-							(sed -i '/%wheel ALL=(ALL) ALL/s/^#//' $ARCH/etc/sudoers
-							arch-chroot "$ARCH" usermod -a -G wheel "$user") &> /dev/null &
-						fi
+						while (true)
+						  do
+							full_user=$(dialog --cancel-button "$cancel" --ok-button "$ok" --inputbox "\n$user_msg2" 12 55 3>&1 1>&2 2>&3)
+							if [ "$?" != "0" ]; then
+								break
+							elif (<<<"$full_user" grep "," &> /dev/null) then
+								dialog --ok-button "$ok" --msgbox "\n$fulluser_err_msg" 10 60
+							elif [ "$(grep -w "$full_user" "$ARCH"/etc/passwd | cut -d: -f5 | cut -d, -f1)" == "$full_user" ]; then
+								dialog --ok-button "$ok" --msgbox "\n$fulluser_err_msg1" 10 60
+							else
+								if [ "$full_user" == "" ]; then
+									arch-chroot "$ARCH" useradd -m -g users -G audio,network,power,storage,optical -s "$sh" "$user" &>/dev/null &
+								else
+									arch-chroot "$ARCH" useradd -m -g users -G audio,network,power,storage,optical -c "$full_user" -s "$sh" "$user" &>/dev/null &
+								fi
+								set_password
+								echo "$(date -u "+%F %H:%M") : Added user: $user" >> "$log"
+									if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$sudo_var" 10 60) then
+									(sed -i '/%wheel ALL=(ALL) ALL/s/^#//' $ARCH/etc/sudoers
+									arch-chroot "$ARCH" usermod -a -G wheel "$user") &> /dev/null &
+								fi
+								break
+							fi
+						done
 						break
 					fi
 				done
@@ -64,6 +80,7 @@ add_user() {
 				  do
 					op_title="$user_op_msg1"
 					usr_shell=$(grep -w "$user" "$ARCH"/etc/passwd | cut -d: -f7)
+					full_user=$(grep -w "$user" "$ARCH"/etc/passwd | cut -d: -f5 | cut -d, -f1)
 					if (grep -w "$user" "$ARCH"/etc/group | grep "wheel" &>/dev/null); then
 						sudo="$yes"
 					else
@@ -72,14 +89,15 @@ add_user() {
 					source "$lang_file"
 
 					if [ "$user" == "root" ]; then
-						user_edit=$(dialog --ok-button "$select" --cancel-button "$back" --menu "$user_edit_var" 12 55 2 \
+						user_edit=$(dialog --ok-button "$select" --cancel-button "$back" --menu "$user_edit_var" 15 55 2 \
 							"$change_pass" "->" \
 							"$change_sh" "->" 3>&1 1>&2 2>&3)
 					else
-						user_edit=$(dialog --ok-button "$select" --cancel-button "$back" --menu "$user_edit_var" 14 55 4 \
+						user_edit=$(dialog --ok-button "$select" --cancel-button "$back" --menu "$user_edit_var" 17 65 5 \
 							"$change_pass" "->" \
 							"$change_sh" "->" \
 							"$change_su" "->" \
+							"$change_fn" "->" \
 							"$del_user" "->" 3>&1 1>&2 2>&3)
 					fi
 
@@ -117,6 +135,25 @@ add_user() {
 									arch-chroot "$ARCH" usermod -a -G wheel "$user" &>/dev/null
 								fi
 							fi
+						;;
+						"$change_fn")
+							while (true)
+							  do
+								full_user=$(dialog --cancel-button "$cancel" --ok-button "$ok" --inputbox "\n$user_msg2" 12 55 3>&1 1>&2 2>&3)
+								if [ "$?" != "0" ]; then
+									break
+								elif (<<<"$full_user" grep "," &> /dev/null) then
+									dialog --ok-button "$ok" --msgbox "\n$fulluser_err_msg" 10 60
+								elif [ "$(grep -w "$full_user" "$ARCH"/etc/passwd | cut -d: -f5 | cut -d, -f1)" == "$full_user" ]; then
+									dialog --ok-button "$ok" --msgbox "\n$fulluser_err_msg1" 10 60
+								else
+									if [ "$full_user" == "" ]; then
+										full_user="$user"
+									fi
+									arch-chroot "$ARCH" chfn -f "$full_user" "$user" &>/dev/null
+									break
+								fi
+							done
 						;;
 						"$del_user")
 							if (dialog --defaultno --yes-button "$yes" --no-button "$no" --yesno "\n$deluser_var" 10 60) then
@@ -159,3 +196,4 @@ set_password() {
 	op_title="$user_op_msg"
 
 }
+

@@ -84,9 +84,10 @@ prepare_base() {
                 ;;
 				fish) 	sh="/bin/bash"
 				;;
-				zsh) 	shrc=$(dialog --ok-button "$ok" --cancel-button "$cancel" --menu "$shrc_msg" 13 64 3 \
+				zsh) 	shrc=$(dialog --ok-button "$ok" --cancel-button "$cancel" --menu "$shrc_msg" 13 65 4 \
 								"$default"	"$shrc_msg1" \
 								"oh-my-zsh"	"$shrc_msg2" \
+								"grml-zsh-config"	"$shrc_msg4" \
 								"$none"		"$shrc_msg3" 3>&1 1>&2 2>&3)
 								if [ "$?" -gt "0" ]; then
 									shrc="$default"
@@ -99,6 +100,8 @@ prepare_base() {
 										sed -i -e '$a\\n[arch-anywhere]\nServer = http://arch-anywhere.org/repo/$arch\nSigLevel = Never' /etc/pacman.conf
 									fi
 									shell+=" oh-my-zsh-git"
+								elif [ "$shrc" == "grml-zsh-config" ]; then
+									shell+=" grml-zsh-config zsh-completions"
 								fi
 				;;
 				*) sh="/bin/$shell"
@@ -384,7 +387,9 @@ add_software() {
 					if [ "$?" -gt "0" ]; then
 						add_soft=false
 					fi
-
+					if (<<<"$software" grep "vlc") then
+						software+=" qt4 phonon-qt4-vlc"
+					fi
 					if (<<<"$software" grep "multimedia-codecs") then
 						software=$(<<<"$software" sed 's/multimedia-codecs/gst-plugins-bad gst-plugins-base gst-plugins-good gst-plugins-ugly ffmpegthumbnailer gst-libav/')
 					fi
