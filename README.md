@@ -38,6 +38,7 @@ http://arch-anywhere.org/
 * Supported Desktop Environments + Window Managers:
 
     Arch Anywhere XFCE4 (developers custom xfce4 desktop) <br />
+    Arch Anywhere OpenboxWM (developers custom Openbox desktop) 
     AwesomeWM <br />
     Budgie <br />
     Bspwm <br />
