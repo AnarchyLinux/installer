@@ -19,10 +19,10 @@
         <value type="int" value="21"/>
         <value type="int" value="22"/>
         <value type="int" value="14"/>
-        <value type="int" value="16"/>
         <value type="int" value="15"/>
         <value type="int" value="17"/>
         <value type="int" value="10"/>
+        <value type="int" value="16"/>
         <value type="int" value="18"/>
         <value type="int" value="2"/>
         <value type="int" value="5"/>
@@ -44,8 +44,8 @@
         <value type="int" value="8"/>
         <value type="int" value="4"/>
         <value type="int" value="13"/>
-        <value type="int" value="19"/>
         <value type="int" value="9"/>
+        <value type="int" value="19"/>
         <value type="int" value="6"/>
       </property>
       <property name="length" type="uint" value="100"/>
@@ -89,6 +89,7 @@
       <property name="names-visible" type="array">
         <value type="string" value="xfce terminal"/>
         <value type="string" value="networkmanager applet"/>
+        <value type="string" value="xfce4-power-manager"/>
         <value type="string" value="drop-down terminal"/>
       </property>
     </property>

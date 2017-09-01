@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<channel name="xfce4-power-manager" version="1.0">
+  <property name="xfce4-power-manager" type="empty">
+    <property name="show-tray-icon" type="bool" value="true"/>
+    <property name="general-notification" type="bool" value="true"/>
+    <property name="dpms-on-ac-sleep" type="uint" value="11"/>
+    <property name="blank-on-ac" type="int" value="10"/>
+    <property name="dpms-on-ac-off" type="uint" value="12"/>
+    <property name="dpms-enabled" type="bool" value="true"/>
+  </property>
+</channel>

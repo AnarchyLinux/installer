@@ -29,7 +29,9 @@ ColorCursor=#93a1a1
 ColorBold=#93a1a1
 ColorBoldUseDefault=FALSE
 TabActivityColor=#dc322f
-ScrollingBar=TERMINAL_SCROLLBAR_NONE
 DropdownHeight=37
 DropdownAlwaysShowTabs=FALSE
+MiscCopyOnSelect=FALSE
+MiscUseShiftArrowsToScroll=FALSE
+MiscSlimTabs=FALSE
 

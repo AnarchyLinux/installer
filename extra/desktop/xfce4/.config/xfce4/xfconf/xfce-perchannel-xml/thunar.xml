@@ -6,8 +6,8 @@
   <property name="misc-single-click" type="bool" value="false"/>
   <property name="last-location-bar" type="string" value="ThunarLocationButtons"/>
   <property name="last-separator-position" type="int" value="170"/>
-  <property name="last-window-width" type="int" value="640"/>
-  <property name="last-window-height" type="int" value="304"/>
+  <property name="last-window-width" type="int" value="670"/>
+  <property name="last-window-height" type="int" value="346"/>
   <property name="last-window-maximized" type="bool" value="false"/>
   <property name="last-show-hidden" type="bool" value="false"/>
 </channel>
