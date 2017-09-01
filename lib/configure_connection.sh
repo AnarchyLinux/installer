@@ -45,47 +45,79 @@ update_mirrors() {
 		fi
 	done
 
-	if ! (</etc/pacman.d/mirrorlist grep "rankmirrors" &>/dev/null); then
-		op_title="$mirror_op_msg"
-		code=$(dialog --nocancel --ok-button "$ok" --menu "$mirror_msg1" 17 60 10 \
-			"$default" "->" \
-			$countries 3>&1 1>&2 2>&3)
-
-		case "$code" in
-			"$default")
-				mirror_url="https://www.archlinux.org/mirrorlist/all/"
+	op_title="$mirror_op_msg"
+	while (true)
+	  do
+		edit_mirrors=$(dialog --ok-button "$ok" --menu "$mirror_msg0" 10 60 3 \
+			"$fetchmirrors" "->" \
+			"$manual_mirrors" "->" \
+			"$cancel_mirrors" "->" 3>&1 1>&2 2>&3)
+		if [ "$?" -gt "0" ] || [ "$edit_mirrors" == "$cancel_mirrors" ]; then
+			if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$mirror_cancel_msg" 10 60) then
+				break
+			fi
+		fi
+        
+		case "$edit_mirrors" in
+			"$fetchmirrors")
+				code=$(dialog --ok-button "$ok" --menu "$mirror_msg1" 17 60 10 \
+					"$default" "->" \
+					$countries 3>&1 1>&2 2>&3)
+				if [ "$?" -gt "0" ]; then
+					if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$mirror_cancel_msg" 10 60) then
+						break
+					else
+						case "$code" in
+							"$default")
+								mirror_url="https://www.archlinux.org/mirrorlist/all/"
+							;;
+							"AS")	## All https mirrors
+								mirror_url="https://www.archlinux.org/mirrorlist/all/https/"
+							;;
+							*)	## User selected country
+								mirror_url="https://www.archlinux.org/mirrorlist/?country=$code"
+							;;
+						esac
+                                
+						if [ "$code" == "$default" ]; then
+							curl -s "$mirror_url" | sed '10,1000d;s/#//' >/etc/pacman.d/mirrorlist.bak &
+						else
+							curl -s "$mirror_url" >/etc/pacman.d/mirrorlist.bak &
+						fi
+						pid=$! pri=0.1 msg="\n$mirror_load0 \n\n \Z1> \Z2curl $mirror_url\Zn" load
+                                
+						if (grep "Server" /etc/pacman.d/mirrorlist.bak &>/dev/null); then
+							echo "$(date -u "+%F %H:%M") : Updated Mirrors From: $code" >> "$log"
+							sed -i 's/#//' /etc/pacman.d/mirrorlist.bak
+							rankmirrors -n 6 /etc/pacman.d/mirrorlist.bak > /etc/pacman.d/mirrorlist &
+						 	pid=$! pri=0.8 msg="\n$mirror_load1 \n\n \Z1> \Z2rankmirrors -n 6 /etc/pacman.d/mirrorlist\Zn" load
+						else
+							dialog --ok-button "$ok" --msgbox "\n$connect_err0" 10 60
+							echo "$(date -u "+%F %H:%M") : Failed to connect to wifi: Exit 1" >> "$log"
+							setterm -background black -store ; reset ; echo -e "$connect_err1" | sed 's/\\Z1//;s/\\Zn//' ;  exit 1
+						fi
+						
+						break
+					fi
+				fi
 			;;
-			"AS")	## All https mirrors
-				mirror_url="https://www.archlinux.org/mirrorlist/all/https/"
-			;;
-			*)	## User selected country
-				mirror_url="https://www.archlinux.org/mirrorlist/?country=$code"
+			"$manual_mirrors")
+				EDITOR=$(dialog --ok-button "$ok" --menu "$mirror_editor_msg" 10 60 3 \
+					"nano"	"$nano_msg" \
+					"vim"	"$vim_msg" \
+					"$cancel" "->" 3>&1 1>&2 2>&3)
+				if [ "$?" -gt "0" ] || [ "$EDITOR" == "$cancel" ]; then
+					if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$mirror_cancel_msg" 10 60) then
+						break
+					fi
+				else
+					$EDITOR /etc/pacman.d/mirrorlist
+					break
+				fi
 			;;
 		esac
+	done
 
-		if [ "$code" == "$default" ]; then
-			curl -s "$mirror_url" | sed '10,1000d;s/#//' >/etc/pacman.d/mirrorlist.bak &
-		else
-			curl -s "$mirror_url" >/etc/pacman.d/mirrorlist.bak &
-		fi
-		pid=$! pri=0.1 msg="\n$mirror_load0 \n\n \Z1> \Z2curl $mirror_url\Zn" load
-
-		if (grep "Server" /etc/pacman.d/mirrorlist.bak &>/dev/null); then
-			echo "$(date -u "+%F %H:%M") : Updated Mirrors From: $code" >> "$log"
-			sed -i 's/#//' /etc/pacman.d/mirrorlist.bak
-			rankmirrors -n 6 /etc/pacman.d/mirrorlist.bak > /etc/pacman.d/mirrorlist &
-		 	pid=$! pri=0.8 msg="\n$mirror_load1 \n\n \Z1> \Z2rankmirrors -n 6 /etc/pacman.d/mirrorlist\Zn" load
-		else
-			dialog --ok-button "$ok" --msgbox "\n$connect_err0" 10 60
-			echo "$(date -u "+%F %H:%M") : Failed to connect to wifi: Exit 1" >> "$log"
-			setterm -background black -store ; reset ; echo -e "$connect_err1" | sed 's/\\Z1//;s/\\Zn//' ;  exit 1
-		fi
-	fi
-
-	if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$mirror_msg2" 10 60) then
-		[ -z "$EDITOR" ] && EDITOR="vim"
-		$EDITOR /etc/pacman.d/mirrorlist
-	fi
 }
 
 check_connection() {
