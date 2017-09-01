@@ -27,11 +27,11 @@ graphics() {
 	while (true)
 	  do
 		de=$(dialog --separate-output --ok-button "$done_msg" --cancel-button "$cancel" --checklist "$environment_msg" 24 60 15 \
-			"AA-Xfce"			"$de15" OFF \
+			"AA-Xfce"		"$de15" OFF \
 			"AA-Openbox"		"$de18" OFF \
-			"budgie"			"$de17" OFF \
+			"budgie"		"$de17" OFF \
 			"cinnamon"      	"$de5" OFF \
-			"deepin"			"$de14" OFF \
+			"deepin"		"$de14" OFF \
 			"gnome"         	"$de4" OFF \
 			"gnome-flashback"	"$de19" OFF \
 			"KDE plasma"    	"$de6" OFF \
@@ -40,13 +40,14 @@ graphics() {
 			"mate"          	"$de1" OFF \
 			"xfce4"         	"$de0" OFF \
 			"awesome"       	"$de9" OFF \
-			"bspwm"				"$de13" OFF \
+			"bspwm"			"$de13" OFF \
 			"dwm"           	"$de12" OFF \
 			"enlightenment" 	"$de7" OFF \
 			"fluxbox"       	"$de11" OFF \
 			"i3"            	"$de10" OFF \
 			"openbox"       	"$de8" OFF \
-			"xmonad"			"$de16" OFF 3>&1 1>&2 2>&3)
+			"windowmaker"		"$de20" OFF \
+			"xmonad"		"$de16" OFF 3>&1 1>&2 2>&3)
 		if [ -z "$de" ]; then
 			if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$desktop_cancel_msg" 10 60) then
 				return
@@ -65,114 +66,129 @@ graphics() {
 	  do
 		case "$env" in
 			"AA-Xfce") 	config_DE+="$env "
-						DE+="xfce4 xfce4-goodies gvfs zsh zsh-syntax-highlighting arc-icon-theme arc-gtk-theme elementary-icon-theme htop xscreensaver arch-wiki-cli lynx fetchmirrors fetchpkg "
+					start_term="exec startxfce4"
+					DE+="xfce4 xfce4-goodies gvfs zsh zsh-syntax-highlighting arc-icon-theme arc-gtk-theme elementary-icon-theme htop xscreensaver arch-wiki-cli lynx fetchmirrors fetchpkg "
 						
-						if ! (grep "arch-anywhere" </etc/pacman.conf &>/dev/null); then
-							sed -i -e '$a\\n[arch-anywhere]\nServer = http://arch-anywhere.org/repo/$arch\nSigLevel = Never' /etc/pacman.conf
-						fi
-						start_term="exec startxfce4"
+					if ! (grep "arch-anywhere" </etc/pacman.conf &>/dev/null); then
+						sed -i -e '$a\\n[arch-anywhere]\nServer = http://arch-anywhere.org/repo/$arch\nSigLevel = Never' /etc/pacman.conf
+					fi
 			;;
 			"AA-Openbox")	config_DE+="$env "
-							DE+="openbox thunar thunar-volman xfce4-terminal xfce4-panel xfce4-whiskermenu-plugin arc-icon-theme arc-gtk-theme elementary-icon-theme xcompmgr transset-df obconf lxappearance-obconf wmctrl gxmessage xfce4-pulseaudio-plugin xfdesktop xdotool htop xscreensaver opensnap ristretto arch-wiki-cli lynx fetchmirrors fetchpkg "
+					start_term="exec openbox-session"
+					DE+="openbox thunar thunar-volman xfce4-terminal xfce4-panel xfce4-whiskermenu-plugin arc-icon-theme arc-gtk-theme elementary-icon-theme xcompmgr transset-df obconf lxappearance-obconf wmctrl gxmessage xfce4-pulseaudio-plugin xfdesktop xdotool htop xscreensaver opensnap ristretto arch-wiki-cli lynx fetchmirrors fetchpkg "
 							
-							if ! (grep "arch-anywhere" </etc/pacman.conf &>/dev/null); then
-								sed -i -e '$a\\n[arch-anywhere]\nServer = http://arch-anywhere.org/repo/$arch\nSigLevel = Never' /etc/pacman.conf
-							fi
-							start_term="exec openbox-session"
+					if ! (grep "arch-anywhere" </etc/pacman.conf &>/dev/null); then
+						sed -i -e '$a\\n[arch-anywhere]\nServer = http://arch-anywhere.org/repo/$arch\nSigLevel = Never' /etc/pacman.conf
+					fi
 			;;
-			"xfce4") 	DE+="xfce4 "
-						if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$extra_msg0" 10 60) then
-							DE+="xfce4-goodies "
-						fi
-						start_term="exec startxfce4"
+			"xfce4") 	start_term="exec startxfce4"
+					DE+="xfce4 "
+					
+					if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$extra_msg0" 10 60) then
+						DE+="xfce4-goodies "
+					fi
 			;;
-			"budgie")	DE+="budgie-desktop arc-icon-theme arc-gtk-theme elementary-icon-theme "
-						if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$extra_msg6" 10 60) then
-							DE+="gnome "
-						fi
-						start_term="export XDG_CURRENT_DESKTOP=Budgie:GNOME ; exec budgie-desktop"
+			"budgie")	start_term="export XDG_CURRENT_DESKTOP=Budgie:GNOME ; exec budgie-desktop"
+					DE+="budgie-desktop arc-icon-theme arc-gtk-theme elementary-icon-theme "
+					
+					if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$extra_msg6" 10 60) then
+						DE+="gnome "
+					fi
 			;;
-			"gnome")	DE+="gnome "
+			"gnome")	start_term="exec gnome-session"
+					DE+="gnome "
+					
+					if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$extra_msg1" 10 60) then
+						DE+="gnome-extra "
+					fi
+			;;
+			"gnome-flashback")	start_term="export XDG_CURRENT_DESKTOP=GNOME-Flashback:GNOME ; exec gnome-session --session=gnome-flashback-metacity"
+						DE+="gnome-flashback "
+								
 						if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$extra_msg1" 10 60) then
-							DE+="gnome-extra "
+							DE+="gnome-backgrounds gnome-control-center gnome-screensaver gnome-applets sensors-applet "
 						fi
-						 start_term="exec gnome-session"
 			;;
-			"gnome-flashback")	DE+="gnome-flashback "
-								if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$extra_msg1" 10 60) then
-									DE+="gnome-backgrounds gnome-control-center gnome-screensaver gnome-applets sensors-applet "
-								fi
-								start_term="export XDG_CURRENT_DESKTOP=GNOME-Flashback:GNOME ; exec gnome-session --session=gnome-flashback-metacity"
-			;;
-			"mate")	if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$extra_msg2" 10 60) then
+			"mate")		start_term="exec mate-session"
+			
+					if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$extra_msg2" 10 60) then
 						DE+="mate mate-extra gtk-engine-murrine "
 					else
 						DE+="mate gtk-engine-murrine "
 					fi
-					start_term="exec mate-session"
 			;;
-			"KDE plasma")	if (dialog --defaultno --yes-button "$yes" --no-button "$no" --yesno "\n$extra_msg3" 10 60) then
-								DE+="plasma-desktop sddm konsole dolphin plasma-nm plasma-pa libxshmfence kscreen "
+			"KDE plasma")	start_term="exec startkde"
+					
+					if (dialog --defaultno --yes-button "$yes" --no-button "$no" --yesno "\n$extra_msg3" 10 60) then
+						DE+="plasma-desktop sddm konsole dolphin plasma-nm plasma-pa libxshmfence kscreen "
     
-								if "$LAPTOP" ; then
-									DE+="powerdevil "
-								fi
-							else
-								DE+="plasma kde-applications "
-							fi
-    
-							if [ -n "$kdel" ]; then
-								DE+="kde-l10n-$kdel "
-							fi
-    
-							start_term="exec startkde"
-			;;
-			"deepin")	DE+="deepin "
-						if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$extra_msg4" 10 60) then
-							DE+="deepin-extra "
+						if "$LAPTOP" ; then
+							DE+="powerdevil "
 						fi
- 	 					start_term="exec startdde"
+					else
+						DE+="plasma kde-applications "
+					fi
+    
+					if [ -n "$kdel" ]; then
+						DE+="kde-l10n-$kdel "
+					fi
+			;;
+			"deepin")	start_term="exec startdde"
+					DE+="deepin "
+					
+					if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$extra_msg4" 10 60) then
+						DE+="deepin-extra "
+					fi
  	 		;;
- 	 		"xmonad")	DE+="xmonad "
- 	 					if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$extra_msg5" 10 60) then
-                       		DE="xmonad-contrib "
-                        fi
-                        start_term="exec xmonad"
+ 	 		"xmonad")	start_term="exec xmonad"
+					DE+="xmonad "
+ 	 				
+ 	 				if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$extra_msg5" 10 60) then
+						DE="xmonad-contrib "
+		                        fi
 			;;
 			"cinnamon")	DE+="cinnamon gnome-terminal file-roller p7zip zip unrar "
-						start_term="exec cinnamon-session"
+					start_term="exec cinnamon-session"
 			;;
-			"lxde") if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$gtk3_var" 10 60) then
+			"lxde")		start_term="exec startlxde"
+					
+					if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$gtk3_var" 10 60) then
 						DE+="lxde-gtk3 "
 						GTK3=true
 					else
 						DE+="lxde "
-					fi
-					start_term="exec startlxde"
+					fi		
 			;;
-			"lxqt") start_term="exec startlxqt"
+			"lxqt")		start_term="exec startlxqt"
 					DE+="lxqt oxygen-icons breeze-icons "
 			;;
 			"enlightenment") 	start_term="exec enlightenment_start"
-								DE+="enlightenment terminology "
+						DE+="enlightenment terminology "
 			;;
 			"bspwm")	start_term="sxhkd & ; exec bspwm"
-						DE+="bspwm sxhkd "
+					DE+="bspwm sxhkd "
 			;;
 			"fluxbox")	start_term="exec startfluxbox"
-						DE+="fluxbox "
+					DE+="fluxbox "
 			;;
 			"openbox")	start_term="exec openbox-session"
-						DE+="openbox "
+					DE+="openbox "
 			;;
 			"awesome") 	start_term="exec awesome"
-						DE+="awesome "
+					DE+="awesome "
 			;;
 			"dwm") 		start_term="exec dwm"
-						DE+="dwm "
+					DE+="dwm "
 			;;
 			"i3") 		start_term="exec i3"
-						DE+="i3 "
+					DE+="i3 "
+			;;
+			"windowmaker")	start_term="exec wmaker"
+					DE+="windowmaker "
+					
+					if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$extra_msg7" 10 60) then
+						DE+="windowmaker-extra "
+					fi
 			;;
 		esac
 	done <<< $de
