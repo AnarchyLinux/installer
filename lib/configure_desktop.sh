@@ -67,7 +67,7 @@ graphics() {
 		case "$env" in
 			"AA-Xfce") 	config_DE+="$env "
 					start_term="exec startxfce4"
-					DE+="xfce4 xfce4-goodies gvfs zsh zsh-syntax-highlighting arc-icon-theme arc-gtk-theme elementary-icon-theme htop xscreensaver arch-wiki-cli lynx fetchmirrors fetchpkg "
+					DE+="xfce4 xfce4-goodies gvfs zsh zsh-syntax-highlighting arc-icon-theme arc-gtk-theme elementary-icon-theme htop arch-wiki-cli lynx fetchmirrors fetchpkg "
 						
 					if ! (grep "arch-anywhere" </etc/pacman.conf &>/dev/null); then
 						sed -i -e '$a\\n[arch-anywhere]\nServer = http://arch-anywhere.org/repo/$arch\nSigLevel = Never' /etc/pacman.conf
@@ -75,7 +75,7 @@ graphics() {
 			;;
 			"AA-Openbox")	config_DE+="$env "
 					start_term="exec openbox-session"
-					DE+="openbox thunar thunar-volman xfce4-terminal xfce4-panel xfce4-whiskermenu-plugin arc-icon-theme arc-gtk-theme elementary-icon-theme xcompmgr transset-df obconf lxappearance-obconf wmctrl gxmessage xfce4-pulseaudio-plugin xfdesktop xdotool htop xscreensaver opensnap ristretto arch-wiki-cli lynx fetchmirrors fetchpkg "
+					DE+="openbox thunar thunar-volman xfce4-terminal xfce4-panel xfce4-whiskermenu-plugin arc-icon-theme arc-gtk-theme elementary-icon-theme xcompmgr transset-df obconf lxappearance-obconf wmctrl gxmessage xfce4-pulseaudio-plugin xfdesktop xdotool htop opensnap ristretto arch-wiki-cli lynx fetchmirrors fetchpkg "
 							
 					if ! (grep "arch-anywhere" </etc/pacman.conf &>/dev/null); then
 						sed -i -e '$a\\n[arch-anywhere]\nServer = http://arch-anywhere.org/repo/$arch\nSigLevel = Never' /etc/pacman.conf
@@ -376,10 +376,8 @@ config_env() {
 	cp -r "$aa_dir"/extra/desktop/{arch-anywhere-wallpaper.png,arch-anywhere-icon.png} "$ARCH"/usr/share/pixmaps
 
 	if (grep "AA-Xfce" <<<"$config_DE" &>/dev/null); then
-		for file in $(ls -A "$aa_dir/extra/desktop/xfce4"); do
-			cp -r "$aa_dir/extra/desktop/xfce4/$file" "$ARCH"/root/
-			cp -r "$aa_dir/extra/desktop/xfce4/$file" "$ARCH"/etc/skel/
-		done
+		cp -r "$aa_dir/extra/desktop/xfce4/.config" "$ARCH"/root/
+		cp -r "$aa_dir/extra/desktop/xfce4/.config" "$ARCH"/etc/skel/
 		cp -r "$aa_dir"/extra/desktop/arch-anywhere-wallpaper.png "$ARCH"/usr/share/backgrounds/xfce/
 		cp "$ARCH"/usr/share/backgrounds/xfce/arch-anywhere-wallpaper.png "$ARCH"/usr/share/backgrounds/xfce/xfce-teal.jpg
 	fi
