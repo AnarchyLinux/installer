@@ -39,22 +39,25 @@ http://arch-anywhere.org/
 
     Arch Anywhere XFCE4 (developers custom xfce4 desktop) <br />
     Arch Anywhere OpenboxWM (developers custom Openbox desktop) 
-    AwesomeWM <br />
+    Awesome <br />
     Budgie <br />
     Bspwm <br />
-    Cinnamon Desktop <br />
+    Cinnamon <br />
     Deepin <br />
     DWM DynamicWM <br />
-    EnlightenmentWM <br />
-    FluxboxWM <br />
-    Gnome Desktop <br />
-    I3 i3WM <br />
-    KDE/Plasma Desktop <br />
-    LXDE Desktop <br />
-    LXQT Desktop <br />
-    Mate Desktop <br />
-    OpenboxWM <br />
-    XFCE4 Desktop <br />
+    Enlightenment <br />
+    Fluxbox <br />
+    Gnome <br />
+    Gnome Flashback <br />
+    i3WM <br />
+    KDE/Plasma <br />
+    LXDE <br />
+    LXQT <br />
+    Mate <br />
+    Openbox <br />
+    WindowMaker <br />
+    XFCE4 <br />
+    Xmonad <br />
 
 * Supported Graphics Drivers:
 
