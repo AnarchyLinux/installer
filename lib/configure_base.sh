@@ -458,17 +458,49 @@ add_software() {
 						"vsftpd"		"$srv7" OFF 3>&1 1>&2 2>&3)
 					if [ "$?" -gt "0" ]; then
 						add_soft=false
-					elif (grep "LAMP" <<<"$software" &>/dev/null); then
-						config_http="LAMP"
+					fi
+
+					if (grep "LAMP" <<<"$software" &>/dev/null); then
+						if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$apache_msg" 10 60) then	
+							config_http="LAMP"
+							enable_http=true
+						fi
 						software=$(<<<"$software" sed 's/LAMP Stack/apache php php-apache mariadb/')
 					elif (grep "LEMP" <<<"$software" &>/dev/null); then
-						config_http="LEMP"
+						if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$nginx_msg" 10 60) then
+							config_http="LEMP"
+							enable_http=true
+						fi
 						software=$(<<<"$software" sed 's/LEMP Stack/nginx-mainline php php-fpm mariadb/')
+					elif (grep "apache" <<<"$software" &>/dev/null); then
+						if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$apache_msg" 10 60) then
+							config_http="apache"
+							enable_http=true
+						fi
+					elif (grep "nginx" <<<"$software" &>/dev/null); then
+						if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$nginx_msg" 10 60) then
+							config_http="nginx"
+							enable_http=true
+						fi
 					fi
 
 					if (grep "openssh" <<<"$software" &>/dev/null); then
-						config_ssh=true
+						if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$ssh_msg" 10 60) then
+							enable_ssh=true
+						fi
 					fi
+					
+					if ! "$enable_ftp" ; then
+						if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$ftp_msg" 10 60) then
+							enable_ftp=true
+							if (<<<"$software" grep "vsftpd" &>/dev/null); then
+								ftp="vsftpd"
+							else
+								ftp="ftpd"
+							fi
+						fi
+					fi
+
 				;;
 				"$system")
 					software=$(dialog --ok-button "$ok" --cancel-button "$cancel" --checklist "$software_msg1" 20 65 10 \
@@ -502,7 +534,8 @@ add_software() {
 						"virtualbox"		"$sys16" OFF \
 						"ufw"			"$sys17" ON \
 						"wget"			"$sys18" ON \
-						"xfe"			"$sys23" OFF 3>&1 1>&2 2>&3)
+						"xfe"			"$sys23" OFF \
+						"xscreensaver"		"$sys34" OFF 3>&1 1>&2 2>&3)
 					if [ "$?" -gt "0" ]; then
 						add_soft=false
 					fi
