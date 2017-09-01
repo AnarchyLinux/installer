@@ -189,6 +189,45 @@ configure_system() {
 		echo "$(date -u "+%F %H:%M") : Enable dhcp" >> "$log"
 	fi
 
+	if "$enable_ssh" ; then
+		arch-chroot "$ARCH" systemctl enable sshd.service &>/dev/null &
+		pid=$! pri=0.1 msg="\n$dhcp_load \n\n \Z1> \Z2systemctl enable sshd\Zn" load
+		echo "$(date -u "+%F %H:%M") : Enable ssh" >> "$log"
+	fi
+
+	if "$enable_ftp" ; then
+		arch-chroot "$ARCH" systemctl enable ${ftp}.service &>/dev/null &
+		pid=$! pri=0.1 msg="\n$dhcp_load \n\n \Z1> \Z2systemctl enable ${ftp}\Zn" load
+		echo "$(date -u "+%F %H:%M") : Enable $ftp" >> "$log"
+	fi
+
+	if "$enable_http" ; then
+		case "$config_http" in
+			"LAMP")
+				(arch-chroot "$ARCH" systemctl enable httpd.service &>/dev/null 
+				sed -i 's/LoadModule mpm_event_module modules/mod_mpm_event.so/#LoadModule mpm_event_module modules/mod_mpm_event.so/' "$ARCH"/etc/httpd/conf/httpd.conf
+				sed -i 's/#LoadModule mpm_prefork_module modules/mod_mpm_prefork.so/LoadModule mpm_prefork_module modules/mod_mpm_prefork.so/' "$ARCH"/etc/httpd/conf/httpd.conf
+				tac "$ARCH"/etc/httpd/conf/httpd.conf | awk '!p && /LoadModule/{print "AddHandler php7-script php\nLoadModule php7_module modules/libphp7.so\n# PHP Modules\n"; p=1} 1' | tac > "$ARCH"/etc/httpd/conf/httpd.conf
+				tac "$ARCH"/etc/httpd/conf/httpd.conf | awk '!p && /Include/{print "\nInclude conf/extra/php7_module.conf\n# PHP Modules\n"; p=1} 1' | tac > "$ARCH"/etc/httpd/conf/httpd.conf
+				sed -i 's/;extension=pdo_mysql.so/extension=pdo_mysql.so/' "$ARCH"/etc/php/php.ini) &
+				pid=$! pri=0.1 msg="\n$dhcp_load \n\n \Z1> \Z2configure LAMP stack\Zn" load
+			;;
+			"LEMP")
+				(arch-chroot "$ARCH" systemctl enable nginx.service &>/dev/null
+				arch-chroot "$ARCH" systemctl enable php-fpm.service &>/dev/null) &
+				pid=$! pri=0.1 msg="\n$dhcp_load \n\n \Z1> \Z2configure LEMP stack\Zn" load
+			;;
+			"apache")
+				arch-chroot "$ARCH" systemctl enable httpd.service &>/dev/null &
+				pid=$! pri=0.1 msg="\n$dhcp_load \n\n \Z1> \Z2systemctl enable httpd\Zn" load
+			;;
+			"nginx")
+				arch-chroot "$ARCH" systemctl enable nginx.service &>/dev/null &
+				pid=$! pri=0.1 msg="\n$dhcp_load \n\n \Z1> \Z2systemctl enable nginx\Zn" load
+			;;
+		esac
+	fi
+
 	if [ -f "$ARCH"/var/lib/pacman/db.lck ]; then
 		rm "$ARCH"/var/lib/pacman/db.lck &> /dev/null
 	fi
