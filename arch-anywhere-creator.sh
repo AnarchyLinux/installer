@@ -16,10 +16,10 @@
 ###############################################################
 
 # Set the version here
-export version="arch-anywhere-2.2.8-x86_64.iso"
+export version="arch-anywhere-2.2.9-x86_64.iso"
 
 # Set the ISO label here
-export iso_label="ARCH_ANY228"
+export iso_label="ARCH_ANY229"
 
 # Location variables all directories must exist
 export aa=$(pwd)
