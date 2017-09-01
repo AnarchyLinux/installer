@@ -245,18 +245,19 @@ add_software() {
 			unset software
 			add_soft=true
 			if ! "$skip" ; then
-				software_menu=$(dialog --extra-button --extra-label "$install" --ok-button "$select" --cancel-button "$cancel" --menu "$software_type_msg" 20 63 11 \
-					"$aar" "$aar_msg" \
-					"$audio" "$audio_msg" \
-					"$games" "$games_msg" \
-					"$graphic" "$graphic_msg" \
-					"$internet" "$internet_msg" \
-					"$multimedia" "$multimedia_msg" \
-					"$office" "$office_msg" \
-					"$terminal" "$terminal_msg" \
-					"$text_editor" "$text_editor_msg" \
-					"$system" "$system_msg" \
-					"$done_msg" "$install \Z2============>\Zn" 3>&1 1>&2 2>&3)
+				software_menu=$(dialog --extra-button --extra-label "$install" --ok-button "$select" --cancel-button "$cancel" --menu "$software_type_msg" 21 63 12 \
+					"$aar"		"$aar_msg" \
+					"$audio"	"$audio_msg" \
+					"$games"	"$games_msg" \
+					"$graphic"	"$graphic_msg" \
+					"$internet"	"$internet_msg" \
+					"$multimedia"	"$multimedia_msg" \
+					"$office"	"$office_msg" \
+					"$terminal"	"$terminal_msg" \
+					"$text_editor"	"$text_editor_msg" \
+					"$servers"	"$servers_msg" \
+					"$system"	"$system_msg" \
+					"$done_msg"	"$install \Z2============>\Zn" 3>&1 1>&2 2>&3)
 				ex="$?"
 
 				if [ "$ex" -eq "1" ]; then
@@ -440,14 +441,42 @@ add_software() {
 						add_soft=false
 					fi
 				;;
+				"$servers")
+					software=$(dialog --ok-button "$ok" --cancel-button "$cancel" --checklist "$software_msg1" 20 62 10 \
+						"LAMP Stack"		"$srv1" OFF \
+						"LEMP Stack"		"$srv2" OFF \
+						"apache"		"$sys1" OFF \
+						"bind"			"$srv10" OFF \
+						"cups"			"$srv11" OFF \
+						"lighttpd"		"$srv5" OFF \
+						"nginx"			"$srv3" OFF \
+						"nginx-mainline"	"$srv4" OFF \
+						"openssh"		"$sys10" OFF \
+						"postfix"		"$srv6" OFF \
+						"samba"			"$srv9" OFF \
+						"squid"			"$srv8" OFF \
+						"vsftpd"		"$srv7" OFF 3>&1 1>&2 2>&3)
+					if [ "$?" -gt "0" ]; then
+						add_soft=false
+					elif (grep "LAMP" <<<"$software" &>/dev/null); then
+						config_http="LAMP"
+						software=$(<<<"$software" sed 's/LAMP Stack/apache php php-apache mariadb/')
+					elif (grep "LEMP" <<<"$software" &>/dev/null); then
+						config_http="LEMP"
+						software=$(<<<"$software" sed 's/LEMP Stack/nginx-mainline php php-fpm mariadb/')
+					fi
+
+					if (grep "openssh" <<<"$software" &>/dev/null); then
+						config_ssh=true
+					fi
+				;;
 				"$system")
 					software=$(dialog --ok-button "$ok" --cancel-button "$cancel" --checklist "$software_msg1" 20 65 10 \
-						"apache"		"$sys1" OFF \
 						"bc"			"$sys25" OFF \
 						"bleachbit"		"$sys22" OFF \
 						"conky"			"$sys2" OFF \
 						"dmenu"			"$sys19" OFF \
-						"galculator"	"$sys24" OFF \
+						"galculator"		"$sys24" OFF \
 						"git"			"$sys3" OFF \
 						"gnome-packagekit"	"$sys26" ON \
 						"gnome-software"	"$sys27" OFF \
@@ -456,16 +485,21 @@ add_software() {
 						"htop"			"$sys6" OFF \
 						"inxi"			"$sys7" OFF \
 						"k3b"			"$sys8" OFF \
+						"mariadb"		"$sys30" OFF \
 						"nmap"			"$sys9" OFF \
-						"openssh"		"$sys10" OFF \
+						"ntfs-3g"		"$sys" ON \
 						"pcmanfm"		"$sys21" OFF \
+						"php"			"$sys29" OFF \
+						"phpmyadmin"		"$sys32" OFF \
+						"postgresql"		"$sys31" OFF \
+						"python"		"$sys33" OFF \
 						"ranger"		"$sys20" OFF \
 						"screen"		"$sys11" OFF \
-						"screenfetch"	"$sys12" ON \
+						"screenfetch"		"$sys12" ON \
 						"scrot"			"$sys13" OFF \
 						"tmux"			"$sys14" OFF \
 						"tuxcmd"		"$sys15" OFF \
-						"virtualbox"	"$sys16" OFF \
+						"virtualbox"		"$sys16" OFF \
 						"ufw"			"$sys17" ON \
 						"wget"			"$sys18" ON \
 						"xfe"			"$sys23" OFF 3>&1 1>&2 2>&3)
