@@ -1,5 +1,4 @@
 favorites=exo-terminal-emulator.desktop,exo-file-manager.desktop,xfce4-taskmanager.desktop,fetchpkg.desktop,arch-wiki.desktop,firefox.desktop,org.xfce.Parole.desktop,gimp.desktop,libreoffice-writer.desktop,atom.desktop,galculator.desktop,sol.desktop,xfce-settings-manager.desktop
-recent=xfce-backdrop-settings.desktop,xfce4-power-manager-settings.desktop,firefox.desktop,xfce-ui-settings.desktop,xfce-wm-settings.desktop,xfce-keyboard-settings.desktop,exo-terminal-emulator.desktop,panel-preferences.desktop,xfce-wmtweaks-settings.desktop
 button-title=Menu
 button-icon=/usr/share/pixmaps/arch-anywhere-icon.png
 button-single-row=false
