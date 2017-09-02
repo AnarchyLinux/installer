@@ -191,16 +191,16 @@ prepare_base() {
 	done
 
 	if [ "$arch" == "x86_64" ]; then
-        if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n\n$multilib_msg" 11 60) then
-            multilib=true
-            echo "$(date -u "+%F %H:%M") : Include multilib" >> "$log"
-        fi
-    fi
+		if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n\n$multilib_msg" 11 60) then
+		    multilib=true
+		    echo "$(date -u "+%F %H:%M") : Include multilib" >> "$log"
+		fi
+	fi
 
-    if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n\n$dhcp_msg" 11 60) then
-        dhcp=true
-        echo "$(date -u "+%F %H:%M") : Enable dhcp" >> "$log"
-    fi
+	    if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n\n$dhcp_msg" 11 60) then
+	        dhcp=true
+	        echo "$(date -u "+%F %H:%M") : Enable dhcp" >> "$log"
+	    fi
 
 	if "$wifi" ; then
 		base_install+="wireless_tools wpa_supplicant wpa_actiond "
@@ -347,17 +347,36 @@ add_software() {
 				"$games")
 					software=$(dialog --ok-button "$ok" --cancel-button "$cancel" --checklist "$software_msg1" 20 70 10 \
 						"alienarena"	"$game0" OFF \
-						"bsd-games"		"$game1" OFF \
-						"bzflag"		"$game2" OFF \
+						"bsd-games"	"$game1" OFF \
+						"bzflag"	"$game2" OFF \
 						"flightgear"	"$game3" OFF \
 						"gnuchess"      "$game4" OFF \
-						"supertux"		"$game5" OFF \
+						"steam"		"$game10" OFF \
+						"supertux"	"$game5" OFF \
 						"supertuxkart"	"$game6" OFF \
 						"urbanterror"	"$game7" OFF \
-						"warsow"		"$game8" OFF \
-						"xonotic"		"$game9" OFF 3>&1 1>&2 2>&3)
+						"warsow"	"$game8" OFF \
+						"xonotic"	"$game9" OFF 3>&1 1>&2 2>&3)
 					if [ "$?" -gt "0" ]; then
 						add_soft=false
+					fi
+
+					if (<<<"$software" grep "steam" &>/dev/null); then
+						while (true)
+						  do
+							if ! "$multilib" ; then
+								if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$steam_add_msg" 10 60) then
+									multilib=true
+								else
+									software=$(<<<"$software" sed 's/steam//'
+									break
+								fi
+							else
+								tac /etc/pacman.conf | sed -e '0,/#\[multilib\]/ s/#\[multilib\]/\[multilib\]/;0,/#Include/ s/#Include/Include/' | tac > /etc/pacman.conf.bak
+								cp /etc/pacman.conf.bak /etc/pacman.conf
+								break
+							fi
+						done
 					fi
 				;;
 				"$graphic")
