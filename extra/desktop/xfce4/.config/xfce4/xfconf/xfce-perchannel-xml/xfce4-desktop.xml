@@ -75,10 +75,10 @@
     </property>
   </property>
   <property name="desktop-icons" type="empty">
-    <property name="style" type="int" value="0"/>
+    <property name="style" type="int" value="2"/>
   </property>
   <property name="last" type="empty">
-    <property name="window-width" type="int" value="638"/>
-    <property name="window-height" type="int" value="508"/>
+    <property name="window-width" type="int" value="671"/>
+    <property name="window-height" type="int" value="530"/>
   </property>
 </channel>
