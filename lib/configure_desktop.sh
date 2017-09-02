@@ -69,6 +69,10 @@ graphics() {
 					start_term="exec startxfce4"
 					DE+="xfce4 xfce4-goodies gvfs zsh zsh-syntax-highlighting arc-icon-theme arc-gtk-theme elementary-icon-theme htop arch-wiki-cli lynx fetchmirrors fetchpkg "
 						
+					if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$extra_msg8" 15 60) then
+						DE+="firefox atom libreoffice-fresh gimp gparted parole screenfetch vim "
+					fi
+
 					if ! (grep "arch-anywhere" </etc/pacman.conf &>/dev/null); then
 						sed -i -e '$a\\n[arch-anywhere]\nServer = http://arch-anywhere.org/repo/$arch\nSigLevel = Never' /etc/pacman.conf
 					fi
