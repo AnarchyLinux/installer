@@ -202,6 +202,12 @@ configure_system() {
 		echo "$(date -u "+%F %H:%M") : Enable $ftp" >> "$log"
 	fi
 
+	if "$enable_cups" ; then
+		arch-chroot "$ARCH" systemctl enable org.cups.cupsd.service &>/dev/null &
+		pid=$! pri=0.1 msg="\n$cups_load \n\n \Z1> \Z2systemctl enable cups\Zn" load
+		echo "$(date -u "+%F %H:%M") : Enable cups" >> "$log"
+	fi
+
 	if "$enable_http" ; then
 		case "$config_http" in
 			"LAMP")
