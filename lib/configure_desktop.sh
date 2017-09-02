@@ -367,10 +367,7 @@ graphics() {
 config_env() {
 
 	sh="/usr/bin/zsh"
-	arch-chroot "$ARCH" chsh -s /usr/bin/zsh &> /dev/null
 	cp -r "$aa_dir"/extra/desktop/ttf-zekton-rg "$ARCH"/usr/share/fonts
-	cp "$aa_dir"/extra/.zshrc "$ARCH"/root/
-	cp "$aa_dir"/extra/.zshrc "$ARCH"/etc/skel/
 	cp "$aa_dir"/extra/desktop/arch-anywhere-icon.png "$ARCH"/root/.face
 	cp "$aa_dir"/extra/desktop/arch-anywhere-icon.png "$ARCH"/etc/skel/.face
 	cp -r "$aa_dir"/extra/desktop/{arch-anywhere-wallpaper.png,arch-anywhere-icon.png} "$ARCH"/usr/share/pixmaps
