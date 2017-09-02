@@ -372,6 +372,7 @@ add_software() {
 									break
 								fi
 							else
+								software=$(<<<"$software" sed 's/steam/steam ttf-liberation/')
 								tac /etc/pacman.conf | sed -e '0,/#\[multilib\]/ s/#\[multilib\]/\[multilib\]/;0,/#Include/ s/#Include/Include/' | tac > /etc/pacman.conf.bak
 								cp /etc/pacman.conf.bak /etc/pacman.conf
 								break
@@ -585,7 +586,7 @@ add_software() {
 							pacman -Sy --print-format='%s' $(echo "$download") | awk '{s+=$1} END {print s/1024/1024}' >/tmp/size &
 							pid=$! pri=0.1 msg="$wait_load \n\n \Z1> \Z2pacman -S --print-format\Zn" load
 							download_size=$(</tmp/size) ; rm /tmp/size
-							export software_size=$(echo "$download_size Mib")
+							export software_size=$(<<<"$download_size" sed 's/\(\..\)\(.*\)/\1 MiB/')
 							export software_int=$(echo "$download" | wc -w)
 							cal_rate
 
@@ -623,7 +624,7 @@ add_software() {
 					pid=$! pri=0.1 msg="$wait_load \n\n \Z1> \Z2pacman -Sy --print-format\Zn" load
 
 					download_size=$(</tmp/size) ; rm /tmp/size
-					software_size=$(echo "$download_size Mib")
+					software_size=$(<<<"$download_size" sed 's/\(\..\)\(.*\)/\1 MiB/')
 					software_int=$(echo "$add_software" | wc -w)
 					source "$lang_file"
 

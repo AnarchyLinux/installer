@@ -22,7 +22,7 @@ install_base() {
 	pacman -Sy --print-format='%s' $(echo "$base_install") | awk '{s+=$1} END {print s/1024/1024}' >/tmp/size &
 	pid=$! pri=0.6 msg="\n$pacman_load \n\n \Z1> \Z2pacman -Sy\Zn" load	
 	download_size=$(</tmp/size) ; rm /tmp/size
-	export software_size="$download_size Mib"
+	export software_size=$(<<<"$download_size" sed 's/\(\..\)\(.*\)/\1 MiB/')
 	cal_rate
 
 	if [ $(wc -w <<<"$base_install") -gt "30" ]; then
