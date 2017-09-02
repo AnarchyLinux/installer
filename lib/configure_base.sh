@@ -84,11 +84,11 @@ prepare_base() {
                 ;;
 				fish) 	sh="/bin/bash"
 				;;
-				zsh) 	shrc=$(dialog --ok-button "$ok" --cancel-button "$cancel" --menu "$shrc_msg" 13 65 4 \
-								"$default"	"$shrc_msg1" \
-								"oh-my-zsh"	"$shrc_msg2" \
+				zsh) 	shrc=$(dialog --ok-button "$ok" --cancel-button "$cancel" --menu "\n$shrc_msg" 13 65 4 \
+								"$default"		"$shrc_msg1" \
+								"oh-my-zsh"		"$shrc_msg2" \
 								"grml-zsh-config"	"$shrc_msg4" \
-								"$none"		"$shrc_msg3" 3>&1 1>&2 2>&3)
+								"$none"			"$shrc_msg3" 3>&1 1>&2 2>&3)
 								if [ "$?" -gt "0" ]; then
 									shrc="$default"
 								fi
@@ -173,7 +173,7 @@ prepare_base() {
 
 	while (true)
 	  do
-		net_util=$(dialog --ok-button "$ok" --cancel-button "$cancel" --menu "$wifi_util_msg" 14 64 3 \
+		net_util=$(dialog --ok-button "$ok" --cancel-button "$cancel" --menu "$wifi_util_msg" 13 64 3 \
 			"networkmanager" 		"$net_util_msg1" \
 			"netctl"			"$net_util_msg0" \
 			"$none" "-" 3>&1 1>&2 2>&3)
