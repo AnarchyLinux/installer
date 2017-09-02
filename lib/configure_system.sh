@@ -111,6 +111,7 @@ configure_system() {
 		echo "KEYMAP=$keyboard" > "$ARCH"/etc/vconsole.conf
 		if "$desktop" ; then
 			echo -e "Section \"InputClass\"\nIdentifier \"system-keyboard\"\nMatchIsKeyboard \"on\"\nOption \"XkbLayout\" \"$keyboard\"\nEndSection" > "$ARCH"/etc/X11/xorg.conf.d/00-keyboard.conf
+			arch-chroot "$ARCH" localectl set-x11-keymap $keyboard &>/dev/null
 		fi
 		echo "$(date -u "+%F %H:%M") : Set system keymap: $keyboard" >> "$log"
 	fi
