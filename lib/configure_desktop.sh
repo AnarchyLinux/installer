@@ -377,6 +377,12 @@ config_env() {
 	cp -r "$aa_dir"/extra/desktop/{arch-anywhere-wallpaper.png,arch-anywhere-icon.png} "$ARCH"/usr/share/pixmaps
 
 	if (grep "AA-Xfce" <<<"$config_DE" &>/dev/null); then
+		if ! (arch-chroot "$ARCH" which firefox &>/dev/null); then
+			sed -i 's/15043600721/14549724517/' "$aa_dir"/extra/desktop/xfce4/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml
+			sed -i 's/favorites=exo-terminal-emulator.desktop,exo-file-manager.desktop,xfce4-taskmanager.desktop,fetchpkg.desktop,arch-wiki.desktop,firefox.desktop,org.xfce.Parole.desktop,gimp.desktop,libreoffice-writer.desktop,atom.desktop,galculator.desktop,sol.desktop,xfce-settings-manager.desktop/favorites=exo-terminal-emulator.desktop,exo-file-manager.desktop,xfce4-taskmanager.desktop,fetchpkg.desktop,arch-wiki.desktop,galculator.desktop,sol.desktop,xfce-settings-manager.desktop/' "$aa_dir"/extra/desktop/xfce4/.config/xfce4/panel/whiskermenu-1.rc
+			sed -i 's/menu_height=720/menu_height=532/' "$aa_dir"/extra/desktop/xfce4/.config/xfce4/panel/whiskermenu-1.rc
+		fi
+
 		cp -r "$aa_dir/extra/desktop/xfce4/.config" "$ARCH"/root/
 		cp -r "$aa_dir/extra/desktop/xfce4/.config" "$ARCH"/etc/skel/
 		cp -r "$aa_dir"/extra/desktop/arch-anywhere-wallpaper.png "$ARCH"/usr/share/backgrounds/xfce/
