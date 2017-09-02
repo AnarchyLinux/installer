@@ -67,10 +67,10 @@ graphics() {
 		case "$env" in
 			"AA-Xfce") 	config_DE+="$env "
 					start_term="exec startxfce4"
-					DE+="xfce4 xfce4-goodies gvfs zsh zsh-syntax-highlighting arc-icon-theme arc-gtk-theme elementary-icon-theme htop arch-wiki-cli lynx fetchmirrors fetchpkg "
+					DE+="xfce4 xfce4-goodies gvfs zsh zsh-syntax-highlighting arc-icon-theme arc-gtk-theme elementary-icon-theme htop arch-wiki-cli lynx fetchmirrors fetchpkg galculator "
 						
 					if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$extra_msg8" 15 60) then
-						DE+="firefox atom libreoffice-fresh gimp gparted parole screenfetch vim "
+						DE+="firefox atom libreoffice-fresh gimp gparted parole screenfetch vim aisleriot "
 					fi
 
 					if ! (grep "arch-anywhere" </etc/pacman.conf &>/dev/null); then
