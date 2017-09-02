@@ -48,7 +48,7 @@ update_mirrors() {
 	op_title="$mirror_op_msg"
 	while (true)
 	  do
-		edit_mirrors=$(dialog --ok-button "$ok" --menu "$mirror_msg0" 10 60 3 \
+		edit_mirrors=$(dialog --ok-button "$ok" --menu "\n$mirror_msg0\n" 12 60 3 \
 			"$fetchmirrors" "->" \
 			"$manual_mirrors" "->" \
 			"$cancel_mirrors" "->" 3>&1 1>&2 2>&3)
