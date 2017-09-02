@@ -368,7 +368,7 @@ add_software() {
 								if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$steam_add_msg" 10 60) then
 									multilib=true
 								else
-									software=$(<<<"$software" sed 's/steam//'
+									software=$(<<<"$software" sed 's/steam//')
 									break
 								fi
 							else
