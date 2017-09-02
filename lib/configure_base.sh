@@ -274,7 +274,6 @@ add_software() {
 							sed -i -e '$a\\n[arch-anywhere]\nServer = http://arch-anywhere.org/repo/$arch\nSigLevel = Never' /etc/pacman.conf
 						fi
 						aa_repo=true
-
 					else
 						continue
 					fi
