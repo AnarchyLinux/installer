@@ -42,7 +42,7 @@ language() {
 
 	case "$ILANG" in
 		"English") export lang_file="$aa_dir"/lang/arch-installer-english.conf ;;
-		"China") export lang_file="$aa_dir"/lang/arch-installer-chinese.conf lib=bg bro=bg kdel=bg ;;
+		"China") export lang_file="$aa_dir"/lang/arch-installer-chinese.conf  ;;
 		"Bulgarian") export lang_file="$aa_dir"/lang/arch-installer-bulgarian.conf lib=bg bro=bg kdel=bg ;;
 		"Dutch") export lang_file="$aa_dir"/lang/arch-installer-dutch.conf lib=nl bro=nl kdel=nl ;;
 		"French") export lang_file="$aa_dir"/lang/arch-installer-french.conf lib=fr bro=fr kdel=fr ;;
