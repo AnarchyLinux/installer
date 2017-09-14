@@ -26,9 +26,9 @@ export aa=$(pwd)
 export customiso="$aa/customiso"
 export iso=$(ls "$aa"/archlinux-* | tail -n1 | sed 's!.*/!!')
 update=false
+trap quit EXIT
 
 # Check depends
-
 if [ ! -f /usr/bin/7z ] || [ ! -f /usr/bin/mksquashfs ] || [ ! -f /usr/bin/xorriso ] || [ ! -f /usr/bin/wget ] || [ ! -f /usr/bin/arch-chroot ] || [ ! -f /usr/bin/xxd ]; then
 	depends=false
 	until "$depends"
@@ -77,7 +77,7 @@ if [ "$iso_ver" != "$iso" ]; then
 	if [ -z "$iso" ]; then
 		echo -en "\nNo archiso found under $aa\nWould you like to download now? [y/N]: "
 		read input
-    
+
 		case "$input" in
 			y|Y|yes|Yes|yY|Yy|yy|YY) update=true
 			;;
@@ -88,7 +88,7 @@ if [ "$iso_ver" != "$iso" ]; then
 	else
 		echo -en "An updated version of the archiso is available for download\n'$iso_ver'\nDownload now? [y/N]: "
 		read input
-		
+
 		case "$input" in
 			y|Y|yes|Yes|yY|Yy|yy|YY) update=true
 			;;
@@ -97,7 +97,7 @@ if [ "$iso_ver" != "$iso" ]; then
 			;;
 		esac
 	fi
-	
+
 	if "$update" ; then
 		cd "$aa"
 		wget "$archiso_link"
@@ -110,11 +110,11 @@ if [ "$iso_ver" != "$iso" ]; then
 fi
 
 init() {
-	
+
 	if [ -d "$customiso" ]; then
 		sudo rm -rf "$customiso"
 	fi
-	
+
 	# Extract archiso to mntdir and continue with build
 	7z x "$iso" -o"$customiso"
 	builds
@@ -141,11 +141,67 @@ builds() {
 		makepkg -s
 	fi
 
-	if [ ! -d /tmp/arc-openbox-master ]; then
-		### Build Arc Openbox theme
+	if [ ! -d /tmp/numix-icon-theme-git ]; then
+		### Build numix icons
 		cd /tmp
-		wget "https://github.com/dglava/arc-openbox/archive/master.zip"
-		unzip master.zip
+		wget "https://aur.archlinux.org/cgit/aur.git/snapshot/numix-icon-theme-git.tar.gz"
+		tar -xf numix-icon-theme-git.tar.gz
+		cd numix-icon-theme-git
+		makepkg -s
+	fi
+
+	if [ ! -d /tmp/numix-circle-icon-theme-git ]; then
+		### Build numix icons
+		cd /tmp
+		wget "https://aur.archlinux.org/cgit/aur.git/snapshot/numix-circle-icon-theme-git.tar.gz"
+		tar -xf numix-circle-icon-theme-git.tar.gz
+		cd numix-circle-icon-theme-git
+		makepkg -s
+	fi
+
+	if [ ! -d /tmp/opensnap ]; then
+		### Build opensnap
+		cd /tmp
+		wget "https://aur.archlinux.org/cgit/aur.git/snapshot/opensnap.tar.gz"
+		tar -xf opensnap.tar.gz
+		cd opensnap
+		makepkg -s
+	fi
+
+	if [ ! -d /tmp/perl-linux-desktopfiles ]; then
+		### Build numix icons
+		cd /tmp
+		wget "https://aur.archlinux.org/cgit/aur.git/snapshot/perl-linux-desktopfiles.tar.gz"
+		tar -xf perl-linux-desktopfiles.tar.gz
+		cd perl-linux-desktopfiles
+		makepkg -s
+	fi
+
+	if [ ! -d /tmp/obmenu-generator ]; then
+		### Build numix icons
+		cd /tmp
+		wget "https://aur.archlinux.org/cgit/aur.git/snapshot/obmenu-generator.tar.gz"
+		tar -xf obmenu-generator.tar.gz
+		cd obmenu-generator
+		makepkg -s
+	fi
+
+	if [ ! -d /tmp/archlabs-oblogout-themes-git ]; then
+		### Build oblogout theme
+		cd /tmp
+		wget "https://aur.archlinux.org/cgit/aur.git/snapshot/archlabs-oblogout-themes-git.tar.gz"
+		tar -xf archlabs-oblogout-themes-git.tar.gz
+		cd archlabs-oblogout-themes-git
+		makepkg -s
+	fi
+
+	if [ ! -d /tmp/dropbox ]; then
+		### Build dropbox
+		cd /tmp
+		wget "https://aur.archlinux.org/cgit/aur.git/snapshot/dropbox.tar.gz"
+		tar -xf dropbox.tar.gz
+		cd dropbox
+		makepkg -s
 	fi
 
 	prepare_sys
@@ -153,7 +209,7 @@ builds() {
 }
 
 prepare_sys() {
-	
+
 ### Set system architecture
 	sys=x86_64
 
@@ -162,15 +218,26 @@ prepare_sys() {
 	echo "Preparing $sys"
 	cd "$customiso"/arch/"$sys"
 	sudo unsquashfs airootfs.sfs
+	sudo mount -t proc proc "$customiso"/arch/"$sys"/squashfs-root/proc/
+	sudo mount -t sysfs sys "$customiso"/arch/"$sys"/squashfs-root/sys/
+	sudo mount -o bind /dev "$customiso"/arch/"$sys"/squashfs-root/dev/
+	sudo cp "$customiso"/arch/"$sys"/squashfs-root/etc/mkinitcpio.conf "$customiso"/arch/"$sys"/squashfs-root/etc/mkinitcpio.conf.bak
+	sudo cp "$customiso"/arch/"$sys"/squashfs-root/etc/mkinitcpio-archiso.conf "$customiso"/arch/"$sys"/squashfs-root/etc/mkinitcpio.conf
+
 
 ### Install fonts, fbterm, fetchmirrors, arch-wiki, and uvesafb drivers onto system and cleanup
-	sudo pacman --root squashfs-root --cachedir squashfs-root/var/cache/pacman/pkg  --config squashfs-root/etc/pacman.conf --noconfirm -Syyy terminus-font
+	sudo pacman --root squashfs-root --cachedir squashfs-root/var/cache/pacman/pkg  --config /etc/pacman.conf --noconfirm --needed -Syyy terminus-font xorg-server xorg-xinit xf86-video-vesa firefox plank vlc galculator file-roller gparted gimp git networkmanager network-manager-applet pulseaudio-alsa \
+		zsh-syntax-highlighting arc-gtk-theme elementary-icon-theme thunar base-devel xfce4 xfce4-goodies libreoffice-fresh chromium virtualbox-guest-dkms virtualbox-guest-utils xdg-user-dirs linux linux-headers oblogout libdvdcss simplescreenrecorder
 	sudo pacman --root squashfs-root --cachedir squashfs-root/var/cache/pacman/pkg  --config squashfs-root/etc/pacman.conf --noconfirm -U /tmp/fetchmirrors/*.pkg.tar.xz
 	sudo pacman --root squashfs-root --cachedir squashfs-root/var/cache/pacman/pkg  --config squashfs-root/etc/pacman.conf --noconfirm -U /tmp/arch-wiki-cli/*.pkg.tar.xz
-#	sudo pacman --root squashfs-root --cachedir squashfs-root/var/cache/pacman/pkg  --config squashfs-root/etc/pacman.conf --noconfirm -U /tmp/v86d/*.pkg.tar.xz
+	sudo pacman --root squashfs-root --cachedir squashfs-root/var/cache/pacman/pkg  --config squashfs-root/etc/pacman.conf --noconfirm -U /tmp/numix-icon-theme-git/*.pkg.tar.xz
+	sudo pacman --root squashfs-root --cachedir squashfs-root/var/cache/pacman/pkg  --config squashfs-root/etc/pacman.conf --noconfirm -U /tmp/numix-circle-icon-theme-git/*.pkg.tar.xz
+	sudo pacman --root squashfs-root --cachedir squashfs-root/var/cache/pacman/pkg  --config squashfs-root/etc/pacman.conf --noconfirm -U /tmp/archlabs-oblogout-themes-git/*.pkg.tar.xz
+	sudo pacman --root squashfs-root --cachedir squashfs-root/var/cache/pacman/pkg  --config squashfs-root/etc/pacman.conf --noconfirm -U /tmp/dropbox/*.pkg.tar.xz
 	sudo pacman --root squashfs-root --cachedir squashfs-root/var/cache/pacman/pkg  --config squashfs-root/etc/pacman.conf -Sl | awk '/\[installed\]$/ {print $1 "/" $2 "-" $3}' > "$customiso"/arch/pkglist.${sys}.txt
 	sudo pacman --root squashfs-root --cachedir squashfs-root/var/cache/pacman/pkg  --config squashfs-root/etc/pacman.conf --noconfirm -Scc
 	sudo rm -f "$customiso"/arch/"$sys"/squashfs-root/var/cache/pacman/pkg/*
+	sudo mv "$customiso"/arch/"$sys"/squashfs-root/etc/mkinitcpio.conf.bak "$customiso"/arch/"$sys"/squashfs-root/etc/mkinitcpio.conf
 
 ### Copy over vconsole.conf (sets font at boot) & locale.gen (enables locale(s) for font) & uvesafb.conf
 	sudo cp "$aa"/etc/{vconsole.conf,locale.gen} "$customiso"/arch/"$sys"/squashfs-root/etc
@@ -195,11 +262,35 @@ prepare_sys() {
 	sudo cp "$aa"/extra/{.zshrc,.help,.dialogrc} "$customiso"/arch/"$sys"/squashfs-root/root/
 	sudo cp "$aa"/extra/{.bashrc,.bashrc-root,.tcshrc,.tcshrc.conf,.mkshrc,.zshrc-default,.zshrc-oh-my,.zshrc-grml} "$customiso"/arch/"$sys"/squashfs-root/usr/share/arch-anywhere/extra/
 	sudo cp -r "$aa"/extra/desktop "$customiso"/arch/"$sys"/squashfs-root/usr/share/arch-anywhere/extra/
-	sudo cp -r /tmp/arc-openbox-master/{Arc,Arc-Dark,Arc-Darker} "$customiso"/arch/"$sys"/squashfs-root/usr/share/arch-anywhere/extra/desktop
-	sudo cp "$aa"/boot/{hostname,issue} "$customiso"/arch/"$sys"/squashfs-root/etc/
+	sudo cp "$aa"/boot/hostname "$customiso"/arch/"$sys"/squashfs-root/etc/
+	sudo cp "$aa"/boot/issue_cli "$customiso"/arch/"$sys"/squashfs-root/etc/issue
 	sudo cp -r "$aa"/boot/loader/ "$customiso"/arch/"$sys"/squashfs-root/usr/share/arch-anywhere/boot/
 	sudo cp "$aa"/boot/splash.png "$customiso"/arch/"$sys"/squashfs-root/usr/share/arch-anywhere/boot/
 	sudo cp "$aa"/etc/{nvidia340.xx,nvidia304.xx} "$customiso"/arch/"$sys"/squashfs-root/usr/share/arch-anywhere/etc/
+
+### Disable netctl enable networkmanager
+	sudo arch-chroot squashfs-root systemctl disable netctl.service
+	sudo arch-chroot squashfs-root systemctl enable NetworkManager.service
+
+### Copy new kernel
+	sudo rm "$customiso"/arch/"$sys"/squashfs-root/boot/initramfs-linux-fallback.img
+	sudo mv "$customiso"/arch/"$sys"/squashfs-root/boot/vmlinuz-linux "$customiso"/arch/boot/"$sys"/vmlinuz
+	sudo mv "$customiso"/arch/"$sys"/squashfs-root/boot/initramfs-linux.img "$customiso"/arch/boot/"$sys"/archiso.img
+
+### Configure xfce4
+	sudo rm "$customiso"/arch/"$sys"/squashfs-root/root/install.txt
+	sudo cp -r "$aa"/xfce4/{issue,oblogout.conf} "$customiso"/arch/"$sys"/squashfs-root/etc/
+	sudo cp -r "$aa"/xfce4/net.launchpad.plank.gschema.xml "$customiso"/arch/"$sys"/squashfs-root/usr/share/glib-2.0/schemas/
+	sudo cp -r "$aa"/extra/desktop/{arch-anywhere-wallpaper.png,arch-anywhere-icon.png,colorful-world.png} "$customiso"/arch/"$sys"/squashfs-root/usr/share/pixmaps
+	sudo cp -r "$aa"/extra/desktop/{arch-anywhere-wallpaper.png,arch-anywhere-icon.png,colorful-world.png} "$customiso"/arch/"$sys"/squashfs-root/usr/share/backgrounds/xfce
+	sudo cp -r "$aa"/extra/desktop/arch-anywhere-icon.png "$customiso"/arch/"$sys"/squashfs-root/root/.face
+	sudo cp -r "$aa"/extra/desktop/ttf-zekton-rg "$customiso"/arch/"$sys"/squashfs-root/usr/share/fonts
+	sudo cp -r "$aa"/xfce4/{.zshrc-default,.xinitrc,.automated_script.sh} "$customiso"/arch/"$sys"/squashfs-root/root
+	sudo cp -r "$aa"/extra/.zshrc-default "$customiso"/arch/"$sys"/squashfs-root/root/.zshrc
+	sudo cp -r "$aa"/xfce4/.config "$customiso"/arch/"$sys"/squashfs-root/root
+	sudo touch "$customiso"/arch/"$sys"/squashfs-root/etc/modules-load.d/virtualbox-guest-modules-arch.conf
+	sudo sed -i 's/chromium %U/chromium --no-sandbox %U/' "$customiso"/arch/"$sys"/squashfs-root/usr/share/applications/chromium.desktop
+	sudo arch-chroot squashfs-root xdg-user-dirs-update
 
 ### cd back into root system directory, remove old system
 	cd "$customiso"/arch/"$sys"
@@ -207,24 +298,27 @@ prepare_sys() {
 
 ### Recreate the ISO using compression remove unsquashed system generate checksums and continue to i686
 	echo "Recreating $sys..."
+	sudo umount "$customiso"/arch/"$sys"/squashfs-root/proc/
+	sudo umount "$customiso"/arch/"$sys"/squashfs-root/sys/
+	sudo umount "$customiso"/arch/"$sys"/squashfs-root/dev/
 	sudo mksquashfs squashfs-root airootfs.sfs -b 1024k -comp xz
 	sudo rm -r squashfs-root
 	md5sum airootfs.sfs > airootfs.md5
-	
+
 ### Begin configure boot function
 	configure_boot
 
 }
 
 configure_boot() {
-	
+
 	archiso_label=$(<"$customiso"/loader/entries/archiso-x86_64.conf awk 'NR==5{print $NF}' | sed 's/.*=//')
 	archiso_hex=$(<<<"$archiso_label" xxd -p)
 	iso_hex=$(<<<"$iso_label" xxd -p)
 	cp "$aa"/boot/splash.png "$customiso"/arch/boot/syslinux
 	cp "$aa"/boot/iso/archiso_head.cfg "$customiso"/arch/boot/syslinux
 	sed -i "s/$archiso_label/$iso_label/" "$customiso"/loader/entries/archiso-x86_64.conf
-	sed -i "s/$archiso_label/$iso_label/" "$customiso"/arch/boot/syslinux/archiso_sys.cfg 
+	sed -i "s/$archiso_label/$iso_label/" "$customiso"/arch/boot/syslinux/archiso_sys.cfg
 	sed -i "s/$archiso_label/$iso_label/" "$customiso"/arch/boot/syslinux/archiso_pxe.cfg
 	cd "$customiso"/EFI/archiso/
 	echo -e "Replacing label hex in efiboot.img...\n$archiso_label $archiso_hex > $iso_label $iso_hex"
@@ -278,17 +372,27 @@ create_iso() {
 
 check_sums() {
 
-echo
-echo "Generating ISO checksums..."
-md5_sum=$(md5sum "$version" | awk '{print $1}')
-sha1_sum=$(sha1sum "$version" | awk '{print $1}')
-timestamp=$(timedatectl | grep "Universal" | awk '{print $4" "$5" "$6}')
-echo "Checksums generated. Saved to arch-anywhere-checksums.txt"
-echo -e "- Arch Anywhere is licensed under GPL v2\n- Developer: Dylan Schacht (deadhead3492@gmail.com)\n- Webpage: http://arch-anywhere.org\n- ISO timestamp: $timestamp\n- $version Official Check Sums:\n\n* md5sum: $md5_sum\n* sha1sum: $sha1_sum" > arch-anywhere-checksums.txt
-echo
-echo "$version ISO generated successfully! Exiting ISO creator."
-echo
-exit
+	echo
+	echo "Generating ISO checksums..."
+	md5_sum=$(md5sum "$version" | awk '{print $1}')
+	sha1_sum=$(sha1sum "$version" | awk '{print $1}')
+	timestamp=$(timedatectl | grep "Universal" | awk '{print $4" "$5" "$6}')
+	echo "Checksums generated. Saved to arch-anywhere-checksums.txt"
+	echo -e "- Arch Anywhere is licensed under GPL v2\n- Developer: Dylan Schacht (deadhead3492@gmail.com)\n- Webpage: http://arch-anywhere.org\n- ISO timestamp: $timestamp\n- $version Official Check Sums:\n\n* md5sum: $md5_sum\n* sha1sum: $sha1_sum" > arch-anywhere-checksums.txt
+	echo
+	echo "$version ISO generated successfully! Exiting ISO creator."
+	echo
+	exit
+
+}
+
+quit() {
+
+	if (mount | grep "$customiso" &>/dev/null); then
+		sudo umount "$customiso"/arch/"$sys"/squashfs-root/proc/
+		sudo umount "$customiso"/arch/"$sys"/squashfs-root/sys/
+		sudo umount "$customiso"/arch/"$sys"/squashfs-root/dev/
+	fi
 
 }
 
