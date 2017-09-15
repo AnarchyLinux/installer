@@ -279,18 +279,20 @@ prepare_sys() {
 
 ### Configure xfce4
 	sudo rm "$customiso"/arch/"$sys"/squashfs-root/root/install.txt
-	sudo cp -r "$aa"/xfce4/{issue,oblogout.conf} "$customiso"/arch/"$sys"/squashfs-root/etc/
-	sudo cp -r "$aa"/xfce4/net.launchpad.plank.gschema.xml "$customiso"/arch/"$sys"/squashfs-root/usr/share/glib-2.0/schemas/
+	sudo cp -r "$aa"/extra/gui/Fetchmirrors.desktop "$customiso"/arch/"$sys"/squashfs-root/root/.Fetchmirrors.desktop
+	sudo cp -r "$aa"/extra/gui/gparted.desktop "$customiso"/arch/"$sys"/squashfs-root/root/.gparted.desktop
+	sudo cp -r "$aa"/extra/gui/Install.desktop "$customiso"/arch/"$sys"/squashfs-root/root/.Install.desktop
+	sudo cp -r "$aa"/extra/gui/{issue,oblogout.conf} "$customiso"/arch/"$sys"/squashfs-root/etc/
+	sudo cp -r "$aa"/extra/gui/net.launchpad.plank.gschema.xml "$customiso"/arch/"$sys"/squashfs-root/usr/share/glib-2.0/schemas/
 	sudo cp -r "$aa"/extra/desktop/{arch-anywhere-wallpaper.png,arch-anywhere-icon.png,colorful-world.png} "$customiso"/arch/"$sys"/squashfs-root/usr/share/pixmaps
 	sudo cp -r "$aa"/extra/desktop/{arch-anywhere-wallpaper.png,arch-anywhere-icon.png,colorful-world.png} "$customiso"/arch/"$sys"/squashfs-root/usr/share/backgrounds/xfce
 	sudo cp -r "$aa"/extra/desktop/arch-anywhere-icon.png "$customiso"/arch/"$sys"/squashfs-root/root/.face
 	sudo cp -r "$aa"/extra/desktop/ttf-zekton-rg "$customiso"/arch/"$sys"/squashfs-root/usr/share/fonts
-	sudo cp -r "$aa"/xfce4/{.zshrc-default,.xinitrc,.automated_script.sh} "$customiso"/arch/"$sys"/squashfs-root/root
+	sudo cp -r "$aa"/extra/gui/{.xinitrc,.automated_script.sh} "$customiso"/arch/"$sys"/squashfs-root/root
 	sudo cp -r "$aa"/extra/.zshrc-default "$customiso"/arch/"$sys"/squashfs-root/root/.zshrc
-	sudo cp -r "$aa"/xfce4/.config "$customiso"/arch/"$sys"/squashfs-root/root
+	sudo cp -r "$aa"/extra/gui/.config "$customiso"/arch/"$sys"/squashfs-root/root
 	sudo touch "$customiso"/arch/"$sys"/squashfs-root/etc/modules-load.d/virtualbox-guest-modules-arch.conf
 	sudo sed -i 's/chromium %U/chromium --no-sandbox %U/' "$customiso"/arch/"$sys"/squashfs-root/usr/share/applications/chromium.desktop
-	sudo arch-chroot squashfs-root xdg-user-dirs-update
 
 ### cd back into root system directory, remove old system
 	cd "$customiso"/arch/"$sys"
