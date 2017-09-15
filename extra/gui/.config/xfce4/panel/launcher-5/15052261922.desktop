@@ -1,0 +1,13 @@
+[Desktop Entry]
+Version=1.0
+Name=Drop-Down Terminal
+Comment=Xfce4 Terminal Drop-Down
+GenericName=Terminal Emulator
+Exec=xfce4-terminal --drop-down
+Icon=final-term
+Terminal=false
+Type=Application
+Categories=GTK;System;TerminalEmulator;
+StartupNotify=true
+X-XFCE-Source=file:///usr/share/applications/xfce4-terminal.desktop
+Path=

@@ -1,0 +1,10 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=Fetchmirrors
+Comment=Update pacman mirrorlist
+Exec=fetchmirrors
+Icon=emblem-ubuntuone-updating
+Path=
+Terminal=true
+StartupNotify=false

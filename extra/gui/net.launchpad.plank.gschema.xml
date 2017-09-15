@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemalist>
+	<enum id="PlankHideType">
+		<value value="0" nick="none"/>
+		<value value="1" nick="intelligent"/>
+		<value value="2" nick="auto"/>
+		<value value="3" nick="dodge-maximized"/>
+		<value value="4" nick="window-dodge"/>
+		<value value="5" nick="dodge-active"/>
+	</enum>
+
+	<enum id="GtkAlignType">
+		<value value="0" nick="fill"/>
+		<value value="1" nick="start"/>
+		<value value="2" nick="end"/>
+		<value value="3" nick="center"/>
+	</enum>
+
+	<enum id="GtkPositionType">
+		<value value="0" nick="left"/>
+		<value value="1" nick="right"/>
+		<value value="2" nick="top"/>
+		<value value="3" nick="bottom"/>
+	</enum>
+
+
+	<schema path="/net/launchpad/plank/" id="net.launchpad.plank">
+		<child schema="net.launchpad.plank.dock.settings" name="docks"/>
+
+		<key type="as" name="enabled-docks">
+			<default>['dock1']</default>
+			<summary>Array of names of active/enabled docks</summary>
+			<description>Contains the names of docks which are created and loaded on start up</description>
+		</key>
+	</schema>
+
+	<schema id="net.launchpad.plank.dock.settings" gettext-domain="plank">
+		<key name="alignment" enum='GtkAlignType'>
+			<default>'center'</default>
+			<summary>The alignment for the dock along the monitor's edge</summary>
+			<description>Possible values are "fill", "start", "end", and "center".</description>
+		</key>
+		<key type="b" name="auto-pinning">
+			<default>true</default>
+			<summary>Automatically pin an application if it seems useful to do</summary>
+			<description>If true, automatically pin applications when it seems useful to do.</description>
+		</key>
+		<key type="b" name="current-workspace-only">
+			<default>false</default>
+			<summary>Only show windows from the current workspace</summary>
+			<description>If true, only show unpinned windows from the current workspace in addition to pinned items.</description>
+		</key>
+		<key type="as" name="dock-items">
+			<default>[]</default>
+			<summary>Dockitem-files Array</summary>
+			<description>Array of dockitem-files for this particular dock. This list is automatically updated and managed by Plank. DO NOT MODIFY.</description>
+		</key>
+		<key type="i" name="hide-delay">
+			<range min="0"/>
+			<default>750</default>
+			<summary>Dock hide delay</summary>
+			<description>Length of the delay before hiding the dock, in milliseconds.</description>
+		</key>
+		<key name="hide-mode" enum='PlankHideType'>
+			<default>'intelligent'</default>
+			<summary>Hidemode of the dock</summary>
+			<description>Possible values are "none", "intelligent", "auto", "dodge-maximized", "window-dodge", and "dodge-active".</description>
+		</key>
+		<key type="i" name="icon-size">
+			<range min="24" max="128"/>
+			<default>48</default>
+			<summary>Icon Size</summary>
+			<description>The size of dock items, in pixels.</description>
+		</key>
+		<key name="items-alignment" enum='GtkAlignType'>
+			<default>'center'</default>
+			<summary>The alignment of dock items</summary>
+			<description>Possible values are "fill", "start", "end", and "center".</description>
+		</key>
+		<key type="b" name="lock-items">
+			<default>false</default>
+			<summary>Lock dock items</summary>
+			<description>If true, prevent drag'n'drop actions and lock dock items in place.</description>
+		</key>
+		<key type="s" name="monitor">
+			<default>''</default>
+			<summary>The name of the monitor for the dock to show on</summary>
+			<description>The plug-name of the monitor for the dock to show on (e.g. DVI-I-1, HDMI1, LVDS1). Leave this empty to keep on the primary monitor.</description>
+		</key>
+		<key type="i" name="offset">
+			<range min="-100" max="100"/>
+			<default>0</default>
+			<summary>Position Offset</summary>
+			<description>The dock's position offset from center, in percent.</description>
+		</key>
+		<key type="b" name="pinned-only">
+			<default>false</default>
+			<summary>Only show pinned applications</summary>
+			<description>If true, only show pinned applications. Useful for running more than one dock.</description>
+		</key>
+		<key name="position" enum='GtkPositionType'>
+			<default>'bottom'</default>
+			<summary>The position for the dock on the monitor</summary>
+			<description>Possible values are "left", "right", "top", and "bottom".</description>
+		</key>
+		<key type="b" name="pressure-reveal">
+			<default>false</default>
+			<summary>Pressure Reveal</summary>
+			<description>If true, use pressure-based revealing of the dock if the input device supports it.</description>
+		</key>
+		<key type="b" name="show-dock-item">
+			<default>false</default>
+			<summary>Show the item for the dock itself</summary>
+			<description>If true, show the Plank dock item.</description>
+		</key>
+		<key type="s" name="theme">
+			<default>'Default'</default>
+			<summary>The name of the dock theme for Plank to use</summary>
+			<description>Built-in values include "Default", "Matte", "Transparent", and "Gtk+".</description>
+		</key>
+		<key type="b" name="tooltips-enabled">
+			<default>true</default>
+			<summary>Show tooltips when items are hovered</summary>
+			<description>If true, tooltips will be shown when dock items are hovered with the cursor.</description>
+		</key>
+		<key type="i" name="unhide-delay">
+			<range min="0"/>
+			<default>0</default>
+			<summary>Dock unhide delay</summary>
+			<description>Length of the delay before unhiding the dock, in milliseconds.</description>
+		</key>
+		<key type="b" name="zoom-enabled">
+			<default>true</default>
+			<summary>Zoom dock items when hovered</summary>
+			<description>If true, zoom dock items when hovered with the cursor.</description>
+		</key>
+		<key type="i" name="zoom-percent">
+			<range min="100" max="200"/>
+			<default>150</default>
+			<summary>Icon zoom percentage</summary>
+			<description>The amount to zoom dock items, in percent.</description>
+		</key>
+	</schema>
+</schemalist>

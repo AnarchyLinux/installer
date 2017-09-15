@@ -1,0 +1,10 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=Install
+Comment=Install Arch Anywhere
+Exec=arch-anywhere
+Icon=intel-installer
+Path=
+Terminal=true
+StartupNotify=false
