@@ -20,18 +20,19 @@ Green=$'\e[0;32m';
 Yellow=$'\e[0;33m';
 Red=$'\e[0;31m';
 
-cpu_type=$(lscpu | grep "Model name:" | cut -c 24-)
-cpu_cores=$(lscpu | grep "^CPU(s)" | cut -c 24-)
+cpu_type=$(lscpu | grep "Model name:" | cut -c 22-)
+cpu_cores=$(lscpu | grep "^CPU(s):" | cut -c 22-)
 
 if (lscpu | grep "CPU max MHz" &> /dev/null) then
-	cpu_freq=$(lscpu | grep "CPU max MHz" | cut -c 24-)
+	cpu_freq=$(lscpu | grep "CPU max MHz:" | cut -c 22-)
 else
-	cpu_freq=$(lscpu | grep "CPU MHz" | cut -c 24-)
+	cpu_freq=$(lscpu | grep "CPU MHz:" | cut -c 22-)
 fi
 
 mem_total=$(free -m | awk 'NR==2 {print $2}')
 mem_used=$(free -m | awk 'NR==2 {print $3}')
-gpu_type=$(lspci | grep VGA | cut -c 36- | awk 'NR==1')
+gpu_cpu=$(lspci | grep VGA | cut -c 36- | awk 'NR==1')
+gpu_dedicated=$(lspci | grep VGA | cut -c 36- | awk 'NR==2')
 block_dev=$(echo -e "${Yellow}Block Devices: \n${Green}$(lsblk | grep "sd." | awk '{print "'${Red}'> '${Green}'"$1" '${Yellow}'Type: '${Green}'"$6" '${Yellow}'Size: '${Green}'"$4" '${Green}'"$7}' | column -t | sed 's/>/    >/')")
 inet_dev=$(echo -e "${Yellow}IP Configuration: \n${Green}$(ip addr | grep -w inet | sed "s/inet/${Red}> ${Green}inet/")")
 kversion=$(uname -srm)
@@ -43,8 +44,9 @@ echo "  ${Red}|${Yellow}Kernel Version: ${Green}$kversion"
 echo "  ${Red}|${Yellow}Command Shell: ${Green}$shell"
 echo "  ${Red}|${Yellow}CPU Model: ${Green}$cpu_type"
 echo "  ${Red}|${Yellow}CPU Cores: ${Green}$cpu_cores"
-echo "  ${Red}|${Yellow}CPU Clock: ${Green}$cpu_freq MiB"
-echo "  ${Red}|${Yellow}GPU Model: ${Green}$gpu_type"
+echo "  ${Red}|${Yellow}CPU Clock: ${Green}$cpu_freq MHz"
+echo "  ${Red}|${Yellow}GPU - CPU: ${Green}$gpu_cpu"
+echo "  ${Red}|${Yellow}GPU - dedicated: ${Green}$gpu_dedicated"
 echo "  ${Red}|${Yellow}Memory: ${Green}$mem_used MiB / $mem_total MiB"
 echo "  ${Red}|$block_dev"
 echo "  ${Red}|$inet_dev${ColorOff}"
