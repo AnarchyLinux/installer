@@ -43,6 +43,9 @@ configure_system() {
 		sed -i 's/MODULES=""/MODULES="nvidia nvidia_modeset nvidia_uvm nvidia_drm"/' "$ARCH"/etc/mkinitcpio.conf
 		sed -i 's!FILES=""!FILES="/etc/modprobe.d/nvidia.conf"!' "$ARCH"/etc/mkinitcpio.conf
 		echo "options nvidia_drm modeset=1" > "$ARCH"/etc/modprobe.d/nvidia.conf
+		if (<<<"$GPU" grep "nvidia" &> /dev/null); then
+			echo "blacklist nouveau" >> "$ARCH"/etc/modprobe.d/nvidia.conf
+		fi
 
 		if [ ! -d "$ARCH"/etc/pacman.d/hooks ]; then
 			mkdir "$ARCH"/etc/pacman.d/hooks
