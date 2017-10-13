@@ -159,7 +159,7 @@ efistub_config() {
 
 	efi_root="root=/dev/$ROOT"
 	if "$crypted" ; then
-		root="cryptdevice=/dev/lvm/lvroot:root root=/dev/mapper/root"
+		efi_root="cryptdevice=/dev/lvm/lvroot:root root=/dev/mapper/root"
 	fi
 
 	efi_drm=""
