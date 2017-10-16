@@ -307,7 +307,8 @@ add_software() {
 						"audacity"		"$audio0" OFF \
 						"audacious"		"$audio1" OFF \
 						"cmus"			"$audio2" OFF \
-						"jack2"         "$audio3" OFF \
+						"clementine"		"$audio10" OFF \
+						"jack2"         	"$audio3" OFF \
 						"projectm"		"$audio4" OFF \
 						"lmms"			"$audio5" OFF \
 						"mpd"			"$audio6" OFF \
