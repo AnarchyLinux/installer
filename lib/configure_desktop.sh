@@ -319,7 +319,7 @@ graphics() {
 		fi
 	done
 
-	DE+="$GPU xdg-user-dirs xorg-server xorg-apps xorg-xinit xterm ttf-dejavu gvfs gvfs-smb gvfs-mtp pulseaudio pavucontrol pulseaudio-alsa alsa-utils unzip "
+	DE+="$GPU xdg-user-dirs xorg-server xorg-apps xorg-xinit xterm ttf-dejavu terminus-font gvfs gvfs-smb gvfs-mtp pulseaudio pavucontrol pulseaudio-alsa alsa-utils unzip "
 	
 	if [ "$net_util" == "networkmanager" ] ; then
 		if (<<<"$DE" grep "plasma" &> /dev/null); then
