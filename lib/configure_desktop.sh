@@ -262,7 +262,7 @@ graphics() {
 							else
 								GPU="nvidia-340xx"
 							fi
-							GPU+=" nvidia-340xx-libgl nvidia-340xx-utils"
+							GPU+=" nvidia-340xx-libgl nvidia-340xx-utils nvidia-settings"
 							break
 						fi
 					elif (<"$aa_dir"/etc/nvidia304.xx grep "$pci_id" &>/dev/null); then
@@ -272,7 +272,7 @@ graphics() {
 							else
 								GPU="nvidia-304xx"
 							fi
-							GPU+=" nvidia-304xx-libgl nvidia-304xx-utils"
+							GPU+=" nvidia-304xx-libgl nvidia-304xx-utils nvidia-settings"
 							break
 						fi
 					else
@@ -286,7 +286,7 @@ graphics() {
 							if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$nvidia_modeset_msg" 10 60) then
 								drm=true
 							fi
-							GPU+=" nvidia-libgl nvidia-utils"
+							GPU+=" nvidia-libgl nvidia-utils nvidia-settings"
 							break
 						fi
 				        fi
@@ -296,21 +296,20 @@ graphics() {
 					fi
 
 					if [ "$kernel" == "lts" ]; then
-						GPU="nvidia-lts nvidia-libgl nvidia-utils"
+						GPU="nvidia-lts nvidia-libgl nvidia-utils nvidia-settings"
 					else
-						GPU+=" ${GPU}-libgl ${GPU}-utils"
+						GPU+=" ${GPU}-libgl ${GPU}-utils nvidia-settings"
 					fi
 					break
 				else
 					if [ "$kernel" == "lts" ]; then
-						GPU="${GPU}-lts ${GPU}-libgl ${GPU}-utils"
+						GPU="${GPU}-lts ${GPU}-libgl ${GPU}-utils nvidia-settings"
 					else
-						GPU+=" ${GPU}-libgl ${GPU}-utils"
+						GPU+=" ${GPU}-libgl ${GPU}-utils nvidia-settings"
 					fi
 					break
 				fi
 			fi
-			GPU+=" nvidia-settings"
 		elif [ "$GPU" == "$default" ]; then
 			GPU="$default_GPU mesa-libgl"
 			break
