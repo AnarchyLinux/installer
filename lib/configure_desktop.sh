@@ -310,6 +310,7 @@ graphics() {
 					break
 				fi
 			fi
+			GPU+=" nvidia-settings"
 		elif [ "$GPU" == "$default" ]; then
 			GPU="$default_GPU mesa-libgl"
 			break
