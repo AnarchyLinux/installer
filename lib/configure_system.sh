@@ -276,6 +276,11 @@ configure_system() {
 	cp "$aa_dir"/extra/.bashrc-root "$ARCH"/root/.bashrc
 	cp "$aa_dir"/extra/.bashrc "$ARCH"/etc/skel/
 
+	sed -i 's/^#Color$/Color/' "$ARCH"/etc/pacman.conf
+	sed -i 's/^#TotalDownload$/TotalDownload/' "$ARCH"/etc/pacman.conf
+	sed -i 's/^#CheckSpace$/CheckSpace/' "$ARCH"/etc/pacman.conf
+	sed -i 's/^#VerbosePkgLists$/VerbosePkgLists/' "$ARCH"/etc/pacman.conf
+	sed -i '/^VerbosePkgLists$/ a ILoveCandy' "$ARCH"/etc/pacman.conf
 }
 
 set_hostname() {
