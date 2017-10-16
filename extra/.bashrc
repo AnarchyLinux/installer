@@ -125,14 +125,6 @@ mcd () {
   cd $1
 }
 
-# finds out your real online IP
-function my_ip() # Get IP adress.
-{
-    MY_IP=$(/sbin/ifconfig enp2s0 | awk '/inet/ { print $2 } ' |
-      sed -e s/addr://)
-    echo ${MY_IP:-"Not connected"}
-}
-
 # set PATH so it includes user's private bin directories
 PATH="$HOME/bin:$HOME/.local/bin:$PATH"
 
