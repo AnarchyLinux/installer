@@ -1,7 +1,7 @@
 #!/bin/bash
 ###############################################################
-### Arch Linux Anywhere Install Script
-### arch-anywhere-chroot.sh
+### Anarchy Linux Install Script
+### anarchy-chroot.sh
 ###
 ### Copyright (C) 2017 Dylan Schacht
 ###
@@ -15,7 +15,7 @@
 ### License: GPL v2.0
 ###############################################################
 
-arch_anywhere_chroot() {
+anarchy_chroot() {
 
 	local char=
 	local input=
@@ -69,7 +69,7 @@ arch_anywhere_chroot() {
 			fi
 		done
 
-		if [ "$input" == "arch-anywhere" ] || [ "$input" == "exit" ]; then
+		if [ "$input" == "anarchy" ] || [ "$input" == "exit" ]; then
 			rm /tmp/chroot_dir.var &> /dev/null
 			clear
 			break

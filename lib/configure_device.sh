@@ -1,6 +1,6 @@
 #!/bin/bash
 ###############################################################
-### Arch Linux Anywhere Install Script
+### Anarchy Linux Install Script
 ### configure_device.sh
 ###
 ### Copyright (C) 2017 Dylan Schacht
@@ -31,7 +31,7 @@ prepare_drives() {
 		"$method1" "-" \
 		"$method2"  "-" \
 		"$menu_msg" "-" 3>&1 1>&2 2>&3)
-    
+
 		if [ "$?" -gt "0" ] || [ "$PART" == "$menu_msg" ]; then
 			main_menu
 		elif [ "$PART" != "$method2" ]; then
@@ -45,20 +45,20 @@ prepare_drives() {
 						dialog --colors --title "$title" --ok-button "$ok" --cancel-button "$cancel" --menu "$drive_msg \n\n $dev_menu" 16 60 5 \\
 					EOF
 			fi
-    
+
 			cat <<-EOF >> "$tmp_menu"
 				$(lsblk -nio NAME,SIZE,TYPE | egrep "disk|raid[0-9]+$" | sed 's/[^[:alnum:]_., ]//g' | column -t | sort -k 1,1 | uniq | awk '{print "\""$1"\"""  ""\"| "$2" | "$3" |==>\""" \\"}' | column -t)
 				3>&1 1>&2 2>&3
 			EOF
-    
+
 			DRIVE=$(bash "$tmp_menu")
 			rm "$tmp_menu"
-    
+
 			if [ -n "$DRIVE" ]; then
 				if (<<<"$DRIVE" egrep "nvme.*|mmc.*|md.*" &> /dev/null) then
 					PART_PREFIX="p"
 				fi
-        
+
 				drive_byte=$(lsblk -nibo NAME,SIZE | grep -w "$DRIVE" | awk '{print $2}')
 				drive_mib=$((drive_byte/1024/1024))
 				drive_gigs=$((drive_mib/1024))
@@ -66,12 +66,12 @@ prepare_drives() {
 				echo "$(date -u "+%F %H:%M") : Drive size in MB: $drive_mib" >> "$log"
 				echo "$(date -u "+%F %H:%M") : F2FS state: $f2fs" >> "$log"
 				fs_select
-        
+
 				if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$swap_msg0" 10 60) then
 					while (true)
 					  do
 						SWAPSPACE=$(dialog --ok-button "$ok" --cancel-button "$cancel" --inputbox "\n$swap_msg1" 11 55 "512M" 3>&1 1>&2 2>&3)
-        
+
 						if [ "$?" -gt "0" ]; then
 							SWAP=false ; break
 						else
@@ -94,10 +94,10 @@ prepare_drives() {
 							fi
 						fi
 					done
-        
+
 					echo "$(date -u "+%F %H:%M") : Swapspace size set to: $SWAPSPACE" >> "$log"
 				fi
-        
+
 				if (efivar -l &> /dev/null); then
 					if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$efi_msg0" 10 60) then
 						GPT=true
@@ -105,16 +105,16 @@ prepare_drives() {
 						echo "$(date -u "+%F %H:%M") : UEFI boot activated" >> "$log"
 					fi
 				fi
-        
+
 				if ! "$UEFI" ; then
 					if (dialog --defaultno --yes-button "$yes" --no-button "$no" --yesno "\n$gpt_msg" 10 60) then
 						GPT=true
 						echo "$(date -u "+%F %H:%M") : GPT partition scheme activated" >> "$log"
 					fi
 				fi
-        
+
 				source "$lang_file"
-        
+
 				if "$SWAP" ; then
 					drive_var="$drive_var1"
 					height=13
@@ -128,7 +128,7 @@ prepare_drives() {
 				else
 					height=11
 				fi
-        
+
 				if (dialog --defaultno --yes-button "$write" --no-button "$cancel" --yesno "\n$drive_var" "$height" 60) then
 					(sgdisk --zap-all /dev/"$DRIVE"
 					wipefs -a /dev/"$DRIVE") &> /dev/null &
@@ -139,7 +139,7 @@ prepare_drives() {
 				fi
 			fi
 		fi
-    
+
 		case "$PART" in
 			"$method0")
 					auto_part
@@ -153,13 +153,13 @@ prepare_drives() {
 						dialog --ok-button "$ok" --msgbox "\n$part_err_msg" 10 60
 					fi
 			;;
-			"$method2")	
+			"$method2")
 					points=$(echo -e "$points_orig\n$custom $custom-mountpoint")
 					part_menu
 			;;
 		esac
 	done
-    
+
 }
 
 auto_part() {
@@ -472,12 +472,14 @@ part_class() {
 				pid=$! pri=0.1 msg="$wait_load \n\n \Z1> \Z2umount -R /mnt\Zn" load
 				mounted=false
 				unset DRIVE
-				cfdisk /dev/"$part"
+				select_util
+				$UTIL /dev/"$part"
 				sleep 0.5
 				clear
 			fi
 		elif (dialog --yes-button "$edit" --no-button "$cancel" --yesno "\n$manual_part_var3" 12 60) then
-			cfdisk /dev/"$part"
+			select_util
+			$UTIL /dev/"$part"
 			sleep 0.5
 			clear
 		fi
@@ -842,6 +844,29 @@ fs_select() {
 		enable_f2fs=true
 	elif [ "$FS" == "btrfs" ]; then
 		enable_btrfs=true
+	fi
+
+}
+
+select_util() {
+
+	if "$GUI" ; then
+		UTIL=$(dialog --menu "$vfat_msg" 14 65 4 \
+			"gparted"	"$part_util" \
+			"cfdisk"	"$part_util0" \
+			"fdisk"		"$part_util1" \
+			"gdisk"		"$part_util2" 3>&1 1>&2 2>&3)
+		if [ "$?" -gt "0" ]; then
+			part_menu
+		fi
+	else
+		UTIL=$(dialog --menu "$vfat_msg" 13 65 3 \
+			"cfdisk"	"$part_util0" \
+			"fdisk"		"$part_util1" \
+			"gdisk"		"$part_util2" 3>&1 1>&2 2>&3)
+		if [ "$?" -gt "0" ]; then
+			part_menu
+		fi
 	fi
 
 }

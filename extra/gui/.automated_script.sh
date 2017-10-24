@@ -40,7 +40,7 @@ check_vm() {
 if [[ $(tty) == "/dev/tty1" ]]; then
     automated_script
     check_vm
-    startx &>/dev/null
+    su user -c startx &>/dev/null
 
     if [ "$?" -gt "0" ]; then
         echo -e "\nERROR: failed to start xorg server"

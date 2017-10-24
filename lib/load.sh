@@ -1,6 +1,6 @@
 #!/bin/bash
 ###############################################################
-### Arch Linux Anywhere Install Script
+### Anarchy Linux Install Script
 ### load.sh
 ###
 ### Copyright (C) 2017 Dylan Schacht

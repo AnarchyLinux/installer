@@ -31,7 +31,7 @@ if [ -r ~/.zshrc -a -r ~/.zshrc.global -a ! -r ~/.zshrc.local ] ; then
 fi
 
 alias help="cat ~/.help"
-alias start="cat /etc/issue"
+alias start="cat ~/.issue_cli"
 alias 1="arch-anywhere"
 alias 2="arch-anywhere -u"
 alias 3="arch-wiki"

@@ -1,6 +1,6 @@
 #!/bin/bash
 ###############################################################
-### Arch Linux Anywhere Install Script
+### Anarchy Linux Install Script
 ### language.sh
 ###
 ### Copyright (C) 2017 Dylan Schacht
@@ -17,9 +17,9 @@
 
 language() {
 
-	echo "$(date -u "+%F %H:%M") : Start arch-anywhere installer" > "$log"
+	echo "$(date -u "+%F %H:%M") : Start anarchy installer" > "$log"
 	op_title=" -| Language Select |- "
-	ILANG=$(dialog --nocancel --menu "\nArch Anywhere Installer\n\n \Z2*\Zn Select your install language:" 20 60 10 \
+	ILANG=$(dialog --nocancel --menu "\nAnarchy Installer\n\n \Z2*\Zn Select your install language:" 20 60 10 \
 		"English" "-" \
 		"Bulgarian" "Български" \
 		"Dutch" "Nederlands" \
@@ -40,7 +40,7 @@ language() {
 		"Swedish" "Svenska" 3>&1 1>&2 2>&3)
 
 	case "$ILANG" in
-		"English") export lang_file="$aa_dir"/lang/arch-installer-english.conf ;;
+		"English") export lang_file="$aa_dir"/lang/anarchy-english.conf ;;
 		"Bulgarian") export lang_file="$aa_dir"/lang/arch-installer-bulgarian.conf lib=bg bro=bg kdel=bg ;;
 		"Dutch") export lang_file="$aa_dir"/lang/arch-installer-dutch.conf lib=nl bro=nl kdel=nl ;;
 		"French") export lang_file="$aa_dir"/lang/arch-installer-french.conf lib=fr bro=fr kdel=fr ;;

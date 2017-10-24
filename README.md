@@ -1,16 +1,16 @@
-# arch-linux-anywhere
+# anarchy-linux
 
-Arch Anywhere is a modified version of the official archiso providing a hassle free pure Arch Linux install from start to finish. Arch Anywhere contains a set of shell scripts intended to simplify the install process. This includes a dialog automated installer enabling you to install Arch Linux from the cli in semi graphical install mode. Simply boot up and type 'arch-anywhere' to invoke the installer script, every aspect of the install is taken into account from partitioning and general system configuration, to installing your favorite desktop/wm and additional software from the official Arch Linux repos.
+Anarchy Linux is an Arch based distro providing a hassle free pure install and polished user experience. Bundled with the AnarchyISO is a dialog installer enabling you to install from the cli in semi graphical install mode. Simply boot up and type 'anarchy' to invoke the installer script, every aspect of the install is taken into account from partitioning and general system configuration, to installing your favorite desktop/wm and additional software from the official Arch Linux repos.
 
-The Arch Anywhere installer is intended to allow novice Linux users a simple and pain free way to install Arch Linux regardless of their previous experience. It is also intended to allow advanced users with a way to deploy an Arch system while still providing the flexibility and freedom of choice of a traditional Arch Linux install. Install Arch Linux when you want it, where you want it, how you want it, that is the Arch Anywhere philosophy.
+The Anarchy installer is intended to allow both novice and experienced Linux users a simple and pain free way to install Arch Linux. Install when you want it, where you want it, how you want it, that is the Anarchy philosophy.
 
-The Arch Anywhere ISO also contains a built in Arch Wiki allowing users to browse the official Arch Linux Wiki from the cli. Simply invoke the 'arch-wiki' command at anytime to search the arch wiki (search args may be passed ex: 'arch-wiki beginners guide'). A utility to update and rank the latest Arch Linux mirrorlist is also included in the ISO it can be invoked by running 'fetchmirrors'. These included utilities make it easy for new users to install Arch from the command line without using the installer and provide a way to learn how Arch really works by learning the install process. 
+The Anarchy ISO also contains a built in Arch Wiki allowing users to browse the official Arch Linux Wiki from the cli. Simply invoke the 'arch-wiki' command at anytime to search the arch wiki (search args may be passed ex: 'arch-wiki beginners guide'). A utility to update and rank the latest Arch Linux mirrorlist is also included in the ISO it can be invoked by running 'fetchmirrors'. The install process for Anarchy is also 100% compatiable with the information found in the install guide on the Arch Wiki. 
 
-Arch Anywhere aims to provide a polished Arch Linux install experience while leaving open every possible install avenue for the user to choose from.
+Anarchy aims to provide a polished and pure Arch install while leaving open every possible configuration avenue for the user to choose from.
 
-This is a ISO containing support only for x86_64 (64 bit) systems.
+This ISO only contains support only for x86_64 (64 bit) systems.
 
-### Official Arch Linux Anywhere ISO:
+### Official Anarchy Linux ISO:
 
 http://arch-anywhere.org/
 
@@ -37,8 +37,8 @@ http://arch-anywhere.org/
 
 * Supported Desktop Environments + Window Managers:
 
-    Arch Anywhere XFCE4 (developers custom xfce4 desktop) <br />
-    Arch Anywhere OpenboxWM (developers custom Openbox desktop) 
+    Anarchy XFCE4 (developers custom xfce4 desktop) <br />
+    Anarchy OpenboxWM (developers custom Openbox desktop) 
     Awesome <br />
     Budgie <br />
     Bspwm <br />
@@ -85,9 +85,9 @@ http://arch-anywhere.org/
 
 Also contains a long list of optional additional software (audio, games, browsers, media players, cli utils, text editors, servers, etc...) from the Official Arch repos.
 
-Arch Anywhere, quick, easy, and straight forward, "Keep it simple stupid".
+Anarchy, quick, easy, and straight forward, "Keep it simple stupid".
 
-You can find the latest version of Arch Anywhere on the Download page:
+You can find the latest version of Anarchy Linux on the Download page:
 
 http://arch-anywhere.org/download
 

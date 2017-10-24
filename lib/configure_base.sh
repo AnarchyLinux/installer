@@ -1,6 +1,6 @@
 #!/bin/bash
 ###############################################################
-### Arch Linux Anywhere Install Script
+### Anarchy Linux Install Script
 ### configure_base.sh
 ###
 ### Copyright (C) 2017 Dylan Schacht
@@ -94,10 +94,10 @@ prepare_base() {
 								fi
 
 								sh="/usr/bin/$shell" shell="zsh zsh-syntax-highlighting"
-								
+
 								if [ "$shrc" == "oh-my-zsh" ]; then
-									if ! (grep "arch-anywhere" </etc/pacman.conf &>/dev/null); then
-										sed -i -e '$a\\n[arch-anywhere]\nServer = http://arch-anywhere.org/repo/$arch\nSigLevel = Never' /etc/pacman.conf
+									if ! (grep "anarchy" </etc/pacman.conf &>/dev/null); then
+										sed -i -e '$a\\n[anarchy]\nServer = http://arch-anywhere.org/repo/$arch\nSigLevel = Never' /etc/pacman.conf
 									fi
 									shell+=" oh-my-zsh-git"
 								elif [ "$shrc" == "grml-zsh-config" ]; then
@@ -209,7 +209,7 @@ prepare_base() {
 			base_install+="wireless_tools wpa_supplicant wpa_actiond "
 		fi
 	fi
-	
+
 	if "$bluetooth" ; then
 		if (dialog --defaultno --yes-button "$yes" --no-button "$no" --yesno "\n$bluetooth_msg" 10 60) then
 			base_install+="bluez bluez-utils pulseaudio-bluetooth "
@@ -248,15 +248,17 @@ add_software() {
 				software_menu=$(dialog --extra-button --extra-label "$install" --ok-button "$select" --cancel-button "$cancel" --menu "$software_type_msg" 21 63 12 \
 					"$aar"		"$aar_msg" \
 					"$audio"	"$audio_msg" \
+					"$database"	"$database_msg" \
 					"$games"	"$games_msg" \
 					"$graphic"	"$graphic_msg" \
 					"$internet"	"$internet_msg" \
 					"$multimedia"	"$multimedia_msg" \
 					"$office"	"$office_msg" \
+					"$programming"	"$program_msg" \
 					"$terminal"	"$terminal_msg" \
 					"$text_editor"	"$text_editor_msg" \
 					"$servers"	"$servers_msg" \
-					"$system"	"$system_msg" \
+					"$util"		"$util_msg" \
 					"$done_msg"	"$install \Z2============>\Zn" 3>&1 1>&2 2>&3)
 				ex="$?"
 
@@ -270,8 +272,8 @@ add_software() {
 					software_menu="$done_msg"
 				elif [ "$software_menu" == "$aar" ] && ! "$aa_repo" ; then
 					if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$aar_add_msg" 10 60) then
-						if ! (grep "arch-anywhere" </etc/pacman.conf &>/dev/null); then
-							sed -i -e '$a\\n[arch-anywhere]\nServer = http://arch-anywhere.org/repo/$arch\nSigLevel = Never' /etc/pacman.conf
+						if ! (grep "anarchy" </etc/pacman.conf &>/dev/null); then
+							sed -i -e '$a\\n[anarchy]\nServer = http://arch-anywhere.org/repo/$arch\nSigLevel = Never' /etc/pacman.conf
 						fi
 						aa_repo=true
 					else
@@ -284,16 +286,33 @@ add_software() {
 
 			case "$software_menu" in
 				"$aar")
-					software=$(dialog --ok-button "$ok" --cancel-button "$cancel" --checklist "$software_msg1" 17 60 7 \
-						"arch-wiki-cli"	"$aar0" ON \
-						"downgrade"		"$aar6" OFF \
-						"dolphin-libre"	"$aar7" OFF \
-						"fetchmirrors"	"$aar1" ON \
-						"fetchpkg"		"$aar8" ON \
-						"octopi"		"$aar4" OFF \
-						"pacaur"		"$aar2" OFF \
-						"pamac-aur"		"$aar5" OFF \
-						"yaourt"		"$aar3" OFF 3>&1 1>&2 2>&3)
+					software=$(dialog --ok-button "$ok" --cancel-button "$cancel" --checklist "$software_msg1" 20 63 10 \
+						"android-sdk"			"$aar23" OFF \
+						"android-sdk-platform-tools"	"$aar24" OFF \
+						"arch-wiki-cli"			"$aar0" ON \
+						"downgrade"			"$aar6" OFF \
+						"dolphin-libre"			"$aar7" OFF \
+						"dropbox"			"$aar25" OFF \
+						"fetchmirrors"			"$aar1" ON \
+						"fetchpkg"			"$aar8" ON \
+						"google-chrome"			"$aar9" OFF \
+						"google-earth"			"$aar10" OFF \
+						"numix-circle-icon-theme-git"	"$aar11" OFF \
+						"numix-icon-theme-git"		"$aar12" OFF \
+						"octopi"			"$aar4" OFF \
+						"pacaur"			"$aar2" OFF \
+						"pamac-aur"			"$aar5" OFF \
+						"plex-media-server"		"$aar13" OFF \
+						"plymouth"			"$aar14" OFF \
+						"powerline-fonts-git"		"$aar15" OFF \
+						"spotify"			"$aar16" OFF \
+						"sublime-text"			"$aar17" OFF \
+						"teamviewer"			"$aar18" OFF \
+						"tor-browser-en"		"$aar19" OFF \
+						"virtualbox-ext-oracle"		"$aar20" OFF \
+						"vivaldi"			"$aar21" OFF \
+						"xmacro"			"$aar22" OFF \
+						"yaourt"			"$aar3" OFF 3>&1 1>&2 2>&3)
 					if [ "$?" -gt "0" ]; then
 						add_soft=false
 					fi
@@ -303,30 +322,51 @@ add_software() {
 					fi
 				;;
 				"$audio")
-					software=$(dialog --ok-button "$ok" --cancel-button "$cancel" --checklist "$software_msg1" 20 60 10 \
+					software=$(dialog --ok-button "$ok" --cancel-button "$cancel" --checklist "$software_msg1" 20 63 10 \
+						"amarok"		"$audio12" OFF \
 						"audacity"		"$audio0" OFF \
 						"audacious"		"$audio1" OFF \
-						"cmus"			"$audio2" OFF \
 						"clementine"		"$audio10" OFF \
-						"jack2"         	"$audio3" OFF \
+						"cmus"			"$audio2" OFF \
+						"jack2"			"$audio3" OFF \
 						"projectm"		"$audio4" OFF \
 						"lmms"			"$audio5" OFF \
 						"mpd"			"$audio6" OFF \
 						"ncmpcpp"		"$audio7" OFF \
 						"pianobar"		"$audio9" OFF \
-						"pavucontrol"	"$audio8" OFF 3>&1 1>&2 2>&3)
+						"pavucontrol"		"$audio8" OFF \
+						"pulseaudio-equalizer"	"$audio11" OFF \
+						"qmmp"			"$audio13" OFF \
+						"rhythmbox"		"$audio14" OFF 3>&1 1>&2 2>&3)
+					if [ "$?" -gt "0" ]; then
+						add_soft=false
+					fi
+				;;
+				"$database")
+					software=$(dialog --ok-button "$ok" --cancel-button "$cancel" --checklist "$software_msg1" 20 63 10 \
+						"couchdb"		"$db0" OFF \
+						"mariadb"		"$sys30" OFF \
+						"mongodb"		"$db1" OFF \
+						"percona-server"	"$db2" OFF \
+						"phpmyadmin"		"$sys32" OFF \
+						"php-sqlite"		"$db3" OFF \
+						"postgresql"		"$sys31" OFF \
+						"redis"			"$db4" OFF \
+						"rethinkdb"		"$db5" OFF\
+						"sqlite"		"$db6" OFF 3>&1 1>&2 2>&3)
 					if [ "$?" -gt "0" ]; then
 						add_soft=false
 					fi
 				;;
 				"$internet")
-					software=$(dialog --ok-button "$ok" --cancel-button "$cancel" --checklist "$software_msg1" 19 60 9 \
+					software=$(dialog --ok-button "$ok" --cancel-button "$cancel" --checklist "$software_msg1" 20 63 10 \
 						"chromium"			"$net0" OFF \
 						"elinks"			"$net3" OFF \
 						"filezilla"			"$net1" OFF \
 						"firefox"			"$net2" OFF \
 						"irssi"				"$net9" OFF \
 						"lynx"				"$net3" OFF \
+						"midori"			"$net12" OFF \
 						"minitube"			"$net4" OFF \
 						"opera"				"$net5" OFF \
 						"thunderbird"			"$net6" OFF \
@@ -382,27 +422,35 @@ add_software() {
 					fi
 				;;
 				"$graphic")
-					software=$(dialog --ok-button "$ok" --cancel-button "$cancel" --checklist "$software_msg1" 17 63 7 \
+					software=$(dialog --ok-button "$ok" --cancel-button "$cancel" --checklist "$software_msg1" 20 63 10 \
 						"blender"		"$graphic0" OFF \
 						"darktable"		"$graphic1" OFF \
 						"feh"			"$graphic6" OFF \
 						"gimp"			"$graphic2" OFF \
+						"graphicsmagick"	"$graphic8" OFF \
 						"graphviz"		"$graphic3" OFF \
-						"imagemagick"	"$graphic4" OFF \
-						"pinta"			"$graphic5" OFF 3>&1 1>&2 2>&3)
+						"imagemagick"		"$graphic4" OFF \
+						"inkscape"		"$graphic9" OFF \
+						"mtpaint"		"$graphic10" OFF \
+						"mypaint"		"$graphic11" OFF \
+						"pinta"			"$graphic5" OFF \
+						"rawtherapee"		"$graphic7" OFF 3>&1 1>&2 2>&3)
 					if [ "$?" -gt "0" ]; then
 						add_soft=false
 					fi
 				;;
 				"$multimedia")
-					software=$(dialog --ok-button "$ok" --cancel-button "$cancel" --checklist "$software_msg1" 17 63 7 \
+					software=$(dialog --ok-button "$ok" --cancel-button "$cancel" --checklist "$software_msg1" 20 63 10 \
+						"byzanz"				"$media10" OFF \
 						"handbrake"				"$media0" OFF \
+						"kdenlive"				"$media9" OFF \
 						"mplayer"				"$media1" OFF \
 						"mpv"					"$media7" OFF \
 						"multimedia-codecs"			"$media8" OFF \
 						"pitivi"				"$media2" OFF \
 						"simplescreenrecorder"			"$media3" OFF \
 						"smplayer"				"$media4" OFF \
+						"snappy-player"				"$media11" OFF \
 						"totem"					"$media5" OFF \
 						"vlc"         	   			"$media6" OFF 3>&1 1>&2 2>&3)
 					if [ "$?" -gt "0" ]; then
@@ -416,12 +464,18 @@ add_software() {
 					fi
 				;;
 				"$office")
-					software=$(dialog --ok-button "$ok" --cancel-button "$cancel" --checklist "$software_msg1" 16 63 6 \
+					software=$(dialog --ok-button "$ok" --cancel-button "$cancel" --checklist "$software_msg1" 20 63 10 \
 						"abiword"               "$office0" OFF \
 						"calligra"              "$office1" OFF \
-						"gnumeric"				"$office3" OFF \
-						"libreoffice-fresh"		"$office4" OFF \
-						"libreoffice-still"		"$office5" OFF 3>&1 1>&2 2>&3)
+						"evince"		"$office9" OFF \
+						"gnumeric"		"$office3" OFF \
+						"glabels"		"$office10" OFF \
+						"gobby"			"$office8" OFF \
+						"libreoffice-fresh"	"$office4" OFF \
+						"libreoffice-still"	"$office5" OFF \
+						"mupdf"			"$office6" OFF \
+						"scribus"		"$office11" OFF \
+						"zathura"		"$office7" OFF 3>&1 1>&2 2>&3)
 					if [ "$?" -gt "0" ]; then
 						add_soft=false
 					fi
@@ -434,21 +488,62 @@ add_software() {
 						software+=" libreoffice-still-$lib"
 					fi
 				;;
+				"$programming")
+					software=$(dialog --ok-button "$ok" --cancel-button "$cancel" --checklist "$software_msg1" 20 63 10 \
+						"clisp"			"$prg0" OFF \
+						"dlang-dmd"		"$prg1" OFF \
+						"dart"			"$prg2" OFF \
+						"go"			"$prg3" OFF \
+						"go-tools"		"$prg4" OFF \
+						"java-runtime-common"	"$prg5" OFF \
+						"java-openjdk-7"	"$prg6" OFF \
+						"java-openjdk-8"	"$prg7" OFF \
+						"java-openjfx-8"	"$prg8" OFF \
+						"perl"			"$prg9" OFF \
+						"php"			"$prg10" OFF \
+						"python"		"$prg11" OFF \
+						"ruby"			"$prg12" OFF \
+						"scala"			"$prg13" OFF 3>&1 1>&2 2>&3)
+					if [ "$?" -gt "0" ]; then
+						add_soft=false
+					fi
+
+					if (<<<"$software" sed "openjdk-7" &>/dev/null); then
+						software=$(<<<"$software" sed 's/java-openjdk-7/jre7-openjdk-headless jre7-openjdk jdk7-openjdk openjdk7-doc openjdk7-src/')
+					fi
+
+					if (<<<"$software" sed "openjdk-8" &>/dev/null); then
+						software=$(<<<"$software" sed 's/java-openjdk-8/jre8-openjdk-headless jre8-openjdk jdk8-openjdk openjdk8-doc openjdk8-src/')
+					fi
+
+					if (<<<"$software" sed "openjfx-8" &>/dev/null); then
+						software=$(<<<"$software" sed 's/java-openjfx-8/java-openjfx java-openjfx-doc java-openjfx-src/')
+					fi
+
+
+				;;
 				"$terminal")
-					software=$(dialog --ok-button "$ok" --cancel-button "$cancel" --checklist "$software_msg1" 18 63 8 \
-						"guake"             "$term1" OFF \
-						"kmscon"			"$term2" OFF \
+					software=$(dialog --ok-button "$ok" --cancel-button "$cancel" --checklist "$software_msg1" 20 63 10 \
+						"cool-retro-term"	"$term12" OFF \
+						"guake"			"$term1" OFF \
+						"kmscon"		"$term2" OFF \
 						"pantheon-terminal"	"$term3" OFF \
-						"rxvt-unicode"      "$term4" OFF \
-						"terminator"        "$term5" OFF \
-						"xfce4-terminal"    "$term6" OFF \
-						"yakuake"           "$term7" OFF 3>&1 1>&2 2>&3)
+						"rxvt-unicode"		"$term4" OFF \
+						"screen"		"$sys11" OFF \
+						"st"			"$term8" OFF \
+						"terminator"		"$term5" OFF \
+						"terminology"		"$term10" OFF \
+						"termite"		"$term9" OFF \
+						"tilda"			"$term11" OFF \
+						"tmux"			"$sys14" OFF \
+						"xfce4-terminal"	"$term6" OFF \
+						"yakuake"		"$term7" OFF 3>&1 1>&2 2>&3)
 					if [ "$?" -gt "0" ]; then
 						add_soft=false
 					fi
 				;;
 				"$text_editor")
-					software=$(dialog --ok-button "$ok" --cancel-button "$cancel" --checklist "$software_msg1" 18 60 8 \
+					software=$(dialog --ok-button "$ok" --cancel-button "$cancel" --checklist "$software_msg1" 20 63 10 \
 						"atom"			"$edit7" OFF \
 						"emacs"			"$edit0" OFF \
 						"geany"			"$edit1" OFF \
@@ -456,13 +551,15 @@ add_software() {
 						"gvim"			"$edit3" OFF \
 						"mousepad"		"$edit4" OFF \
 						"neovim"		"$edit5" OFF \
-						"vim"			"$edit6" OFF 3>&1 1>&2 2>&3)
+						"scite"			"$edit9" OFF \
+						"vim"			"$edit6" OFF \
+						"zim"			"$edit8" OFF 3>&1 1>&2 2>&3)
 					if [ "$?" -gt "0" ]; then
 						add_soft=false
 					fi
 				;;
 				"$servers")
-					software=$(dialog --ok-button "$ok" --cancel-button "$cancel" --checklist "$software_msg1" 20 62 10 \
+					software=$(dialog --ok-button "$ok" --cancel-button "$cancel" --checklist "$software_msg1" 20 63 10 \
 						"LAMP Stack"		"$srv1" OFF \
 						"LEMP Stack"		"$srv2" OFF \
 						"apache"		"$sys1" OFF \
@@ -481,7 +578,7 @@ add_software() {
 					fi
 
 					if (grep "LAMP" <<<"$software" &>/dev/null); then
-						if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$apache_msg" 10 60) then	
+						if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$apache_msg" 10 60) then
 							config_http="LAMP"
 							enable_http=true
 						fi
@@ -516,7 +613,7 @@ add_software() {
 							enable_cups=true
 						fi
 					fi
-					
+
 					if ! "$enable_ftp" ; then
 						if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$ftp_msg" 10 60) then
 							enable_ftp=true
@@ -529,7 +626,7 @@ add_software() {
 					fi
 
 				;;
-				"$system")
+				"$util")
 					software=$(dialog --ok-button "$ok" --cancel-button "$cancel" --checklist "$software_msg1" 20 65 10 \
 						"bc"			"$sys25" OFF \
 						"bleachbit"		"$sys22" OFF \
@@ -544,23 +641,16 @@ add_software() {
 						"htop"			"$sys6" OFF \
 						"inxi"			"$sys7" OFF \
 						"k3b"			"$sys8" OFF \
-						"mariadb"		"$sys30" OFF \
 						"nmap"			"$sys9" OFF \
 						"ntfs-3g"		"$sys" OFF \
 						"pcmanfm"		"$sys21" OFF \
-						"php"			"$sys29" OFF \
-						"phpmyadmin"		"$sys32" OFF \
-						"postgresql"		"$sys31" OFF \
-						"python"		"$sys33" OFF \
 						"ranger"		"$sys20" OFF \
-						"screen"		"$sys11" OFF \
-						"screenfetch"		"$sys12" ON \
+						"screenfetch"		"$sys12" OFF \
 						"scrot"			"$sys13" OFF \
-						"tmux"			"$sys14" OFF \
 						"tuxcmd"		"$sys15" OFF \
 						"virtualbox"		"$sys16" OFF \
 						"ufw"			"$sys17" OFF \
-						"wget"			"$sys18" ON \
+						"wget"			"$sys18" OFF \
 						"xfe"			"$sys23" OFF \
 						"xscreensaver"		"$sys34" OFF 3>&1 1>&2 2>&3)
 					if [ "$?" -gt "0" ]; then

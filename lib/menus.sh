@@ -1,6 +1,6 @@
 #!/bin/bash
 ###############################################################
-### Arch Linux Anywhere Install Script
+### Anarchy Linux Install Script
 ### menus.sh
 ###
 ### Copyright (C) 2017 Dylan Schacht
@@ -54,11 +54,11 @@ reboot_system() {
 						umount -R "$ARCH"
 						reset ; exit
 				;;
-				"$reboot2")	## Arch Anywhere Chroot function
+				"$reboot2")	## Anarchy Chroot function
 						clear
 						echo -e "$arch_chroot_msg"
 						echo "/root" > /tmp/chroot_dir.var
-						arch_anywhere_chroot
+						anarchy_chroot
 						clear
 				;;
 				"$reboot3")	## Edit users
@@ -140,7 +140,7 @@ main_menu() {
 					fi
 			;;
 			"$menu13")	## Start command line session
-					echo -e "alias arch-anywhere=exit ; echo -e '$return_msg'" > /tmp/.zshrc
+					echo -e "alias anarchy=exit ; echo -e '$return_msg'" > /tmp/.zshrc
 					clear
 					ZDOTDIR=/tmp/ zsh
 					rm /tmp/.zshrc

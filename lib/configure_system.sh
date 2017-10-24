@@ -1,6 +1,6 @@
 #!/bin/bash
 ###############################################################
-### Arch Linux Anywhere Install Script
+### Anarchy Linux Install Script
 ### configure_system.sh
 ###
 ### Copyright (C) 2017 Dylan Schacht
@@ -43,6 +43,7 @@ configure_system() {
 		sed -i 's/MODULES=""/MODULES="nvidia nvidia_modeset nvidia_uvm nvidia_drm"/' "$ARCH"/etc/mkinitcpio.conf
 		sed -i 's!FILES=""!FILES="/etc/modprobe.d/nvidia.conf"!' "$ARCH"/etc/mkinitcpio.conf
 		echo "options nvidia_drm modeset=1" > "$ARCH"/etc/modprobe.d/nvidia.conf
+
 		if (<<<"$GPU" grep "nvidia" &> /dev/null); then
 			echo "blacklist nouveau" >> "$ARCH"/etc/modprobe.d/nvidia.conf
 		fi
@@ -169,11 +170,11 @@ configure_system() {
 
 	if [ -n "$config_DE" ]; then
 		config_env &
-		pid=$! pri="0.1" msg="$wait_load \n\n \Z1> \Z2arch-anywhere config_env\Zn" load
+		pid=$! pri="0.1" msg="$wait_load \n\n \Z1> \Z2anarchy config_env\Zn" load
 	fi
 
 	if "$add_repo" ; then
-		echo -e "\n[arch-anywhere]\nServer = $aa_repo\nSigLevel = Never" >> "$ARCH"/etc/pacman.conf
+		echo -e "\n[anarchy]\nServer = $aa_repo\nSigLevel = Never" >> "$ARCH"/etc/pacman.conf
 	fi
 
 	if "$multilib" ; then
@@ -184,7 +185,7 @@ configure_system() {
 	fi
 
 	if "$aa_repo" ; then
-		sed -i -e '$a\\n[arch-anywhere]\nServer = http://arch-anywhere.org/repo/$arch\nSigLevel = Never' "$ARCH"/etc/pacman.conf
+		sed -i -e '$a\\n[anarchy]\nServer = http://arch-anywhere.org/repo/$arch\nSigLevel = Never' "$ARCH"/etc/pacman.conf
 	fi
 
 	if "$dhcp" ; then
@@ -281,6 +282,7 @@ configure_system() {
 	sed -i 's/^#CheckSpace$/CheckSpace/' "$ARCH"/etc/pacman.conf
 	sed -i 's/^#VerbosePkgLists$/VerbosePkgLists/' "$ARCH"/etc/pacman.conf
 	sed -i '/^VerbosePkgLists$/ a ILoveCandy' "$ARCH"/etc/pacman.conf
+
 }
 
 set_hostname() {
@@ -289,7 +291,7 @@ set_hostname() {
 
 	while (true)	## Begin set hostname loop
 	  do		## Prompt user to enter hostname check for starting with numbers or containg special char
-		hostname=$(dialog --ok-button "$ok" --nocancel --inputbox "\n$host_msg" 12 55 "arch-anywhere" 3>&1 1>&2 2>&3 | sed 's/ //g')
+		hostname=$(dialog --ok-button "$ok" --nocancel --inputbox "\n$host_msg" 12 55 "anarchy" 3>&1 1>&2 2>&3 | sed 's/ //g')
 
 		if (<<<$hostname grep "^[0-9]\|[\[\$\!\'\"\`\\|%&#@()+=<>~;:/?.,^{}]\|]" &> /dev/null); then
 			dialog --ok-button "$ok" --msgbox "\n$host_err_msg" 10 60
