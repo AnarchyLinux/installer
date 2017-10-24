@@ -198,25 +198,25 @@ graphics() {
 	done <<< $de
 
 	while (true)
-	  do
-	  	if "$VM" ; then
-	  		case "$virt" in
-	  			vbox)	dialog --ok-button "$ok" --msgbox "\n$vbox_msg" 10 60
-						GPU="virtualbox-guest-utils "
-						if [ "$kernel" == "linux" ]; then
-							GPU+="virtualbox-guest-modules-arch "
-						else
-							GPU+="virtualbox-guest-dkms "
-						fi
+	do
+		if "$VM" ; then
+			case "$virt" in
+				vbox) dialog --ok-button "$ok" --msgbox "\n$vbox_msg" 10 60
+					GPU="virtualbox-guest-utils "
+					if [ "$kernel" == "linux" ]; then
+						GPU+="virtualbox-guest-modules-arch "
+					else
+						GPU+="virtualbox-guest-dkms "
+					fi
 	  			;;
 	  			vmware)	dialog --ok-button "$ok" --msgbox "\n$vmware_msg" 10 60
-						GPU="xf86-video-vmware xf86-input-vmmouse open-vm-tools net-tools gtkmm mesa mesa-libgl"
+					GPU="xf86-video-vmware xf86-input-vmmouse open-vm-tools net-tools gtkmm mesa mesa-libgl"
 	  			;;
 	  			hyper-v) dialog --ok-button "$ok" --msgbox "\n$hyperv_msg" 10 60
-						 GPU="xf86-video-fbdev mesa-libgl"
+					GPU="xf86-video-fbdev mesa-libgl"
 	  			;;
-	  			*) 		dialog --ok-button "$ok" --msgbox "\n$vm_msg" 10 60
-						GPU="xf86-video-fbdev mesa-libgl"
+				*) dialog --ok-button "$ok" --msgbox "\n$vm_msg" 10 60
+					GPU="xf86-video-fbdev mesa-libgl"
 	  			;;
 	  		esac
 	  		break
@@ -224,20 +224,20 @@ graphics() {
 
 	  	if "$NVIDIA" ; then
 			GPU=$(dialog --ok-button "$ok" --cancel-button "$cancel" --menu "$graphics_msg" 18 60 6 \
-				"$default"			 "$gr0" \
-				"xf86-video-ati"     "$gr4" \
-				"xf86-video-intel"   "$gr5" \
-				"xf86-video-nouveau" "$gr9" \
-				"xf86-video-vesa"	 "$gr1" \
-				"NVIDIA"             "$gr2 ->" 3>&1 1>&2 2>&3)
+				"$default"		"$gr0" \
+				"xf86-video-ati"	"$gr4" \
+				"xf86-video-intel"	"$gr5" \
+				"xf86-video-nouveau"	"$gr9" \
+				"xf86-video-vesa"	"$gr1" \
+				"NVIDIA"		"$gr2 ->" 3>&1 1>&2 2>&3)
 			ex="$?"
 		else
 			GPU=$(dialog --ok-button "$ok" --cancel-button "$cancel" --menu "$graphics_msg" 17 60 5 \
-				"$default"			 "$gr0" \
-				"xf86-video-ati"     "$gr4" \
-				"xf86-video-intel"   "$gr5" \
-				"xf86-video-nouveau" "$gr9" \
-				"xf86-video-vesa"	 "$gr1" 3>&1 1>&2 2>&3)
+				"$default"		"$gr0" \
+				"xf86-video-ati"	"$gr4" \
+				"xf86-video-intel"	"$gr5" \
+				"xf86-video-nouveau"	"$gr9" \
+				"xf86-video-vesa"	"$gr1" 3>&1 1>&2 2>&3)
 			ex="$?"
 		fi
 
@@ -255,57 +255,57 @@ graphics() {
 			if [ "$?" -eq "0" ]; then
 				if [ "$GPU" == "$gr0" ]; then
 					pci_id=$(lspci -nn | grep "VGA" | egrep -o '\[.*\]' | awk '{print $NF}' | sed 's/.*://;s/]//')
-			        if (<"$aa_dir"/etc/nvidia340.xx grep "$pci_id" &>/dev/null); then
-        			    if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$nvidia_340msg" 10 60); then
-        			    	if [ "$kernel" == "lts" ]; then
+					if (<"$aa_dir"/etc/nvidia340.xx grep "$pci_id" &>/dev/null); then
+						if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$nvidia_340msg" 10 60); then
+							if [ "$kernel" == "lts" ]; then
 								GPU="nvidia-340xx-lts"
-        			    	else
-        			    		GPU="nvidia-340xx"
-        			    	fi
-        			    	GPU+=" nvidia-340xx-libgl nvidia-340xx-utils"
-        			    	break
-        			    fi
+							else
+								GPU="nvidia-340xx"
+							fi
+							GPU+=" nvidia-340xx-libgl nvidia-340xx-utils nvidia-settings"
+							break
+						fi
 					elif (<"$aa_dir"/etc/nvidia304.xx grep "$pci_id" &>/dev/null); then
-           				if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$nvidia_304msg" 10 60); then
-           					if [ "$kernel" == "lts" ]; then
+						if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$nvidia_304msg" 10 60); then
+							if [ "$kernel" == "lts" ]; then
 								GPU="nvidia-304xx-lts"
-           					else
-           						GPU="nvidia-304xx"
-           					fi
-           					GPU+=" nvidia-304xx-libgl nvidia-304xx-utils"
-           					break
-			        	fi
-			        else
-            			if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$nvidia_curmsg" 10 60); then
-            				if [ "$kernel" == "lts" ]; then
+							else
+								GPU="nvidia-304xx"
+							fi
+							GPU+=" nvidia-304xx-libgl nvidia-304xx-utils nvidia-settings"
+							break
+						fi
+					else
+						if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$nvidia_curmsg" 10 60); then
+							if [ "$kernel" == "lts" ]; then
 								GPU="nvidia-lts"
-            				else
-            					GPU="nvidia"
+							else
+								GPU="nvidia"
 							fi
 
 							if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$nvidia_modeset_msg" 10 60) then
 								drm=true
 							fi
-							GPU+=" nvidia-libgl nvidia-utils"
-            				break
-            			fi
-			        fi
+							GPU+=" nvidia-libgl nvidia-utils nvidia-settings"
+							break
+						fi
+				        fi
 				elif [ "$GPU" == "nvidia" ]; then
 					if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$nvidia_modeset_msg" 10 60) then
 						drm=true
 					fi
 
 					if [ "$kernel" == "lts" ]; then
-						GPU="nvidia-lts nvidia-libgl nvidia-utils"
+						GPU="nvidia-lts nvidia-libgl nvidia-utils nvidia-settings"
 					else
-						GPU+=" ${GPU}-libgl ${GPU}-utils"
+						GPU+=" ${GPU}-libgl ${GPU}-utils nvidia-settings"
 					fi
 					break
 				else
 					if [ "$kernel" == "lts" ]; then
-						GPU="${GPU}-lts ${GPU}-libgl ${GPU}-utils"
+						GPU="${GPU}-lts ${GPU}-libgl ${GPU}-utils nvidia-settings"
 					else
-						GPU+=" ${GPU}-libgl ${GPU}-utils"
+						GPU+=" ${GPU}-libgl ${GPU}-utils nvidia-settings"
 					fi
 					break
 				fi
@@ -319,7 +319,7 @@ graphics() {
 		fi
 	done
 
-	DE+="$GPU xdg-user-dirs xorg-server xorg-apps xorg-xinit xterm ttf-dejavu gvfs gvfs-smb gvfs-mtp pulseaudio pavucontrol pulseaudio-alsa alsa-utils unzip "
+	DE+="$GPU xdg-user-dirs xorg-server xorg-apps xorg-xinit xterm ttf-dejavu terminus-font gvfs gvfs-smb gvfs-mtp pulseaudio pavucontrol pulseaudio-alsa alsa-utils unzip "
 	
 	if [ "$net_util" == "networkmanager" ] ; then
 		if (<<<"$DE" grep "plasma" &> /dev/null); then

@@ -307,7 +307,8 @@ add_software() {
 						"audacity"		"$audio0" OFF \
 						"audacious"		"$audio1" OFF \
 						"cmus"			"$audio2" OFF \
-						"jack2"         "$audio3" OFF \
+						"clementine"		"$audio10" OFF \
+						"jack2"         	"$audio3" OFF \
 						"projectm"		"$audio4" OFF \
 						"lmms"			"$audio5" OFF \
 						"mpd"			"$audio6" OFF \
@@ -536,7 +537,7 @@ add_software() {
 						"dmenu"			"$sys19" OFF \
 						"galculator"		"$sys24" OFF \
 						"git"			"$sys3" OFF \
-						"gnome-packagekit"	"$sys26" ON \
+						"gnome-packagekit"	"$sys26" OFF \
 						"gnome-software"	"$sys27" OFF \
 						"gparted"		"$sys4" OFF \
 						"gpm"			"$sys5" OFF \
@@ -545,7 +546,7 @@ add_software() {
 						"k3b"			"$sys8" OFF \
 						"mariadb"		"$sys30" OFF \
 						"nmap"			"$sys9" OFF \
-						"ntfs-3g"		"$sys" ON \
+						"ntfs-3g"		"$sys" OFF \
 						"pcmanfm"		"$sys21" OFF \
 						"php"			"$sys29" OFF \
 						"phpmyadmin"		"$sys32" OFF \
@@ -558,7 +559,7 @@ add_software() {
 						"tmux"			"$sys14" OFF \
 						"tuxcmd"		"$sys15" OFF \
 						"virtualbox"		"$sys16" OFF \
-						"ufw"			"$sys17" ON \
+						"ufw"			"$sys17" OFF \
 						"wget"			"$sys18" ON \
 						"xfe"			"$sys23" OFF \
 						"xscreensaver"		"$sys34" OFF 3>&1 1>&2 2>&3)

@@ -43,6 +43,9 @@ configure_system() {
 		sed -i 's/MODULES=""/MODULES="nvidia nvidia_modeset nvidia_uvm nvidia_drm"/' "$ARCH"/etc/mkinitcpio.conf
 		sed -i 's!FILES=""!FILES="/etc/modprobe.d/nvidia.conf"!' "$ARCH"/etc/mkinitcpio.conf
 		echo "options nvidia_drm modeset=1" > "$ARCH"/etc/modprobe.d/nvidia.conf
+		if (<<<"$GPU" grep "nvidia" &> /dev/null); then
+			echo "blacklist nouveau" >> "$ARCH"/etc/modprobe.d/nvidia.conf
+		fi
 
 		if [ ! -d "$ARCH"/etc/pacman.d/hooks ]; then
 			mkdir "$ARCH"/etc/pacman.d/hooks
@@ -273,6 +276,11 @@ configure_system() {
 	cp "$aa_dir"/extra/.bashrc-root "$ARCH"/root/.bashrc
 	cp "$aa_dir"/extra/.bashrc "$ARCH"/etc/skel/
 
+	sed -i 's/^#Color$/Color/' "$ARCH"/etc/pacman.conf
+	sed -i 's/^#TotalDownload$/TotalDownload/' "$ARCH"/etc/pacman.conf
+	sed -i 's/^#CheckSpace$/CheckSpace/' "$ARCH"/etc/pacman.conf
+	sed -i 's/^#VerbosePkgLists$/VerbosePkgLists/' "$ARCH"/etc/pacman.conf
+	sed -i '/^VerbosePkgLists$/ a ILoveCandy' "$ARCH"/etc/pacman.conf
 }
 
 set_hostname() {
