@@ -77,9 +77,9 @@ dialog() {
 	if "$screen_h" ; then
 		/usr/bin/dialog --colors --backtitle "$backtitle" --title "$op_title" "$@"
 
-		#if "$LAPTOP" ; then
-			#/usr/bin/dialog --colors --backtitle "$backtitle $(acpi)" --title "$op_title" "$@"
-		#fi
+		if "$LAPTOP" ; then
+			/usr/bin/dialog --colors --backtitle "$backtitle $(acpi)" --title "$op_title" "$@"
+		fi
 	else
 		/usr/bin/dialog --colors --title "$title" "$@"
 	fi
