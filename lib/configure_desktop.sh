@@ -375,6 +375,7 @@ config_env() {
 	cp "$aa_dir"/extra/desktop/anarchy-icon.png "$ARCH"/root/.face
 	cp "$aa_dir"/extra/desktop/anarchy-icon.png "$ARCH"/etc/skel/.face
 	cp -r "$aa_dir"/extra/desktop/wallpapers/*.png "$ARCH"/usr/share/pixmaps
+	cp "$aa_dir"/extra/desktop/anarchy-icon.png "$ARCH"/usr/share/pixmaps
 
 	if (grep "AA-Xfce" <<<"$config_DE" &>/dev/null); then
 		if ! (arch-chroot "$ARCH" which firefox &>/dev/null); then
