@@ -73,16 +73,16 @@ graphics() {
 						DE+="firefox atom libreoffice-fresh gimp gparted parole screenfetch vim aisleriot "
 					fi
 
-					if ! (grep "arch-anywhere" </etc/pacman.conf &>/dev/null); then
-						sed -i -e '$a\\n[arch-anywhere]\nServer = http://arch-anywhere.org/repo/$arch\nSigLevel = Never' /etc/pacman.conf
+					if ! (grep "anarchy" </etc/pacman.conf &>/dev/null); then
+						sed -i -e '$a\\n[anarchy]\nServer = http://arch-anywhere.org/repo/$arch\nSigLevel = Never' /etc/pacman.conf
 					fi
 			;;
 			"AA-Openbox")	config_DE+="$env "
 					start_term="exec openbox-session"
 					DE+="openbox thunar thunar-volman xfce4-terminal xfce4-panel xfce4-whiskermenu-plugin arc-icon-theme arc-gtk-theme elementary-icon-theme xcompmgr transset-df obconf lxappearance-obconf wmctrl gxmessage xfce4-pulseaudio-plugin xfdesktop xdotool htop opensnap ristretto arch-wiki-cli lynx fetchmirrors fetchpkg "
 
-					if ! (grep "arch-anywhere" </etc/pacman.conf &>/dev/null); then
-						sed -i -e '$a\\n[arch-anywhere]\nServer = http://arch-anywhere.org/repo/$arch\nSigLevel = Never' /etc/pacman.conf
+					if ! (grep "anarchy" </etc/pacman.conf &>/dev/null); then
+						sed -i -e '$a\\n[anarchy]\nServer = http://arch-anywhere.org/repo/$arch\nSigLevel = Never' /etc/pacman.conf
 					fi
 			;;
 			"xfce4") 	start_term="exec startxfce4"
