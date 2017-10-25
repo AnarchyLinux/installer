@@ -32,8 +32,8 @@ fi
 
 alias help="cat ~/.help"
 alias start="cat ~/.issue_cli"
-alias 1="arch-anywhere"
-alias 2="arch-anywhere -u"
+alias 1="anarchy"
+alias 2="anarchy -u"
 alias 3="arch-wiki"
 alias 4="iptest"
 alias 5="sysinfo"
