@@ -15,7 +15,7 @@ This ISO only contains support only for x86_64 (64 bit) systems.
 http://arch-anywhere.org/
 
 <p>
-  <img src="http://arch-anywhere.org/images/arch-anywhere-splash.png" width="350"/>
+  <img src="http://arch-anywhere.org/images/anarchy-splash.png" width="350"/>
   <img src="http://arch-anywhere.org/images/installer/1-issue.png" width="350"/>
 </p>
 
