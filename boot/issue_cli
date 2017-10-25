@@ -8,16 +8,16 @@
   [0;32m/#.--   --.#\[0;33m   A simple, elegant, and lightweight linux distribution.
  [0;32m/`           `\[0m
 [0;31m--------------------------------------------------------------------------------[0m
-[0;31m |[0;33m Select an option or type '[0;32manarchy[0;33m' to begin automated installer.     [0;31m|
+[0;31m |[0;33m Select an option or type '[0;32manarchy[0;33m' to begin automated installer.           [0;31m|
 [0;31m |[0;33m Options:                                                                   [0;31m|
 [0;31m |			    	                                              |
-[0;31m |[0;33m 	1.[0;31m) [0;32mAnarchy Installer - anarchy			      [0;31m|
-[0;31m |[0;33m 	2.[0;31m) [0;32mAnarchy Update   -  anarchy -u			      [0;31m|
+[0;31m |[0;33m 	1.[0;31m) [0;32mAnarchy Installer       - anarchy			              [0;31m|
+[0;31m |[0;33m 	2.[0;31m) [0;32mAnarchy Update          - anarchy -u			      [0;31m|
 [0;31m |[0;33m 	3.[0;31m) [0;32mArch Linux Wiki	    - arch-wiki				      [0;31m|
 [0;31m |[0;33m 	4.[0;31m) [0;32mConnection Test	    - iptest				      [0;31m|
 [0;31m |[0;33m 	5.[0;31m) [0;32mSystem Information      - sysinfo				      [0;31m|
 [0;31m |[0;33m 	6.[0;31m) [0;32mUpdate Mirrorlist       - fetchmirrors		      	      [0;31m|
 [0;31m |			    	                                              |
-[0;33m [0;31m|[0;33m For more info on Anarchy Linux type:[0;32m help[0;33m OR:[0;32m anarchy --help	      [0;31m|
+[0;33m [0;31m|[0;33m For more info on Anarchy Linux type:[0;32m help[0;33m OR:[0;32m anarchy --help	              [0;31m|
 [0;33m [0;31m|[0;33m To show this screen at any time type:[0;32m start[0m		                      [0;31m|
 [0;31m--------------------------------------------------------------------------------[0m
