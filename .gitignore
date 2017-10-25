@@ -1,7 +1,7 @@
 # archlinux iso
-archlinux-*-dual.iso
-archlinux-*-dual.iso.*
+archlinux-*-x86_64.iso
+archlinux-*-x86_64.iso.*
 
-# arch-anywhere iso
-arch-anywhere-*-dual.iso
-arch-anywhere-*-dual.iso.*
+# anarchy iso
+anarchy-*-x86_64.iso
+anarchy-*-x86_64.iso.*
