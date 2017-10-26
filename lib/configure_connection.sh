@@ -22,8 +22,12 @@ update_mirrors() {
 		reset ; exit
 	fi
 
+	for interface in $(ls /sys/class/net/ | grep -v "lo\|vir"); do
+		if [[ $(cat /sys/class/net/$interface/carrier) = 1 ]]; then OnLine=true; fi
+	done
+
 	## Until connected loop
-	until ping google.com -W 2 -c 1 &> /dev/null
+	until "$OnLine"
 	  do
 		if [ -n "$wifi_network" ]; then
 			if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$wifi_msg0" 10 60) then
@@ -34,6 +38,7 @@ update_mirrors() {
 					setterm -background black -store ; reset ; echo "$connect_err1" | sed 's/\\Z1//;s/\\Zn//' ; exit 1
 				else
 					echo "$(date -u "+%F %H:%M") : Connected to: $wifi_network" >> "$log"
+					OnLine=true
 				fi
 			else
 				unset wifi_network
@@ -57,7 +62,7 @@ update_mirrors() {
 				break
 			fi
 		fi
-        
+
 		case "$edit_mirrors" in
 			"$fetchmirrors")
 				code=$(dialog --ok-button "$ok" --menu "$mirror_msg1" 17 60 10 \
@@ -82,14 +87,14 @@ update_mirrors() {
 						mirror_url="https://www.archlinux.org/mirrorlist/?country=$code"
 					;;
 				esac
-                
+
 				if [ "$code" == "$default" ]; then
 					curl -s "$mirror_url" | sed '10,1000d;s/#//' >/etc/pacman.d/mirrorlist.bak &
 				else
 					curl -s "$mirror_url" >/etc/pacman.d/mirrorlist.bak &
 				fi
 				pid=$! pri=0.1 msg="\n$mirror_load0 \n\n \Z1> \Z2curl $mirror_url\Zn" load
-                
+
 				if (grep "Server" /etc/pacman.d/mirrorlist.bak &>/dev/null); then
 					echo "$(date -u "+%F %H:%M") : Updated Mirrors From: $code" >> "$log"
 					sed -i 's/#//' /etc/pacman.d/mirrorlist.bak
