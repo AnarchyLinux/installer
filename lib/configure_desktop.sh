@@ -60,6 +60,10 @@ graphics() {
 		fi
 	done
 
+	if ! (</etc/pacman.conf grep "anarchy"); then
+		sed -i -e '$a\\n[anarchy]\nServer = file:///usr/share/anarchy/pkg\nSigLevel = Never' /etc/pacman.conf
+	fi
+
 	source "$lang_file"
 
 	while read env
@@ -67,11 +71,8 @@ graphics() {
 		case "$env" in
 			"Anarchy-xfce4")	config_DE+="$env "
 						start_term="exec startxfce4"
-						DE+="xfce4 xfce4-goodies gvfs zsh zsh-syntax-highlighting arc-icon-theme arc-gtk-theme elementary-icon-theme htop arch-wiki-cli lynx fetchmirrors galculator "
-
-						if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$extra_msg8" 15 60) then
-							DE+="firefox atom libreoffice-fresh gimp gparted parole screenfetch vim aisleriot "
-						fi
+						DE+="xfce4 xfce4-goodies gvfs zsh zsh-syntax-highlighting arc-icon-theme arc-gtk-theme elementary-icon-theme numix-icon-theme-git numix-circle-icon-theme-git htop arch-wiki-cli lynx fetchmirrors galculator \
+						chromium libreoffice-fresh gimp gparted screenfetch vim aisleriot vlc snappy-player clementine simplescreenrecorder audacity pitivi "
 			;;
 			"Anarchy-openbox")	config_DE+="$env "
 						start_term="exec openbox-session"
