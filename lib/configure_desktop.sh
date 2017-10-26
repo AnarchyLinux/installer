@@ -27,8 +27,8 @@ graphics() {
 	while (true)
 	  do
 		de=$(dialog --separate-output --ok-button "$done_msg" --cancel-button "$cancel" --checklist "$environment_msg" 24 60 15 \
-			"AA-Xfce"		"$de15" OFF \
-			"AA-Openbox"		"$de18" OFF \
+			"Anarchy-xfce4"		"$de15" OFF \
+			"Anarchy-openbox"	"$de18" OFF \
 			"budgie"		"$de17" OFF \
 			"cinnamon"      	"$de5" OFF \
 			"deepin"		"$de14" OFF \
@@ -65,25 +65,21 @@ graphics() {
 	while read env
 	  do
 		case "$env" in
-			"AA-Xfce") 	config_DE+="$env "
-					start_term="exec startxfce4"
-					DE+="xfce4 xfce4-goodies gvfs zsh zsh-syntax-highlighting arc-icon-theme arc-gtk-theme elementary-icon-theme htop arch-wiki-cli lynx fetchmirrors fetchpkg galculator "
+			"Anarchy-xfce4")	config_DE+="$env "
+						start_term="exec startxfce4"
+						DE+="xfce4 xfce4-goodies gvfs zsh zsh-syntax-highlighting arc-icon-theme arc-gtk-theme elementary-icon-theme htop arch-wiki-cli lynx fetchmirrors galculator "
 
-					if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$extra_msg8" 15 60) then
-						DE+="firefox atom libreoffice-fresh gimp gparted parole screenfetch vim aisleriot "
-					fi
-
-					if ! (grep "anarchy" </etc/pacman.conf &>/dev/null); then
-						sed -i -e '$a\\n[anarchy]\nServer = http://arch-anywhere.org/repo/$arch\nSigLevel = Never' /etc/pacman.conf
-					fi
+						if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$extra_msg8" 15 60) then
+							DE+="firefox atom libreoffice-fresh gimp gparted parole screenfetch vim aisleriot "
+						fi
 			;;
-			"AA-Openbox")	config_DE+="$env "
-					start_term="exec openbox-session"
-					DE+="openbox thunar thunar-volman xfce4-terminal xfce4-panel xfce4-whiskermenu-plugin arc-icon-theme arc-gtk-theme elementary-icon-theme xcompmgr transset-df obconf lxappearance-obconf wmctrl gxmessage xfce4-pulseaudio-plugin xfdesktop xdotool htop opensnap ristretto arch-wiki-cli lynx fetchmirrors fetchpkg "
+			"Anarchy-openbox")	config_DE+="$env "
+						start_term="exec openbox-session"
+						DE+="openbox thunar thunar-volman xfce4-terminal xfce4-panel xfce4-whiskermenu-plugin arc-icon-theme arc-gtk-theme elementary-icon-theme xcompmgr transset-df obconf lxappearance-obconf wmctrl gxmessage xfce4-pulseaudio-plugin xfdesktop xdotool htop opensnap ristretto arch-wiki-cli lynx fetchmirrors "
 
-					if ! (grep "anarchy" </etc/pacman.conf &>/dev/null); then
-						sed -i -e '$a\\n[anarchy]\nServer = http://arch-anywhere.org/repo/$arch\nSigLevel = Never' /etc/pacman.conf
-					fi
+						if ! (grep "anarchy" </etc/pacman.conf &>/dev/null); then
+							sed -i -e '$a\\n[anarchy]\nServer = http://arch-anywhere.org/repo/$arch\nSigLevel = Never' /etc/pacman.conf
+						fi
 			;;
 			"xfce4") 	start_term="exec startxfce4"
 					DE+="xfce4 "
@@ -374,10 +370,12 @@ config_env() {
 	cp -r "$aa_dir"/extra/desktop/ttf-zekton-rg "$ARCH"/usr/share/fonts
 	cp "$aa_dir"/extra/desktop/anarchy-icon.png "$ARCH"/root/.face
 	cp "$aa_dir"/extra/desktop/anarchy-icon.png "$ARCH"/etc/skel/.face
-	cp -r "$aa_dir"/extra/desktop/wallpapers/*.png "$ARCH"/usr/share/pixmaps
+	cp -r "$aa_dir"/extra/desktop/wallpapers/Anarchy-Splatter-Logo.png "$ARCH"/usr/share/pixmaps
 	cp "$aa_dir"/extra/desktop/anarchy-icon.png "$ARCH"/usr/share/pixmaps
+	mkdir "$ARCH"/usr/share/backgrounds/anarchy
+	cp -r "$aa_dir"/extra/desktop/wallpapers/*.png "$ARCH"/usr/share/backgrounds/anarchy/
 
-	if (grep "AA-Xfce" <<<"$config_DE" &>/dev/null); then
+	if (grep "Anarchy-XFCE4" <<<"$config_DE" &>/dev/null); then
 		if ! (arch-chroot "$ARCH" which firefox &>/dev/null); then
 			sed -i 's/15043600721/14549724517/' "$aa_dir"/extra/desktop/xfce4/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml
 			sed -i 's/favorites=exo-terminal-emulator.desktop,exo-file-manager.desktop,xfce4-taskmanager.desktop,fetchpkg.desktop,arch-wiki.desktop,firefox.desktop,org.xfce.Parole.desktop,gimp.desktop,libreoffice-writer.desktop,atom.desktop,galculator.desktop,sol.desktop,xfce-settings-manager.desktop/favorites=exo-terminal-emulator.desktop,exo-file-manager.desktop,xfce4-taskmanager.desktop,fetchpkg.desktop,arch-wiki.desktop,galculator.desktop,sol.desktop,xfce-settings-manager.desktop/' "$aa_dir"/extra/desktop/xfce4/.config/xfce4/panel/whiskermenu-1.rc
@@ -386,16 +384,13 @@ config_env() {
 
 		cp -r "$aa_dir/extra/desktop/xfce4/.config" "$ARCH"/root/
 		cp -r "$aa_dir/extra/desktop/xfce4/.config" "$ARCH"/etc/skel/
-		cp -r "$aa_dir"/extra/desktop/wallpapers/*.png "$ARCH"/usr/share/backgrounds/xfce/
 	fi
 
-	if (grep "AA-Openbox" <<<"$config_DE" &>/dev/null); then
+	if (grep "Anarchy-Openbox" <<<"$config_DE" &>/dev/null); then
 		for file in $(ls -A "$aa_dir/extra/desktop/openbox"); do
 			cp -r "$aa_dir/extra/desktop/openbox/$file" "$ARCH"/root/
 			cp -r "$aa_dir/extra/desktop/openbox/$file" "$ARCH"/etc/skel/
 		done
-
-
 
 		if [ "$virt" == "vbox" ]; then
 			echo "VBoxClient-all &" >> "$ARCH"/etc/skel/.config/openbox/autostart
