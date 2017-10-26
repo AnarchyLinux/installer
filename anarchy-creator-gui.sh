@@ -229,7 +229,7 @@ prepare_sys() {
 
 ### Install fonts, fbterm, fetchmirrors, arch-wiki, and uvesafb drivers onto system and cleanup
 	sudo pacman --root squashfs-root --cachedir squashfs-root/var/cache/pacman/pkg  --config /etc/pacman.conf --noconfirm --needed -Syyy terminus-font xorg-server xorg-xinit xf86-video-vesa firefox plank vlc galculator file-roller gparted gimp git networkmanager network-manager-applet pulseaudio-alsa \
-		zsh-syntax-highlighting arc-gtk-theme elementary-icon-theme thunar base-devel xfce4 xfce4-goodies libreoffice-fresh chromium virtualbox-guest-dkms virtualbox-guest-utils xdg-user-dirs linux linux-headers oblogout libdvdcss simplescreenrecorder
+		zsh-syntax-highlighting arc-gtk-theme elementary-icon-theme thunar base-devel xfce4 xfce4-goodies libreoffice-fresh chromium virtualbox-guest-dkms virtualbox-guest-utils xdg-user-dirs linux linux-headers oblogout libdvdcss simplescreenrecorder acpi
 	sudo pacman --root squashfs-root --cachedir squashfs-root/var/cache/pacman/pkg  --config squashfs-root/etc/pacman.conf --noconfirm -U /tmp/fetchmirrors/*.pkg.tar.xz
 	sudo pacman --root squashfs-root --cachedir squashfs-root/var/cache/pacman/pkg  --config squashfs-root/etc/pacman.conf --noconfirm -U /tmp/arch-wiki-cli/*.pkg.tar.xz
 	sudo pacman --root squashfs-root --cachedir squashfs-root/var/cache/pacman/pkg  --config squashfs-root/etc/pacman.conf --noconfirm -U /tmp/numix-icon-theme-git/*.pkg.tar.xz
