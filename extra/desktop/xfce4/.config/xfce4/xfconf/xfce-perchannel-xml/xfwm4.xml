@@ -48,7 +48,7 @@
     <property name="shadow_delta_y" type="int" value="-3"/>
     <property name="shadow_opacity" type="int" value="50"/>
     <property name="show_app_icon" type="bool" value="false"/>
-    <property name="show_dock_shadow" type="bool" value="true"/>
+    <property name="show_dock_shadow" type="bool" value="false"/>
     <property name="show_frame_shadow" type="bool" value="true"/>
     <property name="show_popup_shadow" type="bool" value="false"/>
     <property name="snap_resist" type="bool" value="false"/>
@@ -70,7 +70,7 @@
     <property name="unredirect_overlays" type="bool" value="true"/>
     <property name="urgent_blink" type="bool" value="false"/>
     <property name="use_compositing" type="bool" value="true"/>
-    <property name="workspace_count" type="int" value="4"/>
+    <property name="workspace_count" type="int" value="2"/>
     <property name="workspace_names" type="array">
       <value type="string" value="Workspace 1"/>
       <value type="string" value="Workspace 2"/>

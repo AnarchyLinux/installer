@@ -1,4 +1,5 @@
-favorites=exo-terminal-emulator.desktop,exo-file-manager.desktop,xfce4-taskmanager.desktop,fetchpkg.desktop,arch-wiki.desktop,firefox.desktop,org.xfce.Parole.desktop,gimp.desktop,libreoffice-writer.desktop,atom.desktop,galculator.desktop,sol.desktop,xfce-settings-manager.desktop
+favorites=exo-terminal-emulator.desktop,exo-file-manager.desktop,xfce4-taskmanager.desktop,arch-wiki.desktop,galculator.desktop,xfce-settings-manager.desktop
+recent=xfce-backdrop-settings.desktop,xfce-wmtweaks-settings.desktop
 button-title=Menu
 button-icon=/usr/share/pixmaps/anarchy-icon.png
 button-single-row=false
@@ -19,7 +20,7 @@ position-search-alternate=false
 position-commands-alternate=false
 position-categories-alternate=false
 menu-width=466
-menu-height=720
+menu-height=532
 menu-opacity=92
 command-settings=xfce4-settings-manager
 show-command-settings=true
