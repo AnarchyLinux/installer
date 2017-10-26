@@ -30,15 +30,15 @@
 
 init() {
 
-#	if [ $(basename "$0") = "anarchy" ]; then
+	if [ $(basename "$0") = "anarchy" ]; then
 		aa_dir="/usr/share/anarchy" # Anarchy ISO
 		aa_conf="/etc/anarchy.conf"
 		aa_lib="/usr/lib/anarchy"
-#	else
-#		aa_dir=$(dirname $(readlink -f "$0")) # Anarchy git repository
-#		aa_conf="$aa_dir"/etc/anarchy.conf
-#		aa_lib="$aa_dir"/lib
-#	fi
+	else
+		aa_dir=$(dirname $(readlink -f "$0")) # Anarchy git repository
+		aa_conf="$aa_dir"/etc/anarchy.conf
+		aa_lib="$aa_dir"/lib
+	fi
 
 	trap '' 2
 
