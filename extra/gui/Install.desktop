@@ -2,8 +2,8 @@
 Version=1.0
 Type=Application
 Name=Install
-Comment=Install Arch Anywhere
-Exec=arch-anywhere
+Comment=Install Anarchy Linux
+Exec=sudo anarchy
 Icon=intel-installer
 Path=
 Terminal=true
