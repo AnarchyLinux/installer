@@ -263,6 +263,7 @@ prepare_sys() {
 	sudo arch-chroot squashfs-root useradd -m -g users -G power,audio,video,storage -s /usr/bin/zsh user
 	sudo sed -i 's/root/user/' "$customiso"/arch/"$sys"/squashfs-root/etc/systemd/system/getty@tty1.service.d/autologin.conf
 	sudo cp -r "$aa"/extra/gui/{Fetchmirrors.desktop,gparted.desktop,chromium.desktop,exo-terminal-emulator.desktop,Install.desktop} "$customiso"/arch/"$sys"/squashfs-root/home/user/
+	sudo cp -r "$aa"/extra/gui/{Fetchmirrors.desktop,gparted.desktop,chromium.desktop,exo-terminal-emulator.desktop,Install.desktop} "$customiso"/arch/"$sys"/squashfs-root/home/user/Desktop
 	sudo cp -r "$aa"/extra/gui/{Fetchmirrors.desktop,Install.desktop} "$customiso"/arch/"$sys"/squashfs-root/usr/share/applications
 	sudo cp -r "$aa"/extra/gui/{issue,sudoers} "$customiso"/arch/"$sys"/squashfs-root/etc/
 	sudo cp -r "$aa"/extra/desktop/anarchy-icon.png "$customiso"/arch/"$sys"/squashfs-root/usr/share/pixmaps
