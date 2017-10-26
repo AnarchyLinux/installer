@@ -40,12 +40,12 @@ check_vm() {
 if [[ $(tty) == "/dev/tty1" ]]; then
     automated_script
     check_vm
-    su user -c startx &>/dev/null
+    startx &>/dev/null
 
     if [ "$?" -gt "0" ]; then
-        echo -e "\nERROR: failed to start xorg server"
-        systemctl stop NetworkManager.service
-        systemctl start netctl.service
+        echo -e "\nERROR: failed to start xorg server\nFalling back to text mode."
+        sudo systemctl stop NetworkManager.service
+        sudo systemctl start netctl.service
         cat ~/.issue_cli
         exit 1
     fi
