@@ -1,8 +1,0 @@
-2017/10/26-16:39:37.713 3524 Reusing MANIFEST /home/user/.config/chromium/Default/Local Extension Settings/cfhdojbkjhnklbpkdaibdccddilifddb/MANIFEST-000001
-2017/10/26-16:40:40.866 3744 Level-0 table #5: started
-2017/10/26-16:40:43.507 3523 Current memtable full; waiting...
-2017/10/26-16:40:47.932 3744 Level-0 table #5: 3911460 bytes OK
-2017/10/26-16:40:48.175 3744 Delete type=0 #3
-2017/10/26-16:40:48.205 3744 Level-0 table #7: started
-2017/10/26-16:40:48.304 3744 Level-0 table #7: 2871604 bytes OK
-2017/10/26-16:40:48.305 3744 Delete type=0 #4
