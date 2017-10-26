@@ -176,26 +176,17 @@ builds() {
 		wget "https://aur.archlinux.org/cgit/aur.git/snapshot/perl-linux-desktopfiles.tar.gz"
 		tar -xf perl-linux-desktopfiles.tar.gz
 		cd perl-linux-desktopfiles
-		makepkg -s
+		makepkg -si
 	fi
 
-#	if [ ! -d /tmp/obmenu-generator ]; then
-#		### Build numix icons
-#		cd /tmp
-#		wget "https://aur.archlinux.org/cgit/aur.git/snapshot/obmenu-generator.tar.gz"
-#		tar -xf obmenu-generator.tar.gz
-#		cd obmenu-generator
-#		makepkg -s
-#	fi
-
-#	if [ ! -d /tmp/archlabs-oblogout-themes-git ]; then
-#		### Build oblogout theme
-#		cd /tmp
-#		wget "https://aur.archlinux.org/cgit/aur.git/snapshot/archlabs-oblogout-themes-git.tar.gz"
-#		tar -xf archlabs-oblogout-themes-git.tar.gz
-#		cd archlabs-oblogout-themes-git
-#		makepkg -s
-#	fi
+	if [ ! -d /tmp/obmenu-generator ]; then
+		### Build numix icons
+		cd /tmp
+		wget "https://aur.archlinux.org/cgit/aur.git/snapshot/obmenu-generator.tar.gz"
+		tar -xf obmenu-generator.tar.gz
+		cd obmenu-generator
+		makepkg -s
+	fi
 
 	prepare_sys
 
@@ -220,13 +211,11 @@ prepare_sys() {
 
 ### Install fonts, fbterm, fetchmirrors, arch-wiki, and uvesafb drivers onto system and cleanup
 	sudo pacman --root squashfs-root --cachedir squashfs-root/var/cache/pacman/pkg  --config /etc/pacman.conf --noconfirm --needed -Syyy terminus-font xorg-server xorg-xinit xf86-video-vesa vlc galculator file-roller gparted gimp git networkmanager network-manager-applet pulseaudio-alsa \
-		zsh-syntax-highlighting arc-gtk-theme elementary-icon-theme thunar base-devel xfce4 xfce4-goodies libreoffice-fresh chromium virtualbox-guest-dkms virtualbox-guest-utils xdg-user-dirs linux linux-headers oblogout libdvdcss simplescreenrecorder acpi
+		zsh-syntax-highlighting arc-gtk-theme elementary-icon-theme thunar base-devel xfce4 xfce4-goodies libreoffice-fresh chromium virtualbox-guest-dkms virtualbox-guest-utils xdg-user-dirs linux linux-headers libdvdcss simplescreenrecorder acpi
 	sudo pacman --root squashfs-root --cachedir squashfs-root/var/cache/pacman/pkg  --config squashfs-root/etc/pacman.conf --noconfirm -U /tmp/fetchmirrors/*.pkg.tar.xz
 	sudo pacman --root squashfs-root --cachedir squashfs-root/var/cache/pacman/pkg  --config squashfs-root/etc/pacman.conf --noconfirm -U /tmp/arch-wiki-cli/*.pkg.tar.xz
 	sudo pacman --root squashfs-root --cachedir squashfs-root/var/cache/pacman/pkg  --config squashfs-root/etc/pacman.conf --noconfirm -U /tmp/numix-icon-theme-git/*.pkg.tar.xz
 	sudo pacman --root squashfs-root --cachedir squashfs-root/var/cache/pacman/pkg  --config squashfs-root/etc/pacman.conf --noconfirm -U /tmp/numix-circle-icon-theme-git/*.pkg.tar.xz
-	sudo pacman --root squashfs-root --cachedir squashfs-root/var/cache/pacman/pkg  --config squashfs-root/etc/pacman.conf --noconfirm -U /tmp/archlabs-oblogout-themes-git/*.pkg.tar.xz
-	sudo pacman --root squashfs-root --cachedir squashfs-root/var/cache/pacman/pkg  --config squashfs-root/etc/pacman.conf --noconfirm -U /tmp/dropbox/*.pkg.tar.xz
 	sudo pacman --root squashfs-root --cachedir squashfs-root/var/cache/pacman/pkg  --config squashfs-root/etc/pacman.conf -Sl | awk '/\[installed\]$/ {print $1 "/" $2 "-" $3}' > "$customiso"/arch/pkglist.${sys}.txt
 	sudo pacman --root squashfs-root --cachedir squashfs-root/var/cache/pacman/pkg  --config squashfs-root/etc/pacman.conf --noconfirm -Scc
 	sudo rm -f "$customiso"/arch/"$sys"/squashfs-root/var/cache/pacman/pkg/*
@@ -234,7 +223,6 @@ prepare_sys() {
 
 ### Copy over vconsole.conf (sets font at boot) & locale.gen (enables locale(s) for font) & uvesafb.conf
 	sudo cp "$aa"/etc/{vconsole.conf,locale.gen} "$customiso"/arch/"$sys"/squashfs-root/etc
-#	sudo cp "$aa"/etc/uvesafb.conf "$customiso"/arch/"$sys"/squashfs-root/etc/modules-load.d/
 	sudo arch-chroot squashfs-root /bin/bash locale-gen
 
 ### Copy over main arch anywhere config, installer script, and arch-wiki,  make executeable
