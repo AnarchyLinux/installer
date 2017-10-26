@@ -211,7 +211,7 @@ prepare_sys() {
 
 ### Install fonts, fbterm, fetchmirrors, arch-wiki, and uvesafb drivers onto system and cleanup
 	sudo pacman --root squashfs-root --cachedir squashfs-root/var/cache/pacman/pkg  --config /etc/pacman.conf --noconfirm --needed -Syyy terminus-font xorg-server xorg-xinit xf86-video-vesa vlc galculator file-roller gparted gimp git networkmanager network-manager-applet pulseaudio-alsa \
-		zsh-syntax-highlighting arc-gtk-theme elementary-icon-theme thunar base-devel xfce4 xfce4-goodies libreoffice-fresh chromium virtualbox-guest-dkms virtualbox-guest-utils xdg-user-dirs linux linux-headers libdvdcss simplescreenrecorder screenfetch htop acpi
+		zsh-syntax-highlighting arc-gtk-theme elementary-icon-theme thunar base-devel gvfs xdg-user-dirs xfce4 xfce4-goodies libreoffice-fresh chromium virtualbox-guest-dkms virtualbox-guest-utils linux linux-headers libdvdcss simplescreenrecorder screenfetch htop acpi
 	sudo pacman --root squashfs-root --cachedir squashfs-root/var/cache/pacman/pkg  --config squashfs-root/etc/pacman.conf --noconfirm -U /tmp/fetchmirrors/*.pkg.tar.xz
 	sudo pacman --root squashfs-root --cachedir squashfs-root/var/cache/pacman/pkg  --config squashfs-root/etc/pacman.conf --noconfirm -U /tmp/arch-wiki-cli/*.pkg.tar.xz
 	sudo pacman --root squashfs-root --cachedir squashfs-root/var/cache/pacman/pkg  --config squashfs-root/etc/pacman.conf --noconfirm -U /tmp/numix-icon-theme-git/*.pkg.tar.xz
@@ -223,7 +223,6 @@ prepare_sys() {
 
 ### Copy over vconsole.conf (sets font at boot) & locale.gen (enables locale(s) for font) & uvesafb.conf
 	sudo cp "$aa"/etc/{vconsole.conf,locale.gen} "$customiso"/arch/"$sys"/squashfs-root/etc
-#	sudo cp "$aa"/etc/uvesafb.conf "$customiso"/arch/"$sys"/squashfs-root/etc/modules-load.d/
 	sudo arch-chroot squashfs-root /bin/bash locale-gen
 
 ### Copy over main arch anywhere config, installer script, and arch-wiki,  make executeable
@@ -263,12 +262,9 @@ prepare_sys() {
 	sudo rm "$customiso"/arch/"$sys"/squashfs-root/root/install.txt
 	sudo arch-chroot squashfs-root useradd -m -g users -G power,audio,video,storage -s /usr/bin/zsh user
 	sudo sed -i 's/root/user/' "$customiso"/arch/"$sys"/squashfs-root/etc/systemd/system/getty@tty1.service.d/autologin.conf
-	sudo mkdir "$customiso"/arch/"$sys"/squashfs-root/home/user/Desktop/
-	sudo cp -r "$aa"/extra/gui/Fetchmirrors.desktop "$customiso"/arch/"$sys"/squashfs-root/home/user/Desktop/Fetchmirrors.desktop
-	sudo cp -r "$aa"/extra/gui/gparted.desktop "$customiso"/arch/"$sys"/squashfs-root/home/user/Desktop/gparted.desktop
-	sudo cp -r "$aa"/extra/gui/Install.desktop "$customiso"/arch/"$sys"/squashfs-root/home/user/Desktop/Install.desktop
-	sudo cp -r "$aa"/extra/gui/{issue,oblogout.conf,sudoers} "$customiso"/arch/"$sys"/squashfs-root/etc/
-	sudo cp -r "$aa"/extra/gui/net.launchpad.plank.gschema.xml "$customiso"/arch/"$sys"/squashfs-root/usr/share/glib-2.0/schemas/
+	sudo cp -r "$aa"/extra/gui/{Fetchmirrors.desktop,gparted.desktop,chromium.desktop,exo-terminal-emulator.desktop,Install.desktop} "$customiso"/arch/"$sys"/squashfs-root/home/user/
+	sudo cp -r "$aa"/extra/gui/{Fetchmirrors.desktop,Install.desktop} "$customiso"/arch/"$sys"/squashfs-root/usr/share/applications
+	sudo cp -r "$aa"/extra/gui/{issue,sudoers} "$customiso"/arch/"$sys"/squashfs-root/etc/
 	sudo cp -r "$aa"/extra/desktop/anarchy-icon.png "$customiso"/arch/"$sys"/squashfs-root/usr/share/pixmaps
 	sudo cp -r "$aa"/extra/desktop/wallpapers/*.png "$customiso"/arch/"$sys"/squashfs-root/usr/share/pixmaps
 	sudo cp -r "$aa"/extra/desktop/wallpapers/*.png "$customiso"/arch/"$sys"/squashfs-root/usr/share/backgrounds/xfce
@@ -280,9 +276,8 @@ prepare_sys() {
 	sudo cp -r "$aa"/extra/.zshrc-default "$customiso"/arch/"$sys"/squashfs-root/home/user/.zshrc
 	sudo cp -r "$aa"/extra/gui/.config "$customiso"/arch/"$sys"/squashfs-root/home/user/
 	sudo cp -r "$aa"/extra/gui/.config "$customiso"/arch/"$sys"/squashfs-root/root
-	sudo cp -r "$aa"/extra/gui/.config "$customiso"/arch/"$sys"/squashfs-root/root/.zlogin "$aa"/extra/gui/.config "$customiso"/arch/"$sys"/squashfs-root/home/user
-	sudo chmod +x "$customiso"/arch/"$sys"/squashfs-root/home/user/.automated_script.sh
-	sudo arch-chroot squashfs-root chown -R user /home/user/{.zlogin,.zshrc,.face,.automated_script.sh,.config/}
+	sudo cp -r "$customiso"/arch/"$sys"/squashfs-root/root/.zlogin "$customiso"/arch/"$sys"/squashfs-root/home/user
+	sudo arch-chroot squashfs-root chown -R user /home/user/
 	sudo touch "$customiso"/arch/"$sys"/squashfs-root/etc/modules-load.d/virtualbox-guest-modules-arch.conf
 
 ### cd back into root system directory, remove old system
