@@ -375,7 +375,7 @@ config_env() {
 	mkdir "$ARCH"/usr/share/backgrounds/anarchy
 	cp -r "$aa_dir"/extra/desktop/wallpapers/*.png "$ARCH"/usr/share/backgrounds/anarchy/
 
-	if (grep "Anarchy-XFCE4" <<<"$config_DE" &>/dev/null); then
+	if (grep "Anarchy-xfce4" <<<"$config_DE" &>/dev/null); then
 		if ! (arch-chroot "$ARCH" which firefox &>/dev/null); then
 			sed -i 's/15043600721/14549724517/' "$aa_dir"/extra/desktop/xfce4/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml
 			sed -i 's/favorites=exo-terminal-emulator.desktop,exo-file-manager.desktop,xfce4-taskmanager.desktop,fetchpkg.desktop,arch-wiki.desktop,firefox.desktop,org.xfce.Parole.desktop,gimp.desktop,libreoffice-writer.desktop,atom.desktop,galculator.desktop,sol.desktop,xfce-settings-manager.desktop/favorites=exo-terminal-emulator.desktop,exo-file-manager.desktop,xfce4-taskmanager.desktop,fetchpkg.desktop,arch-wiki.desktop,galculator.desktop,sol.desktop,xfce-settings-manager.desktop/' "$aa_dir"/extra/desktop/xfce4/.config/xfce4/panel/whiskermenu-1.rc
@@ -386,7 +386,7 @@ config_env() {
 		cp -r "$aa_dir/extra/desktop/xfce4/.config" "$ARCH"/etc/skel/
 	fi
 
-	if (grep "Anarchy-Openbox" <<<"$config_DE" &>/dev/null); then
+	if (grep "Anarchy-openbox" <<<"$config_DE" &>/dev/null); then
 		for file in $(ls -A "$aa_dir/extra/desktop/openbox"); do
 			cp -r "$aa_dir/extra/desktop/openbox/$file" "$ARCH"/root/
 			cp -r "$aa_dir/extra/desktop/openbox/$file" "$ARCH"/etc/skel/
