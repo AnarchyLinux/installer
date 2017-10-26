@@ -227,7 +227,7 @@ build_sys() {
 	sudo cp "$aa"/extra/{.zshrc,.help,.dialogrc} "$customiso"/arch/"$sys"/squashfs-root/root/
 	sudo cp "$aa"/extra/{.bashrc,.bashrc-root,.tcshrc,.tcshrc.conf,.mkshrc,.zshrc-default,.zshrc-oh-my,.zshrc-grml} "$customiso"/arch/"$sys"/squashfs-root/usr/share/anarchy/extra/
 	sudo cp -r "$aa"/extra/desktop "$customiso"/arch/"$sys"/squashfs-root/usr/share/anarchy/extra/
-	#sudo cp -r /tmp/arc-openbox-master/{Arc,Arc-Dark,Arc-Darker} "$customiso"/arch/"$sys"/squashfs-root/usr/share/anarchy/extra/desktop
+	sudo cp -r /tmp/arc-openbox-master/{Arc,Arc-Dark,Arc-Darker} "$customiso"/arch/"$sys"/squashfs-root/usr/share/anarchy/extra/desktop
 	sudo cp "$aa"/boot/hostname "$customiso"/arch/"$sys"/squashfs-root/etc/
 	sudo cp "$aa"/boot/issue_cli "$customiso"/arch/"$sys"/squashfs-root/etc/issue
 	sudo cp "$aa"/boot/issue_cli "$customiso"/arch/"$sys"/squashfs-root/root/.issue_cli
@@ -325,7 +325,6 @@ build_sys_gui() {
 	sudo arch-chroot squashfs-root useradd -m -g users -G power,audio,video,storage -s /usr/bin/zsh user
 	sudo arch-chroot squashfs-root su user -c xdg-user-dirs-update
 	sudo sed -i 's/root/user/' "$customiso"/arch/"$sys"/squashfs-root/etc/systemd/system/getty@tty1.service.d/autologin.conf
-	#sudo cp -r "$aa"/extra/gui/{Fetchmirrors.desktop,gparted.desktop,chromium.desktop,exo-terminal-emulator.desktop,Install.desktop} "$customiso"/arch/"$sys"/squashfs-root/home/user/
 	sudo cp -r "$aa"/extra/gui/{Fetchmirrors.desktop,gparted.desktop,chromium.desktop,exo-terminal-emulator.desktop,Install.desktop} "$customiso"/arch/"$sys"/squashfs-root/home/user/Desktop
 	sudo cp -r "$aa"/extra/gui/{Fetchmirrors.desktop,Install.desktop} "$customiso"/arch/"$sys"/squashfs-root/usr/share/applications
 	sudo cp -r "$aa"/extra/gui/{issue,sudoers} "$customiso"/arch/"$sys"/squashfs-root/etc/
