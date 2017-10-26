@@ -179,32 +179,23 @@ builds() {
 		makepkg -s
 	fi
 
-	if [ ! -d /tmp/obmenu-generator ]; then
-		### Build numix icons
-		cd /tmp
-		wget "https://aur.archlinux.org/cgit/aur.git/snapshot/obmenu-generator.tar.gz"
-		tar -xf obmenu-generator.tar.gz
-		cd obmenu-generator
-		makepkg -s
-	fi
+#	if [ ! -d /tmp/obmenu-generator ]; then
+#		### Build numix icons
+#		cd /tmp
+#		wget "https://aur.archlinux.org/cgit/aur.git/snapshot/obmenu-generator.tar.gz"
+#		tar -xf obmenu-generator.tar.gz
+#		cd obmenu-generator
+#		makepkg -s
+#	fi
 
-	if [ ! -d /tmp/archlabs-oblogout-themes-git ]; then
-		### Build oblogout theme
-		cd /tmp
-		wget "https://aur.archlinux.org/cgit/aur.git/snapshot/archlabs-oblogout-themes-git.tar.gz"
-		tar -xf archlabs-oblogout-themes-git.tar.gz
-		cd archlabs-oblogout-themes-git
-		makepkg -s
-	fi
-
-	if [ ! -d /tmp/dropbox ]; then
-		### Build dropbox
-		cd /tmp
-		wget "https://aur.archlinux.org/cgit/aur.git/snapshot/dropbox.tar.gz"
-		tar -xf dropbox.tar.gz
-		cd dropbox
-		makepkg -s
-	fi
+#	if [ ! -d /tmp/archlabs-oblogout-themes-git ]; then
+#		### Build oblogout theme
+#		cd /tmp
+#		wget "https://aur.archlinux.org/cgit/aur.git/snapshot/archlabs-oblogout-themes-git.tar.gz"
+#		tar -xf archlabs-oblogout-themes-git.tar.gz
+#		cd archlabs-oblogout-themes-git
+#		makepkg -s
+#	fi
 
 	prepare_sys
 
@@ -228,7 +219,7 @@ prepare_sys() {
 
 
 ### Install fonts, fbterm, fetchmirrors, arch-wiki, and uvesafb drivers onto system and cleanup
-	sudo pacman --root squashfs-root --cachedir squashfs-root/var/cache/pacman/pkg  --config /etc/pacman.conf --noconfirm --needed -Syyy terminus-font xorg-server xorg-xinit xf86-video-vesa firefox plank vlc galculator file-roller gparted gimp git networkmanager network-manager-applet pulseaudio-alsa \
+	sudo pacman --root squashfs-root --cachedir squashfs-root/var/cache/pacman/pkg  --config /etc/pacman.conf --noconfirm --needed -Syyy terminus-font xorg-server xorg-xinit xf86-video-vesa vlc galculator file-roller gparted gimp git networkmanager network-manager-applet pulseaudio-alsa \
 		zsh-syntax-highlighting arc-gtk-theme elementary-icon-theme thunar base-devel xfce4 xfce4-goodies libreoffice-fresh chromium virtualbox-guest-dkms virtualbox-guest-utils xdg-user-dirs linux linux-headers oblogout libdvdcss simplescreenrecorder acpi
 	sudo pacman --root squashfs-root --cachedir squashfs-root/var/cache/pacman/pkg  --config squashfs-root/etc/pacman.conf --noconfirm -U /tmp/fetchmirrors/*.pkg.tar.xz
 	sudo pacman --root squashfs-root --cachedir squashfs-root/var/cache/pacman/pkg  --config squashfs-root/etc/pacman.conf --noconfirm -U /tmp/arch-wiki-cli/*.pkg.tar.xz
@@ -246,13 +237,13 @@ prepare_sys() {
 #	sudo cp "$aa"/etc/uvesafb.conf "$customiso"/arch/"$sys"/squashfs-root/etc/modules-load.d/
 	sudo arch-chroot squashfs-root /bin/bash locale-gen
 
-### Copy over main anarchy config, installer script, and arch-wiki,  make executeable
+### Copy over main arch anywhere config, installer script, and arch-wiki,  make executeable
 	sudo cp "$aa"/etc/anarchy.conf "$customiso"/arch/"$sys"/squashfs-root/etc/
 	sudo cp "$aa"/anarchy-installer.sh "$customiso"/arch/"$sys"/squashfs-root/usr/bin/anarchy
 	sudo cp "$aa"/extra/{sysinfo,iptest} "$customiso"/arch/"$sys"/squashfs-root/usr/bin/
 	sudo chmod +x "$customiso"/arch/"$sys"/squashfs-root/usr/bin/{anarchy,sysinfo,iptest}
 
-### Create anarchy directory and lang directory copy over all lang files
+### Create arch-anywhere directory and lang directory copy over all lang files
 	sudo mkdir -p "$customiso"/arch/"$sys"/squashfs-root/usr/share/anarchy/{lang,extra,boot,etc}
 	sudo cp "$aa"/lang/* "$customiso"/arch/"$sys"/squashfs-root/usr/share/anarchy/lang
 
@@ -265,7 +256,7 @@ prepare_sys() {
 	sudo cp "$aa"/extra/{.bashrc,.bashrc-root,.tcshrc,.tcshrc.conf,.mkshrc,.zshrc-default,.zshrc-oh-my,.zshrc-grml} "$customiso"/arch/"$sys"/squashfs-root/usr/share/anarchy/extra/
 	sudo cp -r "$aa"/extra/desktop "$customiso"/arch/"$sys"/squashfs-root/usr/share/anarchy/extra/
 	sudo cp "$aa"/boot/hostname "$customiso"/arch/"$sys"/squashfs-root/etc/
-	sudo cp "$aa"/boot/issue_cli "$customiso"/arch/"$sys"/squashfs-root/etc/issue
+	sudo cp "$aa"/boot/issue_cli "$customiso"/arch/"$sys"/squashfs-root/etc/
 	sudo cp -r "$aa"/boot/loader/ "$customiso"/arch/"$sys"/squashfs-root/usr/share/anarchy/boot/
 	sudo cp "$aa"/boot/splash.png "$customiso"/arch/"$sys"/squashfs-root/usr/share/anarchy/boot/
 	sudo cp "$aa"/etc/{nvidia340.xx,nvidia304.xx} "$customiso"/arch/"$sys"/squashfs-root/usr/share/anarchy/etc/
@@ -281,23 +272,29 @@ prepare_sys() {
 
 ### Configure xfce4
 	sudo rm "$customiso"/arch/"$sys"/squashfs-root/root/install.txt
-	sudo cp -r "$aa"/extra/gui/Fetchmirrors.desktop "$customiso"/arch/"$sys"/squashfs-root/root/.Fetchmirrors.desktop
-	sudo cp -r "$aa"/extra/gui/gparted.desktop "$customiso"/arch/"$sys"/squashfs-root/root/.gparted.desktop
-	sudo cp -r "$aa"/extra/gui/Install.desktop "$customiso"/arch/"$sys"/squashfs-root/root/.Install.desktop
+	sudo arch-chroot squashfs-root useradd -m -g users -G power,audio,video,storage -s /usr/bin/zsh user
+	sudo sed -i 's/root/user/' "$customiso"/arch/"$sys"/squashfs-root/etc/systemd/system/getty@tty1.service.d/autologin.conf
+	sudo mkdir "$customiso"/arch/"$sys"/squashfs-root/home/user/Desktop/
+	sudo cp -r "$aa"/extra/gui/Fetchmirrors.desktop "$customiso"/arch/"$sys"/squashfs-root/home/user/Desktop/Fetchmirrors.desktop
+	sudo cp -r "$aa"/extra/gui/gparted.desktop "$customiso"/arch/"$sys"/squashfs-root/home/user/Desktop/gparted.desktop
+	sudo cp -r "$aa"/extra/gui/Install.desktop "$customiso"/arch/"$sys"/squashfs-root/home/user/Desktop/Install.desktop
 	sudo cp -r "$aa"/extra/gui/{issue,oblogout.conf,sudoers} "$customiso"/arch/"$sys"/squashfs-root/etc/
 	sudo cp -r "$aa"/extra/gui/net.launchpad.plank.gschema.xml "$customiso"/arch/"$sys"/squashfs-root/usr/share/glib-2.0/schemas/
 	sudo cp -r "$aa"/extra/desktop/anarchy-icon.png "$customiso"/arch/"$sys"/squashfs-root/usr/share/pixmaps
 	sudo cp -r "$aa"/extra/desktop/wallpapers/*.png "$customiso"/arch/"$sys"/squashfs-root/usr/share/pixmaps
 	sudo cp -r "$aa"/extra/desktop/wallpapers/*.png "$customiso"/arch/"$sys"/squashfs-root/usr/share/backgrounds/xfce
 	sudo cp -r "$aa"/extra/desktop/anarchy-icon.png "$customiso"/arch/"$sys"/squashfs-root/root/.face
+	sudo cp -r "$aa"/extra/desktop/anarchy-icon.png "$customiso"/arch/"$sys"/squashfs-root/home/user/.face
 	sudo cp -r "$aa"/extra/desktop/ttf-zekton-rg "$customiso"/arch/"$sys"/squashfs-root/usr/share/fonts
-	sudo cp -r "$aa"/extra/gui/.xinitrc "$customiso"/arch/"$sys"/squashfs-root/etc/skel/
 	sudo cp -r "$aa"/extra/gui/{.xinitrc,.automated_script.sh} "$customiso"/arch/"$sys"/squashfs-root/root
-	sudo cp -r "$aa"/extra/.zshrc-default "$customiso"/arch/"$sys"/squashfs-root/etc/skel/.zshrc
-	sudo cp -r "$aa"/extra/gui/.config "$customiso"/arch/"$sys"/squashfs-root/etc/skel/
+	sudo cp -r "$aa"/extra/gui/{.xinitrc,.automated_script.sh} "$customiso"/arch/"$sys"/squashfs-root/home/user
+	sudo cp -r "$aa"/extra/.zshrc-default "$customiso"/arch/"$sys"/squashfs-root/home/user/.zshrc
+	sudo cp -r "$aa"/extra/gui/.config "$customiso"/arch/"$sys"/squashfs-root/home/user/
 	sudo cp -r "$aa"/extra/gui/.config "$customiso"/arch/"$sys"/squashfs-root/root
+	sudo cp -r "$aa"/extra/gui/.config "$customiso"/arch/"$sys"/squashfs-root/root/.zlogin "$aa"/extra/gui/.config "$customiso"/arch/"$sys"/squashfs-root/home/user
+	sudo chmod +x "$customiso"/arch/"$sys"/squashfs-root/home/user/.automated_script.sh
+	sudo arch-chroot squashfs-root chown -R user /home/user/{.zlogin,.zshrc,.face,.automated_script.sh,.config/}
 	sudo touch "$customiso"/arch/"$sys"/squashfs-root/etc/modules-load.d/virtualbox-guest-modules-arch.conf
-	sudo arch-chroot squashfs-root useradd -m -g users -G power,audio,video,storage -s /usr/bin/zsh user
 
 ### cd back into root system directory, remove old system
 	cd "$customiso"/arch/"$sys"
