@@ -1,0 +1,519 @@
+/*
+ * This file is part of Adblock Plus <https://adblockplus.org/>,
+ * Copyright (C) 2006-present eyeo GmbH
+ *
+ * Adblock Plus is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 3 as
+ * published by the Free Software Foundation.
+ *
+ * Adblock Plus is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Adblock Plus.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+@font-face {
+  font-family: "CreteRound";
+  font-style: normal;
+  src: url(fonts/CreteRound-Regular.otf);
+  src: local ("Ø"),
+  /*local ("Ø") forces using no local font called CreteRound*/
+  url(fonts/CreteRound-Regular.otf) format("otf");
+}
+
+@font-face {
+  font-family: "CreteRound";
+  font-style: italic;
+  src: url(fonts/CreteRound-Italic.otf);
+  src: local ("Ø"),
+  /*local ("Ø") forces using no local font called CreteRound*/
+  url(fonts/CreteRound-Italic.otf) format("otf");
+}
+
+body
+{
+  font-family: Helvetica, Arial, sans-serif;
+  font-size: 15px;
+  line-height: 140%;
+  color: #7f776b;
+  background-color: #f8f6f2;
+  background-image: url(background-main.png);
+  margin: 0;
+  padding: 0;
+}
+
+a, a:link, a:visited
+{
+  color: #5a84b3;
+  text-decoration: underline;
+}
+
+a:hover
+{
+  text-decoration: none;
+}
+
+button
+{
+  cursor: pointer;
+}
+
+ul
+{
+  margin: 0;
+  padding: 0;
+}
+
+li
+{
+  margin: 0;
+  padding: 0;
+  list-style-type: none;
+}
+
+header
+{
+  background-image: url(background.png);
+  background-repeat: repeat-x;
+  width: 100%;
+  padding-top: 25px;
+}
+
+header h1
+{
+  font-size: 24px;
+  font-weight: normal;
+  color: #57ab5b;
+  text-align: center;
+  margin: 21px auto;
+  padding: 16px 0px;
+  border: 1px #57ab5b;
+  border-style: dashed none;
+  /* border parallel fix - 957px is the value
+   * closest to 960px(page width) which makes
+   * the dashed border parallel
+   */
+  max-width: 957px;
+}
+
+h1,
+h2,
+h3
+{
+ font-family: CreteRound, Helvetica, Arial, sans-serif;
+}
+
+h2
+{
+  font-size: 26px;
+  font-weight: lighter;
+  color: #968d81;
+  line-height: 28px;
+  text-align: center;
+  margin: 0;
+  padding: 0;
+}
+
+h3
+{
+  font-size: 22px;
+  color: #7F776B;
+  font-weight: normal;
+  margin-top: 0px;
+  margin-bottom: 10px;
+  padding: 0;
+  line-height: 24px;
+}
+
+h4
+{
+  font-size: 15px;
+  color: #7f776b;
+  font-weight: normal;
+  text-align: center;
+  margin: 0;
+  padding: 0;
+}
+
+section
+{
+  margin: 0 auto;
+  margin-bottom: 30px;
+  max-width: 960px;
+  background-image: url(background.png);
+  padding: 40px 100px;
+  box-sizing: border-box;
+}
+
+#general
+{
+  display: table;
+  padding-left: 0px;
+  padding-right: 0px;
+}
+
+#general > .block
+{
+  display: table-cell;
+  width: 50%;
+  vertical-align: top;
+  padding: 0px 50px;
+  border: dashed 0 #969085;
+  -webkit-border-start-width: 1px;
+  -moz-border-start-width: 1px;
+  border-inline-start-width: 1px;
+}
+
+#general > .block:first-child
+{
+  border: none;
+}
+
+#acceptable-ads-block h2
+{
+  margin-bottom: 34px;
+}
+
+#abb-promotion-block:lang(fr)
+{
+  display: none;
+}
+
+#abb-promotion-block
+{
+  text-align: center;
+}
+
+#abb-promotion-block h2
+{
+  color: #7795b6;
+  margin-bottom: 40px;
+}
+
+#abb-promotion-block a
+{
+  border: solid 1px #446a96;
+  border-radius: 5px;
+  display: inline-block;
+  padding: 6px 16px;
+  background: -webkit-linear-gradient(bottom, #294e76, #6b92be);
+  background: linear-gradient(to top, #294e76, #6b92be);
+  text-decoration: none;
+  text-align: start;
+}
+
+#abb-promotion-block a > div
+{
+  display: table-cell;
+  vertical-align: middle;
+  padding: 6px;
+}
+
+#abb-promotion-block .title
+{
+  font-size: 21px;
+  color: #ffffff;
+  font-weight: bold;
+}
+
+#abb-promotion-block .subtitle
+{
+  font-size: 12px;
+  color: #9ab7d6;
+}
+
+#abb-promotion-block a:hover
+{
+  box-shadow: 0px 0px 5px #5D5D5D;
+}
+
+#abb-promotion-block a:active
+{
+  box-shadow: 0px 0px 5px 1px #5D5D5D;
+}
+
+section > p
+{
+  margin-top: 15px;
+}
+
+#logo
+{
+  margin: 0 auto;
+  height: 128px;
+  width: 128px;
+  display: block;
+}
+
+#share
+{
+  background-image: url(background-share.png);
+  text-align: center;
+  font-family: CreteRound, Helvetica, Arial, sans-serif;
+}
+
+#share h2
+{
+  margin-bottom: 30px;
+}
+
+#share h2,
+#share h2 > a
+{
+  color: #fff;
+}
+
+#share h2 > a:hover
+{
+  color: #2e5075;
+}
+
+#share span
+{
+  color: #bed1e6;
+  text-align: center;
+  line-height: 34px;
+  font-size: 22px;
+  display: block;
+}
+
+#donate:hover, .share-buttons a:hover
+{
+  box-shadow: 0px 0px 0px 2px #8ca7c4;
+  border-radius: 30px;
+}
+
+#share > .block
+{
+  display: inline-block;
+  vertical-align: top;
+  width: 49%;
+  padding: 5px 0px;
+  border: 1px dashed #37506d;
+  border-style: none dashed;
+}
+
+#share > .block:last-child
+{
+  -webkit-border-start-style: none;
+  -moz-border-start-style: none;
+}
+
+#share > .block > span
+{
+  margin: 10px 20px;
+}
+
+.share-buttons
+{
+  margin-top: 6px;
+  vertical-align: top;
+  /* because inline block creates
+   * space if not captured with
+   * font-size and line-height 0px
+   */
+  font-size: 0px;
+  line-height: 0px;
+}
+
+.share-buttons > a
+{
+  width: 50px;
+  height: 50px;
+  margin: 0 8px;
+  text-decoration: none;
+  display: inline-block;
+}
+
+#share-general,
+#share-chinese:lang(zh)
+{
+  display: block;
+}
+
+#share-general:lang(zh),
+#share-chinese
+{
+  display: none;
+}
+
+#share-chinese > a
+{
+  border-bottom: 2px solid transparent;
+}
+
+#share-chinese > a:hover
+{
+  box-shadow: none;
+  border-radius: 0;
+  border-bottom: 2px solid #8CA7C4;
+}
+
+#share-facebook
+{
+  background-image: url(social/facebook.png);
+  background-repeat: no-repeat;
+}
+
+#share-twitter
+{
+  background-image: url(social/twitter.png);
+  background-repeat: no-repeat;
+}
+
+#share-gplus
+{
+  background-image: url(social/googleplus.png);
+  background-repeat: no-repeat;
+}
+
+#share-renren
+{
+  background-image: url(social/renren.png);
+  background-repeat: no-repeat;
+}
+
+#share-weibo
+{
+  background-image: url(social/weibo.png);
+  background-repeat: no-repeat;
+}
+
+.warning
+{
+  font-size: 160%;
+  border: 3px dashed red;
+  text-align: center;
+  line-height: 1.3em;
+}
+
+#social ul
+{
+  list-style: none;
+  display: inline-block;
+  padding: 0;
+  margin: 0;
+}
+
+#social:hover h1
+{
+  opacity: 0;
+}
+
+#social ul:hover li {
+  opacity: 0.3;
+}
+
+#social ul li
+{
+  display: inline-block;
+  margin: 0px 5px;
+  -webkit-transition: opacity .5s ease, bottom .3s ease;
+  transition: opacity .5s ease, bottom .3s ease;
+  position: relative;
+  bottom: -30px;
+}
+
+#social ul li:hover
+{
+  opacity: 1.0;
+  bottom: 0px;
+}
+
+.share-button
+{
+  display: inline-block;
+  width: 82px;
+  height: 82px;
+}
+
+/* Change order of the blocks for French */
+#content:lang(fr)
+{
+  display: table;
+  margin: auto;
+  caption-side: bottom;
+}
+
+#share:lang(fr)
+{
+  display: table-caption;
+}
+
+#donate
+{
+  height: 21px;
+  display: inline-block;
+  margin-top: 15px;
+  margin-bottom: 2px;
+  font-size: 16px;
+  color: #003366;
+  cursor: pointer;
+  font-weight: bold;
+  padding: 5px 18px;
+  text-decoration: none;
+  border-radius: 20px;
+  border: 1px solid #FF9933;
+  overflow: hidden;
+  font-family: arial, sans-serif;
+  background-image: url(donate.png);
+  background-repeat: repeat-x;
+}
+
+footer
+{
+  margin: 0 auto 30px;
+  max-width: 960px;
+  text-align: center;
+}
+
+@media (max-width: 970px)
+{
+  header
+  {
+    background-size: 100px 57px;
+  }
+
+  #logo
+  {
+    width: 64px;
+    height: 64px;
+  }
+
+  section
+  {
+    padding: 40px 20px;
+  }
+
+  #general,
+  #general > .block,
+  #share > .block
+  {
+    display: block;
+  }
+
+  #general > .block
+  {
+    width: auto;
+    margin-left: 20px;
+    margin-right: 20px;
+    padding: 10px 0px;
+    border-width: 1px 0px 0px;
+  }
+
+  #share > .block
+  {
+    width: auto;
+    padding: 20px 0px;
+    border-style: dashed none none;
+  }
+
+  #donate,
+  .share-buttons
+  {
+    margin-top: 10px;
+  }
+}

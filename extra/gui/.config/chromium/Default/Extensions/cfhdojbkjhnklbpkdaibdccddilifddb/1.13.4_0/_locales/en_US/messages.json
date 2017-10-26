@@ -1,0 +1,338 @@
+{
+   "add": {
+      "description": "This is the label for the 'Add' buttons.",
+      "message": "Add"
+   },
+   "add_domain_button": {
+      "message": "Add domain"
+   },
+   "add_filter_button": {
+      "message": "Add filter"
+   },
+   "add_filters_msg": {
+      "message": "Add filter(s)?"
+   },
+   "add_your_own_filters": {
+      "message": "Add your own filters"
+   },
+   "apply_changes": {
+      "message": "Apply changes"
+   },
+   "block_element": {
+      "description": "Context menu item that adds a filter which blocks the selected element",
+      "message": "Block element"
+   },
+   "cancel": {
+      "description": "Cancel button label",
+      "message": "Cancel"
+   },
+   "clickhide_instructions": {
+      "description": "Instructions shown in popup UI before it disapears, when \"Block element\" action is executed",
+      "message": "After closing this popup, click (or right-click) an element on the page."
+   },
+   "description": {
+      "description": "Note: this cannot be longer than 132 characters",
+      "message": "Used on over 100 million devices, Adblock Plus is the world's most popular ad blocker."
+   },
+   "disabled_for_site": {
+      "description": "Popup balloon label to disable blocking",
+      "message": "\u003Cstrong>Disabled\u003C/strong> on this site"
+   },
+   "disabled_for_these_domains": {
+      "message": "Adblock Plus is disabled for the domains listed below. You can add a domain either via the Adblock Plus icon in the address bar or by typing the domain (not a URL) in the box and clicking the \"Add domain\" button."
+   },
+   "easy_create_filter": {
+      "description": "Action in popup UI to add a filter which blocks an element selected from the current page",
+      "message": "Block element"
+   },
+   "edit_filters_raw": {
+      "message": "Edit filters as raw text"
+   },
+   "enable_only_the": {
+      "message": "Enable only the filter lists you need. Too many can make your browser unresponsive."
+   },
+   "enabled_for_site": {
+      "description": "Popup balloon label to enable blocking",
+      "message": "\u003Cstrong>Enabled\u003C/strong> on this site"
+   },
+   "filter_lists": {
+      "description": "This is a tab heading.",
+      "message": "Filter lists"
+   },
+   "filter_must_follow_syntax": {
+      "message": "Your filter must follow the \u003Ca>Adblock Plus filter syntax\u003C/a>."
+   },
+   "filters_acceptableAds2_label": {
+      "message": "Allow some non-intrusive advertising"
+   },
+   "filters_addSubscriptionAdd_label": {
+      "message": "Add"
+   },
+   "filters_addSubscriptionOther_label": {
+      "message": "Add a different subscription"
+   },
+   "filters_addSubscription_label": {
+      "message": "Add filter subscription"
+   },
+   "filters_readMore_label": {
+      "message": "Read more"
+   },
+   "filters_subscription_delete_label": {
+      "message": "Delete"
+   },
+   "filters_subscription_enabled_label": {
+      "message": "Enabled"
+   },
+   "filters_subscription_lastDownload_checksumMismatch": {
+      "message": "Failed, checksum mismatch"
+   },
+   "filters_subscription_lastDownload_connectionError": {
+      "message": "Failed, download failure"
+   },
+   "filters_subscription_lastDownload_inProgress": {
+      "message": "Downloading…"
+   },
+   "filters_subscription_lastDownload_invalidData": {
+      "message": "Failed, not a valid filters list"
+   },
+   "filters_subscription_lastDownload_invalidURL": {
+      "message": "Failed, not a valid address"
+   },
+   "filters_viewList_label": {
+      "message": "View list"
+   },
+   "firstRun_abbButtonSubtitle": {
+      "message": "Available for Android and iOS"
+   },
+   "firstRun_abbButtonTitle": {
+      "message": "Get Adblock Browser here"
+   },
+   "firstRun_abbPromotionHeadline": {
+      "message": "Got a smartphone or a tablet?"
+   },
+   "firstRun_acceptableAdsExplanation": {
+      "message": "We'd like to encourage websites to use straightforward, unobtrusive advertising. That's why we've established \u003Ca>strict guidelines\u003C/a> to identify acceptable ads, which are shown under default settings. If you still want to block every ad you can \u003Ca>disable\u003C/a> this in a few seconds."
+   },
+   "firstRun_acceptableAdsHeadline": {
+      "message": "Annoying ads will now be blocked"
+   },
+   "firstRun_contributor_credits": {
+      "message": "Contributor Credits"
+   },
+   "firstRun_donate": {
+      "message": "donate"
+   },
+   "firstRun_donate_label": {
+      "message": "Support our project"
+   },
+   "firstRun_filterlistsReinitializedWarning": {
+      "message": "It seems that an issue caused all filters to be removed and we were unable to restore a backup. Therefore we had to reset your filters and Acceptable Ads settings. Please check your filter lists and Acceptable Ads settings in the \u003Ca>Adblock Plus options\u003C/a>."
+   },
+   "firstRun_share": {
+      "message": "Tell your friends"
+   },
+   "firstRun_share_headline": {
+      "message": "\u003Ca>Give us a hand\u003C/a> in making the web a better place"
+   },
+   "firstRun_title": {
+      "message": "Adblock Plus has been installed"
+   },
+   "found_a_bug": {
+      "message": "Found a bug? Want to translate Adblock Plus into your language? Please \u003Ca>file a request here\u003C/a>."
+   },
+   "general": {
+      "description": "This is a tab heading.",
+      "message": "General"
+   },
+   "global_filter_elemhide_duplicate_id": {
+      "message": "Only one ID of the element to be hidden can be specified"
+   },
+   "global_filter_elemhide_nocriteria": {
+      "message": "No criteria specified to recognize the element to be hidden"
+   },
+   "global_filter_elemhideemulation_nodomain": {
+      "message": "No active domain specified for extended element hiding filter"
+   },
+   "global_filter_invalid_regexp": {
+      "message": "Invalid regular expression"
+   },
+   "global_filter_unknown_option": {
+      "message": "Unknown filter option"
+   },
+   "global_remove_subscription_warning": {
+      "message": "Do you really want to remove this subscription?"
+   },
+   "global_subscription_invalid_location": {
+      "message": "Filter list location is neither a valid URL nor a valid file name."
+   },
+   "invalid_css_selector": {
+      "message": "$selector$ is not a valid CSS selector",
+      "placeholders": {
+         "selector": {
+            "content": "$1"
+         }
+      }
+   },
+   "last_updated_at": {
+      "description": "e.g. Last updated at 3:00pm on Apr 1, 2011",
+      "message": "Last updated at $time$ on $date$",
+      "placeholders": {
+         "date": {
+            "content": "$2"
+         },
+         "time": {
+            "content": "$1"
+         }
+      }
+   },
+   "last_updated_at_today": {
+      "description": "e.g. Last updated at 3:00pm today",
+      "message": "Last updated at $time$ today",
+      "placeholders": {
+         "time": {
+            "content": "$1"
+         }
+      }
+   },
+   "line": {
+      "description": "Prepended to error messages to indicate the line number (e.g. \"Line 42: Some error on this line\")",
+      "message": "Line $number$",
+      "placeholders": {
+         "number": {
+            "content": "$1"
+         }
+      }
+   },
+   "name": {
+      "message": "Adblock Plus"
+   },
+   "name_devbuild": {
+      "description": "Extension name to be shown for development builds. Note: this cannot be longer than 45 characters.",
+      "message": "Adblock Plus development build"
+   },
+   "notification_antiadblock_message": {
+      "message": "This site has been known to show targeted messages to Adblock Plus users. Do you want Adblock Plus to hide targeted messages?"
+   },
+   "notification_antiadblock_title": {
+      "message": "Hide targeted messages?"
+   },
+   "notification_configure": {
+      "message": "Configure notification settings"
+   },
+   "notification_open_all": {
+      "message": "Open all links from this notification"
+   },
+   "notification_with_buttons": {
+      "message": "Click 'OK' to open all links in this notification."
+   },
+   "notification_without_buttons": {
+      "message": "Click on the notification to open all links in it."
+   },
+   "options": {
+      "message": "Adblock Plus Options"
+   },
+   "options_short": {
+      "description": "Link to the options page from the popup balloon.",
+      "message": "Options"
+   },
+   "out_of_date_lists": {
+      "message": "Out-of-date lists are updated periodically."
+   },
+   "overlay_notification_button_no": {
+      "message": "No"
+   },
+   "overlay_notification_button_yes": {
+      "message": "Yes"
+   },
+   "overlay_notification_closing_button_hide": {
+      "message": "Close this notification"
+   },
+   "overlay_notification_closing_button_optout": {
+      "message": "Stop showing notifications"
+   },
+   "overlay_shownotifications_label": {
+      "message": "Show useful notifications"
+   },
+   "remove_button": {
+      "description": "This is the label for the 'Remove selected' buttons.",
+      "message": "Remove selected"
+   },
+   "show_block_element_menu": {
+      "message": "Show 'Block Element' right-click menu item"
+   },
+   "show_devtools_panel": {
+      "message": "Show 'Adblock Plus' panel in the developer tools"
+   },
+   "stats_label_page": {
+      "description": "This shows the number of blocked requests on a specific page in the popup.",
+      "message": "\u003Cstrong>$number$\u003C/strong> on this page",
+      "placeholders": {
+         "number": {
+            "content": "$1"
+         }
+      }
+   },
+   "stats_label_total": {
+      "description": "This shows the total number of blocked requests in the popup.",
+      "message": "\u003Cstrong>$number$\u003C/strong> in total",
+      "placeholders": {
+         "number": {
+            "content": "$1"
+         }
+      }
+   },
+   "stats_over": {
+      "description": "For some numbers the stats share message will say 'I blocked over 123 ads' instead of 'I blocked 123 ads'. This is a reference to the 'over 9000' meme. This string can be translated simply with '$number$' if that meme isn't known to the speakers of the language or if the resulting sentence would sound weird otherwise.",
+      "message": "over $number$",
+      "placeholders": {
+         "number": {
+            "content": "$1"
+         }
+      }
+   },
+   "stats_share_download": {
+      "description": "Label for link to adblockplus.org that is attached when the user wants to share the stats on Facebook.",
+      "message": "Download Adblock Plus"
+   },
+   "stats_share_message": {
+      "description": "This message will be posted to social networks if the user decides to share the stats.",
+      "message": "I blocked $number$ ads and trackers thanks to Adblock Plus.",
+      "placeholders": {
+         "number": {
+            "content": "$1"
+         }
+      }
+   },
+   "stats_share_title": {
+      "description": "Label for social media buttons sharing the number of blocked ads",
+      "message": "Share this number"
+   },
+   "stats_show_iconnumber": {
+      "description": "Toggle for displaying the number of blocked ads in the icon.",
+      "message": "Show number in icon"
+   },
+   "stats_title": {
+      "description": "Title for the stats section in the popup.",
+      "message": "Ads blocked"
+   },
+   "subscriptionSelection_location_label": {
+      "message": "Filter list location:"
+   },
+   "subscriptionSelection_subscriptionSelector_label": {
+      "message": "Please choose a filter subscription from the list:"
+   },
+   "subscriptionSelection_title_label": {
+      "message": "Subscription title:"
+   },
+   "unexpected_filter_list_header": {
+      "description": "Error message shown when the user attempts to add a custom filter that has the format of a header (e.g. \"[Adblock Plus 2.0]\") which are only allowed in filter lists",
+      "message": "Filter list headers aren't allowed here"
+   },
+   "update_now": {
+      "message": "Update now"
+   },
+   "whitelisted_domains": {
+      "description": "This is a tab heading.",
+      "message": "Whitelisted domains"
+   }
+}

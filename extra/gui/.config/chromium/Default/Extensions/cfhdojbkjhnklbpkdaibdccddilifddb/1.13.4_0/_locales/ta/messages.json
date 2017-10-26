@@ -1,0 +1,240 @@
+{
+   "add": {
+      "message": "சேர்"
+   },
+   "add_domain_button": {
+      "message": "களத்தை சேர்"
+   },
+   "add_filter_button": {
+      "message": "வடிகட்டியை சேர்"
+   },
+   "add_filters_msg": {
+      "message": "வடிகட்டியை சேர்க்கவா?"
+   },
+   "add_your_own_filters": {
+      "message": "சொந்த வடிகட்டியை சேர்"
+   },
+   "apply_changes": {
+      "message": "மாற்றங்களை பயன்படுத்து"
+   },
+   "block_element": {
+      "message": "உறுப்பை தடு"
+   },
+   "cancel": {
+      "message": "ரத்து செய்"
+   },
+   "clickhide_instructions": {
+      "message": "இந்த விழிதிரை மூடிய பின், பக்கத்தில் உள்ள உறுப்பின் மேல் சொடுக்கவும். (அல்லது வலது விசையை சொடுக்கவும்.)"
+   },
+   "description": {
+      "message": "100 மில்லியன் சாதனங்களில் பயன்படுத்தப்படும், Adblock Plus என்பது உலகின் பிரபல இணைய விளம்பர முடக்கி."
+   },
+   "disabled_for_site": {
+      "message": "இந்த தளத்தில் \u003Cstrong> முடக்கப்பட்டுள்ளது\u003C/strong>"
+   },
+   "disabled_for_these_domains": {
+      "message": "கீழே பட்டியலிடப்பட்டுள்ள களங்களுக்கு Adblock Plus முடக்கப்பட்டுள்ளது. களம் ஒன்றை சேர்க்க: முகவரிப் பட்டியில் உள்ள Adblock Plus படவுரு வழியாகவோ அல்லது பெட்டியில் களத்தை (URL அல்ல) தட்டச்சு செய்து   \"களத்தை சேர்\" பொத்தானை சொடுக்குவது மூலமாகவோ நீங்கள் சேர்க்கலாம்."
+   },
+   "easy_create_filter": {
+      "message": "உறுப்பை தடு"
+   },
+   "edit_filters_raw": {
+      "message": "வடிகட்டிகளை வெறும் உரையாக திருத்து"
+   },
+   "enable_only_the": {
+      "message": "உங்களுக்கு தேவையான வடிகட்டி பட்டியல்களை மட்டும் செயல்படுத்தவும். பல பட்டியல்களை ஒரே நேரத்தில் இயக்கினால் உலாவியின் இயக்கத்தை பாதிக்கும் ."
+   },
+   "enabled_for_site": {
+      "message": "இந்த தளத்தில் \u003Cstrong> செயல்படுகிறது\u003C/strong>"
+   },
+   "filter_lists": {
+      "message": "வடிகட்டி பட்டியல்கள்"
+   },
+   "filter_must_follow_syntax": {
+      "message": "உங்கள் Adblock Plus வடிகட்டி பின்வரும் இலக்கணத்தை பயன்படுத்தவேண்டும்: \u003Ca> \u003C/a>."
+   },
+   "firstRun_abbButtonSubtitle": {
+      "message": "ஆண்ட்ராய்டு மற்றும் iOS-க்குக் கிடைக்கிறது"
+   },
+   "firstRun_abbButtonTitle": {
+      "message": "Adblock Browser-ஐ இங்கே பெற்றிடுங்கள்"
+   },
+   "firstRun_abbPromotionHeadline": {
+      "message": "ஸ்மார்ட்ஃபோன் அல்லது டேப்ளெட் வைத்திருக்கிறீர்களா?"
+   },
+   "firstRun_acceptableAdsHeadline": {
+      "message": "எரிச்சலூட்டும் விளம்பரங்கள் இப்போது தடைசெய்யப்படும்"
+   },
+   "firstRun_contributor_credits": {
+      "message": "பங்களிப்பாளர் கிரெடிட்கள்"
+   },
+   "firstRun_dataCorruptionWarning": {
+      "message": "இந்த பக்கம் இதை காட்டி கொண்டே இருக்கிறதா? \u003Ca>இங்கே கிளிக் செய்யவும்!\u003C/a>"
+   },
+   "firstRun_donate": {
+      "message": "தானம் செய்ய"
+   },
+   "firstRun_donate_label": {
+      "message": "நமது திட்டதுக்கு ஆதரவளிக்க"
+   },
+   "firstRun_feature_malware": {
+      "message": "தீம்பொருள் தடுப்பது"
+   },
+   "firstRun_feature_malware_description": {
+      "message": "தெரிந்த தீம்பொருள் தளங்களை தடுப்பது மூலம் உங்கள் உலாவல் பாதுகாப்பானாதாக செய்யவும்."
+   },
+   "firstRun_feature_social": {
+      "message": "சமூக ஊடகங்கள் பொத்தான்கள் நீக்கு"
+   },
+   "firstRun_feature_tracking": {
+      "message": "அறிதலை முடக்கு"
+   },
+   "firstRun_share": {
+      "message": "உங்கள் நண்பர்களுக்கு கூறுங்கள்"
+   },
+   "firstRun_share_headline": {
+      "message": "ஓரு நல்ல வலை இடமாக மாற்ற \u003Ca>எங்களுக்கு கை கொடுங்கள்\u003C/a>"
+   },
+   "firstRun_title": {
+      "message": "Adblock plus நிறுவப்பட்டது"
+   },
+   "firstRun_toggle_off": {
+      "message": "அணைக்க"
+   },
+   "firstRun_toggle_on": {
+      "message": "தொடங்க"
+   },
+   "found_a_bug": {
+      "message": "ஏதேனும் பிழையா? உங்கள் மொழிக்கு Adblock Plus மொழிபெயர்க்கபட வேண்டுமா? தயவுசெய்து கோரிக்கையை \u003Ca> இங்கே பதிக்கவும் \u003C/a>."
+   },
+   "general": {
+      "message": "பொது"
+   },
+   "invalid_css_selector": {
+      "message": "$selector$ ஒரு செல்லுபடியாகும் CSS தேர்வுக்குழு இல்லை",
+      "placeholders": {
+         "selector": {
+            "content": "$1"
+         }
+      }
+   },
+   "last_updated_at": {
+      "message": "$date$ $time$ இல் புதுப்பிக்கப்பட்டது",
+      "placeholders": {
+         "date": {
+            "content": "$2"
+         },
+         "time": {
+            "content": "$1"
+         }
+      }
+   },
+   "last_updated_at_today": {
+      "message": "இன்று  $time$ க்கு புதுப்பிக்கப்பட்டது",
+      "placeholders": {
+         "time": {
+            "content": "$1"
+         }
+      }
+   },
+   "line": {
+      "message": "வரி $number$",
+      "placeholders": {
+         "number": {
+            "content": "$1"
+         }
+      }
+   },
+   "name": {
+      "message": "Adblock Plus"
+   },
+   "name_devbuild": {
+      "message": "Adblock Plus வளர்ச்சி கட்டமை"
+   },
+   "notification_configure": {
+      "message": "அறிவிக்கை அமைப்புகளை உள்ளமைக்க"
+   },
+   "notification_open_all": {
+      "message": "இந்த அறிவிப்பின் அனைத்து இணைப்புகளையும் திற"
+   },
+   "notification_with_buttons": {
+      "message": "இந்த அறிவிப்பில் உள்ள எல்லா இணைப்புகளையும் திறக்க, 'சரி'யை சொடுக்கவும்."
+   },
+   "notification_without_buttons": {
+      "message": "இதில் உள்ள எல்லா இணைப்புகளையும் திறக்க \"அறிவிப்பை\" சொடுக்கவும்."
+   },
+   "options": {
+      "message": "Adblock Plus விருப்பங்கள்"
+   },
+   "options_short": {
+      "message": "தேர்வுகள்"
+   },
+   "out_of_date_lists": {
+      "message": "பழைய பட்டியல்கள் அவ்வப்போது புதுப்பிக்கப்படும்."
+   },
+   "remove_button": {
+      "message": "தேர்ந்தெடுத்ததை நீக்கு"
+   },
+   "show_block_element_menu": {
+      "message": "'உறுப்பை தடு' வலது-கிளிக் மெனு உருப்படியை காண்பி"
+   },
+   "show_devtools_panel": {
+      "message": "டெவலப்பர் கருவிகலில் Adblock Plus'ஐ காட்டு"
+   },
+   "stats_label_page": {
+      "message": "இந்தப் பக்கத்தில் \u003Cstrong>$number$\u003C/strong>",
+      "placeholders": {
+         "number": {
+            "content": "$1"
+         }
+      }
+   },
+   "stats_label_total": {
+      "message": "மொத்தம் \u003Cstrong>$number$\u003C/strong>",
+      "placeholders": {
+         "number": {
+            "content": "$1"
+         }
+      }
+   },
+   "stats_over": {
+      "message": "$number$க்கு மேல்",
+      "placeholders": {
+         "number": {
+            "content": "$1"
+         }
+      }
+   },
+   "stats_share_download": {
+      "message": "Adblock Plusஐ பதிவிறக்கவும்"
+   },
+   "stats_share_message": {
+      "message": "நான் $number$ விளம்பரங்கள் மற்றும் trackerகளை தடுதுள்ளேன். நன்றி Adblock Plus.",
+      "placeholders": {
+         "number": {
+            "content": "$1"
+         }
+      }
+   },
+   "stats_share_title": {
+      "message": "இந்த எண்ணை பகிரவும்"
+   },
+   "stats_show_iconnumber": {
+      "message": "படவுருவில் எண்ணை காட்டு"
+   },
+   "stats_title": {
+      "message": "தடுக்கப்பட்ட விளம்பரங்கள்"
+   },
+   "subscriptionSelection_subscriptionSelector_label": {
+      "message": "பட்டியலில் இருந்து ஒரு வடிகட்டி சந்தாவை தேர்ந்தெடுக்கவும்:"
+   },
+   "unexpected_filter_list_header": {
+      "message": "வடிகட்டி பட்டியலில் தலைப்புகள் இங்கே அனுமதி இல்லை"
+   },
+   "update_now": {
+      "message": "இப்போது புதுப்பிக்கவும்"
+   },
+   "whitelisted_domains": {
+      "message": "அனுமதிக்கப்பட்ட களங்கள்"
+   }
+}

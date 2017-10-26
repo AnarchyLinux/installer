@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+
+<!--
+  - This file is part of Adblock Plus <https://adblockplus.org/>,
+  - Copyright (C) 2006-present eyeo GmbH
+  -
+  - Adblock Plus is free software: you can redistribute it and/or modify
+  - it under the terms of the GNU General Public License version 3 as
+  - published by the Free Software Foundation.
+  -
+  - Adblock Plus is distributed in the hope that it will be useful,
+  - but WITHOUT ANY WARRANTY; without even the implied warranty of
+  - MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  - GNU General Public License for more details.
+  -
+  - You should have received a copy of the GNU General Public License
+  - along with Adblock Plus.  If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<html>
+<head>
+<meta charset="utf-8">
+<link type="text/css" href="jquery-ui/css/smoothness/jquery-ui-1.8.16.custom.css" rel="stylesheet" />
+<script type="text/javascript" src="jquery-ui/js/jquery-1.7.1.min.js"></script>
+<script type="text/javascript" src="jquery-ui/js/jquery-ui-1.8.16.custom.min.js"></script>
+<script type="text/javascript" src="ext/common.js"></script>
+<script type="text/javascript" src="ext/content.js"></script>
+<script type="text/javascript" src="i18n.js" charset="utf-8"></script>
+<script type="text/javascript" src="options.js" charset="utf-8"></script>
+<title>Adblock Plus Options</title>
+<style type="text/css" media="screen">
+body
+{
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 13px;
+  padding: 20px;
+}
+
+td
+{
+  font-size: 13px;
+  vertical-align: top;
+  text-align: left;
+}
+
+p
+{
+  margin-top: 0.5em;
+}
+
+button
+{
+  white-space: pre;
+}
+
+#firefox-warning
+{
+  margin-bottom: 20px;
+  padding: 10px;
+  border: 1px solid #cccccc;
+  border-radius: 3px;
+  background-color: #ffcccc;
+  font-size: 120%;
+}
+
+#subscriptionTemplate,
+#addSubscriptionContainer,
+#customSubscriptionContainer
+{
+  display: none;
+}
+
+#acceptableAdsContainer
+{
+  margin-top: 10px;
+}
+
+#acceptableAdsLink,
+#acceptableAdsDocs
+{
+  margin-left: 10px;
+  margin-right: 10px;
+}
+
+.subscription
+{
+  margin: 3px 0px;
+}
+
+.subscriptionRemoveButton,
+.subscriptionEnabledContainer,
+.subscriptionTitle
+{
+  margin-right: 1em;
+}
+
+.subscriptionRemoveButton
+{
+  font-weight: normal !important;
+  font-size: 20px !important;
+  color: #FF0000 !important;
+  border: none !important;
+  outline: none !important;
+  background: none !important;
+}
+
+.subscriptionUpdate
+{
+  color: #B0B0B0;
+}
+
+#rawFilters {
+  display: none;
+}
+
+.okMsg {
+    display: none;
+    color: #ffffff;
+    background: #30e030;
+    font-weight: bold;
+    padding: 3px;
+}
+
+.errMsg {
+    display: none;
+    color: #ffffff;
+    background: #e03030;
+    font-weight:bold;
+    padding:3px;
+}
+
+/* Filter list entry status message */
+.flMsg {
+    display: none;
+    color: #b0b0b0;
+}
+
+.focused
+{
+  box-shadow: 0px 0px 10px #e03030;
+}
+
+</style>
+</head>
+<body>
+<table>
+  <tr>
+    <td style="padding-right: 8px; vertical-align: middle;">
+      <img src="icons/detailed/abp-32.png" srcset="icons/detailed/abp-64.png 2x">
+    </td>
+    <td>
+      <h1><span class="i18n_options"></span></h1>
+    </td>
+  </tr>
+</table>
+
+<div id="firefox-warning" hidden>
+   Don't like what you see?
+   <a href="https://adblockplus.org/blog/the-plan-towards-offering-adblock-plus-for-firefox-as-a-web-extension" target="_blank">Neither do we</a>.
+   This page will be improved soon.
+</div>
+
+<div id="tabs">
+  <ul>
+    <li><a href="#tab-filterlists"><span class="i18n_filter_lists"></span></a></li>
+    <li><a href="#tab-userfilters"><span class="i18n_add_your_own_filters"></span></a></li>
+    <li><a href="#tab-whitelisted"><span class="i18n_whitelisted_domains"></span></a></li>
+    <li><a href="#tab-general"><span class="i18n_general"></span></a></li>
+  </ul>
+
+  <div id="tab-filterlists">
+    <p>
+      <span class="i18n_enable_only_the"></span>
+    </p>
+    <p>
+      <span class="i18n_out_of_date_lists"></span>
+      <button id="updateFilterLists" class="refreshButton"><span class="i18n_update_now"></span></button><br />
+
+      <!-- Subscription entry template -->
+      <div id="subscriptionTemplate" class="subscription">
+        <button class="i18n_filters_subscription_delete_label subscriptionRemoveButton"></button>
+        <label class="subscriptionEnabledContainer">
+          <input class="subscriptionEnabled" type="checkbox" /> <span class="i18n_filters_subscription_enabled_label"></span>
+        </label>
+        <a class="subscriptionTitle"></a>
+        <span class="subscriptionUpdate"></span>
+      </div>
+
+      <!-- Placeholder for list of subscriptions -->
+      <div id="filterLists"></div>
+      <br />
+
+      <!-- Placeholder for user's filter list URLs -->
+      <div id="userFilterLists" style="margin-bottom: 8px"></div>
+
+      <p id="addSubscriptionButton">
+        <button id="startSubscriptionSelection" class="addButton"><span class="i18n_filters_addSubscription_label"></span></button>
+      </p>
+      <div id="addSubscriptionContainer">
+        <span class="i18n_subscriptionSelection_subscriptionSelector_label"></span><br />
+        <select id="subscriptionSelector" style="width:500px"></select>
+        <button id="addSubscription" class="addButton"><span class="i18n_filters_addSubscriptionAdd_label"></span></button>
+      </div>
+      <div id="customSubscriptionContainer">
+        <p>
+          <span class="i18n_subscriptionSelection_title_label"></span><br />
+          <input type="text" id="customSubscriptionTitle" style="width:500px" />
+        </p>
+        <p>
+          <span class="i18n_subscriptionSelection_location_label"></span><br />
+          <input type="text" id="customSubscriptionLocation" style="width:500px" />
+        </p>
+      </div>
+
+      <div id="acceptableAdsContainer">
+        <input type="checkbox" id="acceptableAds" />
+        <label for="acceptableAds" class="i18n_filters_acceptableAds2_label"></label>
+        <a id="acceptableAdsLink" href="#" target="_blank" class="i18n_filters_viewList_label"></a>
+        <a id="acceptableAdsDocs" href="#" target="_blank" class="i18n_filters_readMore_label"></a>
+      </div>
+    </p>
+  </div>
+
+  <div id="tab-whitelisted">
+    <p class="i18n_disabled_for_these_domains"></p>
+
+    <form id="whitelistForm" action="#">
+    <table>
+      <tr>
+        <td style="max-width:100%">
+          <input type="text" value="" id="newWhitelistDomain" style="width:100%">
+        </td>
+        <td>
+          <button class="addButton" type="submit"><span class="i18n_add_domain_button"></span></button>
+        </td>
+      </tr>
+
+      <tr>
+        <td>
+          <select id="excludedDomainsBox" size="10" multiple style="width:500px; background: white;"></select>
+        </td>
+        <td>
+          <button id="removeWhitelist" class="removeButton"><span class="i18n_remove_button"></span></button>
+        </td>
+      </tr>
+    </table>
+    </form>
+  </div>
+
+  <div id="tab-userfilters">
+    <p id="filter-must-follow-syntax" class="i18n_filter_must_follow_syntax"></p>
+
+    <form id="customFilterForm" action="#">
+    <table>
+      <tr>
+        <td>
+          <input type="text" value="" id="newFilter" style="width:500px">
+        </td>
+        <td>
+          <button class="addButton" type="submit"><span class="i18n_add_filter_button"></span></button>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <select id="userFiltersBox" size="20" multiple style="width: 500px; background: white;overflow:auto;"></select>
+        </td>
+        <td>
+          <button id="removeCustomFilter" class="removeButton"><span class="i18n_remove_button"></span></button>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <div style="font-size: 90%; text-align: right"><a id="rawFiltersButton" href="#"><span class="i18n_edit_filters_raw"></span></a></div>
+        </td>
+      </tr>
+      <tr id="rawFilters">
+        <td>
+          <div style="width: 500px">
+            <textarea id="rawFiltersText" style="width: 100%; height: 300px"></textarea>
+          </div>
+        </td>
+        <td>
+          <div><button id="importRawFilters"><span class="i18n_apply_changes"></span></button></div>
+        </td>
+      </tr>
+    </table>
+    </form>
+  </div>
+
+  <div id="tab-general">
+    <p>
+      <div id="shouldShowBlockElementMenuContainer">
+        <input type="checkbox" id="shouldShowBlockElementMenu" /><label for="shouldShowBlockElementMenu" class="i18n_show_block_element_menu"></label>
+      </div>
+      <div id="showDevtoolsPanelContainer">
+        <input type="checkbox" id="show_devtools_panel" /><label for="show_devtools_panel" class="i18n_show_devtools_panel"></label>
+      </div>
+      <div id="shouldShowNotificationsContainer" data-section="notifications">
+        <input type="checkbox" id="shouldShowNotifications" /><label for="shouldShowNotifications" class="i18n_overlay_shownotifications_label"></label>
+      </div>
+    </p>
+
+    <p id="found-a-bug" class="i18n_found_a_bug"></p>
+  </div>
+</div>
+
+</body>
+</html>

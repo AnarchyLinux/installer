@@ -1,0 +1,342 @@
+{
+   "add": {
+      "message": "הוספה"
+   },
+   "add_domain_button": {
+      "message": "הוספת שם מתחם"
+   },
+   "add_filter_button": {
+      "message": "הוספת מסנן"
+   },
+   "add_filters_msg": {
+      "message": "הוספת מסנן(ים)?"
+   },
+   "add_your_own_filters": {
+      "message": "הוספת מסננים משלך"
+   },
+   "apply_changes": {
+      "message": "החלת השינויים"
+   },
+   "block_element": {
+      "message": "חסימת אלמנט"
+   },
+   "cancel": {
+      "message": "ביטול"
+   },
+   "clickhide_instructions": {
+      "message": "לאחר סגירת חלון זה, לחצו (אפשרי לחיצה-ימנית) על רכיב בעמוד זה."
+   },
+   "description": {
+      "message": "עם התקנות ביותר מ-100 מיליון מכשירים, Adblock Plus הוא חוסם המודעות הפופולרי ביותר בעולם."
+   },
+   "disabled_for_site": {
+      "message": "\u003Cstrong>מנוטרל\u003C/strong> באתר זה"
+   },
+   "disabled_for_these_domains": {
+      "message": "Adblock Plus מנוטרל עבור שמות המתחם המופיעים להלן. ניתן להוסיף שם מתחם או דרך הסמל של Adblock Plus שבשורת הכתובות או על ידי הקלדת שם המתחם (לא הכתובת) בתיבה וללחוץ על הלחצן \"הוספת שם מתחם\"."
+   },
+   "easy_create_filter": {
+      "message": "חסימת אלמנט"
+   },
+   "edit_filters_raw": {
+      "message": "עריכת מסננים כטקסט גולמי"
+   },
+   "enable_only_the": {
+      "message": "אפשרו רק את רשימות המסננים שהנכם צריכים. יותר מידיי רשימות יכולות לגרום לדפדפן שלכם לא להגיב."
+   },
+   "enabled_for_site": {
+      "message": "\u003Cstrong>מאפשר\u003C/strong> באתר זה"
+   },
+   "filter_lists": {
+      "message": "רשימות המסננים"
+   },
+   "filter_must_follow_syntax": {
+      "message": "המסנן שלכם חייב לציית \u003Ca>לתחביר סינון Adblock Plus\u003C/a>."
+   },
+   "filters_acceptableAds2_label": {
+      "message": "אפשור קצת פרסום לא פולשני"
+   },
+   "filters_addSubscriptionAdd_label": {
+      "message": "הוספה"
+   },
+   "filters_addSubscriptionOther_label": {
+      "message": "הוספת הרשמה אחרת"
+   },
+   "filters_addSubscription_label": {
+      "message": "הוספת הרשמת מסנן"
+   },
+   "filters_readMore_label": {
+      "message": "לקרוא עוד"
+   },
+   "filters_subscription_delete_label": {
+      "message": "מחיקה"
+   },
+   "filters_subscription_enabled_label": {
+      "message": "מאפשר"
+   },
+   "filters_subscription_lastDownload_checksumMismatch": {
+      "message": "נכשל, ביקורת הסיכום לתקינות לא התאימה בצורה טובה"
+   },
+   "filters_subscription_lastDownload_connectionError": {
+      "message": "נכשל, ההורדה נכשלה"
+   },
+   "filters_subscription_lastDownload_inProgress": {
+      "message": "מוריד..."
+   },
+   "filters_subscription_lastDownload_invalidData": {
+      "message": "נכשל, רשימת המסננים לא חוקית"
+   },
+   "filters_subscription_lastDownload_invalidURL": {
+      "message": "נכשל, הכתובת שגויה"
+   },
+   "filters_viewList_label": {
+      "message": "הצגת רשימה"
+   },
+   "firstRun_abbButtonSubtitle": {
+      "message": "זמין עבור Android ו-iOS"
+   },
+   "firstRun_abbButtonTitle": {
+      "message": "הורד את Adblock Browser כאן"
+   },
+   "firstRun_abbPromotionHeadline": {
+      "message": "יש לך טלפון חכם או טאבלט?"
+   },
+   "firstRun_acceptableAdsExplanation": {
+      "message": "אנחנו רוצים לעודד אתרים להשתמש בפרסום פשוט ולא בולט. זאת מדוע ביססנו \u003Ca>קווים מנחים נוקשים\u003C/a> כדי לזהות מודעות מתקבלות, אשר מופיעות בהגדרות ברירת המחדל. אם ברצונכם  לחסום בכל זאת את כל המודעות ניתן \u003Ca>לנטרל\u003C/a> זאת במספר שניות."
+   },
+   "firstRun_acceptableAdsHeadline": {
+      "message": "מודעות מציקות ייחסמו מעכשיו"
+   },
+   "firstRun_contributor_credits": {
+      "message": "קרדיטים לתורמים"
+   },
+   "firstRun_dataCorruptionWarning": {
+      "message": "עמוד זה ממשיך להופיע ? \u003Ca>לחצו כאן!\u003C/a>"
+   },
+   "firstRun_donate": {
+      "message": "תרומה"
+   },
+   "firstRun_donate_label": {
+      "message": "תמיכה בפרויקט שלנו"
+   },
+   "firstRun_feature_malware": {
+      "message": "חסימת תוכנות זדוניות"
+   },
+   "firstRun_feature_malware_description": {
+      "message": "הפכו את הגלישה שלכם למאובטחת יותר על ידי חסימת אתרים המכילים תוכנה זדונית."
+   },
+   "firstRun_feature_social": {
+      "message": "הסרת כפתורי מדיה חברתיים"
+   },
+   "firstRun_feature_social_description": {
+      "message": "שחררו אוטומטית את חווית הגלישה שלכם מכפתורי מדיה חברתית, כגון Facebook Like, אשר מופיעים בעמודי אינטרנט ומנתרים את התנהגותכם."
+   },
+   "firstRun_feature_tracking": {
+      "message": "נטרול מעקב"
+   },
+   "firstRun_feature_tracking_description": {
+      "message": "גלשו באנונימיות בעזרת נטרול מעקב - הסתרת עקבותיכם מחברות המודעות אשר עוקבות אחר כל פעולה שלכם."
+   },
+   "firstRun_features": {
+      "message": "Adblock Plus יכול לעשות יותר מרק לחסום פרסומות"
+   },
+   "firstRun_filterlistsReinitializedWarning": {
+      "message": "נראה שישנה בעיה שגרמה לכל המסננים להימחק ולא היה ביכולתנו לגבות אותם. לכן נאלצנו לאפס את המסננים ואת הגדרות המודעות המקובלות. נא בדקו את רשימת המסננים והגדרות המודעות המקובלות ב \u003Ca>Adblock Plus אפשרויות\u003C/a>."
+   },
+   "firstRun_legacySafariWarning": {
+      "message": "הנכם משתמשים בגירסה ישנה של Safari שלא נתמכת על ידי Adblock Plus. זה עלול לא לעבוד כראוי או לשבש את חווית המשתמש בחלק מהאתרים. אנו ממליצים לכם לעדכן את Safari לגרסה 6.1.1 ומעלה (OS X 10.8 Mountain Lion) או Safari 7.0.1 ומעלה (OS X 10.9 Mavericks) או להשתמש בגרסה האחרונה של Mozilla Firefox, Google Chrome or Opera."
+   },
+   "firstRun_share": {
+      "message": "ספרו לחבריכם ומשפחתכם"
+   },
+   "firstRun_share_headline": {
+      "message": "\u003Ca>תנו לנו יד\u003C/a> בהפיכת הרשת למקום טוב יותר"
+   },
+   "firstRun_title": {
+      "message": "Adblock Plus הותקן "
+   },
+   "firstRun_toggle_off": {
+      "message": "מכובה"
+   },
+   "firstRun_toggle_on": {
+      "message": "מופעל"
+   },
+   "found_a_bug": {
+      "message": "מצאת באג? ברצונך לתרגם את Adblock Plus לשפתך? אנא \u003Ca>הגישו בקשתכם כאן\u003C/a>."
+   },
+   "general": {
+      "message": "כללי"
+   },
+   "global_filter_elemhide_duplicate_id": {
+      "message": "רק זהות אחת של האלמנט שיוסתר ניתנת לציון"
+   },
+   "global_filter_elemhide_nocriteria": {
+      "message": "לא צוין קריטריון לזיהוי האלמנט שיוסתר"
+   },
+   "global_filter_invalid_regexp": {
+      "message": "ביטוי רגיל לא חוקי"
+   },
+   "global_filter_unknown_option": {
+      "message": "אפשרות סינון לא ידועה"
+   },
+   "global_remove_subscription_warning": {
+      "message": "האם להסיר את ההרשמה הזאת?"
+   },
+   "global_subscription_invalid_location": {
+      "message": "מיקום רשימת הסינון איננו כתובת אתר חוקית ולא שם קובץ חוקי."
+   },
+   "invalid_css_selector": {
+      "message": "$selector$ איננו בורר CSS תקף",
+      "placeholders": {
+         "selector": {
+            "content": "$1"
+         }
+      }
+   },
+   "last_updated_at": {
+      "message": "עודכנה לאחרונה בשעה $time$ ב־$date$",
+      "placeholders": {
+         "date": {
+            "content": "$2"
+         },
+         "time": {
+            "content": "$1"
+         }
+      }
+   },
+   "last_updated_at_today": {
+      "message": "עודכנה לאחרונה בשעה $time$ ב־היום",
+      "placeholders": {
+         "time": {
+            "content": "$1"
+         }
+      }
+   },
+   "line": {
+      "message": "שורה $number$",
+      "placeholders": {
+         "number": {
+            "content": "$1"
+         }
+      }
+   },
+   "name": {
+      "message": "Adblock Plus"
+   },
+   "name_devbuild": {
+      "message": "גרסאות פיתוח Adblock Plus"
+   },
+   "notification_antiadblock_message": {
+      "message": "אתר זה ידוע בהצגת הודעות מכוונות למשתמשי Adblock Plus. האם ברצונכם ש-Adblock Plus יסתיר הודעות מוכוונות?"
+   },
+   "notification_antiadblock_title": {
+      "message": "הסתרת הודעות מוכוונות?"
+   },
+   "notification_configure": {
+      "message": "קביעת תצורת הגדרות ההתראה"
+   },
+   "notification_open_all": {
+      "message": "פתיחת כל הקישורים מהתראה זו"
+   },
+   "notification_with_buttons": {
+      "message": "לחיצה על 'אישור' לפתיחת כל הקישורים בהתראה זו."
+   },
+   "notification_without_buttons": {
+      "message": "לחיצה על התראה לפתיחת כל הקישורים שבתוכה."
+   },
+   "options": {
+      "message": "אפשרויות Adblock Plus"
+   },
+   "options_short": {
+      "message": "אפשרויות"
+   },
+   "out_of_date_lists": {
+      "message": "רשימות שאינן עדכניות מתעדכנות באופן תדיר."
+   },
+   "overlay_notification_button_no": {
+      "message": "לא"
+   },
+   "overlay_notification_button_yes": {
+      "message": "כן"
+   },
+   "overlay_notification_closing_button_hide": {
+      "message": "סגירת התראה זו"
+   },
+   "overlay_notification_closing_button_optout": {
+      "message": "הפסק להציג התראות"
+   },
+   "overlay_shownotifications_label": {
+      "message": "הצגת התראות שימושיות"
+   },
+   "remove_button": {
+      "message": "הסרת הבחירה"
+   },
+   "show_block_element_menu": {
+      "message": "הצגת הפריט 'חסימת אלמנט' בתפריט הלחצן הימני"
+   },
+   "show_devtools_panel": {
+      "message": "הצגת פאנל 'Adblock Plus' בכלי הפיתוח"
+   },
+   "stats_label_page": {
+      "message": "\u003Cstrong>$number$\u003C/strong> בעמוד זה",
+      "placeholders": {
+         "number": {
+            "content": "$1"
+         }
+      }
+   },
+   "stats_label_total": {
+      "message": "\u003Cstrong>$number$\u003C/strong> בסך הכל",
+      "placeholders": {
+         "number": {
+            "content": "$1"
+         }
+      }
+   },
+   "stats_over": {
+      "message": "מעל $number$",
+      "placeholders": {
+         "number": {
+            "content": "$1"
+         }
+      }
+   },
+   "stats_share_download": {
+      "message": "הורדת Adblock Plus"
+   },
+   "stats_share_message": {
+      "message": "אני חסמתי $number$ פרסומות ועוקבים הודות ל-Adblock Plus.",
+      "placeholders": {
+         "number": {
+            "content": "$1"
+         }
+      }
+   },
+   "stats_share_title": {
+      "message": "שיתוף מספר זה"
+   },
+   "stats_show_iconnumber": {
+      "message": "הצגת מספרים באייקון"
+   },
+   "stats_title": {
+      "message": "מודעות חסומות"
+   },
+   "subscriptionSelection_location_label": {
+      "message": "מיקום רשימת המסננים:"
+   },
+   "subscriptionSelection_subscriptionSelector_label": {
+      "message": "יש לבחור הרשמת מסנן מהרשימה:"
+   },
+   "subscriptionSelection_title_label": {
+      "message": "כותרת ההרשמה:"
+   },
+   "unexpected_filter_list_header": {
+      "message": "כותרות סינון רשימה אינן מותרות כאן"
+   },
+   "update_now": {
+      "message": "עדכן כעת"
+   },
+   "whitelisted_domains": {
+      "message": "שמות מתחם מורשים"
+   }
+}

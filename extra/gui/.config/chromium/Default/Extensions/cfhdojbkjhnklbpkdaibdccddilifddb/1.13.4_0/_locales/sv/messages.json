@@ -1,0 +1,342 @@
+{
+   "add": {
+      "message": "Lägg till"
+   },
+   "add_domain_button": {
+      "message": "Lägg till domän"
+   },
+   "add_filter_button": {
+      "message": "Lägg till filter"
+   },
+   "add_filters_msg": {
+      "message": "Lägg till filter?"
+   },
+   "add_your_own_filters": {
+      "message": "Lägg till dina egna filter"
+   },
+   "apply_changes": {
+      "message": "Verkställ ändringar"
+   },
+   "block_element": {
+      "message": "Blockera objekt"
+   },
+   "cancel": {
+      "message": "Avbryt"
+   },
+   "clickhide_instructions": {
+      "message": "När denna popup stängs, klicka (eller högerklicka) ett objekt på sidan."
+   },
+   "description": {
+      "message": "Adblock Plus används på över 100 miljoner enheter och är med det världens mest populära annonsblockerare."
+   },
+   "disabled_for_site": {
+      "message": "\u003Cstrong>Avaktiverat\u003C/strong> på denna webbplats"
+   },
+   "disabled_for_these_domains": {
+      "message": "Adblock Plus är avaktiverad för domänerna i denna lista. Du kan lägga till en domän via Adblock Plus-ikonen i adressfältet eller genom att skriva domännamnet (inte URL) i textboxen och klicka på \"Lägg till domän\"."
+   },
+   "easy_create_filter": {
+      "message": "Blockera objekt"
+   },
+   "edit_filters_raw": {
+      "message": "Redigera filter som ren text"
+   },
+   "enable_only_the": {
+      "message": "Aktivera endast de filterlistor du behöver. För många kan göra att webbläsaren inte svarar."
+   },
+   "enabled_for_site": {
+      "message": "\u003Cstrong>Aktiverat\u003C/strong> på denna webbplats"
+   },
+   "filter_lists": {
+      "message": "Filterlistor"
+   },
+   "filter_must_follow_syntax": {
+      "message": "Ditt filter måste följa \u003Ca>Adblock Plus filtersyntax\u003C/a>."
+   },
+   "filters_acceptableAds2_label": {
+      "message": "Tillåt viss icke-störande reklam"
+   },
+   "filters_addSubscriptionAdd_label": {
+      "message": "Lägg till"
+   },
+   "filters_addSubscriptionOther_label": {
+      "message": "Lägg till en ny prenumeration"
+   },
+   "filters_addSubscription_label": {
+      "message": "Lägg till filterprenumeration"
+   },
+   "filters_readMore_label": {
+      "message": "Läs mer"
+   },
+   "filters_subscription_delete_label": {
+      "message": "Ta bort"
+   },
+   "filters_subscription_enabled_label": {
+      "message": "Aktiverat"
+   },
+   "filters_subscription_lastDownload_checksumMismatch": {
+      "message": "Fel kontrollsumma"
+   },
+   "filters_subscription_lastDownload_connectionError": {
+      "message": "Fel vid hämtning"
+   },
+   "filters_subscription_lastDownload_inProgress": {
+      "message": "Hämtar…"
+   },
+   "filters_subscription_lastDownload_invalidData": {
+      "message": "Fel vid validering av filter"
+   },
+   "filters_subscription_lastDownload_invalidURL": {
+      "message": "Ogiltig adress"
+   },
+   "filters_viewList_label": {
+      "message": "Visa lista"
+   },
+   "firstRun_abbButtonSubtitle": {
+      "message": "Finns för Android och iOS"
+   },
+   "firstRun_abbButtonTitle": {
+      "message": "Skaffa Adblock Browser här"
+   },
+   "firstRun_abbPromotionHeadline": {
+      "message": "Har du en smartphone eller en surfplatta?"
+   },
+   "firstRun_acceptableAdsExplanation": {
+      "message": "Vi vill uppmuntra webbplatser att använda enkel, diskret reklam. Det är därför vi har fastställt \u003Ca>strikta riktlinjer\u003C/a> för att identifiera acceptabla annonser, som visas under standardinställningar. Om du fortfarande vill blockera alla annonser kan du \u003Ca>inaktivera\u003C/a> detta inom ett par sekunder."
+   },
+   "firstRun_acceptableAdsHeadline": {
+      "message": "Irriterande annonser blockeras nu"
+   },
+   "firstRun_contributor_credits": {
+      "message": "Tack till"
+   },
+   "firstRun_dataCorruptionWarning": {
+      "message": "Fortsätter denna sida att visas? \u003Ca>Klicka här!\u003C/a>"
+   },
+   "firstRun_donate": {
+      "message": "donera"
+   },
+   "firstRun_donate_label": {
+      "message": "Stöd vårt projekt"
+   },
+   "firstRun_feature_malware": {
+      "message": "Malwareblockering"
+   },
+   "firstRun_feature_malware_description": {
+      "message": "Göra din surfning säkrare genom att blockera kända skadliga domäner."
+   },
+   "firstRun_feature_social": {
+      "message": "Ta bort knappar för Sociala Medier"
+   },
+   "firstRun_feature_social_description": {
+      "message": "Förbättrar automatiskt din webbupplevelse genom borttagning av sociala medier knappar, såsom Facebook Gilla, som visas på webbsidor och spåra ditt beteende."
+   },
+   "firstRun_feature_tracking": {
+      "message": "Inaktivera Spårning"
+   },
+   "firstRun_feature_tracking_description": {
+      "message": "Surfa privat genom att inaktivera spårning - dölj dina spår från reklamföretag som vill spåra dina rörelser."
+   },
+   "firstRun_features": {
+      "message": "Adblock Plus kan göra mer än att blockera reklam"
+   },
+   "firstRun_filterlistsReinitializedWarning": {
+      "message": "Det verkar som ett problem har orsakat att alla filter har tagits bort och det gick inte att återställa en säkerhetskopia. Vi var därför tvunga att att återställa dina Filter och Acceptabla Annonser inställningar. Vänligen kontrollera dina Filterlistor och Acceptabla Annonser inställningar i \u003Ca>Adblock Plus alternativ\u003C/a>."
+   },
+   "firstRun_legacySafariWarning": {
+      "message": "Du använder en äldre version av Safari som inte stödjs av Adblock Plus. Adblock Plus kanske inte fungerar korrekt eller försämrar användarupplevelsen på vissa hemsidor. Vi rekommenderar starkt att antingen uppdatera till Safari 6.1.1 eller högre (tillgänglig på OS X 10.8 Mountain Lion), Safari 7.0.1 eller högre (tillgänglig på OS X 10.9 Mavericks), eller att använda den senaste versionen av Mozilla Firefox, Google Chrome eller Opera."
+   },
+   "firstRun_share": {
+      "message": "Berätta för dina vänner"
+   },
+   "firstRun_share_headline": {
+      "message": "\u003Ca>Hjälp oss\u003C/a> att göra webben till en bättre plats"
+   },
+   "firstRun_title": {
+      "message": "Adblock Plus har installerats"
+   },
+   "firstRun_toggle_off": {
+      "message": "AV"
+   },
+   "firstRun_toggle_on": {
+      "message": "PÅ"
+   },
+   "found_a_bug": {
+      "message": "Hittat ett fel? Vill du översätta Adblock Plus till ett annat språk? Vänligen, \u003Ca>skapa en förfrågan här\u003C/a>."
+   },
+   "general": {
+      "message": "Allmänt"
+   },
+   "global_filter_elemhide_duplicate_id": {
+      "message": "Endast ett ID får anges för elementet som skall döljas"
+   },
+   "global_filter_elemhide_nocriteria": {
+      "message": "Inga villkor för att gömma element har uppfyllts"
+   },
+   "global_filter_invalid_regexp": {
+      "message": "Ogiltigt reguljärt uttryck"
+   },
+   "global_filter_unknown_option": {
+      "message": "Okänt filteralternativ"
+   },
+   "global_remove_subscription_warning": {
+      "message": "Vill du verkligen ta bort denna prenumeration?"
+   },
+   "global_subscription_invalid_location": {
+      "message": "Platsen du angivit är antingen ogiltig eller så har du angivit ett felaktigt filnamn."
+   },
+   "invalid_css_selector": {
+      "message": "$selector$ är inte en giltig CSS-väljare",
+      "placeholders": {
+         "selector": {
+            "content": "$1"
+         }
+      }
+   },
+   "last_updated_at": {
+      "message": "Senast uppdaterad den $date$ $time$",
+      "placeholders": {
+         "date": {
+            "content": "$2"
+         },
+         "time": {
+            "content": "$1"
+         }
+      }
+   },
+   "last_updated_at_today": {
+      "message": "Senast uppdaterad i dag $time$",
+      "placeholders": {
+         "time": {
+            "content": "$1"
+         }
+      }
+   },
+   "line": {
+      "message": "Rad $number$",
+      "placeholders": {
+         "number": {
+            "content": "$1"
+         }
+      }
+   },
+   "name": {
+      "message": "Adblock Plus"
+   },
+   "name_devbuild": {
+      "message": "Adblock Plus utvecklingsversion"
+   },
+   "notification_antiadblock_message": {
+      "message": "Denna webbplats har varit känt för att visa riktade budskap till Adblock Plus användare. Vill du Adblock Plus att dölja riktade budskap?"
+   },
+   "notification_antiadblock_title": {
+      "message": "Göm riktade budskap?"
+   },
+   "notification_configure": {
+      "message": "Ändra notifikationsinställningar"
+   },
+   "notification_open_all": {
+      "message": "Öppna alla länkar från denna notifikationen"
+   },
+   "notification_with_buttons": {
+      "message": "Klicka på 'OK' för att öppna alla länkar i detta meddelande."
+   },
+   "notification_without_buttons": {
+      "message": "Klicka på meddelandet för att öppna alla länkar i det."
+   },
+   "options": {
+      "message": "Adblock Plus Alternativ"
+   },
+   "options_short": {
+      "message": "Inställningar"
+   },
+   "out_of_date_lists": {
+      "message": "Utdaterade listor uppdateras periodiskt."
+   },
+   "overlay_notification_button_no": {
+      "message": "Nej"
+   },
+   "overlay_notification_button_yes": {
+      "message": "Ja"
+   },
+   "overlay_notification_closing_button_hide": {
+      "message": "Stäng denna notifiering"
+   },
+   "overlay_notification_closing_button_optout": {
+      "message": "Sluta visa notifieringar"
+   },
+   "overlay_shownotifications_label": {
+      "message": "Visa användbara notifieringar"
+   },
+   "remove_button": {
+      "message": "Ta bort markerad"
+   },
+   "show_block_element_menu": {
+      "message": "Visa 'Blockera objekt' i högerklicksmeny"
+   },
+   "show_devtools_panel": {
+      "message": "Visa 'Adblock Plus'-panelen i utvecklarverktygen"
+   },
+   "stats_label_page": {
+      "message": "\u003Cstrong>$number$\u003C/strong> på den här sidan",
+      "placeholders": {
+         "number": {
+            "content": "$1"
+         }
+      }
+   },
+   "stats_label_total": {
+      "message": "\u003Cstrong>$number$\u003C/strong> totalt",
+      "placeholders": {
+         "number": {
+            "content": "$1"
+         }
+      }
+   },
+   "stats_over": {
+      "message": "över $number$",
+      "placeholders": {
+         "number": {
+            "content": "$1"
+         }
+      }
+   },
+   "stats_share_download": {
+      "message": "Ladda ner Adblock Plus"
+   },
+   "stats_share_message": {
+      "message": "Jag blockerade $number$ annonser och trackers tack vare Adblock Plus.",
+      "placeholders": {
+         "number": {
+            "content": "$1"
+         }
+      }
+   },
+   "stats_share_title": {
+      "message": "Dela detta nummer"
+   },
+   "stats_show_iconnumber": {
+      "message": "Visa nummer vid ikon"
+   },
+   "stats_title": {
+      "message": "Annonser blockerade"
+   },
+   "subscriptionSelection_location_label": {
+      "message": "Plats för filter:"
+   },
+   "subscriptionSelection_subscriptionSelector_label": {
+      "message": "Vänligen välj en filterprenumeration från listan:"
+   },
+   "subscriptionSelection_title_label": {
+      "message": "Rubrik för prenumeration:"
+   },
+   "unexpected_filter_list_header": {
+      "message": "Filterlistrubriker är inte tillåtna här"
+   },
+   "update_now": {
+      "message": "Uppdatera nu"
+   },
+   "whitelisted_domains": {
+      "message": "Vitlistade domäner"
+   }
+}

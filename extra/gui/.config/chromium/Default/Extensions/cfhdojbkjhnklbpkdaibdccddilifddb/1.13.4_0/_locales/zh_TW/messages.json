@@ -1,0 +1,342 @@
+{
+   "add": {
+      "message": "新增"
+   },
+   "add_domain_button": {
+      "message": "新增網域"
+   },
+   "add_filter_button": {
+      "message": "新增過濾條件"
+   },
+   "add_filters_msg": {
+      "message": "新增過濾條件？"
+   },
+   "add_your_own_filters": {
+      "message": "新增自己的過濾條件"
+   },
+   "apply_changes": {
+      "message": "套用"
+   },
+   "block_element": {
+      "message": "過濾網頁元素"
+   },
+   "cancel": {
+      "message": "取消"
+   },
+   "clickhide_instructions": {
+      "message": "請在此訊息關閉後點選網頁上的元素。"
+   },
+   "description": {
+      "message": "Adblock Plus 已在超過 1 億部設備上使用，是世界上最受歡迎的廣告攔截插件。"
+   },
+   "disabled_for_site": {
+      "message": "在此網站上 \u003Cstrong>停用\u003C/strong>"
+   },
+   "disabled_for_these_domains": {
+      "message": "Adblock Plus 將在以下網域停用。您可以利用網址列上的 Adblock Plus 圖示新增，或在下方輸入網域 (而非網址) 並點擊「新增網域」按鈕。"
+   },
+   "easy_create_filter": {
+      "message": "過濾網頁元素"
+   },
+   "edit_filters_raw": {
+      "message": "以純文字編輯"
+   },
+   "enable_only_the": {
+      "message": "只啟用您需要的過濾列表。啟用太多的過濾列表可能導致您的瀏覽器停止回應。"
+   },
+   "enabled_for_site": {
+      "message": "在此網站上 \u003Cstrong>啟用\u003C/strong>"
+   },
+   "filter_lists": {
+      "message": "過濾列表"
+   },
+   "filter_must_follow_syntax": {
+      "message": "您的過濾條件必須遵守 \u003Ca>Adblock Plus 的語法\u003C/a>."
+   },
+   "filters_acceptableAds2_label": {
+      "message": "允許部分非侵入式廣告"
+   },
+   "filters_addSubscriptionAdd_label": {
+      "message": "加入"
+   },
+   "filters_addSubscriptionOther_label": {
+      "message": "新增其他條件集"
+   },
+   "filters_addSubscription_label": {
+      "message": "新增過濾條件集"
+   },
+   "filters_readMore_label": {
+      "message": "詳細內容"
+   },
+   "filters_subscription_delete_label": {
+      "message": "刪除"
+   },
+   "filters_subscription_enabled_label": {
+      "message": "啟用"
+   },
+   "filters_subscription_lastDownload_checksumMismatch": {
+      "message": "失敗，驗證碼不符"
+   },
+   "filters_subscription_lastDownload_connectionError": {
+      "message": "失敗，檔案下載失敗"
+   },
+   "filters_subscription_lastDownload_inProgress": {
+      "message": "下載中..."
+   },
+   "filters_subscription_lastDownload_invalidData": {
+      "message": "失敗，無效的過濾條件列表"
+   },
+   "filters_subscription_lastDownload_invalidURL": {
+      "message": "失敗，無效的位址"
+   },
+   "filters_viewList_label": {
+      "message": "檢視條件列表"
+   },
+   "firstRun_abbButtonSubtitle": {
+      "message": "適用於 Android 及 iOS"
+   },
+   "firstRun_abbButtonTitle": {
+      "message": "在這裡下載 Adblock Browser"
+   },
+   "firstRun_abbPromotionHeadline": {
+      "message": "有部智能手機或平版電腦?"
+   },
+   "firstRun_acceptableAdsExplanation": {
+      "message": "我們想鼓勵網站改採簡樸且不過於搶眼的廣告。這也是我們之所以建立\u003Ca>嚴格的規範\u003C/a>來辨識非侵入式廣告的原因，這種類型的廣告預設會顯示出來。若您仍想阻擋所有的廣告，可以輕鬆地\u003Ca>停用此功能\u003C/a> 。"
+   },
+   "firstRun_acceptableAdsHeadline": {
+      "message": "從現在起，煩人的廣告都將煙消雲散"
+   },
+   "firstRun_contributor_credits": {
+      "message": "貢獻名單"
+   },
+   "firstRun_dataCorruptionWarning": {
+      "message": "這個頁面一直跳出來嗎？ \u003Ca>請看這裡！\u003C/a>"
+   },
+   "firstRun_donate": {
+      "message": "贊助"
+   },
+   "firstRun_donate_label": {
+      "message": "支援我們的專案"
+   },
+   "firstRun_feature_malware": {
+      "message": "惡意軟體過濾"
+   },
+   "firstRun_feature_malware_description": {
+      "message": "過濾惡意網域可使您的瀏覽過程更加安全。"
+   },
+   "firstRun_feature_social": {
+      "message": "移除社交媒體按鈕"
+   },
+   "firstRun_feature_social_description": {
+      "message": "自動擺脫如 Facebook Like 這類出現在網頁上追蹤您瀏覽習慣的社交按鈕。"
+   },
+   "firstRun_feature_tracking": {
+      "message": "停用追蹤"
+   },
+   "firstRun_feature_tracking_description": {
+      "message": "阻止追蹤功能才能達到真正的隱密瀏覽 - 此功能可以擺脫想監視您一舉一動的廣告商。"
+   },
+   "firstRun_features": {
+      "message": "Adblock Plus 不只可以過濾廣告"
+   },
+   "firstRun_filterlistsReinitializedWarning": {
+      "message": "有一個問題已刪除了所有的廣告過濾器，我們也無法還原備份。因此我們得重新設置您的廣告過濾器和可接受的廣告設置。請在\u003Ca>Adblock Plus 選項\u003C/a>裡檢查您的廣告過濾器名單和可接受的廣告設置。"
+   },
+   "firstRun_legacySafariWarning": {
+      "message": "您正在使用 Adblock Plus 所不支援的舊版 Safari。這可能影響使用者體驗或導致功能失常。我們強烈建議將 Safari 更新至 6.1.1 以上版本 (OS X 10.8 Mountain Lion 系統)，或更新至 Safari 7.0.1 (OS X 10.9 Mavericks 系統) 以上版本，或可考慮改用最新版的 Mozilla Firefox, Google Chrome 或 Opera。"
+   },
+   "firstRun_share": {
+      "message": "告訴您的朋友"
+   },
+   "firstRun_share_headline": {
+      "message": "\u003Ca>請助我們一臂之力\u003C/a>，讓網路變得更美好"
+   },
+   "firstRun_title": {
+      "message": "Adblock Plus 已安裝完成"
+   },
+   "firstRun_toggle_off": {
+      "message": "關閉"
+   },
+   "firstRun_toggle_on": {
+      "message": "開啟"
+   },
+   "found_a_bug": {
+      "message": "發現 bug？想要翻譯 Adblock Plus？請至 \u003Ca>此處詢問\u003C/a>。"
+   },
+   "general": {
+      "message": "一般設定"
+   },
+   "global_filter_elemhide_duplicate_id": {
+      "message": "只能指定一個 ID 來隱藏該元素"
+   },
+   "global_filter_elemhide_nocriteria": {
+      "message": "沒有指定欲隱藏元素的辨識名稱"
+   },
+   "global_filter_invalid_regexp": {
+      "message": "無效的正規表示法"
+   },
+   "global_filter_unknown_option": {
+      "message": "未知的篩選器選項"
+   },
+   "global_remove_subscription_warning": {
+      "message": "您確定要移除此條件集嗎？"
+   },
+   "global_subscription_invalid_location": {
+      "message": "條件集網址或檔案名稱無效。"
+   },
+   "invalid_css_selector": {
+      "message": "$selector$不是一個有效的CSS選擇器",
+      "placeholders": {
+         "selector": {
+            "content": "$1"
+         }
+      }
+   },
+   "last_updated_at": {
+      "message": "最後更新於 $date$ $time$",
+      "placeholders": {
+         "date": {
+            "content": "$2"
+         },
+         "time": {
+            "content": "$1"
+         }
+      }
+   },
+   "last_updated_at_today": {
+      "message": "最近更新於今天 $time$",
+      "placeholders": {
+         "time": {
+            "content": "$1"
+         }
+      }
+   },
+   "line": {
+      "message": "行$number$",
+      "placeholders": {
+         "number": {
+            "content": "$1"
+         }
+      }
+   },
+   "name": {
+      "message": "Adblock Plus"
+   },
+   "name_devbuild": {
+      "message": "Adblock Plus 開發版"
+   },
+   "notification_antiadblock_message": {
+      "message": "已知此網站會對 Adblock Plus 用戶顯示針對性的訊息。您希望 Adblock Plus 隱藏它們嗎？"
+   },
+   "notification_antiadblock_title": {
+      "message": "隱藏針對性的訊息？"
+   },
+   "notification_configure": {
+      "message": "設置通知設定"
+   },
+   "notification_open_all": {
+      "message": "打開此通知的所有連結"
+   },
+   "notification_with_buttons": {
+      "message": "點選＂確定＂打開通知中的所有連結。"
+   },
+   "notification_without_buttons": {
+      "message": "點擊通知打開它裡面的所有鏈接"
+   },
+   "options": {
+      "message": "Adblock Plus 選項"
+   },
+   "options_short": {
+      "message": "選項"
+   },
+   "out_of_date_lists": {
+      "message": "過濾列表會定期自動更新。"
+   },
+   "overlay_notification_button_no": {
+      "message": "取消"
+   },
+   "overlay_notification_button_yes": {
+      "message": "確定"
+   },
+   "overlay_notification_closing_button_hide": {
+      "message": "關閉此通知"
+   },
+   "overlay_notification_closing_button_optout": {
+      "message": "停止顯示通知"
+   },
+   "overlay_shownotifications_label": {
+      "message": "顯示有用的通知"
+   },
+   "remove_button": {
+      "message": "刪除已選擇項目"
+   },
+   "show_block_element_menu": {
+      "message": "在右鍵選單顯示「過濾網頁元素」"
+   },
+   "show_devtools_panel": {
+      "message": "顯示 Adblock Plus 面板中的開發人員工具"
+   },
+   "stats_label_page": {
+      "message": "本頁有 \u003Cstrong>$number$\u003C/strong>  項被過濾",
+      "placeholders": {
+         "number": {
+            "content": "$1"
+         }
+      }
+   },
+   "stats_label_total": {
+      "message": "共有 \u003Cstrong>$number$\u003C/strong> 項被過濾",
+      "placeholders": {
+         "number": {
+            "content": "$1"
+         }
+      }
+   },
+   "stats_over": {
+      "message": "$number$",
+      "placeholders": {
+         "number": {
+            "content": "$1"
+         }
+      }
+   },
+   "stats_share_download": {
+      "message": "下載 Adblock Plus"
+   },
+   "stats_share_message": {
+      "message": "感謝 Adblock Plus，至今我已過濾掉了 $number$ 個廣告。",
+      "placeholders": {
+         "number": {
+            "content": "$1"
+         }
+      }
+   },
+   "stats_share_title": {
+      "message": "分享這個數據"
+   },
+   "stats_show_iconnumber": {
+      "message": "在圖示上顯示數量"
+   },
+   "stats_title": {
+      "message": "已過濾廣告"
+   },
+   "subscriptionSelection_location_label": {
+      "message": "過濾條件集位址："
+   },
+   "subscriptionSelection_subscriptionSelector_label": {
+      "message": "請從列表中選擇過濾條件集:"
+   },
+   "subscriptionSelection_title_label": {
+      "message": "過濾條件集名稱："
+   },
+   "unexpected_filter_list_header": {
+      "message": "這裡不允許過濾器列表標題"
+   },
+   "update_now": {
+      "message": "立即更新"
+   },
+   "whitelisted_domains": {
+      "message": "白名單"
+   }
+}

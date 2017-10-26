@@ -1,0 +1,342 @@
+{
+   "add": {
+      "message": "Ekle"
+   },
+   "add_domain_button": {
+      "message": "Alan adı ekle"
+   },
+   "add_filter_button": {
+      "message": "Filtre ekle"
+   },
+   "add_filters_msg": {
+      "message": "Filtre(ler) Ekle?"
+   },
+   "add_your_own_filters": {
+      "message": "Kendi filtrelerinizi ekleyin"
+   },
+   "apply_changes": {
+      "message": "Değişiklikleri uygula"
+   },
+   "block_element": {
+      "message": "Öğeyi Engelle"
+   },
+   "cancel": {
+      "message": "Vazgeç"
+   },
+   "clickhide_instructions": {
+      "message": "Bu pencere kapandığında, engelleyeceğiniz ögeye tıklayın (veya sağ tıklayın)."
+   },
+   "description": {
+      "message": "100 milyondan fazla cihazda kullanılan Adblock Plus dünyanın en popüler reklam engelleyicisidir."
+   },
+   "disabled_for_site": {
+      "message": "Bu sitede \u003Cstrong>devre dışı\u003C/strong>"
+   },
+   "disabled_for_these_domains": {
+      "message": "Adblock Plus aşağıdaki adresler için devre dışı bırakıldı. Adresleri adres çubuğundaki Adblock simgesinden ekleyebilir veya alan adını (URL'yi değil) kutucuğa yazıp \"Alan adını ekle\" butonuna tıklayabilirsin."
+   },
+   "easy_create_filter": {
+      "message": "Öğeyi Engelle"
+   },
+   "edit_filters_raw": {
+      "message": "Filtreleri salt metin olarak düzenle"
+   },
+   "enable_only_the": {
+      "message": "Yalnızca ihtiyacınız olan süzgeç listelerini etkinleştirin. Çok fazla seçim yapmak tarayıcınızın akıcılığını düşürebilir."
+   },
+   "enabled_for_site": {
+      "message": "Bu sitede \u003Cstrong>etkin\u003C/strong>"
+   },
+   "filter_lists": {
+      "message": "Filtre listesi"
+   },
+   "filter_must_follow_syntax": {
+      "message": "Eklediğiniz filtre \u003Ca>Adblock Plus filtre kurallarına\u003C/a> uymak zorundadır."
+   },
+   "filters_acceptableAds2_label": {
+      "message": "Rahatsız etmeyen bazı reklamlara izin ver"
+   },
+   "filters_addSubscriptionAdd_label": {
+      "message": "Ekle"
+   },
+   "filters_addSubscriptionOther_label": {
+      "message": "Başka abonelik ekle"
+   },
+   "filters_addSubscription_label": {
+      "message": "Süzgeç aboneliği ekle"
+   },
+   "filters_readMore_label": {
+      "message": "Daha fazla bilgi al"
+   },
+   "filters_subscription_delete_label": {
+      "message": "Sil"
+   },
+   "filters_subscription_enabled_label": {
+      "message": "Etkin"
+   },
+   "filters_subscription_lastDownload_checksumMismatch": {
+      "message": "Olmadı. Sağlama yapılamadı"
+   },
+   "filters_subscription_lastDownload_connectionError": {
+      "message": "Olmadı. İndirmede sorun var."
+   },
+   "filters_subscription_lastDownload_inProgress": {
+      "message": "İndiriliyor..."
+   },
+   "filters_subscription_lastDownload_invalidData": {
+      "message": "Olmadı. Bu düzgün bir süzgeç listesi değil."
+   },
+   "filters_subscription_lastDownload_invalidURL": {
+      "message": "Olmadı. Bu geçerli bir adres değil."
+   },
+   "filters_viewList_label": {
+      "message": "Listeye bak"
+   },
+   "firstRun_abbButtonSubtitle": {
+      "message": "Android ve iOS için mevcut"
+   },
+   "firstRun_abbButtonTitle": {
+      "message": "Buradan Adblock Browser edinin"
+   },
+   "firstRun_abbPromotionHeadline": {
+      "message": "Akıllı telefon veya tablet mi aldınız?"
+   },
+   "firstRun_acceptableAdsExplanation": {
+      "message": "Siteleri basit ve rahatsız etmeyen reklamlar yayınlamaya teşvik ediyoruz. Bu yüzden varsayılan ayarlar altında gösterilen, makul reklamları tanımlayan \u003Ca>sıkı kuralları\u003C/a> kabul ettik. Yine de tüm reklamları engellemek istiyorsanız \u003Ca>devre dışı bırakma\u003C/a> işini birkaç saniye içinde yapabilirsiniz."
+   },
+   "firstRun_acceptableAdsHeadline": {
+      "message": "Rahatsız edici reklamlar artık engellenecek"
+   },
+   "firstRun_contributor_credits": {
+      "message": "Emeği Geçenler"
+   },
+   "firstRun_dataCorruptionWarning": {
+      "message": "Bu sayfa sürekli gösteriliyor mu? \u003Ca>Buraya tıklayın!\u003C/a>"
+   },
+   "firstRun_donate": {
+      "message": "bağış yapın"
+   },
+   "firstRun_donate_label": {
+      "message": "Projemize destek verin"
+   },
+   "firstRun_feature_malware": {
+      "message": "Zararlı Yazılım Engelleme"
+   },
+   "firstRun_feature_malware_description": {
+      "message": "Bilinen kötü amaçlı yazılıma sahip alan adlarını engelleyerek gezintinizi daha güvenli hale getirin."
+   },
+   "firstRun_feature_social": {
+      "message": "Sosyal Medya Düğmelerini Kaldır"
+   },
+   "firstRun_feature_social_description": {
+      "message": "Sayfalarda çıkan ve davranışlarınızı takip eden Facebook'un \"Beğen\" düğmesi gibi sosyal medya düğmelerinden kurtulun."
+   },
+   "firstRun_feature_tracking": {
+      "message": "İzlenmeyi Devre Dışı Bırak"
+   },
+   "firstRun_feature_tracking_description": {
+      "message": "Her hareketinizi izleyen reklam şirketlerin adımlarınızı gizleyin. İnternette izlenmeyi devre dışı bırakarak gezin."
+   },
+   "firstRun_features": {
+      "message": "Adblock Plus reklamları engellemekten daha fazlasını yapabilir"
+   },
+   "firstRun_filterlistsReinitializedWarning": {
+      "message": "Görünüşe göre bir sorun tüm filtrelerinizin kaldırılmasına neden olmuş ve yedeği geri yükleyemiyoruz. Bu yüzden filtrelerinizi ve Kabul Edilebilir Reklamlar ayarlarınızı sıfırlamamız gerekiyordu. Lütfen \u003Ca>Adblock Plus seçenekleri\u003C/a> bölümünde filtre listelerinizi ve Kabul Edilebilir Reklamlar ayarlarınızı denetleyin."
+   },
+   "firstRun_legacySafariWarning": {
+      "message": "Safari'nin Adblock Plus tarafından desteklenmeyen eski bir sürümünü kullanıyorsunuz. Uygulama doğru şekilde çalışmayabilir veya bazı internet sitelerinde kullanıcı deneyimini olumsuz etkileyebilir. Sürümünüzü Safari 6.1.1 veya daha yüksek  (OS X 10.8 Mountain Lion için), ya da Safari 7.0.1 veya daha yüksek (OS X 10.9 Mavericks için) bir sürüme yükseltmenizi, veya Mozilla Firefox, Google  Chrome ya da Opera'nın en son sürümünü kullanmanızı önemle tavsiye ederiz."
+   },
+   "firstRun_share": {
+      "message": "Arkadaşlarınıza bahsedin"
+   },
+   "firstRun_share_headline": {
+      "message": "İnterneti daha iyi bir yer yapabilmek için \u003Ca>bize elinizi uzatın\u003C/a>"
+   },
+   "firstRun_title": {
+      "message": "Adblock Plus yüklendi"
+   },
+   "firstRun_toggle_off": {
+      "message": "KAPALI"
+   },
+   "firstRun_toggle_on": {
+      "message": "AÇIK"
+   },
+   "found_a_bug": {
+      "message": "Hata mı buldunuz? Adblock Plus'ı kendi dilinize mi çevirmek istiyorsunuz? Lütfen \u003Ca>buradan dosya isteyiniz\u003C/a>."
+   },
+   "general": {
+      "message": "Genel"
+   },
+   "global_filter_elemhide_duplicate_id": {
+      "message": "Gizlenecek sadece bir bileşen kimliği belirtilebilir"
+   },
+   "global_filter_elemhide_nocriteria": {
+      "message": "Gizlenecek bileşeni anlamak için hiçbir ölçüt belirtilmedi"
+   },
+   "global_filter_invalid_regexp": {
+      "message": "Geçersiz düzenli ifade"
+   },
+   "global_filter_unknown_option": {
+      "message": "Bilinmeyen süzme seçeneği"
+   },
+   "global_remove_subscription_warning": {
+      "message": "Gerçekten abonelikten çıkmak istiyor musunuz?"
+   },
+   "global_subscription_invalid_location": {
+      "message": "Dosya listesi konumu ne düzgün bir URL ne de düzgün bir ada sahip."
+   },
+   "invalid_css_selector": {
+      "message": "$selector$ geçerli bir CSS seçicisi değildir",
+      "placeholders": {
+         "selector": {
+            "content": "$1"
+         }
+      }
+   },
+   "last_updated_at": {
+      "message": "Son Güncellenme: $date$ $time$",
+      "placeholders": {
+         "date": {
+            "content": "$2"
+         },
+         "time": {
+            "content": "$1"
+         }
+      }
+   },
+   "last_updated_at_today": {
+      "message": "En son bugün güncellendi. Güncelleme saati: $time$",
+      "placeholders": {
+         "time": {
+            "content": "$1"
+         }
+      }
+   },
+   "line": {
+      "message": "Satır $number$",
+      "placeholders": {
+         "number": {
+            "content": "$1"
+         }
+      }
+   },
+   "name": {
+      "message": "Adblock Plus"
+   },
+   "name_devbuild": {
+      "message": "Adblock Plus geliştirme sürümü"
+   },
+   "notification_antiadblock_message": {
+      "message": "Bu site Adblock Plus kullanıcılarını hedef alan iletiler göstermesiyle bilinir. Adblock Plus'ın hedeflenen iletileri gizlemesini istiyor musunuz?"
+   },
+   "notification_antiadblock_title": {
+      "message": "Hedeflenen iletileri gizlemek istiyor musunuz?"
+   },
+   "notification_configure": {
+      "message": "Bildirim ayarlarını yapılandırma"
+   },
+   "notification_open_all": {
+      "message": "bu bildirimden gelen tüm bağlantıları aç"
+   },
+   "notification_with_buttons": {
+      "message": "Bu bildirimdeki tüm bağlantıları açmak için 'Tamam' düğmesine tıklayın."
+   },
+   "notification_without_buttons": {
+      "message": "Bildirimdeki tüm bağlantıları açmak için bildirim üzerine tıklayın."
+   },
+   "options": {
+      "message": "Adblock Plus Seçenekleri"
+   },
+   "options_short": {
+      "message": "Seçenekler"
+   },
+   "out_of_date_lists": {
+      "message": "Zamanı geçmiş listeler düzenli olarak güncellenmektedir."
+   },
+   "overlay_notification_button_no": {
+      "message": "Hayır"
+   },
+   "overlay_notification_button_yes": {
+      "message": "Evet"
+   },
+   "overlay_notification_closing_button_hide": {
+      "message": "Bu bildirimi kapat"
+   },
+   "overlay_notification_closing_button_optout": {
+      "message": "Bildirim göstermeyi durdur"
+   },
+   "overlay_shownotifications_label": {
+      "message": "Yararlı bildirimleri göster"
+   },
+   "remove_button": {
+      "message": "Seçili olanı kaldır"
+   },
+   "show_block_element_menu": {
+      "message": "Sağ tık menüsünde 'Öğeyi Engelle' seçeneğini göster"
+   },
+   "show_devtools_panel": {
+      "message": "Geliştirici araçlarında 'Adblock Plus' panelini göster"
+   },
+   "stats_label_page": {
+      "message": "Bu sayfada \u003Cstrong>$number$\u003C/strong>",
+      "placeholders": {
+         "number": {
+            "content": "$1"
+         }
+      }
+   },
+   "stats_label_total": {
+      "message": "Toplamda \u003Cstrong>$number$\u003C/strong>",
+      "placeholders": {
+         "number": {
+            "content": "$1"
+         }
+      }
+   },
+   "stats_over": {
+      "message": "$number$ üzerinde",
+      "placeholders": {
+         "number": {
+            "content": "$1"
+         }
+      }
+   },
+   "stats_share_download": {
+      "message": "Adblock Plus'ı indir"
+   },
+   "stats_share_message": {
+      "message": "$number$ reklamı ve izleyiciyi Adblock Plus sayesinde engelledim.",
+      "placeholders": {
+         "number": {
+            "content": "$1"
+         }
+      }
+   },
+   "stats_share_title": {
+      "message": "Bu sayıyı paylaş"
+   },
+   "stats_show_iconnumber": {
+      "message": "Simgede numarayı göster"
+   },
+   "stats_title": {
+      "message": "Engellenen reklamlar"
+   },
+   "subscriptionSelection_location_label": {
+      "message": "Süzgeç listesi konumu:"
+   },
+   "subscriptionSelection_subscriptionSelector_label": {
+      "message": "Lütfen listeden bir süzgeç aboneliği seçin:"
+   },
+   "subscriptionSelection_title_label": {
+      "message": "Aboneliğin adı:"
+   },
+   "unexpected_filter_list_header": {
+      "message": "Filtre liste başlıklarına burada izin verilmiyor"
+   },
+   "update_now": {
+      "message": "Şimdi güncelle"
+   },
+   "whitelisted_domains": {
+      "message": "Güvenilir adresler"
+   }
+}

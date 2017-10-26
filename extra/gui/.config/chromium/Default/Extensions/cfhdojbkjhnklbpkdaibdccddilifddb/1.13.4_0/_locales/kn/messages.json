@@ -1,0 +1,189 @@
+{
+   "add": {
+      "message": "ಸೇರಿಸಿ"
+   },
+   "add_domain_button": {
+      "message": "ಡೊಮೈನ್ ಸೇರಿಸಿ"
+   },
+   "add_filter_button": {
+      "message": "ಫಿಲ್ಟರ್ ಸೇರಿಸಿ"
+   },
+   "add_filters_msg": {
+      "message": "ಫಿಲ್ಟರ್ (ರು) ಸೇರಿಸಲು?"
+   },
+   "add_your_own_filters": {
+      "message": "ನಿಮ್ಮ ಸ್ವಂತ ಶೋಧಕಗಳು ಸೇರಿಸಿ"
+   },
+   "apply_changes": {
+      "message": "ಬದಲಾವಣೆಗಳನ್ನು ಅನ್ವಯಿಸು"
+   },
+   "block_element": {
+      "message": "ಬ್ಲಾಕ್ ಅಂಶ"
+   },
+   "cancel": {
+      "message": "ರದ್ದು"
+   },
+   "clickhide_instructions": {
+      "message": "ಈ ಪಾಪ್ಅಪ್ ಮುಚ್ಚುವ ನಂತರ, ಪುಟ ಮೇಲೆ ಕ್ಲಿಕ್ ಮಾಡಿ (ಅಥವಾ ಬಲ ಕ್ಲಿಕ್ ಮಾಡಿ) ಒಂದು ಅಂಶ."
+   },
+   "description": {
+      "message": "Adblock Plus ಅನ್ನು 100 ಮಿಲಿಯನ್‌ಗೂ ಹೆಚ್ಚು ಸಾಧನಗಳಲ್ಲಿ ಬಳಸಲಾಗಿದ್ದು, ವಿಶ್ವದ ಹೆಚ್ಚು ಜನಪ್ರಿಯ ಜಾಹೀರಾತು ಬ್ಲಾಕರ್ ಆಗಿದೆ."
+   },
+   "disabled_for_site": {
+      "message": "\u003Cstrong>ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಲಾಗಿದೆ\u003C/strong> ಈ ಸೈಟ್"
+   },
+   "disabled_for_these_domains": {
+      "message": "Adblock Plus ಕೆಳಗೆ ಪಟ್ಟಿ ಡೊಮೇನ್ಗಳ ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಲಾಗಿದೆ. ನೀವು ವಿಳಾಸ ಪಟ್ಟಿಯಲ್ಲಿ Adblock Plus ಐಕಾನ್ ಮೂಲಕ ಅಥವಾ ಬಾಕ್ಸ್ ಡೊಮೇನ್ (ಒಂದು URL) ಟೈಪ್ ಮತ್ತು \"ಡೊಮೇನ್ ಸೇರಿಸಿ\" ಗುಂಡಿಯನ್ನು ಕ್ಲಿಕ್ಕಿಸಿ ಡೊಮೇನ್ ಎರಡೂ ಸೇರಿಸಬಹುದು."
+   },
+   "easy_create_filter": {
+      "message": "ಬ್ಲಾಕ್ ಅಂಶ"
+   },
+   "edit_filters_raw": {
+      "message": "ಕಚ್ಚಾ ಪಠ್ಯ ಶೋಧಕಗಳ ಸಂಪಾದಿಸಿ"
+   },
+   "enable_only_the": {
+      "message": "ಮಾತ್ರ ನೀವು ಫಿಲ್ಟರ್ ಪಟ್ಟಿಗಳನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಿ. ಹಲವಾರು ನಿಮ್ಮ ಬ್ರೌಸರ್ ಸ್ಪಂದಿಸದಿರುವ ಮಾಡಬಹುದು."
+   },
+   "enabled_for_site": {
+      "message": "\u003Cstrong>ಶಕ್ತಗೊಂಡಿದೆ\u003C/strong> ಈ ಸೈಟ್ನಲ್ಲಿ"
+   },
+   "filter_lists": {
+      "message": "ಫಿಲ್ಟರ್ ಪಟ್ಟಿಗಳನ್ನು"
+   },
+   "filter_must_follow_syntax": {
+      "message": "ನಿಮ್ಮ ಫಿಲ್ಟರ್ ಅನುಸರಿಸಬೇಕು\u003Ca>Adblock Plus ಫಿಲ್ಟರ್ ವಾಕ್ಯ\u003C/a>."
+   },
+   "found_a_bug": {
+      "message": "ಒಂದು ದೋಷ ಕಂಡುಬಂದಿದೆ? ನಿಮ್ಮ ಭಾಷೆಗೆ Adblock Plus ಭಾಷಾಂತರಿಸಲು ಬಯಸುವಿರಾ? ದಯವಿಟ್ಟು\u003Ca>ವಿನಂತಿಯನ್ನು ಫೈಲ್ ಇಲ್ಲಿ\u003C/a>."
+   },
+   "general": {
+      "message": "ಜನರಲ್"
+   },
+   "invalid_css_selector": {
+      "message": "$selector$ is not a valid CSS selector",
+      "placeholders": {
+         "selector": {
+            "content": "$1"
+         }
+      }
+   },
+   "last_updated_at": {
+      "message": "ಕೊನೆಯದಾಗಿ ಅಪ್ಡೇಟ್$time$ ಕುರಿತು $date$",
+      "placeholders": {
+         "date": {
+            "content": "$2"
+         },
+         "time": {
+            "content": "$1"
+         }
+      }
+   },
+   "last_updated_at_today": {
+      "message": "ಕೊನೆಯದಾಗಿ ಅಪ್ಡೇಟ್ $time$ ಇಂದು",
+      "placeholders": {
+         "time": {
+            "content": "$1"
+         }
+      }
+   },
+   "line": {
+      "message": "ಲೈನ್ $number$",
+      "placeholders": {
+         "number": {
+            "content": "$1"
+         }
+      }
+   },
+   "name": {
+      "message": "Adblock Plus"
+   },
+   "name_devbuild": {
+      "message": "Adblock Plus ಅಭಿವೃದ್ಧಿ ನಿರ್ಮಿಸಲು"
+   },
+   "notification_configure": {
+      "message": "ಅಧಿಸೂಚನೆ ಸೆಟ್ಟಿಂಗ್ಗಳನ್ನು ಕಾನ್ಫಿಗರ್"
+   },
+   "notification_open_all": {
+      "message": "ಈ ಅಧಿಸೂಚನೆಯಿಂದ ಎಲ್ಲಾ ಲಿಂಕ್ಗಳನ್ನು ತೆರೆಯಲು\n"
+   },
+   "notification_with_buttons": {
+      "message": "ಈ ಅಧಿಸೂಚನೆಯನ್ನು ಎಲ್ಲ ಲಿಂಕ್ಗಳನ್ನು ತೆರೆಯಲು 'ಸರಿ' ಕ್ಲಿಕ್ ಮಾಡಿ."
+   },
+   "notification_without_buttons": {
+      "message": "ಇದು ಎಲ್ಲಾ ಲಿಂಕ್ಗಳನ್ನು ತೆರೆಯಲು ಪ್ರಕಟಣೆ ಮೇಲೆ ಕ್ಲಿಕ್ ಮಾಡಿ."
+   },
+   "options": {
+      "message": "Adblock Plus ಆಯ್ಕೆಗಳು"
+   },
+   "options_short": {
+      "message": " ಆಯ್ಕೆಗಳು"
+   },
+   "out_of_date_lists": {
+      "message": "ರೂಢಿಯಲ್ಲಿಲ್ಲದ ಪಟ್ಟಿಗಳನ್ನು ನಿಯತಕಾಲಿಕವಾಗಿ ನವೀಕರಿಸಲಾಗುತ್ತದೆ."
+   },
+   "remove_button": {
+      "message": "ಆಯ್ಕೆಗಳನ್ನು ತೆಗೆಯಿರಿ"
+   },
+   "show_block_element_menu": {
+      "message": "'ಬ್ಲಾಕ್ ಅಂಶ' ಬಲ ಕ್ಲಿಕ್ ಮೆನು ಐಟಂ ತೋರಿಸಿ"
+   },
+   "show_devtools_panel": {
+      "message": "ಶೋ ಡೆವಲಪರ್ ಪರಿಕರಗಳನ್ನು 'Adblock Plus' ಫಲಕ"
+   },
+   "stats_label_page": {
+      "message": "\u003Cstrong>$number$\u003C/strong> ಈ ಪುಟದಲ್ಲಿ",
+      "placeholders": {
+         "number": {
+            "content": "$1"
+         }
+      }
+   },
+   "stats_label_total": {
+      "message": "\u003Cstrong>$number$\u003C/strong> ಒಟ್ಟಾಗಿ",
+      "placeholders": {
+         "number": {
+            "content": "$1"
+         }
+      }
+   },
+   "stats_over": {
+      "message": "ಮೇಲೆ $number$",
+      "placeholders": {
+         "number": {
+            "content": "$1"
+         }
+      }
+   },
+   "stats_share_download": {
+      "message": "Adblock Plus ಡೌನ್ಲೋಡ್"
+   },
+   "stats_share_message": {
+      "message": "ನಾನು ನಿರ್ಬಂಧಿಸಿದ $number$ Adblock Plus ಪ್ಲಸ್ ಜಾಹೀರಾತುಗಳು ಮತ್ತು ಅನ್ವೇಷಕಗಳು ಧನ್ಯವಾದಗಳು.",
+      "placeholders": {
+         "number": {
+            "content": "$1"
+         }
+      }
+   },
+   "stats_share_title": {
+      "message": "ಈ ಸಂಖ್ಯೆ ಹಂಚಿಕೊಳ್ಳಿ"
+   },
+   "stats_show_iconnumber": {
+      "message": "ಐಕಾನ್ ಸಂಖ್ಯೆ ತೋರಿಸಿ"
+   },
+   "stats_title": {
+      "message": "ಜಾಹೀರಾತುಗಳು ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ"
+   },
+   "subscriptionSelection_subscriptionSelector_label": {
+      "message": "ದಯವಿಟ್ಟು ಪಟ್ಟಿಯಿಂದ ಫಿಲ್ಟರ್ ಚಂದಾ ಆಯ್ಕೆ:"
+   },
+   "unexpected_filter_list_header": {
+      "message": "ಫಿಲ್ಟರ್ ಪಟ್ಟಿ ಹೆಡರ್ ಇಲ್ಲಿ ಅನುಮತಿಸಲಾಗುವುದಿಲ್ಲ"
+   },
+   "update_now": {
+      "message": "ಈಗ ನವೀಕರಿಸಿ"
+   },
+   "whitelisted_domains": {
+      "message": "Whitelisted ಡೊಮೈನ್"
+   }
+}

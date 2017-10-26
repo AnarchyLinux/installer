@@ -1,0 +1,342 @@
+{
+   "add": {
+      "message": "Pridėti"
+   },
+   "add_domain_button": {
+      "message": "Pridėti domeną"
+   },
+   "add_filter_button": {
+      "message": "Pridėti filtrą"
+   },
+   "add_filters_msg": {
+      "message": "Pridėti filtrus(-ą)?"
+   },
+   "add_your_own_filters": {
+      "message": "Pridėkite savo filtrus"
+   },
+   "apply_changes": {
+      "message": "Pritaikyti pakeitimus"
+   },
+   "block_element": {
+      "message": "Blokuoti elementą"
+   },
+   "cancel": {
+      "message": "Atsisakyti"
+   },
+   "clickhide_instructions": {
+      "message": "Užvėrus šį iššokantį langą, paspauskite (arba dešiniu mygtuku) ant elemento esančio puslapyje."
+   },
+   "description": {
+      "message": "Naudojamas daugiau nei 100 milijonų įrenginių, „Adblock Plus“ yra populiariausias reklamos blokavimo įrankis."
+   },
+   "disabled_for_site": {
+      "message": "Šiame puslapyje \u003Cstrong>išjungta\u003C/strong>"
+   },
+   "disabled_for_these_domains": {
+      "message": "Adblock Plus žemiau išvardytiems domenams išjungtas. Pridėti domeną galite paspaudę Adblock Plus piktogramą, adreso juostoje arba įvesdami domeną (ne URL) ir paspausdami „Pridėti domeną“ mygtuką."
+   },
+   "easy_create_filter": {
+      "message": "Blokuoti elementą"
+   },
+   "edit_filters_raw": {
+      "message": "Redaguoti filtrus kaip gryną tesktą"
+   },
+   "enable_only_the": {
+      "message": "Įjunkite tik tuos filtrų sąrašus kurių jums reikia. Jei įgalinsite per daug jūsų naršyklė gali sulėtėti."
+   },
+   "enabled_for_site": {
+      "message": "Šiame puslapyje \u003Cstrong>įjungta\u003C/strong>"
+   },
+   "filter_lists": {
+      "message": "Filtrų sąrašai"
+   },
+   "filter_must_follow_syntax": {
+      "message": "Jūsų filtras turi atitikti \u003Ca>Adblock Plus filtrų sintaksę\u003C/a>."
+   },
+   "filters_acceptableAds2_label": {
+      "message": "Leisti neįkyrias reklamas"
+   },
+   "filters_addSubscriptionAdd_label": {
+      "message": "Pridėti"
+   },
+   "filters_addSubscriptionOther_label": {
+      "message": "Pridėti kitą prenumeratą"
+   },
+   "filters_addSubscription_label": {
+      "message": "Pridėti filtro prenumeratą"
+   },
+   "filters_readMore_label": {
+      "message": "Plačiau"
+   },
+   "filters_subscription_delete_label": {
+      "message": "Ištrinti"
+   },
+   "filters_subscription_enabled_label": {
+      "message": "Įjungta"
+   },
+   "filters_subscription_lastDownload_checksumMismatch": {
+      "message": "Nepavyko, bloga kontrolinė suma"
+   },
+   "filters_subscription_lastDownload_connectionError": {
+      "message": "Nepavyko, atsiuntimo klaida"
+   },
+   "filters_subscription_lastDownload_inProgress": {
+      "message": "Atsiunčiama..."
+   },
+   "filters_subscription_lastDownload_invalidData": {
+      "message": "Nepavyko, netinkamas filtrų sąrašas"
+   },
+   "filters_subscription_lastDownload_invalidURL": {
+      "message": "Nepavyko, netinkamas adresas"
+   },
+   "filters_viewList_label": {
+      "message": "Peržiūrėti sąrašą"
+   },
+   "firstRun_abbButtonSubtitle": {
+      "message": "„Android“ ir „iOS“ versijos"
+   },
+   "firstRun_abbButtonTitle": {
+      "message": "„Adblock Browser“ rasi čia"
+   },
+   "firstRun_abbPromotionHeadline": {
+      "message": "Įsigijai išmanųjį arba planšetę?"
+   },
+   "firstRun_acceptableAdsExplanation": {
+      "message": "Mes norėtume paskatinti svetaines naudoti paprastas, nekrentančias į akis reklamas. Todėl nustatėme \u003Ca>griežtas gaires\u003C/a> priimtinų reklamų nustatymui, jos bus rodomos pagal nutylėjimą. Jei vis tiek norite visas reklamas galite \u003Ca>išjungti\u003C/a> šią galimybę per kelias sekundes."
+   },
+   "firstRun_acceptableAdsHeadline": {
+      "message": "Nuo šiol erzinančios reklamos bus užblokuotos"
+   },
+   "firstRun_contributor_credits": {
+      "message": "Padėkos prisidėjusiems"
+   },
+   "firstRun_dataCorruptionWarning": {
+      "message": "Ar šis puslapis pastoviai rodomas? \u003Ca>Paspauskite čia\u003C/a>"
+   },
+   "firstRun_donate": {
+      "message": "paaukoti"
+   },
+   "firstRun_donate_label": {
+      "message": "Paremkite mūsų projektą"
+   },
+   "firstRun_feature_malware": {
+      "message": "Kenkėjiškų programų blokavimas"
+   },
+   "firstRun_feature_malware_description": {
+      "message": "Padarykite savo naršymą saugesniu užblokuodami žinomas kenkėjiškas svetaines."
+   },
+   "firstRun_feature_social": {
+      "message": "Pašalinti socialinių puslapių mygtukus"
+   },
+   "firstRun_feature_social_description": {
+      "message": "Automatiškai pašalinkite socialinių tinklų mygtukus, tokius kaip „Facebook Like“, kurie seka jūsų elgesį."
+   },
+   "firstRun_feature_tracking": {
+      "message": "Išjungti sekimą"
+   },
+   "firstRun_feature_tracking_description": {
+      "message": "Išjunkite sekimą ir paverskite savo naršymą privačiu - paslėpkite savo pėdsakus nuo reklamos įmonių kurios galbūt seka kiekvieną jūsų žingsnį."
+   },
+   "firstRun_features": {
+      "message": "Adblock Plus gali daugiau nei tik blokuoti reklamas"
+   },
+   "firstRun_filterlistsReinitializedWarning": {
+      "message": "Dėl klaidos visi filtrai buvo pašalinti, todėl mes negalime atkurti atsarginės kopijos. Taip pat filtrai ir priimtinų reklamų nustatymai nustatyti iš naujo. Prašome pasitikrinti jūsų filtrų sąrašus ir priimtinų reklamų nustatymus\u003Ca>Adblock Plus nustatymuose\u003C/a>."
+   },
+   "firstRun_legacySafariWarning": {
+      "message": "Jūs naudojate seną Safari versiją, kurios Adblock Plus nepalaiko. Adblock plus gali veikti netinkamai ar sukelti problemų. Rekomenduojame naudoti Safari 6.1.1 ar naujesnę versiją (prieinama Mac OS X 10.9 Mavericks) arba naudokite naujausią Mozilla Firefox, Google Chrome ar Opera."
+   },
+   "firstRun_share": {
+      "message": "Papasakokite savo draugams"
+   },
+   "firstRun_share_headline": {
+      "message": "\u003Ca>Padėkite mums\u003C/a> paversti internetą geresne vieta"
+   },
+   "firstRun_title": {
+      "message": "AdBlock Plus sėkmingai įdiegta"
+   },
+   "firstRun_toggle_off": {
+      "message": "IŠJ."
+   },
+   "firstRun_toggle_on": {
+      "message": "Įj."
+   },
+   "found_a_bug": {
+      "message": "Radote klaidą? Norite išversti Adblock Plus į savo kalbą? Užpildykite \u003Ca>prašymą čia\u003C/a>."
+   },
+   "general": {
+      "message": "Bendra"
+   },
+   "global_filter_elemhide_duplicate_id": {
+      "message": "Gali būti nurodytas tik vienas elemento ID kurį reikia paslėpti"
+   },
+   "global_filter_elemhide_nocriteria": {
+      "message": "Nėra kriterijaus pagal kurį galima būtų nuspręsti kurį elementą paslėpti"
+   },
+   "global_filter_invalid_regexp": {
+      "message": "Netinkama reguliarioji išraiška"
+   },
+   "global_filter_unknown_option": {
+      "message": "Nežinoma filtro parinktis"
+   },
+   "global_remove_subscription_warning": {
+      "message": "Ar tikrai norite atsisakyti šios prenumeratos?"
+   },
+   "global_subscription_invalid_location": {
+      "message": "Filtrų sąrašo adresas nėra taisyklingas URL ar failo vardas."
+   },
+   "invalid_css_selector": {
+      "message": "$selector$ nėra tinkamas CSS selektorius",
+      "placeholders": {
+         "selector": {
+            "content": "$1"
+         }
+      }
+   },
+   "last_updated_at": {
+      "message": "Paskutinį kartą atnaujinta $time$ $date$",
+      "placeholders": {
+         "date": {
+            "content": "$2"
+         },
+         "time": {
+            "content": "$1"
+         }
+      }
+   },
+   "last_updated_at_today": {
+      "message": "Paskutinį kartą atnaujinta šiandien $time$",
+      "placeholders": {
+         "time": {
+            "content": "$1"
+         }
+      }
+   },
+   "line": {
+      "message": "Eilutė $number$",
+      "placeholders": {
+         "number": {
+            "content": "$1"
+         }
+      }
+   },
+   "name": {
+      "message": "Adblock Plus"
+   },
+   "name_devbuild": {
+      "message": "Adblock Plus vystomasis leidimas"
+   },
+   "notification_antiadblock_message": {
+      "message": "Šioje svetainėje rodomi tiksliniai pranešimai Adblock Plus naudotojams. Ar norite jog Adblock Plus paslėptų tikslinius pranešimus?"
+   },
+   "notification_antiadblock_title": {
+      "message": "Paslėpti tikslinius pranešimus?"
+   },
+   "notification_configure": {
+      "message": "Konfigūruoti pranešimų nustatymus"
+   },
+   "notification_open_all": {
+      "message": "Atidaryti visas šio pranešimo nuorodas"
+   },
+   "notification_with_buttons": {
+      "message": "Paspauskite „Gerai“ ir bus atvertos visos šio pranešimo nuorodos."
+   },
+   "notification_without_buttons": {
+      "message": "Paspauskite ant pranešimo ir bus atvertos visos nuorodos jame."
+   },
+   "options": {
+      "message": "Adblock Plus parinktys"
+   },
+   "options_short": {
+      "message": "Parinktys"
+   },
+   "out_of_date_lists": {
+      "message": "Pasenę sąrašai periodiškai atnaujinami."
+   },
+   "overlay_notification_button_no": {
+      "message": "Ne"
+   },
+   "overlay_notification_button_yes": {
+      "message": "Taip"
+   },
+   "overlay_notification_closing_button_hide": {
+      "message": "Uždaryti šį pranešimą"
+   },
+   "overlay_notification_closing_button_optout": {
+      "message": "Neberodyti pranešimų"
+   },
+   "overlay_shownotifications_label": {
+      "message": "Rodyti naudingus pranešimus"
+   },
+   "remove_button": {
+      "message": "Pašalinti pasirinktą"
+   },
+   "show_block_element_menu": {
+      "message": "Dešinio mygtuko meniu rodyti „Blokuoti elementą“"
+   },
+   "show_devtools_panel": {
+      "message": "Rodyti „Adblock Plus“ valdymo pultą kūrėjo įrankiuose"
+   },
+   "stats_label_page": {
+      "message": "\u003Cstrong>$number$\u003C/strong> šiame puslapyje",
+      "placeholders": {
+         "number": {
+            "content": "$1"
+         }
+      }
+   },
+   "stats_label_total": {
+      "message": "\u003Cstrong>$number$\u003C/strong> iš viso",
+      "placeholders": {
+         "number": {
+            "content": "$1"
+         }
+      }
+   },
+   "stats_over": {
+      "message": "daugiau nei $number$",
+      "placeholders": {
+         "number": {
+            "content": "$1"
+         }
+      }
+   },
+   "stats_share_download": {
+      "message": "Parsisiųsti Adblock Plus"
+   },
+   "stats_share_message": {
+      "message": "Adblock Plus dėka aš užblokavau $number$ reklamų.",
+      "placeholders": {
+         "number": {
+            "content": "$1"
+         }
+      }
+   },
+   "stats_share_title": {
+      "message": "Dalintis šiuo skaičiumi"
+   },
+   "stats_show_iconnumber": {
+      "message": "Piktogramoje rodyti skaičių"
+   },
+   "stats_title": {
+      "message": "Reklamos užblokuotos"
+   },
+   "subscriptionSelection_location_label": {
+      "message": "Filtrų sąrašo vieta:"
+   },
+   "subscriptionSelection_subscriptionSelector_label": {
+      "message": "Pasirinkite filtro prenumeratą iš šio sąrašo:"
+   },
+   "subscriptionSelection_title_label": {
+      "message": "Prenumeratos pavadinimas:"
+   },
+   "unexpected_filter_list_header": {
+      "message": "Čia negalima naudoti filtrų sąrašo antraščių"
+   },
+   "update_now": {
+      "message": "Atnaujinti"
+   },
+   "whitelisted_domains": {
+      "message": "Domenai baltajame sąraše"
+   }
+}

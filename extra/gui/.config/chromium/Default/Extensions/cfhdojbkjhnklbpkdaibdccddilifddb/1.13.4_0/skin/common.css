@@ -1,0 +1,59 @@
+/*
+ * This file is part of Adblock Plus <https://adblockplus.org/>,
+ * Copyright (C) 2006-present eyeo GmbH
+ *
+ * Adblock Plus is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 3 as
+ * published by the Free Software Foundation.
+ *
+ * Adblock Plus is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Adblock Plus.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+#glass-pane, #share-popup
+{
+  visibility: hidden;
+  opacity: 0;
+  -webkit-transition-property: opacity;
+  transition-property: opacity;
+}
+
+#glass-pane
+{
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background: rgba(0, 0, 0, 0.5) url(ajax-loader.gif) no-repeat 50% 50%;
+  z-index: 101;
+  -webkit-transition-duration: 0.2s;
+  transition-duration: 0.2s;
+}
+
+#share-popup
+{
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  border: none;
+  -webkit-transition-delay: 0.1s;
+  transition-delay: 0.1s;
+}
+
+#glass-pane.visible, #share-popup.visible
+{
+  visibility: visible;
+  opacity: 1;
+}
+
+#share-popup.visible
+{
+  -webkit-transition-duration: 0.15s;
+  transition-duration: 0.15s;
+}

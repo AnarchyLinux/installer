@@ -1,0 +1,11 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=Install
+Comment=Install Anarchy Linux
+Exec=sudo anarchy
+Icon=intel-installer
+Path=
+Terminal=true
+StartupNotify=false
+X-XFCE-Source=file:///usr/share/applications/Install.desktop

@@ -1,0 +1,181 @@
+{
+   "add": {
+      "message": "ઊમેરો"
+   },
+   "add_domain_button": {
+      "message": "ડોમેઈન ઊમેરો"
+   },
+   "add_filter_button": {
+      "message": "ફિલ્ટર ઊમેરો"
+   },
+   "add_filters_msg": {
+      "message": "ફિલ્ટર ઉમેરવા છે?"
+   },
+   "add_your_own_filters": {
+      "message": "તમારું પોતાનું ફિલ્ટર ઊમેરો"
+   },
+   "apply_changes": {
+      "message": "બદલાવ સાચવો"
+   },
+   "block_element": {
+      "message": "બ્લોક એલિમેન્ટ"
+   },
+   "cancel": {
+      "message": "રદ"
+   },
+   "clickhide_instructions": {
+      "message": "આ પોપ અપ બંધ કરીને, પેજ પરનાં એલિમેન્ટ પર ક્લિક (અથવા રાઈટ ક્લિક) કરો."
+   },
+   "description": {
+      "description": "Note: this cannot be longer than 132 characters",
+      "message": "Used on over 100 million devices, Adblock Plus is the world's most popular ad blocker."
+   },
+   "disabled_for_site": {
+      "message": "આં સાઈટ પર \u003Cstrong>ડિસેબલ\u003C/strong> કરો"
+   },
+   "disabled_for_these_domains": {
+      "message": "નીચે આપેલ ડોમેઈન  માટે Adblock Plus ડિસેબલ કરેલ છે. તમે એડ્રેસ બાર નાં Adblock Plus આઇકોન દ્વારા અથવા બોક્સમાં ડોમેઈન (નહીં કે URL) ટાઇપ કરી  \"ડોમેઈન ઊમેરો\" બટન ક્લિક કરીને સાઈટ ઉમેરી શકો છો."
+   },
+   "easy_create_filter": {
+      "message": "બ્લોક એલિમેન્ટ"
+   },
+   "edit_filters_raw": {
+      "message": "ફિલ્ટરને સળંગ ટેક્સ્ટની જેમ સુધારો"
+   },
+   "enable_only_the": {
+      "message": "માત્ર જરૂરી ફિલ્ટર લીસ્ટને જ ઇનેબલ કરો. વધું પડતા ઇનેબલ બ્રાઉઝરને અનરિસ્પોન્સિવ બનાવી શકે છે."
+   },
+   "enabled_for_site": {
+      "message": "આં સાઈટ પર \u003Cstrong>ઇનેબલ\u003C/strong> કરો"
+   },
+   "filter_lists": {
+      "message": "ફિલ્ટરની લીસ્ટ"
+   },
+   "filter_must_follow_syntax": {
+      "message": "તમારું ફિલ્ટર \u003Ca>Adblock Plus ફિલ્ટર સિન્ટેક્સ\u003C/a>ફોલોવ કરવું જોઈએ."
+   },
+   "found_a_bug": {
+      "message": "કોઈ ભૂલ છે ? શું તમારી ભાષામાં Adblock Plus ને રૂપાંતરિત કરવા માગો છો ? તમારી \u003Ca>રીક્વેસ્ટ અહીં આપો\u003C/a>."
+   },
+   "general": {
+      "message": "સામાન્ય"
+   },
+   "invalid_css_selector": {
+      "message": "$selector$ એ યોગ્ય CSS selector નથી",
+      "placeholders": {
+         "selector": {
+            "content": "$1"
+         }
+      }
+   },
+   "last_updated_at": {
+      "message": "છેલ્લી અપડેટ $time$ વાગ્યે  $date$",
+      "placeholders": {
+         "date": {
+            "content": "$2"
+         },
+         "time": {
+            "content": "$1"
+         }
+      }
+   },
+   "last_updated_at_today": {
+      "message": "છેલ્લી અપડેટ $time$ વાગ્યે આજે",
+      "placeholders": {
+         "time": {
+            "content": "$1"
+         }
+      }
+   },
+   "line": {
+      "message": "લાઈન $number$",
+      "placeholders": {
+         "number": {
+            "content": "$1"
+         }
+      }
+   },
+   "name": {
+      "message": "Adblock Plus"
+   },
+   "name_devbuild": {
+      "message": "Adblock Plus ડેવલોપમેન્ટ બીલ્ડ"
+   },
+   "notification_with_buttons": {
+      "message": "આ નોટીફીકેશનમાં બધી લીંક ખોલવા 'ઓકે' પર ક્લિક કરો."
+   },
+   "notification_without_buttons": {
+      "message": "નોટીફીકેશનમાં બધી લીંક ખોલવા તેનાં પર ક્લિક કરો."
+   },
+   "options": {
+      "message": "Adblock Plus ઓપ્શન્સ"
+   },
+   "options_short": {
+      "message": "ઓપ્શન્સ"
+   },
+   "out_of_date_lists": {
+      "message": "આઉટ-ઓફ-ડેટ લીસ્ટ ક્રમવાર સુધારેલ છે."
+   },
+   "remove_button": {
+      "message": "પસંદ કરેલ કાઢો"
+   },
+   "show_block_element_menu": {
+      "message": "'બ્લોક એલિમેન્ટ' જુઓ મેનુ આઇટમ પર રાઈટ ક્લિક કરીને"
+   },
+   "stats_label_page": {
+      "message": "\u003Cstrong>$number$\u003C/strong> આ પેજ પર",
+      "placeholders": {
+         "number": {
+            "content": "$1"
+         }
+      }
+   },
+   "stats_label_total": {
+      "message": "\u003Cstrong>$number$\u003C/strong> કુલ",
+      "placeholders": {
+         "number": {
+            "content": "$1"
+         }
+      }
+   },
+   "stats_over": {
+      "message": "ઉપર $number$",
+      "placeholders": {
+         "number": {
+            "content": "$1"
+         }
+      }
+   },
+   "stats_share_download": {
+      "message": "ડાઉનલોડ Adblock Plus"
+   },
+   "stats_share_message": {
+      "message": "મેં $number$ એડ્સ અને ટ્રેકરબ્લોક કર્યા Adblock Plusનો આભાર.",
+      "placeholders": {
+         "number": {
+            "content": "$1"
+         }
+      }
+   },
+   "stats_share_title": {
+      "message": "આ આંકડા શેર કરો"
+   },
+   "stats_show_iconnumber": {
+      "message": "આઇકોનમાં નંબર દેખાડો"
+   },
+   "stats_title": {
+      "message": "એડ્સ બ્લોક કરી"
+   },
+   "subscriptionSelection_subscriptionSelector_label": {
+      "message": "લીસ્ટમાંથી ફિલ્ટર સબક્રીપ્શન સિલેક્ટ કરો:"
+   },
+   "unexpected_filter_list_header": {
+      "message": "ફિલ્ટર લીસ્ટ હેડર આહીં વાપરી શકાય નહિ"
+   },
+   "update_now": {
+      "message": "અપડેટ કરો"
+   },
+   "whitelisted_domains": {
+      "message": "વ્હાઈટ લીસ્ટેડ ડોમેઈન"
+   }
+}

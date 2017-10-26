@@ -1,0 +1,245 @@
+*
+{
+  font-family: 'Lucida Grande', 'Segoe UI', Ubuntu, Tahoma, Arial, sans-serif;
+  font-size: 11px;
+  box-sizing: border-box;
+}
+
+html
+{
+  height: 100%;
+  overflow: hidden;
+}
+
+body
+{
+  margin: 0;
+  color: #303942;
+  display: flex;
+  height: 100%;
+  flex-direction: column;
+}
+
+body.default
+{
+  background-color: #ffffff;
+}
+
+body.dark
+{
+  color: #ffffff;
+}
+
+table
+{
+  table-layout: fixed;
+  width: 100%;
+  border-collapse: collapse;
+}
+
+table *
+{
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+td
+{
+  padding: 3px;
+  white-space: nowrap;
+  border-left: 1px solid #cdcdcd;
+}
+
+td:first-child
+{
+  border-left-style: none;
+}
+
+col:nth-child(2)
+{
+  width: 115px;
+}
+
+col:nth-child(3)
+{
+  width: 50%;
+}
+
+header
+{
+  overflow-y: scroll;
+  border-bottom: 1px solid #cdcdcd;
+  flex-shrink: 0;
+}
+
+/*
+ * We have to add a scrollbar to the header to have the columns there aligned
+ * with the table below. But we don't want the scrollbar to be visible there.
+ */
+header::-webkit-scrollbar
+{
+  visibility: hidden;
+}
+
+#items
+{
+  overflow-y: scroll;
+  flex-grow: 1;
+}
+
+#items table
+{
+  line-height: 17px;
+
+  /* This background image gives every other row a gray background.
+   * This is simlar to "tr:nth-child(odd) background-color: #eee;".
+   * However, we can't do it that way, since some rows might be hidden.
+   */
+  background-image: url(data:image/gif;base64,R0lGODdhAQBQAIABAO7u7v///ywAAAAAAQBQAAACC4SPqcsYD6OctMYCADs=);
+  background-repeat: repeat;
+}
+
+body.dark #items table
+{
+  background-image: url(data:image/gif;base64,R0lGODdhAQBQAIACACQkJExMTCwAAAAAAQBQAAACC4yPqcsID6OctMYCADs=);
+}
+
+#items tr
+{
+  height: 40px;
+}
+
+#items tr[data-state=blocked]
+{
+  color: red;
+}
+
+body.dark #items tr[data-state=blocked]
+{
+  color: #ff3a3a;
+}
+
+#items tr[data-state=whitelisted]
+{
+  color: green;
+}
+
+body.dark #items tr[data-state=whitelisted]
+{
+  color: #389c22;
+}
+
+#items[data-filter-state=blocked]       tr:not([data-state=blocked]),
+#items[data-filter-state=whitelisted]   tr:not([data-state=whitelisted]),
+#items[data-filter-type=SUBDOCUMENT]    tr:not([data-type=SUBDOCUMENT]),
+#items[data-filter-type=IMAGE]          tr:not([data-type=IMAGE]),
+#items[data-filter-type=STYLESHEET]     tr:not([data-type=STYLESHEET]),
+#items[data-filter-type=SCRIPT]         tr:not([data-type=SCRIPT]),
+#items[data-filter-type=OBJECT]         tr:not([data-type=OBJECT]),
+#items[data-filter-type=XMLHTTPREQUEST] tr:not([data-type=XMLHTTPREQUEST]),
+#items[data-filter-type=FONT]           tr:not([data-type=FONT]),
+#items[data-filter-type=PING]           tr:not([data-type=PING]),
+#items[data-filter-type=POPUP]          tr:not([data-type=POPUP]),
+#items[data-filter-type=ELEMHIDE]       tr:not([data-type=ELEMHIDE]),
+#items[data-filter-type=WEBSOCKET]      tr:not([data-type=WEBSOCKET]),
+#items[data-filter-type=WEBRTC]         tr:not([data-type=WEBRTC]),
+#items[data-filter-type=OTHER]          tr:not([data-type=OTHER])
+{
+  display: none;
+}
+
+.changed, .unnamed
+{
+  font-style: italic
+}
+
+.request-wrapper, .filter-wrapper
+{
+  display: flex;
+  height: 100%;
+  flex-direction: column;
+}
+
+tr:not(:hover) .action
+{
+  display: none;
+}
+
+.url
+{
+  width: 100%;
+}
+
+.resourceLink
+{
+  cursor: pointer;
+}
+
+.resourceLink:hover {
+  text-decoration: underline;
+}
+
+.action-wrapper
+{
+  display: flex;
+  width: 100%;
+}
+
+.action
+{
+  background: #555;
+  color: white;
+  font-style: normal;
+  border-radius: 7px;
+  padding: 2px 6px;
+  margin: auto;
+  margin-left: 5px;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.filter-wrapper, .filter, .origin, .domain
+{
+  flex-grow: 1;
+}
+
+.domain, .origin,
+.changed .request-wrapper,
+.changed .filter-wrapper,
+.changed .type
+{
+  opacity: 0.6;
+}
+
+footer
+{
+  width: 100%;
+  height: 23px;
+  margin-bottom: -23px;
+  padding: 4px 3px;
+  border-top: 1px solid #cdcdcd;
+  flex-shrink: 0;
+}
+
+.has-changes + footer
+{
+  margin-bottom: 0;
+  transition: margin-bottom 0.5s;
+}
+
+#reload
+{
+  color: blue;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.filtered-by-search
+{
+  display: none;
+}
+
+body.dark #reload
+{
+  color: #2a67e7;
+}

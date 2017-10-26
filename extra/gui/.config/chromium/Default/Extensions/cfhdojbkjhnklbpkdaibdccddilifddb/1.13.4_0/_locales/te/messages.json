@@ -1,0 +1,169 @@
+{
+   "add": {
+      "message": "చేర్చు"
+   },
+   "add_domain_button": {
+      "message": "వాటికను  (ప్రదేశాన్ని,డొమైన్ ను) జోడించు"
+   },
+   "add_filter_button": {
+      "message": "తొట్టుని (వడపోతని) చేర్చు"
+   },
+   "add_filters_msg": {
+      "message": "తొట్టులని (వడపోతలని) చేర్చు?"
+   },
+   "add_your_own_filters": {
+      "message": "మీ సొంత వడపోతలు జోడించు"
+   },
+   "apply_changes": {
+      "message": "మార్పులని ఆపాదించు "
+   },
+   "block_element": {
+      "message": "అంశాన్ని నిరోధించు"
+   },
+   "cancel": {
+      "message": "రద్దు చేయు"
+   },
+   "clickhide_instructions": {
+      "message": "ఈ చిరుతలుపుని (పాపప్) మూసివేసిన తర్వాత, పేజీలో ఒక అంశాన్ని నొక్కండి (లేదా కుడి క్లిక్ చేయండి)."
+   },
+   "description": {
+      "message": "10 కోట్లకు పైగా పరికరాలలో ఉపయోగించ బడే Adblock Plus, ప్రకటనలను అడ్డగించడానికి ప్రపంచంలోనే అత్యంత ప్రసిద్ధమైన సాధనము."
+   },
+   "disabled_for_site": {
+      "message": "ఈ సైట్  లో \u003Cstrong>ఆపివేయబడింది\u003C/strong>"
+   },
+   "disabled_for_these_domains": {
+      "message": "\"Adblock Plus\" లో  క్రింది వాటికల (డొమైన్) జాబితా నిరోధించబడింది. 'మీరు చిరునామా పెట్టె (అడ్రెస్స్ బార్) లో ఉన్న Adblock Plus చిహ్నం ద్వారా 'లేదా' పెట్టెలో వాటికను (డొమైన్ను)  (యుఆర్ఎల్  కాదు సుమీ!) వ్రాసి (టైప్ చేసి) \"వాటికను జోడించు\" బటన్ నొక్కడం ద్వార ఒక వాటికను (డొమైన్) జోడించవచ్చు."
+   },
+   "easy_create_filter": {
+      "message": "అంశాన్ని నిరోధించు"
+   },
+   "edit_filters_raw": {
+      "message": "ముడి అక్షరతొట్టెలను సవరించు "
+   },
+   "enable_only_the": {
+      "message": "మీకు అవసరమైన ఫిల్టర్లు మాత్రమే వాడుకోండి. ఎక్కువ ఫిల్టర్లు వాడటం వలన మీ బ్రౌజరు చలనం లేకుండా అయ్యే అవకాశం ఉంది."
+   },
+   "enabled_for_site": {
+      "message": "ఈ సైట్  లో \u003Cstrong>ప్రారంభించబడింది\u003C/strong>"
+   },
+   "filter_lists": {
+      "message": "జాబితాలని వడకొట్టు"
+   },
+   "filter_must_follow_syntax": {
+      "message": "మీ వడపోత (ఫిల్టర్) క్రింది Adblock Plus వడపోత సింటెక్స్ \u003Ca>ను అనుసరించే ఉండాలి\u003C/a>."
+   },
+   "found_a_bug": {
+      "message": "ఒక లోపాన్ని కనుగొన్నారా? మీ భాషలోకి Adblock Plus ని అనువదించాలనుకుంటున్నారా? \u003Ca>దయచేసి మీ అభ్యర్ధనని ఇక్కడ పొందుపరచండి\u003C/a>."
+   },
+   "general": {
+      "message": "సాధారణం"
+   },
+   "last_updated_at": {
+      "message": "తాజా నవీనకరణ $time$ $date$ యందు",
+      "placeholders": {
+         "date": {
+            "content": "$2"
+         },
+         "time": {
+            "content": "$1"
+         }
+      }
+   },
+   "last_updated_at_today": {
+      "message": "తాజా నవీనకరణ ఈరోజు $time$ కి",
+      "placeholders": {
+         "time": {
+            "content": "$1"
+         }
+      }
+   },
+   "line": {
+      "message": "గీత $number$",
+      "placeholders": {
+         "number": {
+            "content": "$1"
+         }
+      }
+   },
+   "name": {
+      "message": "Adblock Plus"
+   },
+   "name_devbuild": {
+      "message": "Adblock Plus డెవలప్మెంట్ సాఫ్ట్వేర్ ఇది"
+   },
+   "notification_with_buttons": {
+      "message": "అన్ని లింక్స్ ఇదే నోటిఫికేషన్ లో తెరవాలి అనికుంటే, 'ఓకే' అని నొక్కండి."
+   },
+   "notification_without_buttons": {
+      "message": "నోటిఫికేషన్ నొక్కితే అన్ని లింక్స్ దాంట్లో తెరుసుకొంటాయి."
+   },
+   "options": {
+      "message": "Adblock Plus ఐచ్ఛికాలు"
+   },
+   "options_short": {
+      "message": "ఐచ్ఛికాలు"
+   },
+   "out_of_date_lists": {
+      "message": "ఉపయోగంలో లేని జాబితాలు కాలానుగుణంగా నవీకరించబడతాయి."
+   },
+   "remove_button": {
+      "message": "ఎంపిక చేసినవాటిని తీసివేయి"
+   },
+   "show_block_element_menu": {
+      "message": "కుడి బటన్ ని నొక్కినప్పుడు 'అంశాన్ని నిరోధించు' అను ఇచికాన్ని పట్టికలో చూపించు"
+   },
+   "stats_label_page": {
+      "message": "ఈ పేజీ లో \u003Cstrong>$number$\u003C/strong>",
+      "placeholders": {
+         "number": {
+            "content": "$1"
+         }
+      }
+   },
+   "stats_label_total": {
+      "message": "మొత్తం \u003Cstrong>$number$\u003C/strong>",
+      "placeholders": {
+         "number": {
+            "content": "$1"
+         }
+      }
+   },
+   "stats_over": {
+      "message": "$number$ పైనే",
+      "placeholders": {
+         "number": {
+            "content": "$1"
+         }
+      }
+   },
+   "stats_share_download": {
+      "message": "Adblock Plus డౌన్లోడ్"
+   },
+   "stats_share_message": {
+      "message": "ధన్యవాదాలు Adblock Plus $number$ ప్రకటనలు మరియు జాడ కనిపెట్టు వాటిని నిరోధించాను.",
+      "placeholders": {
+         "number": {
+            "content": "$1"
+         }
+      }
+   },
+   "stats_share_title": {
+      "message": "ఈ సంఖ్యను పంచు"
+   },
+   "stats_show_iconnumber": {
+      "message": "ఐకాన్ లో నెంబర్ చూపించు"
+   },
+   "stats_title": {
+      "message": "ప్రకటనలు బ్లాక్ చేయబడినవి"
+   },
+   "subscriptionSelection_subscriptionSelector_label": {
+      "message": "జాబితా నుండి ఒక తొట్టె (వడపోత) చందాని ఎంచుకోండి:"
+   },
+   "update_now": {
+      "message": "ఇప్పుడు నవీనీకరించు"
+   },
+   "whitelisted_domains": {
+      "message": "నమ్మదగిన వాటికలు (ప్రదేశాలు)"
+   }
+}

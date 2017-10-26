@@ -1,0 +1,342 @@
+{
+   "add": {
+      "message": "أضف"
+   },
+   "add_domain_button": {
+      "message": "أضف نطاق"
+   },
+   "add_filter_button": {
+      "message": "أضف فلتر"
+   },
+   "add_filters_msg": {
+      "message": "إضافة فلتر\\فلاتر؟"
+   },
+   "add_your_own_filters": {
+      "message": "أضف الفلاتر الخاصة بك"
+   },
+   "apply_changes": {
+      "message": "تطبيق التغييرات"
+   },
+   "block_element": {
+      "message": "حجب العنصر"
+   },
+   "cancel": {
+      "message": "إلغاء"
+   },
+   "clickhide_instructions": {
+      "message": "بعد إغلاق هذه النافذة، اضغط (أو اضغط بالزر الأيمن) على أحد العناصر في الصفحة."
+   },
+   "description": {
+      "message": "يستخدم على أكثر من 100 مليون جهاز، آدبلوك بلس هو مانع الإعلانات الأكثر إنتشارًا في العالم."
+   },
+   "disabled_for_site": {
+      "message": "\u003Cstrong>معطل\u003C/strong> في هذا الموقع"
+   },
+   "disabled_for_these_domains": {
+      "message": "آدبلوك بلس معطل للنطاقات التالية. تستطيع إضافة نطاق من خلال أيقونة ﺁدبلوك بلس في شريط العنوان أو من خلال كتابة اسم النطاق (وليس الرابط) في الصندوق ثم الضغط على زر \"أضف نطاق\"."
+   },
+   "easy_create_filter": {
+      "message": "حجب العنصر"
+   },
+   "edit_filters_raw": {
+      "message": "تعديل الفلاتر في نص عادي"
+   },
+   "enable_only_the": {
+      "message": "فعّل قائمة الترشيح التي تريد فقط. الكثير منها بإمكانه جعل متصفحك لا يستجيب."
+   },
+   "enabled_for_site": {
+      "message": "\u003Cstrong>مفعّل\u003C/strong> في هذا الموقع"
+   },
+   "filter_lists": {
+      "message": "قوائم المرشحات"
+   },
+   "filter_must_follow_syntax": {
+      "message": "مرشحك يجب ان يتبع \u003Ca>قواعد ترشيح آدبلوك بلس\u003C/a>."
+   },
+   "filters_acceptableAds2_label": {
+      "message": "السماح لبعض الإعلانات الغير متطفّلة"
+   },
+   "filters_addSubscriptionAdd_label": {
+      "message": "اضافة"
+   },
+   "filters_addSubscriptionOther_label": {
+      "message": "إضافة اشتراك آخر"
+   },
+   "filters_addSubscription_label": {
+      "message": "إضافة إشتراك فلاتر"
+   },
+   "filters_readMore_label": {
+      "message": "قراءة المزيد"
+   },
+   "filters_subscription_delete_label": {
+      "message": "ازالة"
+   },
+   "filters_subscription_enabled_label": {
+      "message": "مفعّل"
+   },
+   "filters_subscription_lastDownload_checksumMismatch": {
+      "message": "فشل الأمر، عدم تطابق المجموع الإختباري"
+   },
+   "filters_subscription_lastDownload_connectionError": {
+      "message": "فشل الأمر، بسبب فشل التحميل"
+   },
+   "filters_subscription_lastDownload_inProgress": {
+      "message": "جاري التحميل…"
+   },
+   "filters_subscription_lastDownload_invalidData": {
+      "message": "فشل الأمر، قائمة فلاتر ليست صحيحة"
+   },
+   "filters_subscription_lastDownload_invalidURL": {
+      "message": "فشل الأمر، العنوان ليس صحيح"
+   },
+   "filters_viewList_label": {
+      "message": "إظهار القائمة"
+   },
+   "firstRun_abbButtonSubtitle": {
+      "message": "متوفر لنظامي Android و iOS"
+   },
+   "firstRun_abbButtonTitle": {
+      "message": "احصل على Adblock Browser هنا"
+   },
+   "firstRun_abbPromotionHeadline": {
+      "message": "لديك هاتف ذكي أو كمبيوتر لوحي؟"
+   },
+   "firstRun_acceptableAdsExplanation": {
+      "message": "نود تشجيع مواقع ويب باستخدام الإعلانات واضحة وغير مزعجة. ولهذا السبب وضعنا \u003Ca>مبادئ توجيهية صارمة\u003C/a> لتحديد الإعلانات المقبولة، والتي تظهر ضمن الإعدادات الافتراضية. إذا كنت تريد أن تمنع كل الإعلانات يمكنك \u003Ca>تعطيل\u003C/a> هذا في بضع ثوان."
+   },
+   "firstRun_acceptableAdsHeadline": {
+      "message": "سيتم الآن حجب الإعلانات المزعجة"
+   },
+   "firstRun_contributor_credits": {
+      "message": "شكر للمساهمين"
+   },
+   "firstRun_dataCorruptionWarning": {
+      "message": "هل تواصل هذه الصفحة الظهور ؟ \u003Ca>اضغط هنا !\u003C/a>"
+   },
+   "firstRun_donate": {
+      "message": "تبرع"
+   },
+   "firstRun_donate_label": {
+      "message": "دعم مشروعنا"
+   },
+   "firstRun_feature_malware": {
+      "message": "منع البرامج الضارة"
+   },
+   "firstRun_feature_malware_description": {
+      "message": "إجعل التصفح أكثر أماناً بتعطيل مواقع البرامج الضارة المعروفة."
+   },
+   "firstRun_feature_social": {
+      "message": "إزالة أزرار المواقع الإجتماعية"
+   },
+   "firstRun_feature_social_description": {
+      "message": "خلص تلقائياً المتصفح الخاص بك من وسائل الإعلام الاجتماعية الأزرار، مثل مثل ألفيس بوك، التي تظهر في صفحات الويب، وتتبع السلوك الخاص بك."
+   },
+   "firstRun_feature_tracking": {
+      "message": "تعطيل التعقب"
+   },
+   "firstRun_feature_tracking_description": {
+      "message": "حافظ على خصوصيتك عند استخدام المتصفح بتعطيل التجسس و أخفي نفسك على الشركات الإعلانية اللتي تحاول أن تتبع كل تحركاتك."
+   },
+   "firstRun_features": {
+      "message": "آد بلوك بلس يمكنه عمل أشياء أخرى غير حجب الإعلانات"
+   },
+   "firstRun_filterlistsReinitializedWarning": {
+      "message": "ويبدو أن خطأ تسبب في إزالة جميع قوائم الفلترات حجب الإعلانات، و لم نتمكن من استعادة نسخة احتياطية. ولذلك اضطررنا إلى إعادة تعيين الإعدادات الخاصة بك و قائمة الفلاتر للوضع السابق مع \"الإعلانات القبول\". الرجاء التحقق من قوائم الفلترات و إعدادات \"الإعلانات المقبولة\" في \u003Ca>خيارات آدبلوك بلس\u003C/a>."
+   },
+   "firstRun_legacySafariWarning": {
+      "message": "أنت تستخدم نسخة فديمة من متصفح سفارى وهذه النسخة غير مدعومة من أد بلوك بلس. بحيث من الممكن ان لا يعمل بصورة صحيحة على بعض المواقع. نحن نوصي بشدة ان تقوم بالترقية الى النسخة السادسة 6.1.1 للمتصفح سفارى أو النسخة الأحدث (متوفر على Mac OS X 10.8 Mountain Lion) أو النسخة السابعة 7.0.1 أو الأحدث (متوفر على OS X 10.9 Mavericks) أو تستطيع ان تستخدم أحدث إصدارللمتصفح فايرفوكس، جوجل كروم أو أوبرا."
+   },
+   "firstRun_share": {
+      "message": "أخبر أصدقائك"
+   },
+   "firstRun_share_headline": {
+      "message": "\u003Ca>يقدم لنا يد المساعدة\u003C/a> في جعل الإنترنت مكاناً أفضل"
+   },
+   "firstRun_title": {
+      "message": "تم تثبيت آد بلوك بلس"
+   },
+   "firstRun_toggle_off": {
+      "message": "إيقاف"
+   },
+   "firstRun_toggle_on": {
+      "message": "تشغيل"
+   },
+   "found_a_bug": {
+      "message": "هل وجدت خطأ برمجي؟ تريد ترجمة ﺁدبلوك بلس إلى لغتك؟ الرجاء \u003Ca>الطلب هنا\u003C/a>."
+   },
+   "general": {
+      "message": "عام"
+   },
+   "global_filter_elemhide_duplicate_id": {
+      "message": "تعريف واحد فقط للعنصر الذي سيتم إخفاؤه يمكن أن يحدد"
+   },
+   "global_filter_elemhide_nocriteria": {
+      "message": "لم يتم تحديد صيغة للتعرف على العنصر لإخفائه"
+   },
+   "global_filter_invalid_regexp": {
+      "message": "تعبير منطقي غير صحيح"
+   },
+   "global_filter_unknown_option": {
+      "message": "خيار فلتر غير معروف"
+   },
+   "global_remove_subscription_warning": {
+      "message": "هل أنت حقاً راغب بإزالة هذا الإشتراك؟"
+   },
+   "global_subscription_invalid_location": {
+      "message": "موقع قائمة الفلاتر ليس صحيح كعنوان ويب و لا كإسم ملف."
+   },
+   "invalid_css_selector": {
+      "message": "$selector$ غير صالح كمحدد لـ CSS",
+      "placeholders": {
+         "selector": {
+            "content": "$1"
+         }
+      }
+   },
+   "last_updated_at": {
+      "message": "أخر تحديث في $time$ عند $date$",
+      "placeholders": {
+         "date": {
+            "content": "$2"
+         },
+         "time": {
+            "content": "$1"
+         }
+      }
+   },
+   "last_updated_at_today": {
+      "message": "آخر تحديث في $time$ اليوم",
+      "placeholders": {
+         "time": {
+            "content": "$1"
+         }
+      }
+   },
+   "line": {
+      "message": "السطر $number$",
+      "placeholders": {
+         "number": {
+            "content": "$1"
+         }
+      }
+   },
+   "name": {
+      "message": "آدبلوك بلس"
+   },
+   "name_devbuild": {
+      "message": "رقم نسخة تطوير آدبلوك بلس"
+   },
+   "notification_antiadblock_message": {
+      "message": "يعرف هذا الموقع بإظهاره رسائل موجهة إلى المستخدمي آدبلوك بلس. هل تريد أن يخفي آدبلوك بلس هذه الرسائل المستهدفة؟"
+   },
+   "notification_antiadblock_title": {
+      "message": "إخفاء الرسائل المستهدفة؟"
+   },
+   "notification_configure": {
+      "message": "ضبط إعدادات الإشعارات"
+   },
+   "notification_open_all": {
+      "message": "فتح كل الروابط من هذا الإشعار"
+   },
+   "notification_with_buttons": {
+      "message": "اضغط موافق لفتح جميع الروابط في هذا التنبيه."
+   },
+   "notification_without_buttons": {
+      "message": "اضغط على التنبيه لفتح كل الروابط الموجودة فيه."
+   },
+   "options": {
+      "message": "خيارات آدبلوك بلس"
+   },
+   "options_short": {
+      "message": "الخيارات"
+   },
+   "out_of_date_lists": {
+      "message": "القوائم القديمة تحدث دورياً."
+   },
+   "overlay_notification_button_no": {
+      "message": "لا"
+   },
+   "overlay_notification_button_yes": {
+      "message": "نعم"
+   },
+   "overlay_notification_closing_button_hide": {
+      "message": "إغلاق هذا التنبيه"
+   },
+   "overlay_notification_closing_button_optout": {
+      "message": "إيقاف عرض التنبيهات"
+   },
+   "overlay_shownotifications_label": {
+      "message": "إظهار التنبيهات الهامة"
+   },
+   "remove_button": {
+      "message": "إزالة المحدد"
+   },
+   "show_block_element_menu": {
+      "message": "أظهر فقرة \"حجب العنصر\" في قائمة النقرة اليمنى"
+   },
+   "show_devtools_panel": {
+      "message": "أظهر لوحة 'آدبلوك بلس' في أدوات المطور"
+   },
+   "stats_label_page": {
+      "message": "\u003Cstrong>$number$\u003C/strong> على هذه الصفحة",
+      "placeholders": {
+         "number": {
+            "content": "$1"
+         }
+      }
+   },
+   "stats_label_total": {
+      "message": "\u003Cstrong>$number$\u003C/strong> اجمالي",
+      "placeholders": {
+         "number": {
+            "content": "$1"
+         }
+      }
+   },
+   "stats_over": {
+      "message": "ما يضاهي $number$",
+      "placeholders": {
+         "number": {
+            "content": "$1"
+         }
+      }
+   },
+   "stats_share_download": {
+      "message": "تحميل آدبلوك بلس"
+   },
+   "stats_share_message": {
+      "message": "أنا منعت $number$ إعلاناً و متتبعاً بفضل آدبلوك بلس.",
+      "placeholders": {
+         "number": {
+            "content": "$1"
+         }
+      }
+   },
+   "stats_share_title": {
+      "message": "مشاركة هذا الرقم"
+   },
+   "stats_show_iconnumber": {
+      "message": "عرض الرقم في الصورة المرمزة"
+   },
+   "stats_title": {
+      "message": "الإعلانات المحجوبة"
+   },
+   "subscriptionSelection_location_label": {
+      "message": "موقع قائمة الفلاتر:"
+   },
+   "subscriptionSelection_subscriptionSelector_label": {
+      "message": "الرجاء اختيار اشتراك لفلتر من القائمة:"
+   },
+   "subscriptionSelection_title_label": {
+      "message": "عنوان الاشتراك"
+   },
+   "unexpected_filter_list_header": {
+      "message": "ترويسات قائمة المرشحات غير مسموح بها هنا"
+   },
+   "update_now": {
+      "message": "التحديث الان"
+   },
+   "whitelisted_domains": {
+      "message": "نطاقات القائمة البيضاء"
+   }
+}

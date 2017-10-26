@@ -1,0 +1,342 @@
+{
+   "add": {
+      "message": "Añadir"
+   },
+   "add_domain_button": {
+      "message": "Añadir dominio"
+   },
+   "add_filter_button": {
+      "message": "Añadir filtro"
+   },
+   "add_filters_msg": {
+      "message": "¿Añadir filtro(s)?"
+   },
+   "add_your_own_filters": {
+      "message": "Añada sus filtros"
+   },
+   "apply_changes": {
+      "message": "Aplicar cambios"
+   },
+   "block_element": {
+      "message": "Bloquear elemento"
+   },
+   "cancel": {
+      "message": "Cancelar"
+   },
+   "clickhide_instructions": {
+      "message": "Tras cerrar este menú desplegable, pulse (o con botón derecho) en un elemento de la página."
+   },
+   "description": {
+      "message": "Utilizado en más de 100 millones de dispositivos, Adblock Plus es el bloqueador de publicidad más popular del mundo."
+   },
+   "disabled_for_site": {
+      "message": "\u003Cstrong>Desactivado\u003C/strong> en este sitio"
+   },
+   "disabled_for_these_domains": {
+      "message": "Adblock Plus está desactivado para los dominios mostrados a continuación. Puede añadir un dominio con el icono de Adblock Plus en la barra de direcciones o escribiendo el dominio (no la URL) en el recuadro y pulsando el botón \"Añadir dominio\"."
+   },
+   "easy_create_filter": {
+      "message": "Bloquear elemento"
+   },
+   "edit_filters_raw": {
+      "message": "Editar los filtros como texto"
+   },
+   "enable_only_the": {
+      "message": "Active sólo las listas de filtros que necesite: si activa demasiadas su navegador puede ir muy lento o congelarse."
+   },
+   "enabled_for_site": {
+      "message": "\u003Cstrong>Activado\u003C/strong> en este sitio"
+   },
+   "filter_lists": {
+      "message": "Listas de filtros"
+   },
+   "filter_must_follow_syntax": {
+      "message": "Su filtro debe seguir la \u003Ca>sintaxis de filtros para Adblock Plus\u003C/a>."
+   },
+   "filters_acceptableAds2_label": {
+      "message": "Permitir cierta publicidad no intrusiva"
+   },
+   "filters_addSubscriptionAdd_label": {
+      "message": "Añadir"
+   },
+   "filters_addSubscriptionOther_label": {
+      "message": "Añadir otra suscripción"
+   },
+   "filters_addSubscription_label": {
+      "message": "Añadir suscripción de filtros"
+   },
+   "filters_readMore_label": {
+      "message": "Leer más"
+   },
+   "filters_subscription_delete_label": {
+      "message": "Eliminar"
+   },
+   "filters_subscription_enabled_label": {
+      "message": "Activada"
+   },
+   "filters_subscription_lastDownload_checksumMismatch": {
+      "message": "Error, el checksum no coincide"
+   },
+   "filters_subscription_lastDownload_connectionError": {
+      "message": "Error: error de descarga"
+   },
+   "filters_subscription_lastDownload_inProgress": {
+      "message": "Descargando…"
+   },
+   "filters_subscription_lastDownload_invalidData": {
+      "message": "Error: lista de filtros no válida"
+   },
+   "filters_subscription_lastDownload_invalidURL": {
+      "message": "Error: dirección no válida"
+   },
+   "filters_viewList_label": {
+      "message": "Ver lista"
+   },
+   "firstRun_abbButtonSubtitle": {
+      "message": "Disponible para Android e iOS"
+   },
+   "firstRun_abbButtonTitle": {
+      "message": "Consigue Adblock Browser aquí"
+   },
+   "firstRun_abbPromotionHeadline": {
+      "message": "¿Tienes un smartphone o una tableta?"
+   },
+   "firstRun_acceptableAdsExplanation": {
+      "message": "Nos gustaría fomentar el uso de una publicidad más directa y menos agresiva en los sitios web. Por eso hemos establecido unas \u003Ca>directrices estrictas\u003C/a> para identificar la publicidad aceptable, que se muestra en modo predeterminado. Si sigue queriendo bloquear toda la publicidad puede \u003Ca>desactivar\u003C/a> este modo en unos pocos segundos."
+   },
+   "firstRun_acceptableAdsHeadline": {
+      "message": "Ahora se bloqueará la publicidad molesta"
+   },
+   "firstRun_contributor_credits": {
+      "message": "Colaboradores"
+   },
+   "firstRun_dataCorruptionWarning": {
+      "message": "¿Sigue apareciendo esta página? \u003Ca>Haga clic aquí\u003C/a>"
+   },
+   "firstRun_donate": {
+      "message": "Donar"
+   },
+   "firstRun_donate_label": {
+      "message": "Apoye nuestro proyecto"
+   },
+   "firstRun_feature_malware": {
+      "message": "Bloquear malware"
+   },
+   "firstRun_feature_malware_description": {
+      "message": "Navegue con más seguridad bloqueando dominios identificados como malware."
+   },
+   "firstRun_feature_social": {
+      "message": "Eliminar botones de redes sociales"
+   },
+   "firstRun_feature_social_description": {
+      "message": "Elimine automáticamente de su navegación los botones de redes sociales, como los \"Me gusta\" de Facebook, incluidos en las paginas web y que rastrean sus hábitos."
+   },
+   "firstRun_feature_tracking": {
+      "message": "Desactivar el rastreo"
+   },
+   "firstRun_feature_tracking_description": {
+      "message": "Navegue con intimidad desactivando el rastreo - ocultando su rastro a las empresas de publicidad que espían cada uno de sus movimientos."
+   },
+   "firstRun_features": {
+      "message": "Adblock Plus no sólo bloquea anuncios, puede hacer más cosas"
+   },
+   "firstRun_filterlistsReinitializedWarning": {
+      "message": "Parece que un problema provocó que se eliminasen todos los filtros y no se pudo restaurar una copia de seguridad. Por ello ha sido necesario reiniciar los filtros y predisposiciones de publicidad aceptable. Por favor, revise sus listas de filtros y predisposiciones de publicidad aceptable en \u003Ca>Opciones de Adblock Plus\u003C/a>."
+   },
+   "firstRun_legacySafariWarning": {
+      "message": "Está utilizando una versión antigua de Safari no soportada por Adblock Plus, por lo que podría funcionar incorrectamente o afectar a su experiencia de usuario en algunos sitios web. Le recomendamos actualizar a Safari 6.1.1 o posterior (para Mac OS X 10.8 Mountain Lion), o a Safari 7.0.1 o superior (para Mac OS X 10.9 Mavericks), o usar la última versión de Mozilla Firefox, Google Chrome u Opera."
+   },
+   "firstRun_share": {
+      "message": "Dígaselo a sus amigos"
+   },
+   "firstRun_share_headline": {
+      "message": "\u003Ca>Ayúdenos\u003C/a> a conseguir una web mejor"
+   },
+   "firstRun_title": {
+      "message": "Se ha instalado Adblock Plus"
+   },
+   "firstRun_toggle_off": {
+      "message": "DESACTIVAR"
+   },
+   "firstRun_toggle_on": {
+      "message": "ACTIVAR"
+   },
+   "found_a_bug": {
+      "message": "¿Ha encontrado un error? ¿Quiere traducir Adblock Plus a su idioma? Por favor \u003Ca>rellene una petición aquí\u003C/a>."
+   },
+   "general": {
+      "message": "General"
+   },
+   "global_filter_elemhide_duplicate_id": {
+      "message": "Sólo puede especificarse una ID del elemento a ocultar"
+   },
+   "global_filter_elemhide_nocriteria": {
+      "message": "No se especificó ningún criterio para identificar el elemento a ocultar"
+   },
+   "global_filter_invalid_regexp": {
+      "message": "Expresión regular inválida"
+   },
+   "global_filter_unknown_option": {
+      "message": "Opción de filtrado desconocida"
+   },
+   "global_remove_subscription_warning": {
+      "message": "¿Está seguro de querer eliminar esta suscripción?"
+   },
+   "global_subscription_invalid_location": {
+      "message": "La dirección de la lista de filtros no es una URL ni una ruta de archivo válida."
+   },
+   "invalid_css_selector": {
+      "message": "$selector$ no es un selector CSS válido",
+      "placeholders": {
+         "selector": {
+            "content": "$1"
+         }
+      }
+   },
+   "last_updated_at": {
+      "message": "Última actualización a las $time$ del $date$",
+      "placeholders": {
+         "date": {
+            "content": "$2"
+         },
+         "time": {
+            "content": "$1"
+         }
+      }
+   },
+   "last_updated_at_today": {
+      "message": "Última actualización a las $time$ de hoy",
+      "placeholders": {
+         "time": {
+            "content": "$1"
+         }
+      }
+   },
+   "line": {
+      "message": "Línea $number$",
+      "placeholders": {
+         "number": {
+            "content": "$1"
+         }
+      }
+   },
+   "name": {
+      "message": "Adblock Plus"
+   },
+   "name_devbuild": {
+      "message": "Adblock Plus (versión de desarrollo)"
+   },
+   "notification_antiadblock_message": {
+      "message": "Se sabe que este sitio ha mostrado en el pasado mensajes dirigidos a los usuarios de Adblock Plus. ¿Quiere que Adblock Plus oculte esos mensajes?"
+   },
+   "notification_antiadblock_title": {
+      "message": "¿Ocultar mensajes dirigidos a usuarios de Adblock Plus?"
+   },
+   "notification_configure": {
+      "message": "Configurar opciones de notificación"
+   },
+   "notification_open_all": {
+      "message": "Abrir todos los enlaces de esta notificación"
+   },
+   "notification_with_buttons": {
+      "message": "Pulse \"Aceptar\" para abrir todos los enlaces de este aviso."
+   },
+   "notification_without_buttons": {
+      "message": "Pulse en el aviso para abrir todos los enlaces que contiene."
+   },
+   "options": {
+      "message": "Opciones de Adblock Plus"
+   },
+   "options_short": {
+      "message": "Opciones"
+   },
+   "out_of_date_lists": {
+      "message": "Las listas obsoletas se actualizarán periódicamente."
+   },
+   "overlay_notification_button_no": {
+      "message": "No"
+   },
+   "overlay_notification_button_yes": {
+      "message": "Sí"
+   },
+   "overlay_notification_closing_button_hide": {
+      "message": "Cerrar este aviso"
+   },
+   "overlay_notification_closing_button_optout": {
+      "message": "Dejar de mostrar avisos"
+   },
+   "overlay_shownotifications_label": {
+      "message": "Mostrar avisos útiles"
+   },
+   "remove_button": {
+      "message": "Eliminar"
+   },
+   "show_block_element_menu": {
+      "message": "Mostrar la opción \"Bloquear elemento\" en el menú contextual"
+   },
+   "show_devtools_panel": {
+      "message": "Mostrar el panel de Adblock Plus en las herramientas de desarrollador"
+   },
+   "stats_label_page": {
+      "message": "\u003Cstrong>$number$\u003C/strong> en esta página",
+      "placeholders": {
+         "number": {
+            "content": "$1"
+         }
+      }
+   },
+   "stats_label_total": {
+      "message": "\u003Cstrong>$number$\u003C/strong> en total",
+      "placeholders": {
+         "number": {
+            "content": "$1"
+         }
+      }
+   },
+   "stats_over": {
+      "message": "$number$",
+      "placeholders": {
+         "number": {
+            "content": "$1"
+         }
+      }
+   },
+   "stats_share_download": {
+      "message": "Descargar Adblock Plus"
+   },
+   "stats_share_message": {
+      "message": "He bloqueado $number$ anuncios y rastreadores gracias a Adblock Plus.",
+      "placeholders": {
+         "number": {
+            "content": "$1"
+         }
+      }
+   },
+   "stats_share_title": {
+      "message": "Compartir este número"
+   },
+   "stats_show_iconnumber": {
+      "message": "Mostrar número en icono"
+   },
+   "stats_title": {
+      "message": "Anuncios bloqueados"
+   },
+   "subscriptionSelection_location_label": {
+      "message": "Ubicación de la lista de filtros:"
+   },
+   "subscriptionSelection_subscriptionSelector_label": {
+      "message": "Por favor elija una suscripción de filtros de la lista:"
+   },
+   "subscriptionSelection_title_label": {
+      "message": "Título de la suscripción:"
+   },
+   "unexpected_filter_list_header": {
+      "message": "Los encabezados de listas de filtros no se permiten aquí"
+   },
+   "update_now": {
+      "message": "Actualizar ahora"
+   },
+   "whitelisted_domains": {
+      "message": "Dominios autorizados"
+   }
+}

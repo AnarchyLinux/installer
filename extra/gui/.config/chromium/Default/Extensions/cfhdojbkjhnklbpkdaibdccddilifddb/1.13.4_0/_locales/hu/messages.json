@@ -1,0 +1,342 @@
+{
+   "add": {
+      "message": "Hozzáadás"
+   },
+   "add_domain_button": {
+      "message": "Domain hozzáadása"
+   },
+   "add_filter_button": {
+      "message": "Szűrő hozzáadása"
+   },
+   "add_filters_msg": {
+      "message": "Szűrő(k) hozzáadása?"
+   },
+   "add_your_own_filters": {
+      "message": "Add hozzá a saját szűrőidet"
+   },
+   "apply_changes": {
+      "message": "Változtatások alkalmazása"
+   },
+   "block_element": {
+      "message": "Elem blokkolása"
+   },
+   "cancel": {
+      "message": "Mégse"
+   },
+   "clickhide_instructions": {
+      "message": "Miután bezártad ezt a buborékot, kattints egy elemre az oldalon.."
+   },
+   "description": {
+      "message": "Több mint 100 millió eszközön használják, az Adblock Plus a világ legnépszerűbb hirdetés szűrője."
+   },
+   "disabled_for_site": {
+      "message": "\u003Cstrong>Kikapcsolva\u003C/strong> ezen a weboldalon"
+   },
+   "disabled_for_these_domains": {
+      "message": "Az Adblock Plus le van tiltva az alább felsorolt oldalakon. Egy domaint megadhatsz az Adblock Plus ikonra kattintva a címsorban, vagy beírhatod a domaint (nem az URL-t) a dobozba és kattints a \"Domain hozzáadása\" gombra."
+   },
+   "easy_create_filter": {
+      "message": "Elem blokkolása"
+   },
+   "edit_filters_raw": {
+      "message": "Szűrők szerkesztése nyers szövegként"
+   },
+   "enable_only_the": {
+      "message": "Csak azokat a szűrőlistákat engedélyezze amelyekre feltétlenül szüksége van. Túl sok lista esetén számottevően lelassulhat a böngészés."
+   },
+   "enabled_for_site": {
+      "message": "\u003Cstrong>Engedélyezve\u003C/strong> ezen a weboldalon"
+   },
+   "filter_lists": {
+      "message": "Szűrő lista"
+   },
+   "filter_must_follow_syntax": {
+      "message": "A szűrőd kövesse az \u003Ca>Adblock Plus szintaxisát\u003C/a>."
+   },
+   "filters_acceptableAds2_label": {
+      "message": "Néhány nem tolakodó hirdetés engedélyezése"
+   },
+   "filters_addSubscriptionAdd_label": {
+      "message": "Hozzáadás"
+   },
+   "filters_addSubscriptionOther_label": {
+      "message": "Külső szűrő hozzáadása"
+   },
+   "filters_addSubscription_label": {
+      "message": "Külső szűrő hozzáadása"
+   },
+   "filters_readMore_label": {
+      "message": "Mi ez?"
+   },
+   "filters_subscription_delete_label": {
+      "message": "Törlés"
+   },
+   "filters_subscription_enabled_label": {
+      "message": "Engedélyezve"
+   },
+   "filters_subscription_lastDownload_checksumMismatch": {
+      "message": "Sikertelen, érvénytelen ellenőrző összeg"
+   },
+   "filters_subscription_lastDownload_connectionError": {
+      "message": "Sikertelen, letöltési hiba"
+   },
+   "filters_subscription_lastDownload_inProgress": {
+      "message": "Letöltés..."
+   },
+   "filters_subscription_lastDownload_invalidData": {
+      "message": "Sikertelen, érvénytelen szűrőlista"
+   },
+   "filters_subscription_lastDownload_invalidURL": {
+      "message": "Sikertelen, érvénytelen cím"
+   },
+   "filters_viewList_label": {
+      "message": "Lista megtekintése"
+   },
+   "firstRun_abbButtonSubtitle": {
+      "message": "Elérhető Android és iOS készülékekhez"
+   },
+   "firstRun_abbButtonTitle": {
+      "message": "Szerezd be az Adblock Browsert itt"
+   },
+   "firstRun_abbPromotionHeadline": {
+      "message": "Van egy okostelefonod vagy tableted?"
+   },
+   "firstRun_acceptableAdsExplanation": {
+      "message": "Szeretnénk arra biztatni a weboldalakat, hogy egyértelmű, nem tolakodó hirdetéseket használjanak. Ezért hoztunk létre \u003Ca>szigorú irányelveket\u003C/a>, amelyek segítségével azonosíthatók az elfogadható hirdetések, amelyek az alapbeállítások között találhatók meg. Ha ennek ellenére minden hirdetést \u003Ca>blokkolni\u003C/a> szeretne, ezt továbbra is megteheti mindössze néhány másodperc alatt."
+   },
+   "firstRun_acceptableAdsHeadline": {
+      "message": "A bosszantó hirdetések mostantól blokkolva lesznek"
+   },
+   "firstRun_contributor_credits": {
+      "message": "Hozzájárulók névsora"
+   },
+   "firstRun_dataCorruptionWarning": {
+      "message": "Állandóan megjelenik ez az oldal? \u003Ca>Kattintson ide!\u003C/a>"
+   },
+   "firstRun_donate": {
+      "message": "adományozás"
+   },
+   "firstRun_donate_label": {
+      "message": "A projekt támogatása"
+   },
+   "firstRun_feature_malware": {
+      "message": "Rosszindulatú kódok blokkolása"
+   },
+   "firstRun_feature_malware_description": {
+      "message": "Tegye a böngészést biztonságosabbá azáltal, hogy letiltja az ismert malware címeket."
+   },
+   "firstRun_feature_social": {
+      "message": "Közösségi oldalak gombjainak eltávolítása"
+   },
+   "firstRun_feature_social_description": {
+      "message": "Automatikusan szabaduljon meg a közösségi médiával kapcsolatos gomboktól, mint például a facebook \"Tetszik\" gombja, amelyek a weboldalakon jelennek meg és figyelik az Ön szokásait."
+   },
+   "firstRun_feature_tracking": {
+      "message": "Követés letiltása"
+   },
+   "firstRun_feature_tracking_description": {
+      "message": "Böngésszen privátban azáltal, hogy letiltja a követést - elrejtheti nyomait a reklámcégek elől, amelyek egyébként figyelnék minden lépését."
+   },
+   "firstRun_features": {
+      "message": "Az Adblock Plus a reklámok blokkolásánál többre is képes"
+   },
+   "firstRun_filterlistsReinitializedWarning": {
+      "message": "Egy hiba miatt az összes szűrő eltávolításra került és a biztonsági másolatot sem sikerült visszaállítani. Az összes szűrő és az elfogadható hirdetések beállításai alapállapotba kerültek. Kérem ellenőrizze a szűrő listákat és az elfogadható hirdetések beállításait az \u003Ca>Adblock Plus opció\u003C/a> közt."
+   },
+   "firstRun_legacySafariWarning": {
+      "message": "A Safari egy régi verzióját használja, amelyet nem támogat az Adblock Plus. Lehetséges, hogy nem fog megfelelően működni vagy lelassítja a működést egyes weboldalakon. Erősen ajánlott frissíteni a Safari 6.1.1-es (Mac OS X 10.8 Mountain Lion operációs rendszeren) , vagy a Safari 7.0.1-es és újabb verzióira (OS X 10.9 Maverics operációs rendszertől) vagy használja a Mozilla Firefox, Google Chrome vagy Opera legújabb verzióját."
+   },
+   "firstRun_share": {
+      "message": "Mondja el barátainak"
+   },
+   "firstRun_share_headline": {
+      "message": "\u003Ca>Segítsen nekünk\u003C/a> jobb hellyé tenni a világhálót"
+   },
+   "firstRun_title": {
+      "message": "Sikeresen telepítette az Adblock Plus-t"
+   },
+   "firstRun_toggle_off": {
+      "message": "KIKAPCSOLVA"
+   },
+   "firstRun_toggle_on": {
+      "message": "BEKAPCSOLVA"
+   },
+   "found_a_bug": {
+      "message": "Találtál egy hibát az Adblock Plus-ban? Kérlek \u003Ca>jelentsd itt\u003C/a>."
+   },
+   "general": {
+      "message": "Általános"
+   },
+   "global_filter_elemhide_duplicate_id": {
+      "message": "Csak egy ID-ját lehet megadni az elrejtendő elemnek"
+   },
+   "global_filter_elemhide_nocriteria": {
+      "message": "Nincs megadva feltétel az elrejtendő elemre"
+   },
+   "global_filter_invalid_regexp": {
+      "message": "Érvénytelen reguláris kifejezés"
+   },
+   "global_filter_unknown_option": {
+      "message": "Ismeretlen szűrő"
+   },
+   "global_remove_subscription_warning": {
+      "message": "Valóban el kívánja távolítani ezt a szűrőt?"
+   },
+   "global_subscription_invalid_location": {
+      "message": "A megadott külső szűrőt tartalmazó cím helytelen, vagy hibás fájlnevet tartalmaz."
+   },
+   "invalid_css_selector": {
+      "message": "Érvénytelen CSS kiválasztó: $selector$",
+      "placeholders": {
+         "selector": {
+            "content": "$1"
+         }
+      }
+   },
+   "last_updated_at": {
+      "message": "Utoljára ekkor lett frissítve: $date$ $time$",
+      "placeholders": {
+         "date": {
+            "content": "$2"
+         },
+         "time": {
+            "content": "$1"
+         }
+      }
+   },
+   "last_updated_at_today": {
+      "message": "Utoljára ekkor lett frissítve: ma $time$-kor",
+      "placeholders": {
+         "time": {
+            "content": "$1"
+         }
+      }
+   },
+   "line": {
+      "message": "$number$. sor",
+      "placeholders": {
+         "number": {
+            "content": "$1"
+         }
+      }
+   },
+   "name": {
+      "message": "Adblock Plus"
+   },
+   "name_devbuild": {
+      "message": "Adblock Plus fejlesztői változat"
+   },
+   "notification_antiadblock_message": {
+      "message": "Ezen az oldalon célzott üzeneteket jelenítenek meg az Adblock Plus felhasználóinak. Szeretné, ha az Adblock Plus elrejtené ezeket az üzeneteket?"
+   },
+   "notification_antiadblock_title": {
+      "message": "Célzott üzenetek elrejtése"
+   },
+   "notification_configure": {
+      "message": "Értesítési beállítások konfigurálása"
+   },
+   "notification_open_all": {
+      "message": "Összes link megnyitása ebből az értesítésből"
+   },
+   "notification_with_buttons": {
+      "message": "Kattints az OK gombra az értesítésben lévő összes link megnyitásához."
+   },
+   "notification_without_buttons": {
+      "message": "Kattints az értesítésre a benne lévő összes link megnyitásához."
+   },
+   "options": {
+      "message": "Adblock Plus beállítások"
+   },
+   "options_short": {
+      "message": "Beállítások"
+   },
+   "out_of_date_lists": {
+      "message": "Az elavult listák időközönként frissülnek."
+   },
+   "overlay_notification_button_no": {
+      "message": "Nem"
+   },
+   "overlay_notification_button_yes": {
+      "message": "Igen"
+   },
+   "overlay_notification_closing_button_hide": {
+      "message": "Értesítés bezárása"
+   },
+   "overlay_notification_closing_button_optout": {
+      "message": "Ne jelenjenek meg értesítések"
+   },
+   "overlay_shownotifications_label": {
+      "message": "Hasznos értesítések megjelenítése"
+   },
+   "remove_button": {
+      "message": "Kijelölt eltávolítása"
+   },
+   "show_block_element_menu": {
+      "message": "'Elem blokkolása' megjelenítése a környezeti menüben"
+   },
+   "show_devtools_panel": {
+      "message": "'Adblock Plus' panel megjelenítése a fejlesztői eszközökben"
+   },
+   "stats_label_page": {
+      "message": "\u003Cstrong>$number$\u003C/strong> ezen az oldalon",
+      "placeholders": {
+         "number": {
+            "content": "$1"
+         }
+      }
+   },
+   "stats_label_total": {
+      "message": "\u003Cstrong>$number$\u003C/strong> összesen",
+      "placeholders": {
+         "number": {
+            "content": "$1"
+         }
+      }
+   },
+   "stats_over": {
+      "message": "több mint $number$",
+      "placeholders": {
+         "number": {
+            "content": "$1"
+         }
+      }
+   },
+   "stats_share_download": {
+      "message": "Adblock Plus letöltése"
+   },
+   "stats_share_message": {
+      "message": "Kiszűrtem $number$ hirdetést és nyomkövetőt az Adblock Plusnak köszönhetően.",
+      "placeholders": {
+         "number": {
+            "content": "$1"
+         }
+      }
+   },
+   "stats_share_title": {
+      "message": "Statisztika megosztása"
+   },
+   "stats_show_iconnumber": {
+      "message": "Blokkolt reklámok számának kijelzése az ikonon"
+   },
+   "stats_title": {
+      "message": "Blokkolt reklámok:"
+   },
+   "subscriptionSelection_location_label": {
+      "message": "Szűrőlista címe:"
+   },
+   "subscriptionSelection_subscriptionSelector_label": {
+      "message": "Kérem válassza ki a szűrőt a listából:"
+   },
+   "subscriptionSelection_title_label": {
+      "message": "Külső szűrő neve:"
+   },
+   "unexpected_filter_list_header": {
+      "message": "A szűrő lista fejlécek itt nem engedélyezettek"
+   },
+   "update_now": {
+      "message": "Frissítés most"
+   },
+   "whitelisted_domains": {
+      "message": "Engedélyezett domainek"
+   }
+}

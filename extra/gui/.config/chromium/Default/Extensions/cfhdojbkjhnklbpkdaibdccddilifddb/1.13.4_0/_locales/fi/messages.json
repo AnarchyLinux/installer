@@ -1,0 +1,336 @@
+{
+   "add": {
+      "message": "Lisää"
+   },
+   "add_domain_button": {
+      "message": "Lisää sivu"
+   },
+   "add_filter_button": {
+      "message": "Lisää suodatin"
+   },
+   "add_filters_msg": {
+      "message": "Lisää suodatin\\suodattimia?"
+   },
+   "add_your_own_filters": {
+      "message": "Lisää omia suodattimia"
+   },
+   "apply_changes": {
+      "message": "Hyväksy muutokset"
+   },
+   "block_element": {
+      "message": "Estä elementti"
+   },
+   "cancel": {
+      "message": "Peruuta"
+   },
+   "clickhide_instructions": {
+      "message": "Tämän ikkunan sulkemisen jälkeen klikkaa (tai oikea klikkaa) elementtiä jonka haluat estää."
+   },
+   "description": {
+      "message": "Adblock Plus on maailman suosituin mainosten esto-ohjelma, ja se on käytössä yli 100 miljoonassa laitteessa."
+   },
+   "disabled_for_site": {
+      "message": "\u003Cstrong>Poistettu\u003C/strong> tältä sivulta"
+   },
+   "disabled_for_these_domains": {
+      "message": "Adblock Plus ei estä mainoksia sivuilla jotka ovat alla listattuna. Voit lisätä sivun joko Adblock Plus kuvakkeesta osoiteriviltä tai kirjoittamalla sivun (ei osoitetta) laatikkoon ja klikkaamalla \"lisää sivu\" nappia."
+   },
+   "easy_create_filter": {
+      "message": "Estä elementti"
+   },
+   "edit_filters_raw": {
+      "message": "Editoi suodattimia tekstimuodossa"
+   },
+   "enable_only_the": {
+      "message": "Käytä vain tarvittavia suodattimia. Liian monta suodatinta voi aiheuttaa sen että selaimesi ei vastaa."
+   },
+   "enabled_for_site": {
+      "message": "\u003Cstrong>Poistettu\u003C/strong> tältä sivulta"
+   },
+   "filter_lists": {
+      "message": "Suodatinlistat"
+   },
+   "filter_must_follow_syntax": {
+      "message": "Suodattimesi on noudatettava \u003Ca>Adblock Plus suodattimen syntaksia\u003C/a>."
+   },
+   "filters_acceptableAds2_label": {
+      "message": "Salli osa ei-häiritsevästä mainonnasta"
+   },
+   "filters_addSubscriptionAdd_label": {
+      "message": "Lisää"
+   },
+   "filters_addSubscriptionOther_label": {
+      "message": "Lisää jokin muu tilaus"
+   },
+   "filters_addSubscription_label": {
+      "message": "Lisää suodatintilaus"
+   },
+   "filters_readMore_label": {
+      "message": "Lue lisää"
+   },
+   "filters_subscription_delete_label": {
+      "message": "Poista"
+   },
+   "filters_subscription_enabled_label": {
+      "message": "Käytössä"
+   },
+   "filters_subscription_lastDownload_checksumMismatch": {
+      "message": "Epäonnistui, tarkistussumma ei täsmää"
+   },
+   "filters_subscription_lastDownload_connectionError": {
+      "message": "Epäonnistui, latausvirhe"
+   },
+   "filters_subscription_lastDownload_inProgress": {
+      "message": "Lataa..."
+   },
+   "filters_subscription_lastDownload_invalidData": {
+      "message": "Epäonnistui, kelvoton suodatinlista"
+   },
+   "filters_subscription_lastDownload_invalidURL": {
+      "message": "Epäonnistui, kelvoton osoite"
+   },
+   "filters_viewList_label": {
+      "message": "Näytä lista"
+   },
+   "firstRun_abbButtonSubtitle": {
+      "message": "Saatavilla Androidille ja iOS:lle"
+   },
+   "firstRun_abbButtonTitle": {
+      "message": "Hanki Adblock Browser täältä"
+   },
+   "firstRun_abbPromotionHeadline": {
+      "message": "Onko sinulla älypuhelin tai tabletti?"
+   },
+   "firstRun_acceptableAdsExplanation": {
+      "message": "Kannustamme verkkosivuja käyttämään yksinkertaisia mainoksia, jotka eivät häiritse. Tämän vuoksi olemme luoneet \u003Ca>tiukat ohjesäännöt\u003C/a> hyväksyttävien mainosten tunnistamiseksi, jotka näytetään oletusasetuksilla. Jos silti haluat estää kaikki mainokset, voit ottaa tämän \u003Ca>pois käytöstä\u003C/a> käden käänteessä."
+   },
+   "firstRun_acceptableAdsHeadline": {
+      "message": "Häiritsevät mainokset estetään"
+   },
+   "firstRun_contributor_credits": {
+      "message": "Avustajat:"
+   },
+   "firstRun_dataCorruptionWarning": {
+      "message": "Näetkö tämän sivun koko ajan? \u003Ca>Napsauta tätä!\u003C/a>"
+   },
+   "firstRun_donate": {
+      "message": "lahjoita"
+   },
+   "firstRun_donate_label": {
+      "message": "Tue projektiamme"
+   },
+   "firstRun_feature_malware": {
+      "message": "Haittaohjelmien estäminen"
+   },
+   "firstRun_feature_malware_description": {
+      "message": "Tee selaimestasi turvallisempi estämällä verkko-osoitteita, joiden tiedetään sisältävän haitallisia ohjelmia."
+   },
+   "firstRun_feature_social": {
+      "message": "Sosiaalisen median painikkeiden poistaminen"
+   },
+   "firstRun_feature_social_description": {
+      "message": "Poista sivustoilta automaattisesti sosiaalisen median painikkeet, kuten Facebookin tykkää -painikkeet, jotka seuraavat verkkokäyttäytymistäsi."
+   },
+   "firstRun_feature_tracking": {
+      "message": "Seuraamisen estäminen"
+   },
+   "firstRun_feature_tracking_description": {
+      "message": "Selaa yksityisesti estämällä seuraaminen - piilota jälkesi mainosyhtiöiltä, jotka muuten seuraavat jokaista liikettäsi."
+   },
+   "firstRun_features": {
+      "message": "Adblock Plus voi tehdä muutakin kuin vain estää mainoksia"
+   },
+   "firstRun_filterlistsReinitializedWarning": {
+      "message": "Näyttäisi siltä, että ongelman takia kaikki suodattimet on poistettu ja niiden palauttaminen varmuuskopiosta epäonnistui. Tämän vuoksi kaikki suodattimien ja hyväksyttävien mainosten asetukset on palautettu alkuarvoihin. Tarkasta suodatinlistat ja hyväksyttävien mainosten asetukset \u003Ca>Adblock Plussan asetuksista\u003C/a>."
+   },
+   "firstRun_legacySafariWarning": {
+      "message": "Käytössäsi on Safarin vanha versio, jota Adblock Plus ei tue. Se ei välttämättä toimi oikein tai saattaa heikentää joidenkin sivustojen käyttökokemusta. Suosittelemme vahvasti päivittämään Safari 6.1.1:een tai uudempaan (OSX 10.8 Mountain Lion), tai Safari 7.0.1:een tai uudempaan (OSX 10.9 Mavericks), tai käyttämään Mozilla Firefoxin, Google Chromen tai Operan uusinta versiota."
+   },
+   "firstRun_share": {
+      "message": "Kerro ystävillesi"
+   },
+   "firstRun_share_headline": {
+      "message": "\u003Ca>Auta meitä\u003C/a> tekemään verkosta parempi paikka"
+   },
+   "firstRun_title": {
+      "message": "Adblock Plus on asennettu"
+   },
+   "found_a_bug": {
+      "message": "Löysitkö vian? Haluatko kääntää Adblock Plusin omalle kielellesi? Ole hyvä ja \u003Ca>kirjoita hakemus täällä\u003C/a>."
+   },
+   "general": {
+      "message": "Yleiset"
+   },
+   "global_filter_elemhide_duplicate_id": {
+      "message": "Piilotettavalle elementille voidaan määritellä vain yksi tunniste (ID)"
+   },
+   "global_filter_elemhide_nocriteria": {
+      "message": "Piilotettavan elementin määrittävää tunnistetta ei annettu"
+   },
+   "global_filter_invalid_regexp": {
+      "message": "Virheellinen normaali-ilmaus"
+   },
+   "global_filter_unknown_option": {
+      "message": "Tuntematon suodatusvaihtoehto"
+   },
+   "global_remove_subscription_warning": {
+      "message": "Haluatko varmasti poistaa tämän tilauksen?"
+   },
+   "global_subscription_invalid_location": {
+      "message": "Suodatinlistan sijainti on joko kelvoton osoite tai tiedoston nimi."
+   },
+   "invalid_css_selector": {
+      "message": "$selector$ ei ole kelvollinen CSS-valitsin",
+      "placeholders": {
+         "selector": {
+            "content": "$1"
+         }
+      }
+   },
+   "last_updated_at": {
+      "message": "Viimeksi päivitetty $time$ $date$",
+      "placeholders": {
+         "date": {
+            "content": "$2"
+         },
+         "time": {
+            "content": "$1"
+         }
+      }
+   },
+   "last_updated_at_today": {
+      "message": "Viimeksi päivitetty $time$ tänään",
+      "placeholders": {
+         "time": {
+            "content": "$1"
+         }
+      }
+   },
+   "line": {
+      "message": "Rivi $number$",
+      "placeholders": {
+         "number": {
+            "content": "$1"
+         }
+      }
+   },
+   "name": {
+      "message": "Adblock Plus"
+   },
+   "name_devbuild": {
+      "message": "Adblock Plus kehittäjän versio"
+   },
+   "notification_antiadblock_message": {
+      "message": "Tämän sivun tiedetään näyttäneen kohdennettuja viestejä Adblock Plussan käyttäjille. Haluatko, että Adblock Plus piilottaa kohdennetut viestit?"
+   },
+   "notification_antiadblock_title": {
+      "message": "Piilotetaanko kohdennetut viestit?"
+   },
+   "notification_configure": {
+      "message": "Määritä ilmoitusasetukset"
+   },
+   "notification_open_all": {
+      "message": "Avata kaikki linkit tästä ilmoituksesta"
+   },
+   "notification_with_buttons": {
+      "message": "Valitse 'OK' aukaeksesi kaikki linkit tässä ilmoituksessa."
+   },
+   "notification_without_buttons": {
+      "message": "Napsauttamalla ilmoitusta voit avata kaikki linkit siitä."
+   },
+   "options": {
+      "message": "Adblock Plus asetukset"
+   },
+   "options_short": {
+      "message": "Asetukset"
+   },
+   "out_of_date_lists": {
+      "message": "Vanhentuneet listat päivitetään säännöllisesti."
+   },
+   "overlay_notification_button_no": {
+      "message": "Ei"
+   },
+   "overlay_notification_button_yes": {
+      "message": "Kyllä"
+   },
+   "overlay_notification_closing_button_hide": {
+      "message": "Sulje tämä ilmoitus"
+   },
+   "overlay_notification_closing_button_optout": {
+      "message": "Lopeta ilmoitusten näyttäminen"
+   },
+   "overlay_shownotifications_label": {
+      "message": "Näytä hyödylliset ilmoitukset"
+   },
+   "remove_button": {
+      "message": "Poista valitut"
+   },
+   "show_block_element_menu": {
+      "message": "Näytä 'Estä elementti' oikea-klikkaus valikossa"
+   },
+   "show_devtools_panel": {
+      "message": "Näytä \"Adblock Plus\" -paneeli kehittäjätyökalut"
+   },
+   "stats_label_page": {
+      "message": "\u003Cstrong>$number$\u003C/strong> tällä sivulla",
+      "placeholders": {
+         "number": {
+            "content": "$1"
+         }
+      }
+   },
+   "stats_label_total": {
+      "message": "\u003Cstrong>$number$\u003C/strong> yhteensä",
+      "placeholders": {
+         "number": {
+            "content": "$1"
+         }
+      }
+   },
+   "stats_over": {
+      "message": "yli $number$",
+      "placeholders": {
+         "number": {
+            "content": "$1"
+         }
+      }
+   },
+   "stats_share_download": {
+      "message": "Lataa Adblock Plus"
+   },
+   "stats_share_message": {
+      "message": "Estin $number$ mainosta ja trackeriä kiitos Adblock Plus;an.",
+      "placeholders": {
+         "number": {
+            "content": "$1"
+         }
+      }
+   },
+   "stats_share_title": {
+      "message": "Jaa tämä numero"
+   },
+   "stats_show_iconnumber": {
+      "message": "Näytä numerot kuvakkeessa"
+   },
+   "stats_title": {
+      "message": "Mainokset estetty"
+   },
+   "subscriptionSelection_location_label": {
+      "message": "Suodatinlistan sijainti:"
+   },
+   "subscriptionSelection_subscriptionSelector_label": {
+      "message": "Valitse suodatintilaus listasta:"
+   },
+   "subscriptionSelection_title_label": {
+      "message": "Tilauksen nimi:"
+   },
+   "unexpected_filter_list_header": {
+      "message": "Suodatin-listan otsakkeet eivät ole sallittuja tässä"
+   },
+   "update_now": {
+      "message": "Päivitä nyt"
+   },
+   "whitelisted_domains": {
+      "message": "Sallitut sivut"
+   }
+}
