@@ -40,6 +40,7 @@
       <property name="show-home" type="bool" value="true"/>
       <property name="show-filesystem" type="bool" value="false"/>
       <property name="show-trash" type="bool" value="false"/>
+      <property name="show-removable" type="bool" value="false"/>
     </property>
   </property>
 </channel>

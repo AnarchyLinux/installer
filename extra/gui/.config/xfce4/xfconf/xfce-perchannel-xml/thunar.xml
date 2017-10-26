@@ -4,4 +4,6 @@
   <property name="last-view" type="string" value="ThunarIconView"/>
   <property name="last-icon-view-zoom-level" type="string" value="THUNAR_ZOOM_LEVEL_NORMAL"/>
   <property name="last-separator-position" type="int" value="170"/>
+  <property name="misc-single-click" type="bool" value="false"/>
+  <property name="misc-volume-management" type="bool" value="false"/>
 </channel>
