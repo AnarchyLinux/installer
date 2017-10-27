@@ -129,7 +129,7 @@ update_iso() {
 		fi
 
 		if "$update" ; then
-			cd "$aa"
+			cd "$aa" || exit
 			wget "$archiso_link"
 			if [ "$?" -gt "0" ]; then
 				echo "Error: requires wget, exiting"
@@ -148,64 +148,64 @@ aur_builds() {
 
 	if [ ! -d /tmp/fetchmirrors ]; then
 		### Build fetchmirrors
-		cd /tmp
+		cd /tmp || exit
 		wget "https://aur.archlinux.org/cgit/aur.git/snapshot/fetchmirrors.tar.gz"
 		tar -xf fetchmirrors.tar.gz
-		cd fetchmirrors
+		cd fetchmirrors || exit
 		makepkg -s
 	fi
 
 	if [ ! -d /tmp/arch-wiki-cli ]; then
 		### Build arch-wiki
-		cd /tmp
+		cd /tmp || exit
 		wget "https://aur.archlinux.org/cgit/aur.git/snapshot/arch-wiki-cli.tar.gz"
 		tar -xf arch-wiki-cli.tar.gz
-		cd arch-wiki-cli
+		cd arch-wiki-cli || exit
 		makepkg -s
 	fi
 
 	if [ ! -d /tmp/numix-icon-theme-git ]; then
                  ### Build numix icons
-                 cd /tmp
+                 cd /tmp || exit
                  wget "https://aur.archlinux.org/cgit/aur.git/snapshot/numix-icon-theme-git.tar.gz"
                  tar -xf numix-icon-theme-git.tar.gz
-                 cd numix-icon-theme-git
+                 cd numix-icon-theme-git || exit
                  makepkg -si
          fi
 
          if [ ! -d /tmp/numix-circle-icon-theme-git ]; then
                  ### Build numix icons
-                 cd /tmp
+                 cd /tmp || exit
                  wget "https://aur.archlinux.org/cgit/aur.git/snapshot/numix-circle-icon-theme-git.tar.gz"
                  tar -xf numix-circle-icon-theme-git.tar.gz
-                 cd numix-circle-icon-theme-git
+                 cd numix-circle-icon-theme-git || exit
                  makepkg -s
 	fi
 
 	if [ ! -d /tmp/lightdm-slick-greeter ]; then
                  ### Build slick greeter
-                 cd /tmp
+                 cd /tmp || exit
                  wget "https://aur.archlinux.org/cgit/aur.git/snapshot/lightdm-slick-greeter.tar.gz"
                  tar -xf lightdm-slick-greeter.tar.gz
-                 cd lightdm-slick-greeter
+                 cd lightdm-slick-greeter || exit
                  makepkg -si
          fi
 
          if [ ! -d /tmp/lightdm-settings ]; then
                  ### Build lightdm settings
-                 cd /tmp
+                 cd /tmp || exit
                  wget "https://aur.archlinux.org/cgit/aur.git/snapshot/lightdm-settings.tar.gz"
                  tar -xf lightdm-settings.tar.gz
-                 cd lightdm-settings
+                 cd lightdm-settings || exit
                  makepkg -s
          fi
 
 	 if [ ! -d /tmp/oh-my-zsh-git ]; then
                  ### Build oh-my-zsh
-                 cd /tmp
+                 cd /tmp || exit
                  wget "https://aur.archlinux.org/cgit/aur.git/snapshot/oh-my-zsh-git.tar.gz"
                  tar -xf oh-my-zsh-git.tar.gz
-                 cd oh-my-zsh-git
+                 cd oh-my-zsh-git || exit
                  makepkg -s
          fi
 
@@ -227,7 +227,7 @@ build_sys() {
 	### Change directory into the ISO where the filesystem is stored.
 	### Unsquash root filesystem 'airootfs.sfs' this creates a directory 'squashfs-root' containing the entire system
 	echo "Preparing $sys"
-	cd "$customiso"/arch/"$sys"
+	cd "$customiso"/arch/"$sys" || exit
 	sudo unsquashfs airootfs.sfs
 
 	### Install fonts, fbterm, fetchmirrors, arch-wiki
@@ -276,12 +276,12 @@ build_sys() {
 	sudo cp /tmp/lightdm-slick-greeter/*.pkg.tar.xz "$customiso"/arch/"$sys"/squashfs-root/usr/share/anarchy/pkg
 	sudo cp /tmp/lightdm-settings/*.pkg.tar.xz "$customiso"/arch/"$sys"/squashfs-root/usr/share/anarchy/pkg
 	sudo cp /tmp/oh-my-zsh-git/*.pkg.tar.xz "$customiso"/arch/"$sys"/squashfs-root/usr/share/anarchy/pkg
-	cd "$customiso"/arch/"$sys"/squashfs-root/usr/share/anarchy/pkg
+	cd "$customiso"/arch/"$sys"/squashfs-root/usr/share/anarchy/pkg || exit
 	sudo repo-add anarchy.db.tar.gz *.pkg.tar.xz
 	sudo sed -i -e '$a\\n[anarchy]\nServer = file:///usr/share/anarchy/pkg\nSigLevel = Never' "$customiso"/arch/"$sys"/squashfs-root/etc/pacman.conf
 
 	### cd back into root system directory, remove old system
-	cd "$customiso"/arch/"$sys"
+	cd "$customiso"/arch/"$sys" || exit
 	rm airootfs.sfs
 
 	### Recreate the ISO using compression remove unsquashed system generate checksums and continue to i686
@@ -297,7 +297,7 @@ build_sys_gui() {
 	### Change directory into the ISO where the filesystem is stored.
 	### Unsquash root filesystem 'airootfs.sfs' this creates a directory 'squashfs-root' containing the entire system
 	echo "Preparing $sys"
-	cd "$customiso"/arch/"$sys"
+	cd "$customiso"/arch/"$sys" || exit
 	sudo unsquashfs airootfs.sfs
 	sudo mount -t proc proc "$customiso"/arch/"$sys"/squashfs-root/proc/
 	sudo mount -t sysfs sys "$customiso"/arch/"$sys"/squashfs-root/sys/
@@ -387,12 +387,12 @@ build_sys_gui() {
 	sudo cp /tmp/lightdm-slick-greeter/*.pkg.tar.xz "$customiso"/arch/"$sys"/squashfs-root/usr/share/anarchy/pkg
 	sudo cp /tmp/lightdm-settings/*.pkg.tar.xz "$customiso"/arch/"$sys"/squashfs-root/usr/share/anarchy/pkg
 	sudo cp /tmp/oh-my-zsh-git/*.pkg.tar.xz "$customiso"/arch/"$sys"/squashfs-root/usr/share/anarchy/pkg
-	cd "$customiso"/arch/"$sys"/squashfs-root/usr/share/anarchy/pkg
+	cd "$customiso"/arch/"$sys"/squashfs-root/usr/share/anarchy/pkg || exit
 	sudo repo-add anarchy.db.tar.gz *.pkg.tar.xz
 	sudo sed -i -e '$a\\n[anarchy]\nServer = file:///usr/share/anarchy/pkg\nSigLevel = Never' "$customiso"/arch/"$sys"/squashfs-root/etc/pacman.conf
 
 	### cd back into root system directory, remove old system
-	cd "$customiso"/arch/"$sys"
+	cd "$customiso"/arch/"$sys" || exit
 	rm airootfs.sfs
 
 	### Recreate the ISO using compression remove unsquashed system generate checksums and continue to i686
@@ -416,7 +416,7 @@ configure_boot() {
 	sed -i "s/$archiso_label/$iso_label/;s/Arch Linux archiso/Anarchy Linux/" "$customiso"/loader/entries/archiso-x86_64.conf
 	sed -i "s/$archiso_label/$iso_label/;s/Arch Linux/Anarchy Linux/" "$customiso"/arch/boot/syslinux/archiso_sys.cfg
 	sed -i "s/$archiso_label/$iso_label/;s/Arch Linux/Anarchy Linux/" "$customiso"/arch/boot/syslinux/archiso_pxe.cfg
-	cd "$customiso"/EFI/archiso/
+	cd "$customiso"/EFI/archiso/ || exit
 	echo -e "Replacing label hex in efiboot.img...\n$archiso_label $archiso_hex > $iso_label $iso_hex"
 	xxd -c 256 -p efiboot.img | sed "s/$archiso_hex/$iso_hex/" | xxd -r -p > efiboot1.img
 	if ! (xxd -c 256 -p efiboot1.img | grep "$iso_hex" &>/dev/null); then
@@ -430,7 +430,7 @@ configure_boot() {
 
 create_iso() {
 
-	cd "$aa"
+	cd "$aa" || exit
 	xorriso -as mkisofs \
 	 -iso-level 3 \
 	-full-iso9660-filenames \
@@ -446,7 +446,7 @@ create_iso() {
 	"$customiso"
 
 	if [ "$?" -eq "0" ]; then
-		rm -rf "$custom_iso"
+		rm -rf "$customiso"
 		check_sums
 	else
 		echo "Error: ISO creation failed, please email the developer: deadhead3492@gmail.com"
