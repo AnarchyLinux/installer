@@ -61,7 +61,7 @@ check_depends() {
 		  do
 			echo
 			echo -n "ISO creation requires arch-install-scripts, lynx, squashfs-tools, libisoburn, p7zip, vim, and wget, would you like to install missing dependencies now? [y/N]: "
-			read input
+			read -r input
 
 			case "$input" in
 				y|Y|yes|Yes|yY|Yy|yy|YY)
@@ -72,7 +72,7 @@ check_depends() {
 					if [ ! -f /usr/bin/7z ]; then query="$query p7zip" ; fi
 					if [ ! -f /usr/bin/arch-chroot ]; then query="$query arch-install-scripts"; fi
 					if [ ! -f /usr/bin/xxd ]; then query="$query xxd"; fi
-					sudo pacman -Syy $(echo "$query")
+					sudo pacman -Syy "$query"
 					depends=true
 				;;
 				n|N|no|No|nN|Nn|nn|NN)
@@ -106,7 +106,7 @@ update_iso() {
 	if [ "$iso_ver" != "$rel_ver" ]; then
 		if [ -z "$iso" ]; then
 			echo -en "\nNo archiso found under $aa\nWould you like to download now? [y/N]: "
-			read input
+			read -r input
 
 			case "$input" in
 				y|Y|yes|Yes|yY|Yy|yy|YY) update=true
@@ -117,7 +117,7 @@ update_iso() {
 			esac
 		else
 			echo -en "An updated version of the archiso is available for download\n'$iso_ver'\nDownload now? [y/N]: "
-			read input
+			read -r input
 
 			case "$input" in
 				y|Y|yes|Yes|yY|Yy|yy|YY) update=true
