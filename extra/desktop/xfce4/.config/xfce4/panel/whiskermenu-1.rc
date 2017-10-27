@@ -1,5 +1,5 @@
 favorites=exo-terminal-emulator.desktop,exo-file-manager.desktop,xfce4-taskmanager.desktop,arch-wiki.desktop,chromium.desktop,vlc.desktop,clementine.desktop,pitivi.desktop,gimp.desktop,mousepad.desktop,libreoffice-writer.desktop,audacity.desktop,simplescreenrecorder.desktop,xfce4-screenshooter.desktop,galculator.desktop,sol.desktop,xfburn.desktop,gparted.desktop,xfce-settings-manager.desktop
-recent=thunar-volman-settings.desktop,xfce-display-settings.desktop,xfce-ui-settings.desktop,xfce-backdrop-settings.desktop,xfce-wmtweaks-settings.desktop
+recent=xfce-backdrop-settings.desktop,thunar-volman-settings.desktop,xfce-display-settings.desktop,xfce-ui-settings.desktop,xfce-wmtweaks-settings.desktop
 button-title=Menu
 button-icon=/usr/share/pixmaps/anarchy-icon.png
 button-single-row=false
