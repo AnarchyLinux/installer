@@ -1,7 +1,7 @@
 favorites=exo-file-manager.desktop,exo-terminal-emulator.desktop,xfce4-taskmanager.desktop,Install.desktop,Fetchmirrors.desktop,gparted.desktop,chromium.desktop,vlc.desktop,gimp.desktop,mousepad.desktop,galculator.desktop,libreoffice-base.desktop,libreoffice-calc.desktop,libreoffice-draw.desktop,libreoffice-impress.desktop,libreoffice-math.desktop,libreoffice-writer.desktop
 recent=exo-terminal-emulator.desktop,gparted.desktop,nm-connection-editor.desktop,xfce-backdrop-settings.desktop,galculator.desktop,mousepad.desktop,libreoffice-writer.desktop,xfce4-taskmanager.desktop,chromium.desktop,xfce-wmtweaks-settings.desktop
 button-title=Menu
-button-icon=/usr/share/pixmaps/archlinux.png
+button-icon=/usr/share/pixmaps/anarchy-icon.png
 button-single-row=false
 show-button-title=true
 show-button-icon=true
