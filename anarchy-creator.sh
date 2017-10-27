@@ -141,6 +141,9 @@ update_iso() {
 
 aur_builds() {
 
+	### First update pacman databases
+	sudo pacman -Sy
+
 	if [ ! -d /tmp/fetchmirrors ]; then
 		### Build fetchmirrors
 		cd /tmp
@@ -192,6 +195,15 @@ aur_builds() {
                  wget "https://aur.archlinux.org/cgit/aur.git/snapshot/lightdm-settings.tar.gz"
                  tar -xf lightdm-settings.tar.gz
                  cd lightdm-settings
+                 makepkg -s
+         fi
+
+	 if [ ! -d /tmp/oh-my-zsh-git ]; then
+                 ### Build oh-my-zsh
+                 cd /tmp
+                 wget "https://aur.archlinux.org/cgit/aur.git/snapshot/oh-my-zsh-git.tar.gz"
+                 tar -xf oh-my-zsh-git.tar.gz
+                 cd oh-my-zsh-git
                  makepkg -s
          fi
 
@@ -261,6 +273,7 @@ build_sys() {
 	sudo cp /tmp/numix-circle-icon-theme-git/*.pkg.tar.xz "$customiso"/arch/"$sys"/squashfs-root/usr/share/anarchy/pkg
 	sudo cp /tmp/lightdm-slick-greeter/*.pkg.tar.xz "$customiso"/arch/"$sys"/squashfs-root/usr/share/anarchy/pkg
 	sudo cp /tmp/lightdm-settings/*.pkg.tar.xz "$customiso"/arch/"$sys"/squashfs-root/usr/share/anarchy/pkg
+	sudo cp /tmp/oh-my-zsh-git/*.pkg.tar.xz "$customiso"/arch/"$sys"/squashfs-root/usr/share/anarchy/pkg
 	cd "$customiso"/arch/"$sys"/squashfs-root/usr/share/anarchy/pkg
 	sudo repo-add anarchy.db.tar.gz *.pkg.tar.xz
 	sudo sed -i -e '$a\\n[anarchy]\nServer = file:///usr/share/anarchy/pkg\nSigLevel = Never' "$customiso"/arch/"$sys"/squashfs-root/etc/pacman.conf
@@ -371,6 +384,7 @@ build_sys_gui() {
 	sudo cp /tmp/numix-circle-icon-theme-git/*.pkg.tar.xz "$customiso"/arch/"$sys"/squashfs-root/usr/share/anarchy/pkg
 	sudo cp /tmp/lightdm-slick-greeter/*.pkg.tar.xz "$customiso"/arch/"$sys"/squashfs-root/usr/share/anarchy/pkg
 	sudo cp /tmp/lightdm-settings/*.pkg.tar.xz "$customiso"/arch/"$sys"/squashfs-root/usr/share/anarchy/pkg
+	sudo cp /tmp/oh-my-zsh-git/*.pkg.tar.xz "$customiso"/arch/"$sys"/squashfs-root/usr/share/anarchy/pkg
 	cd "$customiso"/arch/"$sys"/squashfs-root/usr/share/anarchy/pkg
 	sudo repo-add anarchy.db.tar.gz *.pkg.tar.xz
 	sudo sed -i -e '$a\\n[anarchy]\nServer = file:///usr/share/anarchy/pkg\nSigLevel = Never' "$customiso"/arch/"$sys"/squashfs-root/etc/pacman.conf
