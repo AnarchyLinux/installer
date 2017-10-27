@@ -97,7 +97,7 @@ prepare_base() {
 
 								if [ "$shrc" == "oh-my-zsh" ]; then
 									if ! (grep "anarchy" </etc/pacman.conf &>/dev/null); then
-										sed -i -e '$a\\n[anarchy]\nServer = http://arch-anywhere.org/repo/$arch\nSigLevel = Never' /etc/pacman.conf
+										sed -i -e '$a\\n[anarchy]\nServer = file:///usr/share/anarchy/pkg\nSigLevel = Never' /etc/pacman.conf
 									fi
 									shell+=" oh-my-zsh-git"
 								elif [ "$shrc" == "grml-zsh-config" ]; then

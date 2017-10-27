@@ -18,12 +18,14 @@
         <value type="int" value="23"/>
         <value type="int" value="24"/>
         <value type="int" value="21"/>
+        <value type="int" value="3"/>
+        <value type="int" value="9"/>
         <value type="int" value="6"/>
         <value type="int" value="5"/>
         <value type="int" value="4"/>
         <value type="int" value="8"/>
-        <value type="int" value="13"/>
         <value type="int" value="7"/>
+        <value type="int" value="13"/>
       </property>
       <property name="position-locked" type="bool" value="true"/>
       <property name="background-style" type="uint" value="1"/>
@@ -122,6 +124,16 @@
     <property name="plugin-25" type="string" value="launcher">
       <property name="items" type="array">
         <value type="string" value="15090351806.desktop"/>
+      </property>
+    </property>
+    <property name="plugin-3" type="string" value="launcher">
+      <property name="items" type="array">
+        <value type="string" value="15090880171.desktop"/>
+      </property>
+    </property>
+    <property name="plugin-9" type="string" value="launcher">
+      <property name="items" type="array">
+        <value type="string" value="15090880522.desktop"/>
       </property>
     </property>
   </property>

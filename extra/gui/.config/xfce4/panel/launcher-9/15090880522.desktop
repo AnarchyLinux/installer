@@ -1,0 +1,12 @@
+[Desktop Entry]
+Name=Mousepad
+Comment=Simple Text Editor
+GenericName=Text Editor
+Exec=mousepad %F
+Icon=accessories-text-editor
+Terminal=false
+StartupNotify=true
+Type=Application
+Categories=Utility;TextEditor;GTK;
+MimeType=text/plain;
+X-XFCE-Source=file:///usr/share/applications/mousepad.desktop

@@ -168,9 +168,14 @@ configure_system() {
 		esac
 	fi
 
-	if [ -n "$config_DE" ]; then
+	if "$desktop"; then
 		config_env &
-		pid=$! pri="0.1" msg="$wait_load \n\n \Z1> \Z2anarchy config_env\Zn" load
+		pid=$! pri="0.1" msg="$wait_load \n\n \Z1> \Z2anarchy configure desktop\Zn" load
+
+		if [ "$DM" == "lightdm" ]; then
+			sed -i -e '$a\\ngreeter-session=slick-greeter' "$ARCH"/etc/lightdm/lightdm.conf
+			cp "$aa_dir"/extra/desktop/lightdm/slick-greeter.conf "$ARCH"/etc/lightdm/
+		fi
 	fi
 
 	if "$add_repo" ; then

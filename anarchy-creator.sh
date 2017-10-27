@@ -40,9 +40,11 @@ init() {
 	### Location variables all directories must exist
 	export aa=$(pwd)
 	export customiso="$aa/customiso"
+
 	if (ls "$aa"/archlinux-* &>/dev/null); then
 		export iso=$(ls "$aa"/archlinux-* | tail -n1 | sed 's!.*/!!')
 	fi
+
 	update=false
 	check_depends
 	update_iso
@@ -91,16 +93,17 @@ update_iso() {
 
 	# Link to the iso used to create Anarchy Linux
 	echo "Checking for updated ISO..."
-	export archiso_link=$(lynx -dump $(lynx -dump http://arch.localmsp.org/arch/iso | grep "8\. " | awk '{print $2}') | grep "7\. " | awk '{print $2}')
+	export archiso_link=$(lynx -dump http://mirrors.kernel.org/archlinux/iso/ | grep "4\. " | awk '{print $2}')
 
 	if [ -z "$archiso_link" ]; then
 		echo -e "ERROR: archiso link not found\nRequired for updating archiso.\nPlease install 'lynx' to resolve this issue"
 		sleep 4
 	else
-		iso_ver=$(<<<"$archiso_link" sed 's!.*/!!')
+		iso_ver=$(<<<"$archiso_link" grep -o "[0-9].*.[0-9]*.*[0-9]")
+		rel_ver=$(<<<"$iso" grep -o "[0-9].*.[0-9]*\.[0-9][0-9]")
 	fi
 
-	if [ "$iso_ver" != "$iso" ]; then
+	if [ "$iso_ver" != "$rel_ver" ]; then
 		if [ -z "$iso" ]; then
 			echo -en "\nNo archiso found under $aa\nWould you like to download now? [y/N]: "
 			read input
@@ -140,6 +143,9 @@ update_iso() {
 
 aur_builds() {
 
+	### First update pacman databases
+	sudo pacman -Sy
+
 	if [ ! -d /tmp/fetchmirrors ]; then
 		### Build fetchmirrors
 		cd /tmp
@@ -173,6 +179,33 @@ aur_builds() {
                  wget "https://aur.archlinux.org/cgit/aur.git/snapshot/numix-circle-icon-theme-git.tar.gz"
                  tar -xf numix-circle-icon-theme-git.tar.gz
                  cd numix-circle-icon-theme-git
+                 makepkg -s
+	fi
+
+	if [ ! -d /tmp/lightdm-slick-greeter ]; then
+                 ### Build slick greeter
+                 cd /tmp
+                 wget "https://aur.archlinux.org/cgit/aur.git/snapshot/lightdm-slick-greeter.tar.gz"
+                 tar -xf lightdm-slick-greeter.tar.gz
+                 cd lightdm-slick-greeter
+                 makepkg -si
+         fi
+
+         if [ ! -d /tmp/lightdm-settings ]; then
+                 ### Build lightdm settings
+                 cd /tmp
+                 wget "https://aur.archlinux.org/cgit/aur.git/snapshot/lightdm-settings.tar.gz"
+                 tar -xf lightdm-settings.tar.gz
+                 cd lightdm-settings
+                 makepkg -s
+         fi
+
+	 if [ ! -d /tmp/oh-my-zsh-git ]; then
+                 ### Build oh-my-zsh
+                 cd /tmp
+                 wget "https://aur.archlinux.org/cgit/aur.git/snapshot/oh-my-zsh-git.tar.gz"
+                 tar -xf oh-my-zsh-git.tar.gz
+                 cd oh-my-zsh-git
                  makepkg -s
          fi
 
@@ -227,7 +260,6 @@ build_sys() {
 	sudo cp "$aa"/extra/{.zshrc,.help,.dialogrc} "$customiso"/arch/"$sys"/squashfs-root/root/
 	sudo cp "$aa"/extra/{.bashrc,.bashrc-root,.tcshrc,.tcshrc.conf,.mkshrc,.zshrc-default,.zshrc-oh-my,.zshrc-grml} "$customiso"/arch/"$sys"/squashfs-root/usr/share/anarchy/extra/
 	sudo cp -r "$aa"/extra/desktop "$customiso"/arch/"$sys"/squashfs-root/usr/share/anarchy/extra/
-	sudo cp -r /tmp/arc-openbox-master/{Arc,Arc-Dark,Arc-Darker} "$customiso"/arch/"$sys"/squashfs-root/usr/share/anarchy/extra/desktop
 	sudo cp "$aa"/boot/hostname "$customiso"/arch/"$sys"/squashfs-root/etc/
 	sudo cp "$aa"/boot/issue_cli "$customiso"/arch/"$sys"/squashfs-root/etc/issue
 	sudo cp "$aa"/boot/issue_cli "$customiso"/arch/"$sys"/squashfs-root/root/.issue_cli
@@ -241,6 +273,9 @@ build_sys() {
 	sudo cp /tmp/fetchmirrors/*.pkg.tar.xz "$customiso"/arch/"$sys"/squashfs-root/usr/share/anarchy/pkg
 	sudo cp /tmp/numix-icon-theme-git/*.pkg.tar.xz "$customiso"/arch/"$sys"/squashfs-root/usr/share/anarchy/pkg
 	sudo cp /tmp/numix-circle-icon-theme-git/*.pkg.tar.xz "$customiso"/arch/"$sys"/squashfs-root/usr/share/anarchy/pkg
+	sudo cp /tmp/lightdm-slick-greeter/*.pkg.tar.xz "$customiso"/arch/"$sys"/squashfs-root/usr/share/anarchy/pkg
+	sudo cp /tmp/lightdm-settings/*.pkg.tar.xz "$customiso"/arch/"$sys"/squashfs-root/usr/share/anarchy/pkg
+	sudo cp /tmp/oh-my-zsh-git/*.pkg.tar.xz "$customiso"/arch/"$sys"/squashfs-root/usr/share/anarchy/pkg
 	cd "$customiso"/arch/"$sys"/squashfs-root/usr/share/anarchy/pkg
 	sudo repo-add anarchy.db.tar.gz *.pkg.tar.xz
 	sudo sed -i -e '$a\\n[anarchy]\nServer = file:///usr/share/anarchy/pkg\nSigLevel = Never' "$customiso"/arch/"$sys"/squashfs-root/etc/pacman.conf
@@ -273,7 +308,7 @@ build_sys_gui() {
 
 	### Install fonts, fbterm, fetchmirrors, arch-wiki, and uvesafb drivers onto system and cleanup
 	sudo pacman --root squashfs-root --cachedir squashfs-root/var/cache/pacman/pkg  --config /etc/pacman.conf --noconfirm --needed -Syyy terminus-font xorg-server xorg-xinit xf86-video-vesa vlc galculator file-roller gparted gimp git networkmanager network-manager-applet pulseaudio-alsa \
-		zsh-syntax-highlighting arc-gtk-theme elementary-icon-theme thunar base-devel gvfs xdg-user-dirs xfce4 xfce4-goodies libreoffice-fresh chromium virtualbox-guest-dkms virtualbox-guest-utils linux linux-headers libdvdcss simplescreenrecorder screenfetch htop acpi
+		zsh-syntax-highlighting arc-gtk-theme elementary-icon-theme thunar base-devel gvfs xdg-user-dirs xfce4 xfce4-goodies libreoffice-fresh chromium virtualbox-guest-dkms virtualbox-guest-utils linux linux-headers libdvdcss simplescreenrecorder screenfetch htop acpi pavucontrol
 	sudo pacman --root squashfs-root --cachedir squashfs-root/var/cache/pacman/pkg  --config squashfs-root/etc/pacman.conf --noconfirm -U /tmp/fetchmirrors/*.pkg.tar.xz
 	sudo pacman --root squashfs-root --cachedir squashfs-root/var/cache/pacman/pkg  --config squashfs-root/etc/pacman.conf --noconfirm -U /tmp/arch-wiki-cli/*.pkg.tar.xz
 	sudo pacman --root squashfs-root --cachedir squashfs-root/var/cache/pacman/pkg  --config squashfs-root/etc/pacman.conf --noconfirm -U /tmp/numix-icon-theme-git/*.pkg.tar.xz
@@ -325,7 +360,6 @@ build_sys_gui() {
 	sudo arch-chroot squashfs-root useradd -m -g users -G power,audio,video,storage -s /usr/bin/zsh user
 	sudo arch-chroot squashfs-root su user -c xdg-user-dirs-update
 	sudo sed -i 's/root/user/' "$customiso"/arch/"$sys"/squashfs-root/etc/systemd/system/getty@tty1.service.d/autologin.conf
-	sudo cp -r "$aa"/extra/gui/{Fetchmirrors.desktop,gparted.desktop,chromium.desktop,exo-terminal-emulator.desktop,Install.desktop} "$customiso"/arch/"$sys"/squashfs-root/home/user/
 	sudo cp -r "$aa"/extra/gui/{Fetchmirrors.desktop,gparted.desktop,chromium.desktop,exo-terminal-emulator.desktop,Install.desktop} "$customiso"/arch/"$sys"/squashfs-root/home/user/Desktop
 	sudo cp -r "$aa"/extra/gui/{Fetchmirrors.desktop,Install.desktop} "$customiso"/arch/"$sys"/squashfs-root/usr/share/applications
 	sudo cp -r "$aa"/extra/gui/{issue,sudoers} "$customiso"/arch/"$sys"/squashfs-root/etc/
@@ -350,6 +384,9 @@ build_sys_gui() {
 	sudo cp /tmp/fetchmirrors/*.pkg.tar.xz "$customiso"/arch/"$sys"/squashfs-root/usr/share/anarchy/pkg
 	sudo cp /tmp/numix-icon-theme-git/*.pkg.tar.xz "$customiso"/arch/"$sys"/squashfs-root/usr/share/anarchy/pkg
 	sudo cp /tmp/numix-circle-icon-theme-git/*.pkg.tar.xz "$customiso"/arch/"$sys"/squashfs-root/usr/share/anarchy/pkg
+	sudo cp /tmp/lightdm-slick-greeter/*.pkg.tar.xz "$customiso"/arch/"$sys"/squashfs-root/usr/share/anarchy/pkg
+	sudo cp /tmp/lightdm-settings/*.pkg.tar.xz "$customiso"/arch/"$sys"/squashfs-root/usr/share/anarchy/pkg
+	sudo cp /tmp/oh-my-zsh-git/*.pkg.tar.xz "$customiso"/arch/"$sys"/squashfs-root/usr/share/anarchy/pkg
 	cd "$customiso"/arch/"$sys"/squashfs-root/usr/share/anarchy/pkg
 	sudo repo-add anarchy.db.tar.gz *.pkg.tar.xz
 	sudo sed -i -e '$a\\n[anarchy]\nServer = file:///usr/share/anarchy/pkg\nSigLevel = Never' "$customiso"/arch/"$sys"/squashfs-root/etc/pacman.conf

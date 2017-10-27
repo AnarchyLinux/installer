@@ -60,6 +60,10 @@ graphics() {
 		fi
 	done
 
+	if ! (</etc/pacman.conf grep "anarchy"); then
+		sed -i -e '$a\\n[anarchy]\nServer = file:///usr/share/anarchy/pkg\nSigLevel = Never' /etc/pacman.conf
+	fi
+
 	source "$lang_file"
 
 	while read env
@@ -67,11 +71,8 @@ graphics() {
 		case "$env" in
 			"Anarchy-xfce4")	config_DE+="$env "
 						start_term="exec startxfce4"
-						DE+="xfce4 xfce4-goodies gvfs zsh zsh-syntax-highlighting arc-icon-theme arc-gtk-theme elementary-icon-theme htop arch-wiki-cli lynx fetchmirrors galculator "
-
-						if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$extra_msg8" 15 60) then
-							DE+="firefox atom libreoffice-fresh gimp gparted parole screenfetch vim aisleriot "
-						fi
+						DE+="xfce4 xfce4-goodies gvfs zsh zsh-syntax-highlighting arc-icon-theme arc-gtk-theme elementary-icon-theme numix-icon-theme-git numix-circle-icon-theme-git htop arch-wiki-cli lynx fetchmirrors galculator \
+						chromium libreoffice-fresh gimp gparted screenfetch vim aisleriot vlc clementine simplescreenrecorder audacity pitivi "
 			;;
 			"Anarchy-openbox")	config_DE+="$env "
 						start_term="exec openbox-session"
@@ -347,7 +348,7 @@ graphics() {
 			"sddm"		"$dm3" 3>&1 1>&2 2>&3)
 		if [ "$?" -eq "0" ]; then
 			if [ "$DM" == "lightdm" ]; then
-				DE+="$DM lightdm-gtk-greeter "
+				DE+="$DM lightdm-gtk-greeter lightdm-slick-greeter lightdm-settings "
 			elif [ "$DM" == "lxdm" ] && "$GTK3"; then
 				DE+="${DM}-gtk3 "
 			else
@@ -366,8 +367,8 @@ graphics() {
 
 config_env() {
 
-	sh="/usr/bin/zsh"
 	cp -r "$aa_dir"/extra/desktop/ttf-zekton-rg "$ARCH"/usr/share/fonts
+	arch-chroot "$ARCH" fc-cache -f
 	cp "$aa_dir"/extra/desktop/anarchy-icon.png "$ARCH"/root/.face
 	cp "$aa_dir"/extra/desktop/anarchy-icon.png "$ARCH"/etc/skel/.face
 	cp -r "$aa_dir"/extra/desktop/wallpapers/Anarchy-Splatter-Logo.png "$ARCH"/usr/share/pixmaps
@@ -376,12 +377,6 @@ config_env() {
 	cp -r "$aa_dir"/extra/desktop/wallpapers/*.png "$ARCH"/usr/share/backgrounds/anarchy/
 
 	if (grep "Anarchy-xfce4" <<<"$config_DE" &>/dev/null); then
-		if ! (arch-chroot "$ARCH" which firefox &>/dev/null); then
-			sed -i 's/15043600721/14549724517/' "$aa_dir"/extra/desktop/xfce4/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml
-			sed -i 's/favorites=exo-terminal-emulator.desktop,exo-file-manager.desktop,xfce4-taskmanager.desktop,fetchpkg.desktop,arch-wiki.desktop,firefox.desktop,org.xfce.Parole.desktop,gimp.desktop,libreoffice-writer.desktop,atom.desktop,galculator.desktop,sol.desktop,xfce-settings-manager.desktop/favorites=exo-terminal-emulator.desktop,exo-file-manager.desktop,xfce4-taskmanager.desktop,fetchpkg.desktop,arch-wiki.desktop,galculator.desktop,sol.desktop,xfce-settings-manager.desktop/' "$aa_dir"/extra/desktop/xfce4/.config/xfce4/panel/whiskermenu-1.rc
-			sed -i 's/720/532/' "$aa_dir"/extra/desktop/xfce4/.config/xfce4/panel/whiskermenu-1.rc
-		fi
-
 		cp -r "$aa_dir/extra/desktop/xfce4/.config" "$ARCH"/root/
 		cp -r "$aa_dir/extra/desktop/xfce4/.config" "$ARCH"/etc/skel/
 	fi
@@ -399,7 +394,6 @@ config_env() {
 	fi
 
 	echo "$(date -u "+%F %H:%M") : Configured: $config_DE" >> "$log"
-	arch-chroot "$ARCH" fc-cache -f
 
 }
 
