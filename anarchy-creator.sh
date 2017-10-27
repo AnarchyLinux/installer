@@ -91,9 +91,13 @@ check_depends() {
 
 update_iso() {
 
+	# Check for latest Arch Linux ISO on website Download page
+	export archiso_latest=$(curl -s https://www.archlinux.org/download/ | grep "Current Release" | awk '{print $3}' | sed -e 's/<.*//')
+
 	# Link to the iso used to create Anarchy Linux
 	echo "Checking for updated ISO..."
-	export archiso_link=$(lynx -dump http://mirrors.kernel.org/archlinux/iso/ | grep "4\. " | awk '{print $2}')
+	#export archiso_link=$(lynx -dump http://mirrors.kernel.org/archlinux/iso/ | grep "4\. " | awk '{print $2}')
+	export archiso_link=http://mirrors.kernel.org/archlinux/iso/$archiso_latest/archlinux-$archiso_latest-x86_64.iso
 
 	if [ -z "$archiso_link" ]; then
 		echo -e "ERROR: archiso link not found\nRequired for updating archiso.\nPlease install 'lynx' to resolve this issue"
