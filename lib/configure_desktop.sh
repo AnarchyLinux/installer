@@ -371,10 +371,10 @@ config_env() {
 	arch-chroot "$ARCH" fc-cache -f
 	cp "$aa_dir"/extra/desktop/anarchy-icon.png "$ARCH"/root/.face
 	cp "$aa_dir"/extra/desktop/anarchy-icon.png "$ARCH"/etc/skel/.face
-	cp -r "$aa_dir"/extra/desktop/wallpapers/Anarchy-Splatter-Logo.png "$ARCH"/usr/share/pixmaps
+	cp -r "$aa_dir"/extra/desktop/wallpapers/Anarchy-Logo.png "$ARCH"/usr/share/pixmaps
 	cp "$aa_dir"/extra/desktop/anarchy-icon.png "$ARCH"/usr/share/pixmaps
 	mkdir "$ARCH"/usr/share/backgrounds/anarchy
-	cp -r "$aa_dir"/extra/desktop/wallpapers/*.png "$ARCH"/usr/share/backgrounds/anarchy/
+	cp -r "$aa_dir"/extra/desktop/wallpapers/*. "$ARCH"/usr/share/backgrounds/anarchy/
 
 	if (grep "Anarchy-xfce4" <<<"$config_DE" &>/dev/null); then
 		cp -r "$aa_dir/extra/desktop/xfce4/.config" "$ARCH"/root/
