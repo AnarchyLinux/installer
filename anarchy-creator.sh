@@ -65,7 +65,7 @@ check_depends() {
 
 			case "$input" in
 				y|Y|yes|Yes|yY|Yy|yy|YY)
-					if [ ! -f /usr/bin/wget ]; then query="$query wget"; fi
+					if [ ! -f "/usr/bin/wget" ]; then query="wget"; fi
 					if [ ! -f /usr/bin/xorriso ]; then query="$query libisoburn"; fi
 					if [ ! -f /usr/bin/mksquashfs ]; then query="$query squashfs-tools"; fi
 					if [ ! -f /usr/bin/lynx ]; then query="$query lynx" ; fi
