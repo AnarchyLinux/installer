@@ -278,7 +278,7 @@ build_sys() {
 	sudo cp /tmp/oh-my-zsh-git/*.pkg.tar.xz "$customiso"/arch/"$sys"/squashfs-root/usr/share/anarchy/pkg
 	cd "$customiso"/arch/"$sys"/squashfs-root/usr/share/anarchy/pkg || exit
 	sudo repo-add anarchy.db.tar.gz *.pkg.tar.xz
-	sudo sed -i -e '$a\\n[anarchy]\nServer = file:///usr/share/anarchy/pkg\nSigLevel = Never' "$customiso"/arch/"$sys"/squashfs-root/etc/pacman.conf
+	sudo sed -i -e '$a\\n[anarchy]\nServer = https://arch-anywhere.org/repo/$arch\nSigLevel = Never' "$customiso"/arch/"$sys"/squashfs-root/etc/pacman.conf
 
 	### cd back into root system directory, remove old system
 	cd "$customiso"/arch/"$sys" || exit
@@ -389,7 +389,7 @@ build_sys_gui() {
 	sudo cp /tmp/oh-my-zsh-git/*.pkg.tar.xz "$customiso"/arch/"$sys"/squashfs-root/usr/share/anarchy/pkg
 	cd "$customiso"/arch/"$sys"/squashfs-root/usr/share/anarchy/pkg || exit
 	sudo repo-add anarchy.db.tar.gz *.pkg.tar.xz
-	sudo sed -i -e '$a\\n[anarchy]\nServer = file:///usr/share/anarchy/pkg\nSigLevel = Never' "$customiso"/arch/"$sys"/squashfs-root/etc/pacman.conf
+	sudo sed -i -e '$a\\n[anarchy]\nServer = https://arch-anywhere.org/repo/$arch\nSigLevel = Never' "$customiso"/arch/"$sys"/squashfs-root/etc/pacman.conf
 
 	### cd back into root system directory, remove old system
 	cd "$customiso"/arch/"$sys" || exit
