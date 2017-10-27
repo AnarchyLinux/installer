@@ -103,11 +103,13 @@ update_iso() {
 		echo -e "ERROR: archiso link not found\nRequired for updating archiso.\nPlease install 'lynx' to resolve this issue"
 		sleep 4
 	else
-		iso_ver=$(<<<"$archiso_link" grep -o "[0-9].*.[0-9]*.*[0-9]")
-		rel_ver=$(<<<"$iso" grep -o "[0-9].*.[0-9]*\.[0-9][0-9]")
+		iso_ver=$(<<<"$archiso_link" sed 's!.*/!!')
+		#iso_ver=$(<<<"$archiso_link" grep -o "[0-9].*.[0-9]*.*[0-9]")
+		#rel_ver=$(<<<"$iso" grep -o "[0-9].*.[0-9]*\.[0-9][0-9]")
 	fi
 
-	if [ "$iso_ver" != "$rel_ver" ]; then
+	if [ "$iso_ver" != "$iso_ver" ]; then
+	#if [ "$iso_ver" != "$rel_ver" ]; then
 		if [ -z "$iso" ]; then
 			echo -en "\nNo archiso found under $aa\nWould you like to download now? [y/N]: "
 			read -r input
