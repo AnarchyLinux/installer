@@ -40,9 +40,11 @@ init() {
 	### Location variables all directories must exist
 	export aa=$(pwd)
 	export customiso="$aa/customiso"
+
 	if (ls "$aa"/archlinux-* &>/dev/null); then
 		export iso=$(ls "$aa"/archlinux-* | tail -n1 | sed 's!.*/!!')
 	fi
+
 	update=false
 	check_depends
 	update_iso
