@@ -168,9 +168,9 @@ configure_system() {
 		esac
 	fi
 
-	if [ -n "$config_DE" ]; then
+	if "$desktop"; then
 		config_env &
-		pid=$! pri="0.1" msg="$wait_load \n\n \Z1> \Z2anarchy config_env\Zn" load
+		pid=$! pri="0.1" msg="$wait_load \n\n \Z1> \Z2anarchy configure desktop\Zn" load
 	fi
 
 	if "$add_repo" ; then
