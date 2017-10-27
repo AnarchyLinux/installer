@@ -175,6 +175,24 @@ aur_builds() {
                  tar -xf numix-circle-icon-theme-git.tar.gz
                  cd numix-circle-icon-theme-git
                  makepkg -s
+	fi
+
+	if [ ! -d /tmp/lightdm-slick-greeter ]; then
+                 ### Build slick greeter
+                 cd /tmp
+                 wget "https://aur.archlinux.org/cgit/aur.git/snapshot/lightdm-slick-greeter.tar.gz"
+                 tar -xf lightdm-slick-greeter.tar.gz
+                 cd lightdm-slick-greeter
+                 makepkg -si
+         fi
+
+         if [ ! -d /tmp/lightdm-settings ]; then
+                 ### Build lightdm settings
+                 cd /tmp
+                 wget "https://aur.archlinux.org/cgit/aur.git/snapshot/lightdm-settings.tar.gz"
+                 tar -xf lightdm-settings.tar.gz
+                 cd lightdm-settings
+                 makepkg -s
          fi
 
 }
@@ -241,6 +259,8 @@ build_sys() {
 	sudo cp /tmp/fetchmirrors/*.pkg.tar.xz "$customiso"/arch/"$sys"/squashfs-root/usr/share/anarchy/pkg
 	sudo cp /tmp/numix-icon-theme-git/*.pkg.tar.xz "$customiso"/arch/"$sys"/squashfs-root/usr/share/anarchy/pkg
 	sudo cp /tmp/numix-circle-icon-theme-git/*.pkg.tar.xz "$customiso"/arch/"$sys"/squashfs-root/usr/share/anarchy/pkg
+	sudo cp /tmp/lightdm-slick-greeter/*.pkg.tar.xz "$customiso"/arch/"$sys"/squashfs-root/usr/share/anarchy/pkg
+	sudo cp /tmp/lightdm-settings/*.pkg.tar.xz "$customiso"/arch/"$sys"/squashfs-root/usr/share/anarchy/pkg
 	cd "$customiso"/arch/"$sys"/squashfs-root/usr/share/anarchy/pkg
 	sudo repo-add anarchy.db.tar.gz *.pkg.tar.xz
 	sudo sed -i -e '$a\\n[anarchy]\nServer = file:///usr/share/anarchy/pkg\nSigLevel = Never' "$customiso"/arch/"$sys"/squashfs-root/etc/pacman.conf
@@ -349,6 +369,8 @@ build_sys_gui() {
 	sudo cp /tmp/fetchmirrors/*.pkg.tar.xz "$customiso"/arch/"$sys"/squashfs-root/usr/share/anarchy/pkg
 	sudo cp /tmp/numix-icon-theme-git/*.pkg.tar.xz "$customiso"/arch/"$sys"/squashfs-root/usr/share/anarchy/pkg
 	sudo cp /tmp/numix-circle-icon-theme-git/*.pkg.tar.xz "$customiso"/arch/"$sys"/squashfs-root/usr/share/anarchy/pkg
+	sudo cp /tmp/lightdm-slick-greeter/*.pkg.tar.xz "$customiso"/arch/"$sys"/squashfs-root/usr/share/anarchy/pkg
+	sudo cp /tmp/lightdm-settings/*.pkg.tar.xz "$customiso"/arch/"$sys"/squashfs-root/usr/share/anarchy/pkg
 	cd "$customiso"/arch/"$sys"/squashfs-root/usr/share/anarchy/pkg
 	sudo repo-add anarchy.db.tar.gz *.pkg.tar.xz
 	sudo sed -i -e '$a\\n[anarchy]\nServer = file:///usr/share/anarchy/pkg\nSigLevel = Never' "$customiso"/arch/"$sys"/squashfs-root/etc/pacman.conf
