@@ -348,7 +348,7 @@ graphics() {
 			"sddm"		"$dm3" 3>&1 1>&2 2>&3)
 		if [ "$?" -eq "0" ]; then
 			if [ "$DM" == "lightdm" ]; then
-				DE+="$DM lightdm-gtk-greeter "
+				DE+="$DM lightdm-gtk-greeter lightdm-slick-greeter lightdm-settings "
 			elif [ "$DM" == "lxdm" ] && "$GTK3"; then
 				DE+="${DM}-gtk3 "
 			else
