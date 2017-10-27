@@ -108,7 +108,7 @@ update_iso() {
 		#rel_ver=$(<<<"$iso" grep -o "[0-9].*.[0-9]*\.[0-9][0-9]")
 	fi
 
-	if [ "$iso_ver" != "$iso_ver" ]; then
+	if [ "$iso_ver" != "$iso" ]; then
 	#if [ "$iso_ver" != "$rel_ver" ]; then
 		if [ -z "$iso" ]; then
 			echo -en "\nNo archiso found under $aa\nWould you like to download now? [y/N]: "
