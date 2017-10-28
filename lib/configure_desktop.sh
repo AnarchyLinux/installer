@@ -46,14 +46,15 @@ graphics() {
 			"fluxbox"       	"$de11" OFF \
 			"i3"            	"$de10" OFF \
 			"openbox"       	"$de8" OFF \
+			"sway"			"$de21" OFF \
 			"windowmaker"		"$de20" OFF \
 			"xmonad"		"$de16" OFF 3>&1 1>&2 2>&3)
 		if [ -z "$de" ]; then
 			if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$desktop_cancel_msg" 10 60) then
 				return
 			fi
-		elif (grep "AA-Xfce" <<<"$de" &>/dev/null) && (grep "AA-Openbox" <<<"$de" &>/dev/null); then
-			de=$(sed 's/AA-Xfce//' <<<"$de")
+		elif (grep "Anarchy-xfce4" <<<"$de" &>/dev/null) && (grep "Anarchy-openbox" <<<"$de" &>/dev/null); then
+			de=$(sed 's/Anarchy-openbox//' <<<"$de")
 			break
 		else
 			break
@@ -186,6 +187,9 @@ graphics() {
 					if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$extra_msg7" 10 60) then
 						DE+="windowmaker-extra "
 					fi
+			;;
+			"sway")		start_term="sway"
+					DE+="sway "
 			;;
 		esac
 	done <<< $de
