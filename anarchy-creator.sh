@@ -60,7 +60,7 @@ check_depends() {
 		until "$depends"
 		  do
 			echo
-			echo -n "ISO creation requires arch-install-scripts, lynx, squashfs-tools, libisoburn, p7zip, vim, and wget, would you like to install missing dependencies now? [y/N]: "
+			echo -n "ISO creation requires arch-install-scripts, squashfs-tools, libisoburn, p7zip, vim, and wget, would you like to install missing dependencies now? [y/N]: "
 			read -r input
 
 			case "$input" in
@@ -68,7 +68,6 @@ check_depends() {
 					if [ ! -f /usr/bin/wget ]; then query="$query wget"; fi
 					if [ ! -f /usr/bin/xorriso ]; then query="$query libisoburn"; fi
 					if [ ! -f /usr/bin/mksquashfs ]; then query="$query squashfs-tools"; fi
-					if [ ! -f /usr/bin/lynx ]; then query="$query lynx" ; fi
 					if [ ! -f /usr/bin/7z ]; then query="$query p7zip" ; fi
 					if [ ! -f /usr/bin/arch-chroot ]; then query="$query arch-install-scripts"; fi
 					if [ ! -f /usr/bin/xxd ]; then query="$query xxd"; fi
@@ -96,20 +95,10 @@ update_iso() {
 
 	# Link to the iso used to create Anarchy Linux
 	echo "Checking for updated ISO..."
-	#export archiso_link=$(lynx -dump http://mirrors.kernel.org/archlinux/iso/ | grep "4\. " | awk '{print $2}')
 	export archiso_link=http://mirrors.kernel.org/archlinux/iso/$archiso_latest/archlinux-$archiso_latest-x86_64.iso
+	export iso_date=$(<<<"$archiso_link" sed 's!.*/!!')
 
-	if [ -z "$archiso_link" ]; then
-		echo -e "ERROR: archiso link not found\nRequired for updating archiso.\nPlease install 'lynx' to resolve this issue"
-		sleep 4
-	else
-		iso_ver=$(<<<"$archiso_link" sed 's!.*/!!')
-		#iso_ver=$(<<<"$archiso_link" grep -o "[0-9].*.[0-9]*.*[0-9]")
-		#rel_ver=$(<<<"$iso" grep -o "[0-9].*.[0-9]*\.[0-9][0-9]")
-	fi
-
-	if [ "$iso_ver" != "$iso" ]; then
-	#if [ "$iso_ver" != "$rel_ver" ]; then
+	if [ "$iso_date" != "$iso" ]; then
 		if [ -z "$iso" ]; then
 			echo -en "\nNo archiso found under $aa\nWould you like to download now? [y/N]: "
 			read -r input
@@ -215,6 +204,15 @@ aur_builds() {
                  makepkg -s
          fi
 
+	 if [ ! -d /tmp/opensnap ]; then
+                 ### Build opensnap
+                 cd /tmp || exit
+                 wget "https://aur.archlinux.org/cgit/aur.git/snapshot/opensnap.tar.gz"
+                 tar -xf opensnap.tar.gz
+                 cd opensnap || exit
+                 makepkg -s
+         fi
+
 }
 
 extract_iso() {
@@ -228,27 +226,29 @@ extract_iso() {
 
 }
 
-build_sys() {
+build_conf() {
 
 	### Change directory into the ISO where the filesystem is stored.
 	### Unsquash root filesystem 'airootfs.sfs' this creates a directory 'squashfs-root' containing the entire system
 	echo "Preparing $sys"
-	cd "$customiso"/arch/"$sys" || exit
-	sudo unsquashfs airootfs.sfs
-
-	### Install fonts, fbterm, fetchmirrors, arch-wiki
-	sudo pacman --root squashfs-root --cachedir squashfs-root/var/cache/pacman/pkg  --config squashfs-root/etc/pacman.conf --noconfirm -Syyy terminus-font acpi
-	sudo pacman --root squashfs-root --cachedir squashfs-root/var/cache/pacman/pkg  --config squashfs-root/etc/pacman.conf --noconfirm -U /tmp/fetchmirrors/*.pkg.tar.xz
-	sudo pacman --root squashfs-root --cachedir squashfs-root/var/cache/pacman/pkg  --config squashfs-root/etc/pacman.conf --noconfirm -U /tmp/arch-wiki-cli/*.pkg.tar.xz
-	sudo pacman --root squashfs-root --cachedir squashfs-root/var/cache/pacman/pkg  --config squashfs-root/etc/pacman.conf -Sl | awk '/\[installed\]$/ {print $1 "/" $2 "-" $3}' > "$customiso"/arch/pkglist.${sys}.txt
-	sudo pacman --root squashfs-root --cachedir squashfs-root/var/cache/pacman/pkg  --config squashfs-root/etc/pacman.conf --noconfirm -Scc
-	sudo rm -f "$customiso"/arch/"$sys"/squashfs-root/var/cache/pacman/pkg/*
+	if [ "$interface" == "cli" ]; then
+		cd "$customiso"/arch/"$sys" || exit
+		sudo unsquashfs airootfs.sfs
+	else
+		cd "$customiso"/arch/"$sys" || exit
+		sudo unsquashfs airootfs.sfs
+		sudo mount -t proc proc "$customiso"/arch/"$sys"/squashfs-root/proc/
+		sudo mount -t sysfs sys "$customiso"/arch/"$sys"/squashfs-root/sys/
+		sudo mount -o bind /dev "$customiso"/arch/"$sys"/squashfs-root/dev/
+		sudo cp "$customiso"/arch/"$sys"/squashfs-root/etc/mkinitcpio.conf "$customiso"/arch/"$sys"/squashfs-root/etc/mkinitcpio.conf.bak
+		sudo cp "$customiso"/arch/"$sys"/squashfs-root/etc/mkinitcpio-archiso.conf "$customiso"/arch/"$sys"/squashfs-root/etc/mkinitcpio.conf
+	fi
 
 	### Copy over vconsole.conf (sets font at boot) & locale.gen (enables locale(s) for font) & uvesafb.conf
 	sudo cp "$aa"/etc/{vconsole.conf,locale.gen} "$customiso"/arch/"$sys"/squashfs-root/etc
 	sudo arch-chroot squashfs-root /bin/bash locale-gen
 
-	### Copy over main Anarchy Linux config, installer script, and arch-wiki,  make executeable
+	### Copy over main anarchy config, installer script, and arch-wiki,  make executeable
 	sudo cp "$aa"/etc/anarchy.conf "$customiso"/arch/"$sys"/squashfs-root/etc/
 	sudo cp "$aa"/anarchy-installer.sh "$customiso"/arch/"$sys"/squashfs-root/usr/bin/anarchy
 	sudo cp "$aa"/extra/{sysinfo,iptest} "$customiso"/arch/"$sys"/squashfs-root/usr/bin/
@@ -267,8 +267,7 @@ build_sys() {
 	sudo cp "$aa"/extra/{.bashrc,.bashrc-root,.tcshrc,.tcshrc.conf,.mkshrc,.zshrc-default,.zshrc-oh-my,.zshrc-grml} "$customiso"/arch/"$sys"/squashfs-root/usr/share/anarchy/extra/
 	sudo cp -r "$aa"/extra/desktop "$customiso"/arch/"$sys"/squashfs-root/usr/share/anarchy/extra/
 	sudo cp "$aa"/boot/hostname "$customiso"/arch/"$sys"/squashfs-root/etc/
-	sudo cp "$aa"/boot/issue_cli "$customiso"/arch/"$sys"/squashfs-root/etc/issue
-	sudo cp "$aa"/boot/issue_cli "$customiso"/arch/"$sys"/squashfs-root/root/.issue_cli
+	sudo cp "$aa"/boot/issue_cli "$customiso"/arch/"$sys"/squashfs-root/etc/
 	sudo cp -r "$aa"/boot/loader/ "$customiso"/arch/"$sys"/squashfs-root/usr/share/anarchy/boot/
 	sudo cp "$aa"/boot/splash.png "$customiso"/arch/"$sys"/squashfs-root/usr/share/anarchy/boot/
 	sudo cp "$aa"/etc/{nvidia340.xx,nvidia304.xx} "$customiso"/arch/"$sys"/squashfs-root/usr/share/anarchy/etc/
@@ -282,15 +281,29 @@ build_sys() {
 	sudo cp /tmp/lightdm-slick-greeter/*.pkg.tar.xz "$customiso"/arch/"$sys"/squashfs-root/usr/share/anarchy/pkg
 	sudo cp /tmp/lightdm-settings/*.pkg.tar.xz "$customiso"/arch/"$sys"/squashfs-root/usr/share/anarchy/pkg
 	sudo cp /tmp/oh-my-zsh-git/*.pkg.tar.xz "$customiso"/arch/"$sys"/squashfs-root/usr/share/anarchy/pkg
+	sudo cp /tmp/opensnap/*.pkg.tar.xz "$customiso"/arch/"$sys"/squashfs-root/usr/share/anarchy/pkg
 	cd "$customiso"/arch/"$sys"/squashfs-root/usr/share/anarchy/pkg || exit
-	sudo repo-add anarchy.db.tar.gz *.pkg.tar.xz
-	sudo sed -i -e '$a\\n[anarchy]\nServer = https://arch-anywhere.org/repo/$arch\nSigLevel = Never' "$customiso"/arch/"$sys"/squashfs-root/etc/pacman.conf
+	sudo repo-add anarchy-local.db.tar.gz *.pkg.tar.xz
+	sudo sed -i -e '$a\\n[anarchy-local]\nServer = file:///usr/share/anarchy/pkg\nSigLevel = Never' "$customiso"/arch/"$sys"/squashfs-root/etc/pacman.conf
+
+}
+
+build_sys() {
+
+	cd "$customiso"/arch/"$sys" || exit
+	### Install fonts, fbterm, fetchmirrors, arch-wiki
+	sudo pacman --root squashfs-root --cachedir squashfs-root/var/cache/pacman/pkg  --config squashfs-root/etc/pacman.conf --noconfirm -Syyy terminus-font acpi
+	sudo pacman --root squashfs-root --cachedir squashfs-root/var/cache/pacman/pkg  --config squashfs-root/etc/pacman.conf --noconfirm -U /tmp/fetchmirrors/*.pkg.tar.xz
+	sudo pacman --root squashfs-root --cachedir squashfs-root/var/cache/pacman/pkg  --config squashfs-root/etc/pacman.conf --noconfirm -U /tmp/arch-wiki-cli/*.pkg.tar.xz
+	sudo pacman --root squashfs-root --cachedir squashfs-root/var/cache/pacman/pkg  --config squashfs-root/etc/pacman.conf -Sl | awk '/\[installed\]$/ {print $1 "/" $2 "-" $3}' > "$customiso"/arch/pkglist.${sys}.txt
+	sudo pacman --root squashfs-root --cachedir squashfs-root/var/cache/pacman/pkg  --config squashfs-root/etc/pacman.conf --noconfirm -Scc
+	sudo rm -f "$customiso"/arch/"$sys"/squashfs-root/var/cache/pacman/pkg/*
 
 	### cd back into root system directory, remove old system
 	cd "$customiso"/arch/"$sys" || exit
 	rm airootfs.sfs
 
-	### Recreate the ISO using compression remove unsquashed system generate checksums and continue to i686
+	### Recreate the ISO using compression remove unsquashed system generate checksums
 	echo "Recreating $sys..."
 	sudo mksquashfs squashfs-root airootfs.sfs -b 1024k -comp xz
 	sudo rm -r squashfs-root
@@ -300,18 +313,7 @@ build_sys() {
 
 build_sys_gui() {
 
-	### Change directory into the ISO where the filesystem is stored.
-	### Unsquash root filesystem 'airootfs.sfs' this creates a directory 'squashfs-root' containing the entire system
-	echo "Preparing $sys"
 	cd "$customiso"/arch/"$sys" || exit
-	sudo unsquashfs airootfs.sfs
-	sudo mount -t proc proc "$customiso"/arch/"$sys"/squashfs-root/proc/
-	sudo mount -t sysfs sys "$customiso"/arch/"$sys"/squashfs-root/sys/
-	sudo mount -o bind /dev "$customiso"/arch/"$sys"/squashfs-root/dev/
-	sudo cp "$customiso"/arch/"$sys"/squashfs-root/etc/mkinitcpio.conf "$customiso"/arch/"$sys"/squashfs-root/etc/mkinitcpio.conf.bak
-	sudo cp "$customiso"/arch/"$sys"/squashfs-root/etc/mkinitcpio-archiso.conf "$customiso"/arch/"$sys"/squashfs-root/etc/mkinitcpio.conf
-
-
 	### Install fonts, fbterm, fetchmirrors, arch-wiki, and uvesafb drivers onto system and cleanup
 	sudo pacman --root squashfs-root --cachedir squashfs-root/var/cache/pacman/pkg  --config /etc/pacman.conf --noconfirm --needed -Syyy terminus-font xorg-server xorg-xinit xf86-video-vesa vlc galculator file-roller gparted gimp git networkmanager network-manager-applet pulseaudio-alsa \
 		zsh-syntax-highlighting arc-gtk-theme elementary-icon-theme thunar base-devel gvfs xdg-user-dirs xfce4 xfce4-goodies libreoffice-fresh chromium virtualbox-guest-dkms virtualbox-guest-utils linux linux-headers libdvdcss simplescreenrecorder screenfetch htop acpi pavucontrol \
@@ -324,34 +326,6 @@ build_sys_gui() {
 	sudo pacman --root squashfs-root --cachedir squashfs-root/var/cache/pacman/pkg  --config squashfs-root/etc/pacman.conf --noconfirm -Scc
 	sudo rm -f "$customiso"/arch/"$sys"/squashfs-root/var/cache/pacman/pkg/*
 	sudo mv "$customiso"/arch/"$sys"/squashfs-root/etc/mkinitcpio.conf.bak "$customiso"/arch/"$sys"/squashfs-root/etc/mkinitcpio.conf
-
-	### Copy over vconsole.conf (sets font at boot) & locale.gen (enables locale(s) for font) & uvesafb.conf
-	sudo cp "$aa"/etc/{vconsole.conf,locale.gen} "$customiso"/arch/"$sys"/squashfs-root/etc
-	sudo arch-chroot squashfs-root /bin/bash locale-gen
-
-	### Copy over main arch anywhere config, installer script, and arch-wiki,  make executeable
-	sudo cp "$aa"/etc/anarchy.conf "$customiso"/arch/"$sys"/squashfs-root/etc/
-	sudo cp "$aa"/anarchy-installer.sh "$customiso"/arch/"$sys"/squashfs-root/usr/bin/anarchy
-	sudo cp "$aa"/extra/{sysinfo,iptest} "$customiso"/arch/"$sys"/squashfs-root/usr/bin/
-	sudo chmod +x "$customiso"/arch/"$sys"/squashfs-root/usr/bin/{anarchy,sysinfo,iptest}
-
-	### Create arch-anywhere directory and lang directory copy over all lang files
-	sudo mkdir -p "$customiso"/arch/"$sys"/squashfs-root/usr/share/anarchy/{lang,extra,boot,etc}
-	sudo cp "$aa"/lang/* "$customiso"/arch/"$sys"/squashfs-root/usr/share/anarchy/lang
-
-	### Create shell function library
-	sudo mkdir "$customiso"/arch/"$sys"/squashfs-root/usr/lib/anarchy
-	sudo cp "$aa"/lib/* "$customiso"/arch/"$sys"/squashfs-root/usr/lib/anarchy
-
-	### Copy over extra files (dot files, desktop configurations, help file, issue file, hostname file)
-	sudo cp "$aa"/extra/{.zshrc,.help,.dialogrc} "$customiso"/arch/"$sys"/squashfs-root/root/
-	sudo cp "$aa"/extra/{.bashrc,.bashrc-root,.tcshrc,.tcshrc.conf,.mkshrc,.zshrc-default,.zshrc-oh-my,.zshrc-grml} "$customiso"/arch/"$sys"/squashfs-root/usr/share/anarchy/extra/
-	sudo cp -r "$aa"/extra/desktop "$customiso"/arch/"$sys"/squashfs-root/usr/share/anarchy/extra/
-	sudo cp "$aa"/boot/hostname "$customiso"/arch/"$sys"/squashfs-root/etc/
-	sudo cp "$aa"/boot/issue_cli "$customiso"/arch/"$sys"/squashfs-root/etc/
-	sudo cp -r "$aa"/boot/loader/ "$customiso"/arch/"$sys"/squashfs-root/usr/share/anarchy/boot/
-	sudo cp "$aa"/boot/splash.png "$customiso"/arch/"$sys"/squashfs-root/usr/share/anarchy/boot/
-	sudo cp "$aa"/etc/{nvidia340.xx,nvidia304.xx} "$customiso"/arch/"$sys"/squashfs-root/usr/share/anarchy/etc/
 
 	### Disable netctl enable networkmanager
 	sudo arch-chroot squashfs-root systemctl disable netctl.service
@@ -385,24 +359,11 @@ build_sys_gui() {
 	sudo arch-chroot squashfs-root chown -R user /home/user/
 	sudo touch "$customiso"/arch/"$sys"/squashfs-root/etc/modules-load.d/virtualbox-guest-modules-arch.conf
 
-	### Copy over built packages and create repository
-	sudo mkdir "$customiso"/arch/"$sys"/squashfs-root/usr/share/anarchy/pkg
-	sudo cp /tmp/arch-wiki-cli/*.pkg.tar.xz "$customiso"/arch/"$sys"/squashfs-root/usr/share/anarchy/pkg
-	sudo cp /tmp/fetchmirrors/*.pkg.tar.xz "$customiso"/arch/"$sys"/squashfs-root/usr/share/anarchy/pkg
-	sudo cp /tmp/numix-icon-theme-git/*.pkg.tar.xz "$customiso"/arch/"$sys"/squashfs-root/usr/share/anarchy/pkg
-	sudo cp /tmp/numix-circle-icon-theme-git/*.pkg.tar.xz "$customiso"/arch/"$sys"/squashfs-root/usr/share/anarchy/pkg
-	sudo cp /tmp/lightdm-slick-greeter/*.pkg.tar.xz "$customiso"/arch/"$sys"/squashfs-root/usr/share/anarchy/pkg
-	sudo cp /tmp/lightdm-settings/*.pkg.tar.xz "$customiso"/arch/"$sys"/squashfs-root/usr/share/anarchy/pkg
-	sudo cp /tmp/oh-my-zsh-git/*.pkg.tar.xz "$customiso"/arch/"$sys"/squashfs-root/usr/share/anarchy/pkg
-	cd "$customiso"/arch/"$sys"/squashfs-root/usr/share/anarchy/pkg || exit
-	sudo repo-add anarchy.db.tar.gz *.pkg.tar.xz
-	sudo sed -i -e '$a\\n[anarchy]\nServer = https://arch-anywhere.org/repo/$arch\nSigLevel = Never' "$customiso"/arch/"$sys"/squashfs-root/etc/pacman.conf
-
 	### cd back into root system directory, remove old system
 	cd "$customiso"/arch/"$sys" || exit
 	rm airootfs.sfs
 
-	### Recreate the ISO using compression remove unsquashed system generate checksums and continue to i686
+	### Recreate the ISO using compression remove unsquashed system generate checksums
 	echo "Recreating $sys..."
 	sudo umount "$customiso"/arch/"$sys"/squashfs-root/proc/
 	sudo umount "$customiso"/arch/"$sys"/squashfs-root/sys/
@@ -464,12 +425,12 @@ create_iso() {
 
 check_sums() {
 
-echo "Generating ISO checksums..."
-md5_sum=$(md5sum "$version" | awk '{print $1}')
-sha1_sum=$(sha1sum "$version" | awk '{print $1}')
-timestamp=$(timedatectl | grep "Universal" | awk '{print $4" "$5" "$6}')
-echo "Checksums generated. Saved to anarchy-checksums.txt"
-echo -e "- Anarchy Linux is licensed under GPL v2\n- Developer: Dylan Schacht (deadhead3492@gmail.com)\n- Webpage: http://arch-anywhere.org\n- ISO timestamp: $timestamp\n- $version Official Check Sums:\n\n* md5sum: $md5_sum\n* sha1sum: $sha1_sum" > anarchy-checksums.txt
+	echo "Generating ISO checksums..."
+	md5_sum=$(md5sum "$version" | awk '{print $1}')
+	sha1_sum=$(sha1sum "$version" | awk '{print $1}')
+	timestamp=$(timedatectl | grep "Universal" | awk '{print $4" "$5" "$6}')
+	echo "Checksums generated. Saved to $(sed 's/.iso//' <<<"$version")-checksums.txt"
+	echo -e "- Anarchy Linux is licensed under GPL v2\n- Developer: Dylan Schacht (deadhead3492@gmail.com)\n- Webpage: http://arch-anywhere.org\n- ISO timestamp: $timestamp\n- $version Official Check Sums:\n\n* md5sum: $md5_sum\n* sha1sum: $sha1_sum" > "$(sed 's/.iso//' <<<"$version")-checksums.txt"
 
 }
 
@@ -486,6 +447,7 @@ case "$1" in
 			set_version
 			init
 			extract_iso
+			build_conf
 			build_sys
 			configure_boot
 			create_iso
@@ -496,6 +458,7 @@ case "$1" in
 			set_version
 			init
 			extract_iso
+			build_conf
 			build_sys_gui
 			configure_boot
 			create_iso
@@ -507,13 +470,15 @@ case "$1" in
 			set_version
 			init
 			extract_iso
-                        build_sys
+                        build_conf
+			build_sys
                         configure_boot
                         create_iso
 			echo "$version ISO generated successfully!."
 			interface="gui"
 			set_version
 			extract_iso
+			build_conf
 			build_sys_gui
                         configure_boot
                         create_iso
