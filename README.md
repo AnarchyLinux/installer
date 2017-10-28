@@ -44,7 +44,7 @@ http://arch-anywhere.org/
     Bspwm <br />
     Cinnamon <br />
     Deepin <br />
-    DWM DynamicWM <br />
+    DynamicWM <br />
     Enlightenment <br />
     Fluxbox <br />
     Gnome <br />
@@ -55,6 +55,7 @@ http://arch-anywhere.org/
     LXQT <br />
     Mate <br />
     Openbox <br />
+    SwayWM <br />
     WindowMaker <br />
     XFCE4 <br />
     Xmonad <br />
