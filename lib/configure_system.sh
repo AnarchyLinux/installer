@@ -260,8 +260,8 @@ configure_system() {
 		cp "$ARCH"/etc/skel/.bash_profile "$ARCH"/root/
 	elif [ "$sh" == "/usr/bin/zsh" ]; then
 		if [ "$shrc" == "$default" ]; then
-			cp "$aa_dir"/extra/.zshrc-default "$ARCH"/root/.zshrc
-			cp "$aa_dir"/extra/.zshrc-default "$ARCH"/etc/skel/.zshrc
+			cp "$aa_dir"/extra/.zshrc "$ARCH"/root/.zshrc
+			cp "$aa_dir"/extra/.zshrc "$ARCH"/etc/skel/.zshrc
 		elif [ "$shrc" == "oh-my-zsh" ]; then
 			cp "$aa_dir"/extra/.zshrc-oh-my "$ARCH"/root/.zshrc
 			cp "$aa_dir"/extra/.zshrc-oh-my "$ARCH"/etc/skel/.zshrc
