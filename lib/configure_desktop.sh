@@ -60,8 +60,8 @@ graphics() {
 		fi
 	done
 
-	if ! (</etc/pacman.conf grep "anarchy"); then
-		sed -i -e '$a\\n[anarchy]\nServer = file:///usr/share/anarchy/pkg\nSigLevel = Never' /etc/pacman.conf
+	if ! (</etc/pacman.conf grep "anarchy-local"); then
+		sed -i -e '$a\\n[anarchy-local]\nServer = file:///usr/share/anarchy/pkg\nSigLevel = Never' /etc/pacman.conf
 	fi
 
 	source "$lang_file"
@@ -77,10 +77,6 @@ graphics() {
 			"Anarchy-openbox")	config_DE+="$env "
 						start_term="exec openbox-session"
 						DE+="openbox thunar thunar-volman xfce4-terminal xfce4-panel xfce4-whiskermenu-plugin arc-icon-theme arc-gtk-theme elementary-icon-theme xcompmgr transset-df obconf lxappearance-obconf wmctrl gxmessage xfce4-pulseaudio-plugin xfdesktop xdotool htop opensnap ristretto arch-wiki-cli lynx fetchmirrors "
-
-						if ! (grep "anarchy" </etc/pacman.conf &>/dev/null); then
-							sed -i -e '$a\\n[anarchy]\nServer = http://arch-anywhere.org/repo/$arch\nSigLevel = Never' /etc/pacman.conf
-						fi
 			;;
 			"xfce4") 	start_term="exec startxfce4"
 					DE+="xfce4 "

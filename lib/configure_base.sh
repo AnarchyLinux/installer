@@ -96,8 +96,8 @@ prepare_base() {
 								sh="/usr/bin/$shell" shell="zsh zsh-syntax-highlighting"
 
 								if [ "$shrc" == "oh-my-zsh" ]; then
-									if ! (grep "anarchy" </etc/pacman.conf &>/dev/null); then
-										sed -i -e '$a\\n[anarchy]\nServer = file:///usr/share/anarchy/pkg\nSigLevel = Never' /etc/pacman.conf
+									if ! (grep "anarchy-local" </etc/pacman.conf &>/dev/null); then
+										sed -i -e '$a\\n[anarchy-local]\nServer = file:///usr/share/anarchy/pkg\nSigLevel = Never' /etc/pacman.conf
 									fi
 									shell+=" oh-my-zsh-git"
 								elif [ "$shrc" == "grml-zsh-config" ]; then
@@ -272,7 +272,7 @@ add_software() {
 					software_menu="$done_msg"
 				elif [ "$software_menu" == "$aar" ] && ! "$aa_repo" ; then
 					if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$aar_add_msg" 10 60) then
-						if ! (grep "anarchy" </etc/pacman.conf &>/dev/null); then
+						if ! (grep "\[anarchy\]" </etc/pacman.conf &>/dev/null); then
 							sed -i -e '$a\\n[anarchy]\nServer = http://arch-anywhere.org/repo/$arch\nSigLevel = Never' /etc/pacman.conf
 						fi
 						aa_repo=true
