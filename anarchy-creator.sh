@@ -235,6 +235,8 @@ aur_builds() {
 
 extract_iso() {
 
+	cd "$aa"
+
 	if [ -d "$customiso" ]; then
 		sudo rm -rf "$customiso"
 	fi
