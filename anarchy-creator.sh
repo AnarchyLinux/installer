@@ -204,15 +204,6 @@ aur_builds() {
                  makepkg -s
          fi
 	 
-	 if [ ! -d /tmp/zsh-syntax-highlighting-git ]; then
-	 	 ### Build zsh-syntax-highlighting
-		 cd /tmp || exit
-		 wget https://aur.archlinux.org/cgit/aur.git/snapshot/zsh-syntax-highlighting-git.tar.gz
-		 tar -xf zsh-syntax-highlighting-git.tar.gz
-		 cd zsh-syntax-highlighting-git || exit
-		 makepkg -s
-	 fi
-
 	 if [ ! -d /tmp/opensnap ]; then
                  ### Build opensnap
                  cd /tmp || exit
