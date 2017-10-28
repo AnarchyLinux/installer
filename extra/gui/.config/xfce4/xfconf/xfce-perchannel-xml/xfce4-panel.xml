@@ -76,7 +76,7 @@
     </property>
     <property name="plugin-10" type="string" value="showdesktop"/>
     <property name="plugin-14" type="string" value="tasklist">
-      <property name="flat-buttons" type="bool" value="true"/>
+      <property name="flat-buttons" type="bool" value="false"/>
     </property>
     <property name="plugin-15" type="string" value="separator">
       <property name="style" type="uint" value="0"/>
