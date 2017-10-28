@@ -286,7 +286,7 @@ build_conf() {
 	sudo cp "$aa"/extra/{.zshrc,.help,.dialogrc} "$customiso"/arch/"$sys"/squashfs-root/root/
 	sudo cp "$aa"/extra/.zshrc "$customiso"/arch/"$sys"/squashfs-root/etc/zsh/zshrc
 	sudo cp "$aa"/extra/{.bashrc,.bashrc-root,.tcshrc,.tcshrc.conf,.mkshrc,.zshrc,.zshrc-oh-my,.zshrc-grml} "$customiso"/arch/"$sys"/squashfs-root/usr/share/anarchy/extra/
-	sudo sed -i -e '$a\\nalias help="cat ~/.help"\nalias start="cat ~/.issue_cli"\nalias 1="anarchy"\nalias 2="anarchy -u"\nalias 3="arch-wiki"\nalias 4="iptest"\nalias 5="sysinfo"\nalias 6="fetchmirrors"' "$customiso"/arch/"$sys"/squashfs-root/root/.zshrc
+	sudo sed -i -e '$a\\nalias help="cat ~/.help"\nalias start="cat ~/.issue_cli"\nalias 1="anarchy"\nalias 2="anarchy -u"\nalias 3="arch-wiki"\nalias 4="iptest"\nalias 5="sysinfo"\nalias 6="fetchmirrors"\ncat /etc/issue' "$customiso"/arch/"$sys"/squashfs-root/root/.zshrc
 	sudo cp -r "$aa"/extra/desktop "$customiso"/arch/"$sys"/squashfs-root/usr/share/anarchy/extra/
 	sudo cp "$aa"/boot/hostname "$customiso"/arch/"$sys"/squashfs-root/etc/
 	sudo cp "$aa"/boot/issue_cli "$customiso"/arch/"$sys"/squashfs-root/etc/
