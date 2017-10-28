@@ -473,13 +473,21 @@ part_class() {
 				mounted=false
 				unset DRIVE
 				select_util
-				$UTIL /dev/"$part"
+				if "$gpart" ; then
+					$UTIL /dev/"$part" &>/dev/null
+				else
+					$UTIL /dev/"$part"
+				fi
 				sleep 0.5
 				clear
 			fi
 		elif (dialog --yes-button "$edit" --no-button "$cancel" --yesno "\n$manual_part_var3" 12 60) then
 			select_util
-			$UTIL /dev/"$part"
+			if "$gpart" ; then
+				$UTIL /dev/"$part" &>/dev/null
+			else
+				$UTIL /dev/"$part"
+			fi
 			sleep 0.5
 			clear
 		fi
@@ -850,6 +858,8 @@ fs_select() {
 
 select_util() {
 
+	gpart=false
+
 	if "$GUI" ; then
 		UTIL=$(dialog --menu "$vfat_msg" 14 65 4 \
 			"gparted"	"$part_util" \
@@ -858,6 +868,8 @@ select_util() {
 			"gdisk"		"$part_util2" 3>&1 1>&2 2>&3)
 		if [ "$?" -gt "0" ]; then
 			part_menu
+		elif [ "$UTIL" == "gparted" ]; then
+			gpart=true
 		fi
 	else
 		UTIL=$(dialog --menu "$vfat_msg" 13 65 3 \
