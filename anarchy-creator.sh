@@ -213,6 +213,24 @@ aur_builds() {
                  makepkg -s
          fi
 
+	 if [ ! -d /tmp/perl-linux-desktopfiles ]; then
+                 ### perl-linux-desktopfiles
+                 cd /tmp || exit
+                 wget "https://aur.archlinux.org/cgit/aur.git/snapshot/perl-linux-desktopfiles.tar.gz"
+                 tar -xf perl-linux-desktopfiles.tar.gz
+                 cd perl-linux-desktopfiles || exit
+                 makepkg -si
+         fi
+
+	 if [ ! -d /tmp/obmenu-generator ]; then
+                 ### Build obmenu-generator
+                 cd /tmp || exit
+                 wget "https://aur.archlinux.org/cgit/aur.git/snapshot/obmenu-generator.tar.gz"
+                 tar -xf obmenu-generator.tar.gz
+                 cd obmenu-generator || exit
+                 makepkg -s
+         fi
+
 }
 
 extract_iso() {
@@ -284,6 +302,8 @@ build_conf() {
 	sudo cp /tmp/lightdm-settings/*.pkg.tar.xz "$customiso"/arch/"$sys"/squashfs-root/usr/share/anarchy/pkg
 	sudo cp /tmp/oh-my-zsh-git/*.pkg.tar.xz "$customiso"/arch/"$sys"/squashfs-root/usr/share/anarchy/pkg
 	sudo cp /tmp/opensnap/*.pkg.tar.xz "$customiso"/arch/"$sys"/squashfs-root/usr/share/anarchy/pkg
+	sudo cp /tmp/perl-linux-desktopfiles/*.pkg.tar.xz "$customiso"/arch/"$sys"/squashfs-root/usr/share/anarchy/pkg
+	sudo cp /tmp/obmenu-generator/*.pkg.tar.xz "$customiso"/arch/"$sys"/squashfs-root/usr/share/anarchy/pkg
 	cd "$customiso"/arch/"$sys"/squashfs-root/usr/share/anarchy/pkg || exit
 	sudo repo-add anarchy-local.db.tar.gz *.pkg.tar.xz
 	sudo sed -i -e '$a\\n[anarchy-local]\nServer = file:///usr/share/anarchy/pkg\nSigLevel = Never' "$customiso"/arch/"$sys"/squashfs-root/etc/pacman.conf

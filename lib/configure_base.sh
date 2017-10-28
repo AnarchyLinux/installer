@@ -387,6 +387,7 @@ add_software() {
 				;;
 				"$games")
 					software=$(dialog --ok-button "$ok" --cancel-button "$cancel" --checklist "$software_msg1" 20 70 10 \
+						"aisleriot"	"$game11" OFF \
 						"alienarena"	"$game0" OFF \
 						"bsd-games"	"$game1" OFF \
 						"bzflag"	"$game2" OFF \

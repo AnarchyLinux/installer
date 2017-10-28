@@ -72,12 +72,23 @@ graphics() {
 		case "$env" in
 			"Anarchy-xfce4")	config_DE+="$env "
 						start_term="exec startxfce4"
-						DE+="xfce4 xfce4-goodies gvfs zsh zsh-syntax-highlighting arc-icon-theme arc-gtk-theme elementary-icon-theme numix-icon-theme-git numix-circle-icon-theme-git htop arch-wiki-cli lynx fetchmirrors galculator \
-						chromium libreoffice-fresh gimp gparted screenfetch vim aisleriot vlc clementine simplescreenrecorder audacity pitivi "
+						DE+="xfce4 xfce4-goodies gvfs zsh zsh-syntax-highlighting arc-icon-theme arc-gtk-theme elementary-icon-theme numix-icon-theme-git numix-circle-icon-theme-git htop arch-wiki-cli lynx fetchmirrors "
+
+						if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$extra_msg8" 10 60) then
+							de_extras
+							DE+="$extras "
+						fi
+
 			;;
 			"Anarchy-openbox")	config_DE+="$env "
 						start_term="exec openbox-session"
-						DE+="openbox thunar thunar-volman xfce4-terminal xfce4-panel xfce4-whiskermenu-plugin arc-icon-theme arc-gtk-theme elementary-icon-theme xcompmgr transset-df obconf lxappearance-obconf wmctrl gxmessage xfce4-pulseaudio-plugin xfdesktop xdotool htop opensnap ristretto arch-wiki-cli lynx fetchmirrors "
+						DE+="openbox thunar thunar-volman xfce4-terminal xfce4-panel xfce4-whiskermenu-plugin arc-icon-theme arc-gtk-theme numix-icon-theme-git numix-circle-icon-theme-git elementary-icon-theme xcompmgr transset-df obconf lxappearance-obconf wmctrl gxmessage xfce4-pulseaudio-plugin xfdesktop xdotool htop opensnap ristretto arch-wiki-cli lynx fetchmirrors oblogout obmenu-generator openbox-themes "
+
+						if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$extra_msg8" 10 60) then
+							de_extras
+							DE+="$extras "
+						fi
+
 			;;
 			"xfce4") 	start_term="exec startxfce4"
 					DE+="xfce4 "
@@ -362,6 +373,25 @@ graphics() {
 
 	base_install+="$DE "
 	desktop=true
+
+}
+
+de_extras() {
+
+	extras=$(dialog --ok-button "$ok" --cancel-button "$cancel" --checklist "$software_msg1" 20 63 10 \
+	        "aisleriot"		"$game11" ON \
+		"audacity"              "$audio0" ON \
+	        "chromium"              "$net0" ON \
+	        "clementine"            "$audio10" ON \
+	        "galculator"		"$sys24" ON \
+	        "gimp"			"$graphic2" ON \
+	        "gparted"		"$sys4" ON \
+	        "libreoffice-fresh"     "$office4" ON \
+	        "pitivi"                "$media2" ON \
+	        "screenfetch"           "$sys12" ON \
+	        "simplescreenrecorder"  "$media3" ON \
+		"vim"			"$edit6" ON \
+		"vlc"			"$media6" ON 3>&1 1>&2 2>&3)
 
 }
 
