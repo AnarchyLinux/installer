@@ -111,7 +111,7 @@ update_iso() {
 				;;
 			esac
 		else
-			echo -en "An updated version of the archiso is available for download\n'$iso_ver'\nDownload now? [y/N]: "
+			echo -en "An updated version of the archiso is available for download\n'$archiso_latest'\nDownload now? [y/N]: "
 			read -r input
 
 			case "$input" in
