@@ -4,7 +4,7 @@ Anarchy Linux is an Arch based distro providing a hassle free pure install and p
 
 The Anarchy installer is intended to allow both novice and experienced Linux users a simple and pain free way to install Arch Linux. Install when you want it, where you want it, how you want it, that is the Anarchy philosophy.
 
-The Anarchy ISO also contains a built in Arch Wiki allowing users to browse the official Arch Linux Wiki from the cli. Simply invoke the 'arch-wiki' command at anytime to search the arch wiki (search args may be passed ex: 'arch-wiki beginners guide'). A utility to update and rank the latest Arch Linux mirrorlist is also included in the ISO it can be invoked by running 'fetchmirrors'. The install process for Anarchy is also 100% compatiable with the information found in the install guide on the Arch Wiki. 
+The Anarchy ISO also contains a built in Arch Wiki allowing users to browse the official Arch Linux Wiki from the cli. Simply invoke the 'arch-wiki' command at anytime to search the arch wiki (search args may be passed ex: 'arch-wiki beginners guide'). A utility to update and rank the latest Arch Linux mirrorlist is also included in the ISO it can be invoked by running 'fetchmirrors'. The install process for Anarchy is also 100% compatible with the information found in the install guide on the Arch Wiki. 
 
 Anarchy aims to provide a polished and pure Arch install while leaving open every possible configuration avenue for the user to choose from.
 
@@ -44,7 +44,7 @@ http://arch-anywhere.org/
     Bspwm <br />
     Cinnamon <br />
     Deepin <br />
-    DWM DynamicWM <br />
+    DynamicWM <br />
     Enlightenment <br />
     Fluxbox <br />
     Gnome <br />
@@ -55,6 +55,7 @@ http://arch-anywhere.org/
     LXQT <br />
     Mate <br />
     Openbox <br />
+    SwayWM <br />
     WindowMaker <br />
     XFCE4 <br />
     Xmonad <br />
