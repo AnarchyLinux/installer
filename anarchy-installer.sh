@@ -62,11 +62,12 @@ main() {
 	set_zone
 	prepare_drives
 	prepare_base
+	set_hostname
+	set_user
 	graphics
 	add_software
 	install_base
 	configure_system
-	set_hostname
 	add_user
 	reboot_system
 

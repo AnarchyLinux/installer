@@ -294,27 +294,4 @@ configure_system() {
 
 }
 
-set_hostname() {
-
-	op_title="$host_op_msg"
-
-	while (true)	## Begin set hostname loop
-	  do		## Prompt user to enter hostname check for starting with numbers or containg special char
-		hostname=$(dialog --ok-button "$ok" --nocancel --inputbox "\n$host_msg" 12 55 "anarchy" 3>&1 1>&2 2>&3 | sed 's/ //g')
-
-		if (<<<$hostname grep "^[0-9]\|[\[\$\!\'\"\`\\|%&#@()+=<>~;:/?.,^{}]\|]" &> /dev/null); then
-			dialog --ok-button "$ok" --msgbox "\n$host_err_msg" 10 60
-		else
-			break
-		fi
-	done
-
-	echo "$hostname" > "$ARCH"/etc/hostname
-	arch-chroot "$ARCH" chsh -s "$sh" &>/dev/null
-	echo "$(date -u "+%F %H:%M") : Hostname set: $hostname" >> "$log"
-	user=root
-	set_password
-
-}
-
 # vim: ai:ts=8:sw=8:sts=8:noet
