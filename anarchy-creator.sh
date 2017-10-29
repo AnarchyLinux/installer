@@ -203,7 +203,7 @@ aur_builds() {
                  cd oh-my-zsh-git || exit
                  makepkg -s
          fi
-
+	 
 	 if [ ! -d /tmp/opensnap ]; then
                  ### Build opensnap
                  cd /tmp || exit
