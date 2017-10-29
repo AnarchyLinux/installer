@@ -398,6 +398,7 @@ de_extras() {
 config_env() {
 
 	cp -r "$aa_dir"/extra/desktop/ttf-zekton-rg "$ARCH"/usr/share/fonts
+	chmod -R 755 "$ARCH"/usr/share/fonts/ttf-zekton-rg
 	arch-chroot "$ARCH" fc-cache -f
 	cp "$aa_dir"/extra/desktop/anarchy-icon.png "$ARCH"/root/.face
 	cp "$aa_dir"/extra/desktop/anarchy-icon.png "$ARCH"/etc/skel/.face
