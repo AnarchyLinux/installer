@@ -203,7 +203,7 @@ aur_builds() {
                  cd oh-my-zsh-git || exit
                  makepkg -s
          fi
-	 
+
 	 if [ ! -d /tmp/opensnap ]; then
                  ### Build opensnap
                  cd /tmp || exit
@@ -288,7 +288,7 @@ build_conf() {
 	sudo cp "$aa"/extra/.zshrc "$customiso"/arch/"$sys"/squashfs-root/etc/zsh/zshrc
 	sudo cp "$aa"/extra/{.bashrc,.bashrc-root,.tcshrc,.tcshrc.conf,.mkshrc,.zshrc,.zshrc-oh-my,.zshrc-grml} "$customiso"/arch/"$sys"/squashfs-root/usr/share/anarchy/extra/
 	sudo sed -i -e '$a\\nalias help="cat ~/.help"\nalias start="cat ~/.issue_cli"\nalias 1="anarchy"\nalias 2="anarchy -u"\nalias 3="arch-wiki"\nalias 4="iptest"\nalias 5="sysinfo"\nalias 6="fetchmirrors"\ncat /etc/issue_cli' "$customiso"/arch/"$sys"/squashfs-root/root/.zshrc
-	sudo cp -r "$aa"/extra/desktop "$customiso"/arch/"$sys"/squashfs-root/usr/share/anarchy/extra/
+	sudo cp -r "$aa"/extra/{desktop,wallpapers,fonts,anarchy-icon.png} "$customiso"/arch/"$sys"/squashfs-root/usr/share/anarchy/extra/
 	sudo cp "$aa"/boot/hostname "$customiso"/arch/"$sys"/squashfs-root/etc/
 	sudo cp "$aa"/boot/issue_cli "$customiso"/arch/"$sys"/squashfs-root/etc/
 	sudo cp -r "$aa"/boot/loader/ "$customiso"/arch/"$sys"/squashfs-root/usr/share/anarchy/boot/
@@ -368,12 +368,12 @@ build_sys_gui() {
 	sudo cp -r "$aa"/extra/gui/{Fetchmirrors.desktop,gparted.desktop,chromium.desktop,exo-terminal-emulator.desktop,Install.desktop} "$customiso"/arch/"$sys"/squashfs-root/home/user/Desktop
 	sudo cp -r "$aa"/extra/gui/{Fetchmirrors.desktop,Install.desktop} "$customiso"/arch/"$sys"/squashfs-root/usr/share/applications
 	sudo cp -r "$aa"/extra/gui/{issue,sudoers} "$customiso"/arch/"$sys"/squashfs-root/etc/
-	sudo cp -r "$aa"/extra/desktop/anarchy-icon.png "$customiso"/arch/"$sys"/squashfs-root/usr/share/pixmaps
-	sudo cp -r "$aa"/extra/desktop/wallpapers/*.png "$customiso"/arch/"$sys"/squashfs-root/usr/share/pixmaps
-	sudo cp -r "$aa"/extra/desktop/wallpapers/*.png "$customiso"/arch/"$sys"/squashfs-root/usr/share/backgrounds/xfce
-	sudo cp -r "$aa"/extra/desktop/anarchy-icon.png "$customiso"/arch/"$sys"/squashfs-root/root/.face
-	sudo cp -r "$aa"/extra/desktop/anarchy-icon.png "$customiso"/arch/"$sys"/squashfs-root/home/user/.face
-	sudo cp -r "$aa"/extra/desktop/ttf-zekton-rg "$customiso"/arch/"$sys"/squashfs-root/usr/share/fonts
+	sudo cp -r "$aa"/extra/anarchy-icon.png "$customiso"/arch/"$sys"/squashfs-root/usr/share/pixmaps
+	sudo cp -r "$aa"/extra/wallpapers/*.png "$customiso"/arch/"$sys"/squashfs-root/usr/share/pixmaps
+	sudo cp -r "$aa"/extra/wallpapers/*.png "$customiso"/arch/"$sys"/squashfs-root/usr/share/backgrounds/xfce
+	sudo cp -r "$aa"/extra/anarchy-icon.png "$customiso"/arch/"$sys"/squashfs-root/root/.face
+	sudo cp -r "$aa"/extra/anarchy-icon.png "$customiso"/arch/"$sys"/squashfs-root/home/user/.face
+	sudo cp -r "$aa"/extra/fonts/ttf-zekton-rg "$customiso"/arch/"$sys"/squashfs-root/usr/share/fonts
 	sudo cp -r "$aa"/extra/gui/{.xinitrc,.automated_script.sh} "$customiso"/arch/"$sys"/squashfs-root/root
 	sudo cp -r "$aa"/extra/gui/{.xinitrc,.automated_script.sh} "$customiso"/arch/"$sys"/squashfs-root/home/user
 	sudo cp -r "$aa"/extra/.zshrc "$customiso"/arch/"$sys"/squashfs-root/home/user/.zshrc
