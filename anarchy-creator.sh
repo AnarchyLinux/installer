@@ -291,6 +291,8 @@ build_conf() {
 	sudo cp -r "$aa"/extra/{desktop,wallpapers,fonts,anarchy-icon.png} "$customiso"/arch/"$sys"/squashfs-root/usr/share/anarchy/extra/
 	sudo cp "$aa"/boot/hostname "$customiso"/arch/"$sys"/squashfs-root/etc/
 	sudo cp "$aa"/boot/issue_cli "$customiso"/arch/"$sys"/squashfs-root/etc/
+	sudo cp "$aa"/etc/lsb-release "$customiso"/arch/"$sys"/squashfs-root/etc
+	sudo cp "$aa"/etc/os-release "$customiso"/arch/"$sys"/squashfs-root/etc
 	sudo cp -r "$aa"/boot/loader/ "$customiso"/arch/"$sys"/squashfs-root/usr/share/anarchy/boot/
 	sudo cp "$aa"/boot/splash.png "$customiso"/arch/"$sys"/squashfs-root/usr/share/anarchy/boot/
 	sudo cp "$aa"/etc/{nvidia340.xx,nvidia304.xx} "$customiso"/arch/"$sys"/squashfs-root/usr/share/anarchy/etc/
