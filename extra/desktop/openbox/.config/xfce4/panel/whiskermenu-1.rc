@@ -1,7 +1,7 @@
-favorites=exo-terminal-emulator.desktop,exo-file-manager.desktop,htop.desktop,fetchpkg.desktop,arch-wiki.desktop,exo-web-browser.desktop,pavucontrol.desktop,thunar-volman-settings.desktop,obconf.desktop
-recent=htop.desktop,thunar-volman-settings.desktop,xscreensaver-properties.desktop,xterm.desktop,panel-preferences.desktop,obconf.desktop,exo-preferred-applications.desktop,xfce-backdrop-settings.desktop,exo-web-browser.desktop,exo-file-manager.desktop
+favorites=exo-terminal-emulator.desktop,exo-file-manager.desktop,htop.desktop,arch-wiki.desktop,chromium.desktop,vlc.desktop,clementine.desktop,audacity.desktop,pavucontrol.desktop,gimp.desktop,mousepad.desktop,libreoffice-writer.desktop,pitivi.desktop,gparted.desktop,sol.desktop,galculator.desktop,xfce4-screenshooter.desktop,simplescreenrecorder.desktop
+recent=obconf.desktop,xfce-backdrop-settings.desktop,htop.desktop,thunar-volman-settings.desktop,xterm.desktop,panel-preferences.desktop,exo-preferred-applications.desktop,exo-web-browser.desktop,exo-file-manager.desktop
 button-title=Menu
-button-icon=/usr/share/pixmaps/arch-anywhere-icon.png
+button-icon=/usr/share/pixmaps/anarchy-icon.png
 button-single-row=false
 show-button-title=true
 show-button-icon=true
@@ -28,12 +28,12 @@ command-lockscreen=xflock4
 show-command-lockscreen=false
 command-switchuser=gdmflexiserver
 show-command-switchuser=false
-command-logout=obpower
+command-logout=oblogout
 show-command-logout=true
 command-menueditor=menulibre
-show-command-menueditor=true
+show-command-menueditor=false
 command-profile=mugshot
-show-command-profile=true
+show-command-profile=false
 search-actions=5
 
 [action0]

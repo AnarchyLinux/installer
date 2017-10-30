@@ -1,7 +1,7 @@
 [Desktop Entry]
 Version=1.0
 Type=Application
-Name=obpower
+Name=oblogout
 Comment=Power Options
 Exec=obpower
 Icon=preferences-desktop-accessibility-symbolic
