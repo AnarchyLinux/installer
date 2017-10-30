@@ -369,8 +369,6 @@ build_sys_gui() {
 	sudo cp -r "$aa"/extra/gui/{Fetchmirrors.desktop,Install.desktop} "$customiso"/arch/"$sys"/squashfs-root/usr/share/applications
 	sudo cp -r "$aa"/extra/gui/{issue,sudoers} "$customiso"/arch/"$sys"/squashfs-root/etc/
 	sudo cp -r "$aa"/extra/anarchy-icon.png "$customiso"/arch/"$sys"/squashfs-root/usr/share/pixmaps
-	sudo cp -r "$aa"/extra/wallpapers/*.png "$customiso"/arch/"$sys"/squashfs-root/usr/share/pixmaps
-	sudo cp -r "$aa"/extra/wallpapers/*.png "$customiso"/arch/"$sys"/squashfs-root/usr/share/backgrounds/xfce
 	sudo cp -r "$aa"/extra/anarchy-icon.png "$customiso"/arch/"$sys"/squashfs-root/root/.face
 	sudo cp -r "$aa"/extra/anarchy-icon.png "$customiso"/arch/"$sys"/squashfs-root/home/user/.face
 	sudo cp -r "$aa"/extra/fonts/ttf-zekton-rg "$customiso"/arch/"$sys"/squashfs-root/usr/share/fonts
