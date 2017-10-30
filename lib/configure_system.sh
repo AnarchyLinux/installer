@@ -292,6 +292,15 @@ configure_system() {
 	sed -i 's/^#VerbosePkgLists$/VerbosePkgLists/' "$ARCH"/etc/pacman.conf
 	sed -i '/^VerbosePkgLists$/ a ILoveCandy' "$ARCH"/etc/pacman.conf
 
+	echo "$hostname" > "$ARCH"/etc/hostname
+        echo "$(date -u "+%F %H:%M") : Hostname set: $hostname" >> "$log"
+	arch-chroot "$ARCH" chsh -s "$sh" &>/dev/null
+	input="$(echo "$root_crypt" | openssl enc -aes-256-cbc -a -d -salt -pass pass:"$ssl_key")"
+        (sleep 1 ; printf "$input\n$input" | arch-chroot "$ARCH" passwd root) &> /dev/null &
+        pid=$! pri=0.1 msg="$wait_load \n\n \Z1> \Z2passwd root\Zn" load
+        unset input
+        echo "$(date -u "+%F %H:%M") : Password set: root" >> "$log"
+
 }
 
 # vim: ai:ts=8:sw=8:sts=8:noet

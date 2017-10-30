@@ -397,14 +397,14 @@ de_extras() {
 
 config_env() {
 
-	cp -r "$aa_dir"/extra/desktop/ttf-zekton-rg "$ARCH"/usr/share/fonts
+	cp -r "$aa_dir"/extra/fonts/ttf-zekton-rg "$ARCH"/usr/share/fonts
 	chmod -R 755 "$ARCH"/usr/share/fonts/ttf-zekton-rg
 	arch-chroot "$ARCH" fc-cache -f
-	cp "$aa_dir"/extra/desktop/anarchy-icon.png "$ARCH"/root/.face
-	cp "$aa_dir"/extra/desktop/anarchy-icon.png "$ARCH"/etc/skel/.face
-	cp "$aa_dir"/extra/desktop/anarchy-icon.png "$ARCH"/usr/share/pixmaps
+	cp "$aa_dir"/extra/anarchy-icon.png "$ARCH"/root/.face
+	cp "$aa_dir"/extra/anarchy-icon.png "$ARCH"/etc/skel/.face
+	cp "$aa_dir"/extra/anarchy-icon.png "$ARCH"/usr/share/pixmaps
 	mkdir "$ARCH"/usr/share/backgrounds/anarchy
-	cp -r "$aa_dir"/extra/desktop/wallpapers/{*.jpeg,*.png} "$ARCH"/usr/share/backgrounds/anarchy/
+	cp -r "$aa_dir"/extra/wallpapers/{*.jpeg,*.png} "$ARCH"/usr/share/backgrounds/anarchy/
 
 	if (grep "Anarchy-xfce4" <<<"$config_DE" &>/dev/null); then
 		cp -r "$aa_dir/extra/desktop/xfce4/.config" "$ARCH"/root/

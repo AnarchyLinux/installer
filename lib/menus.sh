@@ -62,7 +62,8 @@ reboot_system() {
 						clear
 				;;
 				"$reboot3")	## Edit users
-						add_user
+						menu_enter=true
+						set_user
 				;;
 				"$reboot5")	## Software menu
 						menu_enter=true
