@@ -283,7 +283,6 @@ build_conf() {
 	sudo cp "$aa"/lib/* "$customiso"/arch/"$sys"/squashfs-root/usr/lib/anarchy
 
 	### Copy over extra files (dot files, desktop configurations, help file, issue file, hostname file)
-	sudo rm "$customiso"/arch/"$sys"/squashfs-root/root/install.txt
 	sudo cp "$aa"/extra/{.zshrc,.help,.dialogrc} "$customiso"/arch/"$sys"/squashfs-root/root/
 	sudo cp "$aa"/extra/.zshrc "$customiso"/arch/"$sys"/squashfs-root/etc/zsh/zshrc
 	sudo cp "$aa"/extra/{.bashrc,.bashrc-root,.tcshrc,.tcshrc.conf,.mkshrc,.zshrc,.zshrc-oh-my,.zshrc-grml} "$customiso"/arch/"$sys"/squashfs-root/usr/share/anarchy/extra/
