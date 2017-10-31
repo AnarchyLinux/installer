@@ -28,6 +28,7 @@ graphics() {
 	  do
 		de=$(dialog --separate-output --ok-button "$done_msg" --cancel-button "$cancel" --checklist "$environment_msg" 24 60 15 \
 			"Anarchy-xfce4"		"$de15" OFF \
+			"Anarchy-gnome"		"$de22" OFF \
 			"Anarchy-openbox"	"$de18" OFF \
 			"budgie"		"$de17" OFF \
 			"cinnamon"      	"$de5" OFF \
@@ -72,13 +73,22 @@ graphics() {
 		case "$env" in
 			"Anarchy-xfce4")	config_DE+="$env "
 						start_term="exec startxfce4"
-						DE+="xfce4 xfce4-goodies gvfs zsh zsh-syntax-highlighting arc-icon-theme arc-gtk-theme elementary-icon-theme numix-icon-theme-git numix-circle-icon-theme-git htop arch-wiki-cli lynx fetchmirrors "
+						DE+="xfce4 xfce4-goodies gvfs zsh zsh-syntax-highlighting arc-gtk-theme numix-icon-theme-git numix-circle-icon-theme-git htop arch-wiki-cli lynx fetchmirrors "
 
 						if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$extra_msg8" 10 60) then
 							de_extras
 							DE+="$extras "
 						fi
 
+			;;
+			"Anarchy-gnome")	config_DE+="$env "
+						start_term="exec gnome-session"
+						DE+="gnome gnome-extra gvfs zsh zsh-syntax-highlighting arc-gtk-theme numix-icon-theme-git numix-circle-icon-theme-git htop arch-wiki-cli lynx fetchmirrors "
+
+						if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$extra_msg8" 10 60) then
+                                                         de_extras
+                                                         DE+="$extras "
+						fi
 			;;
 			"Anarchy-openbox")	config_DE+="$env "
 						start_term="exec openbox-session"
@@ -409,6 +419,12 @@ config_env() {
 	if (grep "Anarchy-xfce4" <<<"$config_DE" &>/dev/null); then
 		cp -r "$aa_dir/extra/desktop/xfce4/.config" "$ARCH"/root/
 		cp -r "$aa_dir/extra/desktop/xfce4/.config" "$ARCH"/etc/skel/
+	fi
+
+	if (grep "Anarchy-gnome" <<<"$config_DE" &>/dev/null); then
+		cp -r "$aa_dir/extra/desktop/gnome/{.config,.local}" "$ARCH"/root
+		cp -r "$aa_dir/extra/desktop/gnome/{.config,.local}" "$ARCH"/etc/skel
+		cp -r "$aa_dir/extra/desktop/gnome/gnome-backgrounds.xml" "$ARCH"/usr/share/gnome-background-properties
 	fi
 
 	if (grep "Anarchy-openbox" <<<"$config_DE" &>/dev/null); then
