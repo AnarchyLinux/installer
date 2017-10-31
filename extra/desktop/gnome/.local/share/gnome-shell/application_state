@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<application-state>
+  <context id="">
+    <application id="gnome-control-center.desktop" open-window-count="0" score="25" last-seen="1509408772"/>
+    <application id="org.gnome.Epiphany.desktop" open-window-count="0" score="16" last-seen="1509035694"/>
+    <application id="evolution.desktop" open-window-count="0" score="0" last-seen="1509405408"/>
+    <application id="terminator.desktop" open-window-count="1" score="353" last-seen="1509408994"/>
+    <application id="anjuta.desktop" open-window-count="0" score="9" last-seen="1509408327"/>
+    <application id="gnome-background-panel.desktop" open-window-count="0" score="0" last-seen="0"/>
+    <application id="gnome-tweak-tool.desktop" open-window-count="0" score="53" last-seen="1509405396"/>
+    <application id="gnome-music.desktop" open-window-count="0" score="1" last-seen="1509408933"/>
+    <application id="atomix.desktop" open-window-count="0" score="0" last-seen="1509408860"/>
+    <application id="chromium.desktop" open-window-count="0" score="5" last-seen="1509408221"/>
+    <application id="org.gnome.gedit.desktop" open-window-count="0" score="1" last-seen="1509408992"/>
+    <application id="xfce4-terminal.desktop" open-window-count="0" score="36" last-seen="1509407412"/>
+    <application id="org.gnome.Terminal.desktop" open-window-count="0" score="131" last-seen="1509406048"/>
+    <application id="org.gnome.Totem.desktop" open-window-count="0" score="1" last-seen="1509408833"/>
+    <application id="org.gnome.Maps.desktop" open-window-count="0" score="1" last-seen="1509408914"/>
+  </context>
+</application-state>
