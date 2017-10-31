@@ -422,8 +422,10 @@ config_env() {
 	fi
 
 	if (grep "Anarchy-gnome" <<<"$config_DE" &>/dev/null); then
-		cp -r "$aa_dir/extra/desktop/gnome/{.config,.local}" "$ARCH"/root
-		cp -r "$aa_dir/extra/desktop/gnome/{.config,.local}" "$ARCH"/etc/skel
+		cp -r "$aa_dir/extra/desktop/gnome/.config" "$ARCH"/root
+		cp -r "$aa_dir/extra/desktop/gnome/.local" "$ARCH"/root
+		cp -r "$aa_dir/extra/desktop/gnome/.config" "$ARCH"/etc/skel
+		cp -r "$aa_dir/extra/desktop/gnome/.local" "$ARCH"/etc/skel
 		cp -r "$aa_dir/extra/desktop/gnome/gnome-backgrounds.xml" "$ARCH"/usr/share/gnome-background-properties
 	fi
 
