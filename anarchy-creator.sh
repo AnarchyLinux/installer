@@ -363,7 +363,6 @@ build_sys_gui() {
 	sudo mv "$customiso"/arch/"$sys"/squashfs-root/boot/initramfs-linux.img "$customiso"/arch/boot/"$sys"/archiso.img
 
 	### Configure xfce4
-	sudo rm "$customiso"/arch/"$sys"/squashfs-root/root/install.txt
 	sudo arch-chroot squashfs-root useradd -m -g users -G power,audio,video,storage -s /usr/bin/zsh user
 	sudo arch-chroot squashfs-root su user -c xdg-user-dirs-update
 	sudo sed -i 's/root/user/' "$customiso"/arch/"$sys"/squashfs-root/etc/systemd/system/getty@tty1.service.d/autologin.conf
