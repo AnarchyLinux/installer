@@ -643,7 +643,7 @@ add_software() {
 						"inxi"			"$sys7" OFF \
 						"k3b"			"$sys8" OFF \
 						"nmap"			"$sys9" OFF \
-						"ntfs-3g"		"$sys" OFF \
+						"ntfs-3g"		"$sys28" OFF \
 						"pcmanfm"		"$sys21" OFF \
 						"ranger"		"$sys20" OFF \
 						"screenfetch"		"$sys12" OFF \
