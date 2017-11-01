@@ -37,8 +37,10 @@ http://arch-anywhere.org/
 
 * Supported Desktop Environments + Window Managers:
 
-    Anarchy XFCE4 (developers custom xfce4 desktop) <br />
-    Anarchy OpenboxWM (developers custom Openbox desktop) <br />
+    Anarchy Cinnamon Edition (developers custom Cinnamon desktop) <br />
+    Anarchy Gnome Edition (developers custom Gnome desktop) <br />
+    Anarchy OpenboxWM Edition (developers custom Openbox desktop) <br />
+    Anarchy XFCE4 Edition (developers custom Xfce4 desktop) <br/> 
     Awesome <br />
     Budgie <br />
     Bspwm <br />
