@@ -155,7 +155,7 @@ graphics() {
 							DE+="powerdevil "
 						fi
 					else
-						DE+="plasma kde-applications "
+						DE+="plasma ark aspell-en cdrdao clementine dolphin dolphin-plugins ffmpegthumbs gwenview k3b kate kcalc kdialog kfind kdeconnect kdegraphics-thumbnailers kdenetwork-filesharing kdenetwork-kopete kdesudo kdelibs4support kipi-plugins khelpcenter konsole kwalletmanager okular spectacle transmission-qt krita kolourpaint karbon korganizer knetattach qupzilla bomi kdenlive bomi   "
 					fi
 
 					if [ -n "$kdel" ]; then
