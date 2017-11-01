@@ -28,6 +28,7 @@ graphics() {
 	  do
 		de=$(dialog --separate-output --ok-button "$done_msg" --cancel-button "$cancel" --checklist "$environment_msg" 24 60 15 \
 			"Anarchy-xfce4"		"$de15" OFF \
+			"Anarchy-cinnamon"	"$de23" OFF \
 			"Anarchy-gnome"		"$de22" OFF \
 			"Anarchy-openbox"	"$de18" OFF \
 			"budgie"		"$de17" OFF \
@@ -80,6 +81,15 @@ graphics() {
 							DE+="$extras "
 						fi
 
+			;;
+			"Anarchy-cinnamon")	config_DE+="$env"
+						DE+="cinnamon gnome-terminal file-roller p7zip zip unrar gvfs zsh zsh-syntax-highlighting arc-gtk-theme numix-icon-theme-git numix-circle-icon-theme-git htop arch-wiki-cli lynx fetchmirrors "
+						start_term="exec cinnamon-session"
+
+						if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$extra_msg8" 10 60) then
+                                                          de_extras
+                                                          DE+="$extras "
+                                                fi
 			;;
 			"Anarchy-gnome")	config_DE+="$env "
 						start_term="exec gnome-session"
@@ -419,6 +429,15 @@ config_env() {
 	if (grep "Anarchy-xfce4" <<<"$config_DE" &>/dev/null); then
 		cp -r "$aa_dir/extra/desktop/xfce4/.config" "$ARCH"/root/
 		cp -r "$aa_dir/extra/desktop/xfce4/.config" "$ARCH"/etc/skel/
+	fi
+
+	if (grep "Anarchy-cinnamon" <<<"$config_DE" &>/dev/null); then
+		cp -r "$aa_dir/extra/desktop/cinnamon/.config" "$ARCH"/root
+		cp -r "$aa_dir/extra/desktop/cinnamon/.cinnamon" "$ARCH"/root
+		cp -r "$aa_dir/extra/desktop/cinnamon/.themes" "$ARCH"/root
+		cp -r "$aa_dir/extra/desktop/cinnamon/.config" "$ARCH"/etc/skel
+		cp -r "$aa_dir/extra/desktop/cinnamon/.cinnamon" "$ARCH"/etc/skel
+		cp -r "$aa_dir/extra/desktop/cinnamon/.themes" "$ARCH"/etc/skel
 	fi
 
 	if (grep "Anarchy-gnome" <<<"$config_DE" &>/dev/null); then
