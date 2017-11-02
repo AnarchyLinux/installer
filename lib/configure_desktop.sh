@@ -26,38 +26,51 @@ graphics() {
 
 	while (true)
 	  do
-		de=$(dialog --separate-output --ok-button "$done_msg" --cancel-button "$cancel" --checklist "$environment_msg" 24 60 15 \
-			"Anarchy-xfce4"		"$de15" OFF \
-			"Anarchy-cinnamon"	"$de23" OFF \
-			"Anarchy-gnome"		"$de22" OFF \
-			"Anarchy-openbox"	"$de18" OFF \
-			"budgie"		"$de17" OFF \
-			"cinnamon"      	"$de5" OFF \
-			"deepin"		"$de14" OFF \
-			"gnome"         	"$de4" OFF \
-			"gnome-flashback"	"$de19" OFF \
-			"KDE plasma"    	"$de6" OFF \
-			"lxde"          	"$de2" OFF \
-			"lxqt"          	"$de3" OFF \
-			"mate"          	"$de1" OFF \
-			"xfce4"         	"$de0" OFF \
-			"awesome"       	"$de9" OFF \
-			"bspwm"			"$de13" OFF \
-			"dwm"           	"$de12" OFF \
-			"enlightenment" 	"$de7" OFF \
-			"fluxbox"       	"$de11" OFF \
-			"i3"            	"$de10" OFF \
-			"openbox"       	"$de8" OFF \
-			"sway"			"$de21" OFF \
-			"windowmaker"		"$de20" OFF \
-			"xmonad"		"$de16" OFF 3>&1 1>&2 2>&3)
+		de=$(dialog --ok-button "$done_msg" --cancel-button "$cancel" --menu "$environment_msg" 17 60 8 \
+			"Anarchy-budgie"	"$de24" \
+			"Anarchy-cinnamon"	"$de23" \
+			"Anarchy-gnome"		"$de22" \
+			"Anarchy-openbox"	"$de18" \
+			"Anarchy-xfce4"         "$de15" \
+			"$more_de"		"$more_de_msg" \
+			"$more_wm"		"$more_wm_msg" 3>&1 1>&2 2>&3)
+
 		if [ -z "$de" ]; then
 			if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$desktop_cancel_msg" 10 60) then
 				return
 			fi
-		elif (grep "Anarchy-xfce4" <<<"$de" &>/dev/null) && (grep "Anarchy-openbox" <<<"$de" &>/dev/null); then
-			de=$(sed 's/Anarchy-openbox//' <<<"$de")
-			break
+		elif [ "$de" == "$more_de" ]; then
+			de=$(dialog --separate-output --ok-button "$done_msg" --cancel-button "$back" --checklist "$environment_msg" 19 60 10 \
+				"budgie"		"$de17" OFF \
+				"cinnamon"      	"$de5" OFF \
+				"deepin"		"$de14" OFF \
+				"gnome"         	"$de4" OFF \
+				"gnome-flashback"	"$de19" OFF \
+				"KDE plasma"    	"$de6" OFF \
+				"lxde"          	"$de2" OFF \
+				"lxqt"          	"$de3" OFF \
+				"mate"          	"$de1" OFF \
+				"xfce4"         	"$de0" OFF 3>&1 1>&2 2>&3)
+
+			if [ -n "$de" ]; then
+				break
+			fi
+		elif [ "$de" == "$more_wm" ]; then
+			de=$(dialog --separate-output --ok-button "$done_msg" --cancel-button "$back" --checklist "$environment_msg" 19 60 10 \
+				"awesome"               "$de9" OFF \
+				"bspwm"                 "$de13" OFF \
+				"dwm"                   "$de12" OFF \
+				"enlightenment"         "$de7" OFF \
+				"fluxbox"               "$de11" OFF \
+				"i3"                    "$de10" OFF \
+				"openbox"               "$de8" OFF \
+				"sway"                  "$de21" OFF \
+				"windowmaker"           "$de20" OFF \
+				"xmonad"                "$de16" OFF 3>&1 1>&2 2>&3)
+
+			if [ -n "$de" ]; then
+                                 break
+                         fi
 		else
 			break
 		fi
@@ -72,43 +85,25 @@ graphics() {
 	while read env
 	  do
 		case "$env" in
-			"Anarchy-xfce4")	config_DE+="$env "
+			"Anarchy-xfce4")	config_DE="$env "
 						start_term="exec startxfce4"
-						DE+="xfce4 xfce4-goodies gvfs zsh zsh-syntax-highlighting arc-gtk-theme numix-icon-theme-git numix-circle-icon-theme-git htop arch-wiki-cli lynx fetchmirrors "
-
-						if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$extra_msg8" 10 60) then
-							de_extras
-							DE+="$extras "
-						fi
-
+						DE+="xfce4 xfce4-goodies $extras "
 			;;
-			"Anarchy-cinnamon")	config_DE+="$env"
-						DE+="cinnamon gnome-terminal file-roller p7zip zip unrar gvfs zsh zsh-syntax-highlighting arc-gtk-theme numix-icon-theme-git numix-circle-icon-theme-git htop arch-wiki-cli lynx fetchmirrors "
+			"Anarchy-budgie")	config_DE="$env"
+						start_term="export XDG_CURRENT_DESKTOP=Budgie:GNOME ; exec budgie-desktop"
+						DE+="budgie-desktop mousepad terminator $extras "
+			;;
+			"Anarchy-cinnamon")	config_DE="$env"
+						DE+="cinnamon gnome-terminal file-roller p7zip zip unrar terminator $extras "
 						start_term="exec cinnamon-session"
-
-						if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$extra_msg8" 10 60) then
-                                                          de_extras
-                                                          DE+="$extras "
-                                                fi
 			;;
-			"Anarchy-gnome")	config_DE+="$env "
+			"Anarchy-gnome")	config_DE="$env "
 						start_term="exec gnome-session"
-						DE+="gnome gnome-extra gvfs zsh zsh-syntax-highlighting arc-gtk-theme numix-icon-theme-git numix-circle-icon-theme-git htop arch-wiki-cli lynx fetchmirrors "
-
-						if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$extra_msg8" 10 60) then
-                                                         de_extras
-                                                         DE+="$extras "
-						fi
+						DE+="gnome gnome-extra terminator $extras "
 			;;
-			"Anarchy-openbox")	config_DE+="$env "
+			"Anarchy-openbox")	config_DE="$env "
 						start_term="exec openbox-session"
-						DE+="openbox thunar thunar-volman xfce4-terminal xfce4-panel xfce4-whiskermenu-plugin arc-icon-theme arc-gtk-theme numix-icon-theme-git numix-circle-icon-theme-git elementary-icon-theme xcompmgr transset-df obconf lxappearance-obconf wmctrl gxmessage xfce4-pulseaudio-plugin xfdesktop xdotool htop opensnap ristretto arch-wiki-cli lynx fetchmirrors oblogout obmenu-generator openbox-themes "
-
-						if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$extra_msg8" 10 60) then
-							de_extras
-							DE+="$extras "
-						fi
-
+						DE+="openbox thunar thunar-volman xfce4-terminal xfce4-panel xfce4-whiskermenu-plugin xcompmgr transset-df obconf lxappearance-obconf wmctrl gxmessage xfce4-pulseaudio-plugin xfdesktop xdotool opensnap ristretto oblogout obmenu-generator openbox-themes $extras "
 			;;
 			"xfce4") 	start_term="exec startxfce4"
 					DE+="xfce4 "
@@ -396,25 +391,6 @@ graphics() {
 
 }
 
-de_extras() {
-
-	extras=$(dialog --ok-button "$ok" --cancel-button "$cancel" --checklist "$software_msg1" 20 63 10 \
-	        "aisleriot"		"$game11" ON \
-		"audacity"              "$audio0" ON \
-	        "chromium"              "$net0" ON \
-	        "clementine"            "$audio10" ON \
-	        "galculator"		"$sys24" ON \
-	        "gimp"			"$graphic2" ON \
-	        "gparted"		"$sys4" ON \
-	        "libreoffice-fresh"     "$office4" ON \
-	        "pitivi"                "$media2" ON \
-	        "screenfetch"           "$sys12" ON \
-	        "simplescreenrecorder"  "$media3" ON \
-		"vim"			"$edit6" ON \
-		"vlc"			"$media6" ON 3>&1 1>&2 2>&3)
-
-}
-
 config_env() {
 
 	cp -r "$aa_dir"/extra/fonts/ttf-zekton-rg "$ARCH"/usr/share/fonts
@@ -426,39 +402,37 @@ config_env() {
 	mkdir "$ARCH"/usr/share/backgrounds/anarchy
 	cp -r "$aa_dir"/extra/wallpapers/{*.jpeg,*.png} "$ARCH"/usr/share/backgrounds/anarchy/
 
-	if (grep "Anarchy-xfce4" <<<"$config_DE" &>/dev/null); then
-		cp -r "$aa_dir/extra/desktop/xfce4/.config" "$ARCH"/root/
-		cp -r "$aa_dir/extra/desktop/xfce4/.config" "$ARCH"/etc/skel/
-	fi
+	case "$config_DE" in
+		"Anarchy-xfce4")	cp -r "$aa_dir/extra/desktop/xfce4/.config" "$ARCH"/root/
+					cp -r "$aa_dir/extra/desktop/xfce4/.config" "$ARCH"/etc/skel/
+		;;
+		"Anarchy-budgie")	cp -r "$aa_dir/extra/desktop/budgie/.config" "$ARCH"/root
+					cp -r "$aa_dir/extra/desktop/budgie/.config" "$ARCH"/etc/skel
+		;;
+		"Anarchy-cinnamon")	cp -r "$aa_dir/extra/desktop/cinnamon/.config" "$ARCH"/root
+					cp -r "$aa_dir/extra/desktop/cinnamon/.cinnamon" "$ARCH"/root
+					cp -r "$aa_dir/extra/desktop/cinnamon/.themes" "$ARCH"/root
+					cp -r "$aa_dir/extra/desktop/cinnamon/.config" "$ARCH"/etc/skel
+					cp -r "$aa_dir/extra/desktop/cinnamon/.cinnamon" "$ARCH"/etc/skel
+					cp -r "$aa_dir/extra/desktop/cinnamon/.themes" "$ARCH"/etc/skel
+		;;
+		"Anarchy-gnome")	cp -r "$aa_dir/extra/desktop/gnome/.config" "$ARCH"/root
+					cp -r "$aa_dir/extra/desktop/gnome/.local" "$ARCH"/root
+					cp -r "$aa_dir/extra/desktop/gnome/.config" "$ARCH"/etc/skel
+					cp -r "$aa_dir/extra/desktop/gnome/.local" "$ARCH"/etc/skel
+					cp -r "$aa_dir/extra/desktop/gnome/gnome-backgrounds.xml" "$ARCH"/usr/share/gnome-background-properties
+		;;
+		"Anarchy-openbox")	for file in $(ls -A "$aa_dir/extra/desktop/openbox"); do
+						cp -r "$aa_dir/extra/desktop/openbox/$file" "$ARCH"/root/
+						cp -r "$aa_dir/extra/desktop/openbox/$file" "$ARCH"/etc/skel/
+					done
 
-	if (grep "Anarchy-cinnamon" <<<"$config_DE" &>/dev/null); then
-		cp -r "$aa_dir/extra/desktop/cinnamon/.config" "$ARCH"/root
-		cp -r "$aa_dir/extra/desktop/cinnamon/.cinnamon" "$ARCH"/root
-		cp -r "$aa_dir/extra/desktop/cinnamon/.themes" "$ARCH"/root
-		cp -r "$aa_dir/extra/desktop/cinnamon/.config" "$ARCH"/etc/skel
-		cp -r "$aa_dir/extra/desktop/cinnamon/.cinnamon" "$ARCH"/etc/skel
-		cp -r "$aa_dir/extra/desktop/cinnamon/.themes" "$ARCH"/etc/skel
-	fi
-
-	if (grep "Anarchy-gnome" <<<"$config_DE" &>/dev/null); then
-		cp -r "$aa_dir/extra/desktop/gnome/.config" "$ARCH"/root
-		cp -r "$aa_dir/extra/desktop/gnome/.local" "$ARCH"/root
-		cp -r "$aa_dir/extra/desktop/gnome/.config" "$ARCH"/etc/skel
-		cp -r "$aa_dir/extra/desktop/gnome/.local" "$ARCH"/etc/skel
-		cp -r "$aa_dir/extra/desktop/gnome/gnome-backgrounds.xml" "$ARCH"/usr/share/gnome-background-properties
-	fi
-
-	if (grep "Anarchy-openbox" <<<"$config_DE" &>/dev/null); then
-		for file in $(ls -A "$aa_dir/extra/desktop/openbox"); do
-			cp -r "$aa_dir/extra/desktop/openbox/$file" "$ARCH"/root/
-			cp -r "$aa_dir/extra/desktop/openbox/$file" "$ARCH"/etc/skel/
-		done
-
-		if [ "$virt" == "vbox" ]; then
-			echo "VBoxClient-all &" >> "$ARCH"/etc/skel/.config/openbox/autostart
-			echo "VBoxClient-all &" >> "$ARCH"/root/.config/openbox/autostart
-		fi
-	fi
+					if [ "$virt" == "vbox" ]; then
+						echo "VBoxClient-all &" >> "$ARCH"/etc/skel/.config/openbox/autostart
+						echo "VBoxClient-all &" >> "$ARCH"/root/.config/openbox/autostart
+					fi
+		;;
+	esac
 
 	echo "$(date -u "+%F %H:%M") : Configured: $config_DE" >> "$log"
 
