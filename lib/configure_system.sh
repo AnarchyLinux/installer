@@ -178,7 +178,7 @@ configure_system() {
 		pid=$! pri="0.1" msg="$wait_load \n\n \Z1> \Z2anarchy configure desktop\Zn" load
 
 		if [ "$DM" == "lightdm" ]; then
-			cp -r "$aa_dir"/extra/desktop/lightdm/{lightdm.conf,slick-greeter.conf} "$ARCH"/etc/lightdm/
+			cp -r "$aa_dir"/extra/desktop/lightdm/lightdm-gtk-greeter.conf "$ARCH"/etc/lightdm/
 		fi
 	fi
 
