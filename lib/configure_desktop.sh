@@ -81,28 +81,24 @@ graphics() {
 	fi
 
 	source "$lang_file"
+	export env
 
 	while read env
 	  do
 		case "$env" in
-			"Anarchy-xfce4")	config_DE="$env "
-						start_term="exec startxfce4"
+			"Anarchy-xfce4")	start_term="exec startxfce4"
 						DE+="xfce4 xfce4-goodies $extras "
 			;;
-			"Anarchy-budgie")	config_DE="$env"
-						start_term="export XDG_CURRENT_DESKTOP=Budgie:GNOME ; exec budgie-desktop"
+			"Anarchy-budgie")	start_term="export XDG_CURRENT_DESKTOP=Budgie:GNOME ; exec budgie-desktop"
 						DE+="budgie-desktop mousepad terminator $extras "
 			;;
-			"Anarchy-cinnamon")	config_DE="$env"
-						DE+="cinnamon gnome-terminal file-roller p7zip zip unrar terminator $extras "
+			"Anarchy-cinnamon")	DE+="cinnamon gnome-terminal file-roller p7zip zip unrar terminator $extras "
 						start_term="exec cinnamon-session"
 			;;
-			"Anarchy-gnome")	config_DE="$env "
-						start_term="exec gnome-session"
+			"Anarchy-gnome")	start_term="exec gnome-session"
 						DE+="gnome gnome-extra terminator $extras "
 			;;
-			"Anarchy-openbox")	config_DE="$env "
-						start_term="exec openbox-session"
+			"Anarchy-openbox")	start_term="exec openbox-session"
 						DE+="openbox thunar thunar-volman xfce4-terminal xfce4-panel xfce4-whiskermenu-plugin xcompmgr transset-df obconf lxappearance-obconf wmctrl gxmessage xfce4-pulseaudio-plugin xfdesktop xdotool opensnap ristretto oblogout obmenu-generator openbox-themes $extras "
 			;;
 			"xfce4") 	start_term="exec startxfce4"
@@ -402,7 +398,7 @@ config_env() {
 	mkdir "$ARCH"/usr/share/backgrounds/anarchy
 	cp -r "$aa_dir"/extra/wallpapers/{*.jpeg,*.png} "$ARCH"/usr/share/backgrounds/anarchy/
 
-	case "$config_DE" in
+	case "$env" in
 		"Anarchy-xfce4")	cp -r "$aa_dir/extra/desktop/xfce4/.config" "$ARCH"/root/
 					cp -r "$aa_dir/extra/desktop/xfce4/.config" "$ARCH"/etc/skel/
 		;;
