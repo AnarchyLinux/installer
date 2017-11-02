@@ -173,7 +173,7 @@ graphics() {
 					DE+="xmonad "
 
  	 				if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$extra_msg5" 10 60) then
-						DE="xmonad-contrib "
+						DE+="xmonad-contrib "
 		                        fi
 			;;
 			"cinnamon")	DE+="cinnamon gnome-terminal file-roller p7zip zip unrar "
