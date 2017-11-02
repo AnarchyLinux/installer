@@ -177,24 +177,6 @@ aur_builds() {
                  makepkg -s
 	fi
 
-	if [ ! -d /tmp/lightdm-slick-greeter ]; then
-                 ### Build slick greeter
-                 cd /tmp || exit
-                 wget "https://aur.archlinux.org/cgit/aur.git/snapshot/lightdm-slick-greeter.tar.gz"
-                 tar -xf lightdm-slick-greeter.tar.gz
-                 cd lightdm-slick-greeter || exit
-                 makepkg -si
-         fi
-
-         if [ ! -d /tmp/lightdm-settings ]; then
-                 ### Build lightdm settings
-                 cd /tmp || exit
-                 wget "https://aur.archlinux.org/cgit/aur.git/snapshot/lightdm-settings.tar.gz"
-                 tar -xf lightdm-settings.tar.gz
-                 cd lightdm-settings || exit
-                 makepkg -s
-         fi
-
 	 if [ ! -d /tmp/oh-my-zsh-git ]; then
                  ### Build oh-my-zsh
                  cd /tmp || exit
@@ -303,8 +285,6 @@ build_conf() {
 	sudo cp /tmp/fetchmirrors/*.pkg.tar.xz "$customiso"/arch/"$sys"/squashfs-root/usr/share/anarchy/pkg
 	sudo cp /tmp/numix-icon-theme-git/*.pkg.tar.xz "$customiso"/arch/"$sys"/squashfs-root/usr/share/anarchy/pkg
 	sudo cp /tmp/numix-circle-icon-theme-git/*.pkg.tar.xz "$customiso"/arch/"$sys"/squashfs-root/usr/share/anarchy/pkg
-	sudo cp /tmp/lightdm-slick-greeter/*.pkg.tar.xz "$customiso"/arch/"$sys"/squashfs-root/usr/share/anarchy/pkg
-	sudo cp /tmp/lightdm-settings/*.pkg.tar.xz "$customiso"/arch/"$sys"/squashfs-root/usr/share/anarchy/pkg
 	sudo cp /tmp/oh-my-zsh-git/*.pkg.tar.xz "$customiso"/arch/"$sys"/squashfs-root/usr/share/anarchy/pkg
 	sudo cp /tmp/opensnap/*.pkg.tar.xz "$customiso"/arch/"$sys"/squashfs-root/usr/share/anarchy/pkg
 	sudo cp /tmp/perl-linux-desktopfiles/*.pkg.tar.xz "$customiso"/arch/"$sys"/squashfs-root/usr/share/anarchy/pkg
