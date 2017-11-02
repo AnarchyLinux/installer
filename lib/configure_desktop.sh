@@ -164,7 +164,7 @@ graphics() {
 					DE+="xmonad "
 
  	 				if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$extra_msg5" 10 60) then
-						DE="xmonad-contrib "
+						DE+="xmonad-contrib "
 		                        fi
 			;;
 			"cinnamon")	DE+="cinnamon gnome-terminal file-roller p7zip zip unrar "
@@ -396,7 +396,7 @@ config_env() {
 	cp "$aa_dir"/extra/anarchy-icon.png "$ARCH"/etc/skel/.face
 	cp "$aa_dir"/extra/anarchy-icon.png "$ARCH"/usr/share/pixmaps
 	mkdir "$ARCH"/usr/share/backgrounds/anarchy
-	cp -r "$aa_dir"/extra/wallpapers/{*.jpeg,*.png} "$ARCH"/usr/share/backgrounds/anarchy/
+	cp -r "$aa_dir"/extra/wallpapers/*.jpeg "$ARCH"/usr/share/backgrounds/anarchy/
 
 	case "$env" in
 		"Anarchy-xfce4")	cp -r "$aa_dir/extra/desktop/xfce4/.config" "$ARCH"/root/
