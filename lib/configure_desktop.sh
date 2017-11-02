@@ -400,7 +400,7 @@ config_env() {
 	cp "$aa_dir"/extra/anarchy-icon.png "$ARCH"/etc/skel/.face
 	cp "$aa_dir"/extra/anarchy-icon.png "$ARCH"/usr/share/pixmaps
 	mkdir "$ARCH"/usr/share/backgrounds/anarchy
-	cp -r "$aa_dir"/extra/wallpapers/{*.jpeg,*.png} "$ARCH"/usr/share/backgrounds/anarchy/
+	cp -r "$aa_dir"/extra/wallpapers/*.jpeg "$ARCH"/usr/share/backgrounds/anarchy/
 
 	case "$config_DE" in
 		"Anarchy-xfce4")	cp -r "$aa_dir/extra/desktop/xfce4/.config" "$ARCH"/root/
