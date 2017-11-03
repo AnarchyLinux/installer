@@ -81,24 +81,28 @@ graphics() {
 	fi
 
 	source "$lang_file"
-	export env
 
 	while read env
 	  do
 		case "$env" in
-			"Anarchy-xfce4")	start_term="exec startxfce4"
+			"Anarchy-xfce4")	config_env="$env"
+						start_term="exec startxfce4"
 						DE+="xfce4 xfce4-goodies $extras "
 			;;
-			"Anarchy-budgie")	start_term="export XDG_CURRENT_DESKTOP=Budgie:GNOME ; exec budgie-desktop"
+			"Anarchy-budgie")	config_env="$env"
+						start_term="export XDG_CURRENT_DESKTOP=Budgie:GNOME ; exec budgie-desktop"
 						DE+="budgie-desktop mousepad terminator $extras "
 			;;
-			"Anarchy-cinnamon")	DE+="cinnamon gnome-terminal file-roller p7zip zip unrar terminator $extras "
+			"Anarchy-cinnamon")	config_env="$env"
+						DE+="cinnamon gnome-terminal file-roller p7zip zip unrar terminator $extras "
 						start_term="exec cinnamon-session"
 			;;
-			"Anarchy-gnome")	start_term="exec gnome-session"
+			"Anarchy-gnome")	config_env="$env"
+						start_term="exec gnome-session"
 						DE+="gnome gnome-extra terminator $extras "
 			;;
-			"Anarchy-openbox")	start_term="exec openbox-session"
+			"Anarchy-openbox")	config_env="$env"
+						start_term="exec openbox-session"
 						DE+="openbox thunar thunar-volman xfce4-terminal xfce4-panel xfce4-whiskermenu-plugin xcompmgr transset-df obconf lxappearance-obconf wmctrl gxmessage xfce4-pulseaudio-plugin xfdesktop xdotool opensnap ristretto oblogout obmenu-generator openbox-themes $extras "
 			;;
 			"xfce4") 	start_term="exec startxfce4"
@@ -214,7 +218,7 @@ graphics() {
 					DE+="sway "
 			;;
 		esac
-	done <<< $de
+	done <<< "$de"
 
 	while (true)
 	  do
@@ -398,7 +402,7 @@ config_env() {
 	mkdir "$ARCH"/usr/share/backgrounds/anarchy
 	cp -r "$aa_dir"/extra/wallpapers/*.jpeg "$ARCH"/usr/share/backgrounds/anarchy/
 
-	case "$env" in
+	case "$config_env" in
 		"Anarchy-xfce4")	cp -r "$aa_dir/extra/desktop/xfce4/.config" "$ARCH"/root/
 					cp -r "$aa_dir/extra/desktop/xfce4/.config" "$ARCH"/etc/skel/
 		;;
@@ -430,7 +434,7 @@ config_env() {
 		;;
 	esac
 
-	echo "$(date -u "+%F %H:%M") : Configured: $config_DE" >> "$log"
+	echo "$(date -u "+%F %H:%M") : Configured: $config_env" >> "$log"
 
 }
 
