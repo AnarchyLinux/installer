@@ -91,7 +91,7 @@ graphics() {
 			;;
 			"Anarchy-budgie")	config_env="$env"
 						start_term="export XDG_CURRENT_DESKTOP=Budgie:GNOME ; exec budgie-desktop"
-						DE+="budgie-desktop mousepad terminator $extras "
+						DE+="budgie-desktop mousepad terminator nautilus gnome-backgrounds $extras "
 			;;
 			"Anarchy-cinnamon")	config_env="$env"
 						DE+="cinnamon gnome-terminal file-roller p7zip zip unrar terminator $extras "
