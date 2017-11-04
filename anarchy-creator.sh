@@ -71,7 +71,7 @@ check_depends() {
 					if [ ! -f /usr/bin/7z ]; then query="$query p7zip" ; fi
 					if [ ! -f /usr/bin/arch-chroot ]; then query="$query arch-install-scripts"; fi
 					if [ ! -f /usr/bin/xxd ]; then query="$query xxd"; fi
-					sudo pacman -Syy "$query"
+					sudo pacman -Syy $query
 					depends=true
 				;;
 				n|N|no|No|nN|Nn|nn|NN)
