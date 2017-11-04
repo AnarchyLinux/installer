@@ -40,28 +40,28 @@ prepare_base() {
 
 	case "$install_menu" in
 		"Arch-Linux-Base")
-			base_install="linux-headers sudo " kernel="linux"
+			base_install="linux-headers sudo lsb-release " kernel="linux"
 		;;
 		"Arch-Linux-Base-Devel")
-			base_install="base-devel linux-headers " kernel="linux"
+			base_install="base-devel linux-headers lsb-release " kernel="linux"
 		;;
 		"Arch-Linux-Hardened")
-			base_install="linux-hardened linux-hardened-headers sudo " kernel="linux-hardened"
+			base_install="linux-hardened linux-hardened-headers sudo lsb-release " kernel="linux-hardened"
 		;;
 		"Arch-Linux-Hardened-Devel")
-			base_install="base-devel linux-hardened linux-hardened-headers " kernel="linux-hardened"
+			base_install="base-devel linux-hardened linux-hardened-headers lsb-release " kernel="linux-hardened"
 		;;
 		"Arch-Linux-LTS-Base")
-			base_install="linux-lts linux-lts-headers sudo " kernel="linux-lts"
+			base_install="linux-lts linux-lts-headers sudo lsb-release " kernel="linux-lts"
 		;;
 		"Arch-Linux-LTS-Base-Devel")
-			base_install="base-devel linux-lts linux-lts-headers " kernel="linux-lts"
+			base_install="base-devel linux-lts linux-lts-headers lsb-release " kernel="linux-lts"
 		;;
 		"Arch-Linux-Zen")
-			base_install="linux-zen linux-zen-headers sudo " kernel="linux-zen"
+			base_install="linux-zen linux-zen-headers sudo lsb-release " kernel="linux-zen"
 		;;
 		"Arch-Linux-Zen-Devel")
-			base_install="base-devel linux-zen linux-zen-headers " kernel="linux-zen"
+			base_install="base-devel linux-zen linux-zen-headers lsb-release " kernel="linux-zen"
 		;;
 	esac
 
@@ -414,9 +414,13 @@ add_software() {
 									break
 								fi
 							else
-								software=$(<<<"$software" sed 's/steam/steam ttf-liberation/')
+								software+=" steam-native-runtime ttf-liberation"
 								tac /etc/pacman.conf | sed -e '0,/#\[multilib\]/ s/#\[multilib\]/\[multilib\]/;0,/#Include/ s/#Include/Include/' | tac > /etc/pacman.conf.bak
 								cp /etc/pacman.conf.bak /etc/pacman.conf
+
+								if (<<<"$GPU" grep "nvidia" &>/dev/null); then
+									software+=" lib32-nvidia-utils"
+								fi
 								break
 							fi
 						done

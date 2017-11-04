@@ -178,7 +178,7 @@ configure_system() {
 		pid=$! pri="0.1" msg="$wait_load \n\n \Z1> \Z2anarchy configure desktop\Zn" load
 
 		if [ "$DM" == "lightdm" ]; then
-			cp -r "$aa_dir"/extra/desktop/lightdm/{lightdm.conf,slick-greeter.conf} "$ARCH"/etc/lightdm/
+			cp -r "$aa_dir"/extra/desktop/lightdm/lightdm-gtk-greeter.conf "$ARCH"/etc/lightdm/
 		fi
 	fi
 
@@ -285,9 +285,9 @@ configure_system() {
 
 	cp "$aa_dir"/extra/.bashrc-root "$ARCH"/root/.bashrc
 	cp "$aa_dir"/extra/.bashrc "$ARCH"/etc/skel/
-	cp /etc/lsb-release "$ARCH"/etc
+	(cp /etc/lsb-release "$ARCH"/etc
 	cp /etc/os-release "$ARCH"/etc
-	mv "$ARCH"/etc/arch-release "$ARCH"/etc/anarchy-release
+	mv "$ARCH"/etc/arch-release "$ARCH"/etc/anarchy-release) &>/dev/null
 
 	sed -i 's/^#Color$/Color/' "$ARCH"/etc/pacman.conf
 	sed -i 's/^#TotalDownload$/TotalDownload/' "$ARCH"/etc/pacman.conf

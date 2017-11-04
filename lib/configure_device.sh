@@ -137,6 +137,8 @@ prepare_drives() {
 				else
 					unset PART
 				fi
+			else
+				continue
 			fi
 		fi
 

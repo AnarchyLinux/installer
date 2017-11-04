@@ -71,7 +71,7 @@ check_depends() {
 					if [ ! -f /usr/bin/7z ]; then query="$query p7zip" ; fi
 					if [ ! -f /usr/bin/arch-chroot ]; then query="$query arch-install-scripts"; fi
 					if [ ! -f /usr/bin/xxd ]; then query="$query xxd"; fi
-					sudo pacman -Syy "$query"
+					sudo pacman -Syy $query
 					depends=true
 				;;
 				n|N|no|No|nN|Nn|nn|NN)
@@ -176,24 +176,6 @@ aur_builds() {
                  cd numix-circle-icon-theme-git || exit
                  makepkg -s
 	fi
-
-	if [ ! -d /tmp/lightdm-slick-greeter ]; then
-                 ### Build slick greeter
-                 cd /tmp || exit
-                 wget "https://aur.archlinux.org/cgit/aur.git/snapshot/lightdm-slick-greeter.tar.gz"
-                 tar -xf lightdm-slick-greeter.tar.gz
-                 cd lightdm-slick-greeter || exit
-                 makepkg -si
-         fi
-
-         if [ ! -d /tmp/lightdm-settings ]; then
-                 ### Build lightdm settings
-                 cd /tmp || exit
-                 wget "https://aur.archlinux.org/cgit/aur.git/snapshot/lightdm-settings.tar.gz"
-                 tar -xf lightdm-settings.tar.gz
-                 cd lightdm-settings || exit
-                 makepkg -s
-         fi
 
 	 if [ ! -d /tmp/oh-my-zsh-git ]; then
                  ### Build oh-my-zsh
@@ -303,8 +285,6 @@ build_conf() {
 	sudo cp /tmp/fetchmirrors/*.pkg.tar.xz "$customiso"/arch/"$sys"/squashfs-root/usr/share/anarchy/pkg
 	sudo cp /tmp/numix-icon-theme-git/*.pkg.tar.xz "$customiso"/arch/"$sys"/squashfs-root/usr/share/anarchy/pkg
 	sudo cp /tmp/numix-circle-icon-theme-git/*.pkg.tar.xz "$customiso"/arch/"$sys"/squashfs-root/usr/share/anarchy/pkg
-	sudo cp /tmp/lightdm-slick-greeter/*.pkg.tar.xz "$customiso"/arch/"$sys"/squashfs-root/usr/share/anarchy/pkg
-	sudo cp /tmp/lightdm-settings/*.pkg.tar.xz "$customiso"/arch/"$sys"/squashfs-root/usr/share/anarchy/pkg
 	sudo cp /tmp/oh-my-zsh-git/*.pkg.tar.xz "$customiso"/arch/"$sys"/squashfs-root/usr/share/anarchy/pkg
 	sudo cp /tmp/opensnap/*.pkg.tar.xz "$customiso"/arch/"$sys"/squashfs-root/usr/share/anarchy/pkg
 	sudo cp /tmp/perl-linux-desktopfiles/*.pkg.tar.xz "$customiso"/arch/"$sys"/squashfs-root/usr/share/anarchy/pkg
@@ -342,8 +322,9 @@ build_sys_gui() {
 
 	cd "$customiso"/arch/"$sys" || exit
 	### Install fonts, fbterm, fetchmirrors, arch-wiki, and uvesafb drivers onto system and cleanup
+	sudo pacman --root squashfs-root --cachedir squashfs-root/var/cache/pacman/pkg  --config /etc/pacman.conf --noconfirm -Rdd rfkill
 	sudo pacman --root squashfs-root --cachedir squashfs-root/var/cache/pacman/pkg  --config /etc/pacman.conf --noconfirm --needed -Syyy terminus-font xorg-server xorg-xinit xf86-video-vesa vlc galculator file-roller gparted gimp git networkmanager network-manager-applet pulseaudio pulseaudio-alsa alsa-utils \
-		zsh-syntax-highlighting arc-gtk-theme elementary-icon-theme thunar base-devel gvfs xdg-user-dirs xfce4 xfce4-goodies libreoffice-fresh chromium virtualbox-guest-dkms virtualbox-guest-utils linux linux-headers libdvdcss simplescreenrecorder screenfetch htop acpi pavucontrol
+		zsh-syntax-highlighting arc-gtk-theme elementary-icon-theme thunar base-devel gvfs xdg-user-dirs xfce4 xfce4-goodies libreoffice-fresh chromium virtualbox-guest-dkms virtualbox-guest-utils linux linux-headers libdvdcss simplescreenrecorder screenfetch htop acpi pavucontrol libutil-linux
 	sudo pacman --root squashfs-root --cachedir squashfs-root/var/cache/pacman/pkg  --config /etc/pacman.conf --noconfirm -U /tmp/fetchmirrors/*.pkg.tar.xz
 	sudo pacman --root squashfs-root --cachedir squashfs-root/var/cache/pacman/pkg  --config /etc/pacman.conf --noconfirm -U /tmp/arch-wiki-cli/*.pkg.tar.xz
 	sudo pacman --root squashfs-root --cachedir squashfs-root/var/cache/pacman/pkg  --config /etc/pacman.conf --noconfirm -U /tmp/numix-icon-theme-git/*.pkg.tar.xz
