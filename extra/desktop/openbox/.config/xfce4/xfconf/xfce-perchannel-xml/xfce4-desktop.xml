@@ -24,7 +24,7 @@
           <property name="image-style" type="int" value="5"/>
           <property name="last-image" type="string" value="/usr/share/backgrounds/xfce/xfce-teal.jpg"/>
         </property>
-        <property name="image-path" type="string" value="/usr/share/pixmaps/arch-anywhere-wallpaper.png"/>
+        <property name="image-path" type="string" value="/usr/share/pixmaps/Faction.jpeg"/>
         <property name="image-show" type="bool" value="true"/>
         <property name="image-style" type="int" value="0"/>
       </property>
