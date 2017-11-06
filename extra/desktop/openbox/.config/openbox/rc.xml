@@ -325,7 +325,7 @@
         <command>kfmclient openProfile filemanagement</command>
       </action>
     </keybind>
-    <keybind key="C-a">
+    <keybind key="C-grave">
       <action name="Execute">
         <command>xfce4-terminal --drop-down</command>
       </action>
