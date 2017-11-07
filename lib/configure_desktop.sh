@@ -144,7 +144,7 @@ graphics() {
 			"KDE plasma")	start_term="exec startkde"
 
 					if (dialog --defaultno --yes-button "$yes" --no-button "$no" --yesno "\n$extra_msg3" 10 60) then
-						DE+="plasma-desktop sddm konsole dolphin plasma-nm plasma-pa libxshmfence kscreen "
+						DE+="plasma-desktop konsole dolphin plasma-nm plasma-pa libxshmfence kscreen "
 
 						if "$LAPTOP" ; then
 							DE+="powerdevil "
