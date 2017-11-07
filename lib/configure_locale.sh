@@ -36,7 +36,7 @@ set_keys() {
 		"uk" "United Kingdom" \
 		"$other"       "$other-keymaps"		 3>&1 1>&2 2>&3)
 		source "$lang_file"
-    
+
 		if [ "$keyboard" = "$other" ]; then
 			keyboard=$(dialog --ok-button "$ok" --cancel-button "$cancel" --menu "$keys_msg" 19 60 10  $key_maps 3>&1 1>&2 2>&3)
 			if [ "$?" -eq "0" ]; then
@@ -46,6 +46,10 @@ set_keys() {
 			break
 		fi
 	done
+
+	if "$GUI" ; then
+		setxkbmap "$keyboard"
+	fi
 
 	localectl set-keymap "$keyboard"
 	echo "$(date -u "+%F %H:%M") : Set keymap to: $keyboard" >> "$log"
@@ -77,7 +81,7 @@ set_locale() {
 		"es_ES.UTF-8" "Spanish" \
 		"sv_SE.UTF-8" "Swedish" \
 		"$other"       "$other-locale"		 3>&1 1>&2 2>&3)
-    
+
 		if [ "$LOCALE" = "$other" ]; then
 			LOCALE=$(dialog --ok-button "$ok" --cancel-button "$cancel" --menu "$locale_msg" 18 60 11 $localelist 3>&1 1>&2 2>&3)
 			if [ "$?" -eq "0" ]; then
