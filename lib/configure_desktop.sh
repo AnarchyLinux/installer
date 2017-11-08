@@ -26,51 +26,44 @@ graphics() {
 
 	while (true)
 	  do
-		de=$(dialog --ok-button "$done_msg" --cancel-button "$cancel" --menu "$environment_msg" 17 60 8 \
+		de=$(dialog --ok-button "$done_msg" --cancel-button "$cancel" --menu "$environment_msg" 16 60 7 \
 			"Anarchy-budgie"	"$de24" \
 			"Anarchy-cinnamon"	"$de23" \
 			"Anarchy-gnome"		"$de22" \
 			"Anarchy-openbox"	"$de18" \
 			"Anarchy-xfce4"         "$de15" \
-			"$more_de"		"$more_de_msg" \
-			"$more_wm"		"$more_wm_msg" 3>&1 1>&2 2>&3)
+			"$more_de"		"$more_de_msg" 3>&1 1>&2 2>&3)
 
 		if [ -z "$de" ]; then
 			if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$desktop_cancel_msg" 10 60) then
 				return
 			fi
 		elif [ "$de" == "$more_de" ]; then
-			de=$(dialog --separate-output --ok-button "$done_msg" --cancel-button "$back" --checklist "$environment_msg" 19 60 10 \
+			de=$(dialog --separate-output --ok-button "$done_msg" --cancel-button "$back" --checklist "$environment_msg" 24 60 15 \
+				"awesome"               "$de9" OFF \
+				"bspwm"                 "$de13" OFF \
 				"budgie"		"$de17" OFF \
 				"cinnamon"      	"$de5" OFF \
 				"deepin"		"$de14" OFF \
+				"dwm"                   "$de12" OFF \
+				"enlightenment"         "$de7" OFF \
+				"fluxbox"               "$de11" OFF \
 				"gnome"         	"$de4" OFF \
 				"gnome-flashback"	"$de19" OFF \
+				"i3"                    "$de10" OFF \
 				"KDE plasma"    	"$de6" OFF \
 				"lxde"          	"$de2" OFF \
 				"lxqt"          	"$de3" OFF \
 				"mate"          	"$de1" OFF \
+				"openbox"               "$de8" OFF \
+				"sway"                  "$de21" OFF \
+				"windowmaker"           "$de20" OFF \
+				"xmonad"                "$de16" OFF \
 				"xfce4"         	"$de0" OFF 3>&1 1>&2 2>&3)
 
 			if [ -n "$de" ]; then
 				break
 			fi
-		elif [ "$de" == "$more_wm" ]; then
-			de=$(dialog --separate-output --ok-button "$done_msg" --cancel-button "$back" --checklist "$environment_msg" 19 60 10 \
-				"awesome"               "$de9" OFF \
-				"bspwm"                 "$de13" OFF \
-				"dwm"                   "$de12" OFF \
-				"enlightenment"         "$de7" OFF \
-				"fluxbox"               "$de11" OFF \
-				"i3"                    "$de10" OFF \
-				"openbox"               "$de8" OFF \
-				"sway"                  "$de21" OFF \
-				"windowmaker"           "$de20" OFF \
-				"xmonad"                "$de16" OFF 3>&1 1>&2 2>&3)
-
-			if [ -n "$de" ]; then
-                                 break
-                         fi
 		else
 			break
 		fi
@@ -105,7 +98,7 @@ graphics() {
 						start_term="exec openbox-session"
 						DE+="openbox thunar thunar-volman xfce4-terminal xfce4-panel xfce4-whiskermenu-plugin xcompmgr transset-df obconf lxappearance-obconf wmctrl gxmessage xfce4-pulseaudio-plugin xfdesktop xdotool opensnap ristretto oblogout obmenu-generator openbox-themes $extras "
 			;;
-			"xfce4") 	start_term="exec startxfce4"
+			"xfce4") 	start_term="exec startxfce4" config_env+="$env "
 					DE+="xfce4 "
 
 					if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$extra_msg0" 10 60) then
@@ -114,12 +107,13 @@ graphics() {
 			;;
 			"budgie")	start_term="export XDG_CURRENT_DESKTOP=Budgie:GNOME ; exec budgie-desktop"
 					DE+="budgie-desktop arc-icon-theme arc-gtk-theme elementary-icon-theme "
+					config_env+="$env "
 
 					if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$extra_msg6" 10 60) then
 						DE+="gnome "
 					fi
 			;;
-			"gnome")	start_term="exec gnome-session"
+			"gnome")	start_term="exec gnome-session" config_env+="$env "
 					DE+="gnome "
 
 					if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$extra_msg1" 10 60) then
@@ -127,13 +121,13 @@ graphics() {
 					fi
 			;;
 			"gnome-flashback")	start_term="export XDG_CURRENT_DESKTOP=GNOME-Flashback:GNOME ; exec gnome-session --session=gnome-flashback-metacity"
-						DE+="gnome-flashback "
+						DE+="gnome-flashback " config_env+="$env "
 
 						if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$extra_msg1" 10 60) then
 							DE+="gnome-backgrounds gnome-control-center gnome-screensaver gnome-applets sensors-applet "
 						fi
 			;;
-			"mate")		start_term="exec mate-session"
+			"mate")		start_term="exec mate-session" config_env+="$env "
 
 					if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$extra_msg2" 10 60) then
 						DE+="mate mate-extra gtk-engine-murrine "
@@ -141,7 +135,7 @@ graphics() {
 						DE+="mate gtk-engine-murrine "
 					fi
 			;;
-			"KDE plasma")	start_term="exec startkde"
+			"KDE plasma")	start_term="exec startkde" config_env+="$env "
 
 					if (dialog --defaultno --yes-button "$yes" --no-button "$no" --yesno "\n$extra_msg3" 10 60) then
 						DE+="plasma-desktop konsole dolphin plasma-nm plasma-pa libxshmfence kscreen "
@@ -157,14 +151,14 @@ graphics() {
 						DE+="kde-l10n-$kdel "
 					fi
 			;;
-			"deepin")	start_term="exec startdde"
+			"deepin")	start_term="exec startdde" config_env+="$env "
 					DE+="deepin "
 
 					if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$extra_msg4" 10 60) then
 						DE+="deepin-extra "
 					fi
  	 		;;
- 	 		"xmonad")	start_term="exec xmonad"
+ 	 		"xmonad")	start_term="exec xmonad" config_env+="$env "
 					DE+="xmonad "
 
  	 				if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$extra_msg5" 10 60) then
@@ -172,9 +166,9 @@ graphics() {
 		                        fi
 			;;
 			"cinnamon")	DE+="cinnamon gnome-terminal file-roller p7zip zip unrar "
-					start_term="exec cinnamon-session"
+					start_term="exec cinnamon-session" config_env+="$env "
 			;;
-			"lxde")		start_term="exec startlxde"
+			"lxde")		start_term="exec startlxde" config_env+="$env "
 
 					if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$gtk3_var" 10 60) then
 						DE+="lxde-gtk3 "
@@ -183,38 +177,38 @@ graphics() {
 						DE+="lxde "
 					fi
 			;;
-			"lxqt")		start_term="exec startlxqt"
+			"lxqt")		start_term="exec startlxqt" config_env+="$env "
 					DE+="lxqt oxygen-icons breeze-icons "
 			;;
-			"enlightenment") 	start_term="exec enlightenment_start"
+			"enlightenment") 	start_term="exec enlightenment_start" config_env+="$env "
 						DE+="enlightenment terminology "
 			;;
-			"bspwm")	start_term="sxhkd & ; exec bspwm"
+			"bspwm")	start_term="sxhkd & ; exec bspwm" config_env+="$env "
 					DE+="bspwm sxhkd "
 			;;
-			"fluxbox")	start_term="exec startfluxbox"
+			"fluxbox")	start_term="exec startfluxbox" config_env+="$env "
 					DE+="fluxbox "
 			;;
-			"openbox")	start_term="exec openbox-session"
+			"openbox")	start_term="exec openbox-session" config_env+="$env "
 					DE+="openbox "
 			;;
-			"awesome") 	start_term="exec awesome"
+			"awesome") 	start_term="exec awesome" config_env+="$env "
 					DE+="awesome "
 			;;
-			"dwm") 		start_term="exec dwm"
+			"dwm") 		start_term="exec dwm" config_env+="$env "
 					DE+="dwm "
 			;;
-			"i3") 		start_term="exec i3"
+			"i3") 		start_term="exec i3" config_env+="$env "
 					DE+="i3 "
 			;;
-			"windowmaker")	start_term="exec wmaker"
+			"windowmaker")	start_term="exec wmaker" config_env+="$env "
 					DE+="windowmaker "
 
 					if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$extra_msg7" 10 60) then
 						DE+="windowmaker-extra "
 					fi
 			;;
-			"sway")		start_term="sway"
+			"sway")		start_term="sway" config_env+="$env "
 					DE+="sway "
 			;;
 		esac
@@ -386,7 +380,6 @@ graphics() {
 		dialog --ok-button "$ok" --msgbox "\n$startx_msg" 10 60
 	fi
 
-	base_install+="$DE "
 	desktop=true
 
 }

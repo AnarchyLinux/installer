@@ -242,12 +242,16 @@ set_hostname() {
                  fi
          done
 
-         user=root
-         set_password
-         root_sh="$sh"
-         root_crypt="$pass_crypt"
+}
 
- }
+root_passwd() {
+
+	user=root
+        set_password
+        root_sh="$sh"
+        root_crypt="$pass_crypt"
+
+}
 
 set_password() {
 
