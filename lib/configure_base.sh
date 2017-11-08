@@ -15,130 +15,9 @@
 ### License: GPL v2.0
 ###############################################################
 
-select_install() {
+prepare_base() {
 
-          op_title="$install_op_msg"
-          while (true)
-            do
-                  install_opt=$(dialog --ok-button "$ok" --cancel-button "$cancel" --menu "$install_opt_msg" 14 69 2 \
-                          "$quick_install"        "$quick_install_msg" \
-                          "$advanced_install"     "$advanced_install_msg" 3>&1 1>&2 2>&3)
-
-                  case "$install_opt" in
-                          "$advanced_install")    select_kernel
-                                                  select_shell
-                                                  select_bootloader
-                                                  select_net
-                                                  select_config
-                                                  set_hostname
-                                                  root_passwd
-						  set_user
-                                                  graphics
-                                                  prepare_base
-                                                  add_software
-						  break
-                          ;;
-                          "$quick_install")       base_install="base-devel linux-headers lsb-release " kernel="linux"
-                                                  bootloader="grub os-prober"
-                                                  shell="zsh zsh-syntax-highlighting" shrc="$default"
-                                                  net_install="networkmanager wireless_tools wpa_supplicant wpa_actiond"
-                                                  if "$bluetooth" ; then
-                                                          net_install+=" bluez bluez-utils pulseaudio-bluetooth"
-                                                          enable_bt=true
-                                                  fi
-                                                  dhcp=true
-                                                  multilib=true
-                                                  config_env="Anarchy-xfce4"
-                                                  start_term="exec startxfce4"
-                                                  DE="xfce4 xfce4-goodies $extras"
-                                                  set_hostname
-						  root_passwd
-                                                  set_user
-                                                  prepare_base
-						  break
-                          ;;
-                          *)      if (dialog --defaultno --yes-button "$yes" --no-button "$no" --yesno "\n$exit_msg" 10 60) then
-                                        main_menu
-                                  fi
-                          ;;
-                  esac
-          done
-
-}
-
-install_menu() {
-
-	while (true)
-	  do
-		install_opts=$(dialog --extra-button --extra-label "$install" --ok-button "$edit" --cancel-button "$cancel" --menu "$install_var" 24 80 13 \
-			"$select_boot:"		"$bootloader" \
-			"$select_desktop:"	"$config_env" \
-			"$select_device:"	"/dev/$DRIVE" \
-			"$select_host:"		"$hostname" \
-			"$select_kernel:"	"$kernel $BASE" \
-			"$select_keymap:"	"$keymap" \
-			"$select_locale:"	"$locale" \
-			"$select_net:"		"$net_install" \
-			"$select_sh:"		"$shell" \
-			"$select_soft:"		"$extras $download_list" \
-			"$select_time:"		"$ZONE" \
-			"$select_user:"		"$(<$tmp_passwd cut -d: -f1 | tr '\n' ' ')" \
-			"$done_msg"		"$install =>" 3>&1 1>&2 2>&3)
-		if [ "$ex" -eq "1" ]; then
-			if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$exit_msg" 10 60) then
-				unset base_install DE
-                                desktop=false
-                                main_menu
-                        fi
-                elif [ "$ex" -eq "3" ]; then
-			break
-		else
-			case "$install_opts" in
-				"$select_boot:")	select_bootloader
-							prepare_base
-				;;
-				"$select_desktop:")	graphics
-							prepare_base
-				;;
-				"$select_device:")	if "$mounted" ; then
-								if (dialog --yes-button "$yes" --no-button "$no" --defaultno --yesno "\n$menu_err_msg3" 10 60); then
-									mounted=false ; prepare_drives
-								fi
-							else
-								prepare_drives
-							fi
-				;;
-				"$select_host:")	set_hostname
-				;;
-				"$select_kernel:")	select_kernel
-							prepare_base
-				;;
-				"$select_keymap:")	set_keys
-				;;
-				"$select_locale:")	set_locale
-				;;
-				"$select_net:")		select_net
-							prepare_base
-				;;
-				"$select_sh:")		select_shell
-							prepare_base
-				;;
-				"$select_soft:")	add_software
-				;;
-				"$select_time:")	set_zone
-				;;
-				"$select_user:")	set_user
-				;;
-				"$done_msg")		break
-				;;
-			esac
-		fi
-	done
-
-}
-
-select_kernel() {
-
+	op_title="$install_op_msg"
 	while (true)
 	  do
 		install_menu=$(dialog --ok-button "$ok" --cancel-button "$cancel" --menu "$install_type_msg" 17 69 8 \
@@ -150,42 +29,41 @@ select_kernel() {
 			"Arch-Linux-LTS-Base-Devel"	"$LTS_msg1" \
 			"Arch-Linux-Zen"		"$zen_msg0" \
 			"Arch-Linux-Zen-Devel"		"$zen_msg1" 3>&1 1>&2 2>&3)
-
-		case "$install_menu" in
-			"Arch-Linux-Base")		BASE="linux-headers sudo lsb-release" kernel="linux"
-							break
-			;;
-			"Arch-Linux-Base-Devel")	BASE="base-devel linux-headers lsb-release" kernel="linux"
-							break
-			;;
-			"Arch-Linux-Hardened")		BASE="linux-hardened linux-hardened-headers sudo lsb-release" kernel="linux-hardened"
-							break
-			;;
-			"Arch-Linux-Hardened-Devel")	BASE="base-devel linux-hardened linux-hardened-headers lsb-release" kernel="linux-hardened"
-							break
-			;;
-			"Arch-Linux-LTS-Base")		BASE="linux-lts linux-lts-headers sudo lsb-release" kernel="linux-lts"
-							break
-			;;
-			"Arch-Linux-LTS-Base-Devel")	BASE="base-devel linux-lts linux-lts-headers lsb-release" kernel="linux-lts"
-							break
-			;;
-			"Arch-Linux-Zen")		BASE="linux-zen linux-zen-headers sudo lsb-release" kernel="linux-zen"
-							break
-			;;
-			"Arch-Linux-Zen-Devel")		BASE="base-devel linux-zen linux-zen-headers lsb-release" kernel="linux-zen"
-							break
-			;;
-			*)	if (dialog --defaultno --yes-button "$yes" --no-button "$no" --yesno "\n$exit_msg" 10 60) then
-				      main_menu
-				fi
-			;;
-		esac
+		if [ "$?" -gt "0" ]; then
+			if (dialog --defaultno --yes-button "$yes" --no-button "$no" --yesno "\n$exit_msg" 10 60) then
+				main_menu
+			fi
+		else
+			break
+		fi
 	done
 
-}
-
-select_shell() {
+	case "$install_menu" in
+		"Arch-Linux-Base")
+			base_install="linux-headers sudo lsb-release " kernel="linux"
+		;;
+		"Arch-Linux-Base-Devel")
+			base_install="base-devel linux-headers lsb-release " kernel="linux"
+		;;
+		"Arch-Linux-Hardened")
+			base_install="linux-hardened linux-hardened-headers sudo lsb-release " kernel="linux-hardened"
+		;;
+		"Arch-Linux-Hardened-Devel")
+			base_install="base-devel linux-hardened linux-hardened-headers lsb-release " kernel="linux-hardened"
+		;;
+		"Arch-Linux-LTS-Base")
+			base_install="linux-lts linux-lts-headers sudo lsb-release " kernel="linux-lts"
+		;;
+		"Arch-Linux-LTS-Base-Devel")
+			base_install="base-devel linux-lts linux-lts-headers lsb-release " kernel="linux-lts"
+		;;
+		"Arch-Linux-Zen")
+			base_install="linux-zen linux-zen-headers sudo lsb-release " kernel="linux-zen"
+		;;
+		"Arch-Linux-Zen-Devel")
+			base_install="base-devel linux-zen linux-zen-headers lsb-release " kernel="linux-zen"
+		;;
+	esac
 
 	while (true)
 	  do
@@ -229,13 +107,11 @@ select_shell() {
 				*) sh="/bin/$shell"
 				;;
 			esac
+
+			base_install+="$shell "
 			break
 		fi
 	done
-
-}
-
-select_bootloader() {
 
 	while (true)
 	  do
@@ -243,8 +119,8 @@ select_bootloader() {
 			bootloader=$(dialog --ok-button "$ok" --cancel-button "$cancel" --menu "$loader_type_msg" 13 64 4 \
 				"grub"			"$loader_msg" \
 				"syslinux"		"$loader_msg1" \
-				"systemd-boot"		"$loader_msg2" \
-				"efistub"		"$loader_msg3" \
+				"systemd-boot"	"$loader_msg2" \
+				"efistub"	    "$loader_msg3" \
 				"$none" "-" 3>&1 1>&2 2>&3)
 			ex="$?"
 		else
@@ -273,15 +149,19 @@ select_bootloader() {
 						mkfs.ext4 -O \^64bit /dev/"$BOOT"
 						mount /dev/"$BOOT" "$mnt") &> /dev/null &
 						pid=$! pri=0.1 msg="\n$boot_load \n\n \Z1> \Z2mkfs.ext4 -O ^64bit /dev/$BOOT\Zn" load
+						base_install+="$bootloader "
 						break
 					fi
 				else
+					base_install+="$bootloader "
 					break
 				fi
 			else
+				base_install+="$bootloader "
 				break
 			fi
 		elif [ "$bootloader" == "grub" ]; then
+			base_install+="$bootloader "
 			break
 		else
 			if (dialog --defaultno --yes-button "$yes" --no-button "$no" --yesno "\n$grub_warn_msg0" 10 60) then
@@ -290,14 +170,6 @@ select_bootloader() {
 			fi
 		fi
 	done
-
-	if (dialog --defaultno --yes-button "$yes" --no-button "$no" --yesno "\n$os_prober_msg" 10 60) then
-		bootloader+=" os-prober"
-	fi
-
-}
-
-select_net() {
 
 	while (true)
 	  do
@@ -312,36 +184,11 @@ select_net() {
 			fi
 		else
 			if [ "$net_util" == "netctl" ] || [ "$net_util" == "networkmanager" ]; then
-				net_install="$net_util dialog " enable_nm=true
+				base_install+="$net_util dialog " enable_nm=true
 			fi
 			break
 		fi
 	done
-
-	if "$wifi" ; then
-		net_install+="wireless_tools wpa_supplicant wpa_actiond "
-	else
-		if (dialog --defaultno --yes-button "$yes" --no-button "$no" --yesno "\n$wifi_option_msg" 10 60) then
-			net_install+="wireless_tools wpa_supplicant wpa_actiond "
-		else
-			unset wifi_install
-		fi
-	fi
-
-	if "$bluetooth" ; then
-		if (dialog --defaultno --yes-button "$yes" --no-button "$no" --yesno "\n$bluetooth_msg" 10 60) then
-			net_install+="bluez bluez-utils pulseaudio-bluetooth "
-			enable_bt=true
-		fi
-	fi
-
-	if (dialog --defaultno --yes-button "$yes" --no-button "$no" --yesno "\n$pppoe_msg" 10 60) then
-		net_install+="rp-pppoe "
-	fi
-
-}
-
-select_config() {
 
 	if [ "$arch" == "x86_64" ]; then
 		if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n\n$multilib_msg" 11 60) then
@@ -350,16 +197,33 @@ select_config() {
 		fi
 	fi
 
-	if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n\n$dhcp_msg" 11 60) then
-		dhcp=true
+	    if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n\n$dhcp_msg" 11 60) then
+	        dhcp=true
 	        echo "$(date -u "+%F %H:%M") : Enable dhcp" >> "$log"
+	    fi
+
+	if "$wifi" ; then
+		base_install+="wireless_tools wpa_supplicant wpa_actiond "
+	else
+		if (dialog --defaultno --yes-button "$yes" --no-button "$no" --yesno "\n$wifi_option_msg" 10 60) then
+			base_install+="wireless_tools wpa_supplicant wpa_actiond "
+		fi
 	fi
 
-}
+	if "$bluetooth" ; then
+		if (dialog --defaultno --yes-button "$yes" --no-button "$no" --yesno "\n$bluetooth_msg" 10 60) then
+			base_install+="bluez bluez-utils pulseaudio-bluetooth "
+			enable_bt=true
+		fi
+	fi
 
-prepare_base(){
+	if (dialog --defaultno --yes-button "$yes" --no-button "$no" --yesno "\n$pppoe_msg" 10 60) then
+		base_install+="rp-pppoe "
+	fi
 
-	base_install="$BASE $net_install $bootloader $shell $DE "
+	if (dialog --defaultno --yes-button "$yes" --no-button "$no" --yesno "\n$os_prober_msg" 10 60) then
+		base_install+="os-prober "
+	fi
 
 	if "$enable_f2fs" ; then
 		base_install+="f2fs-tools "
