@@ -87,7 +87,7 @@ graphics() {
 		case "$env" in
 			"Anarchy-xfce4")	config_env="$env"
 						start_term="exec startxfce4"
-						DE+="xfce4 xfce4-goodies $extras "
+						DE+="xfce4 xfce4-goodies gimp vlc clementine $extras "
 			;;
 			"Anarchy-budgie")	config_env="$env"
 						start_term="export XDG_CURRENT_DESKTOP=Budgie:GNOME ; exec budgie-desktop"
