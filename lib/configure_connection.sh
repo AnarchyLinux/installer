@@ -130,8 +130,8 @@ check_connection() {
 
 	op_title="$connection_op_msg"
 	(test_mirror=$(</etc/pacman.d/mirrorlist grep "^Server" | awk 'NR==1{print $3}' | sed 's/$.*//')
-	test_pkg=$(curl -s https://www.archlinux.org/packages/extra/i686/bluez-utils/ | grep "<title>" | awk '{print $4"-"$5}')
-	test_link="${test_mirror}extra/os/i686/${test_pkg}-i686.pkg.tar.xz"
+	test_pkg=$()
+	test_link="${test_mirror}extra/os/x86_64/${test_pkg}-x86_64.pkg.tar.xz"
 	wget -4 --no-check-certificate --append-output=/tmp/wget.log -O /dev/null "${test_link}") &
 	pid=$! pri=0.3 msg="\n$connection_load \n\n \Z1> \Z2wget -O /dev/null test_link/test1Mb.db\Zn" load
 
