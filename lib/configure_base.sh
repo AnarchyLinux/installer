@@ -300,7 +300,6 @@ add_software() {
 						"numix-circle-icon-theme-git"	"$aar11" OFF \
 						"numix-icon-theme-git"		"$aar12" OFF \
 						"octopi"			"$aar4" OFF \
-						"pacaur"			"$aar2" OFF \
 						"pamac-aur"			"$aar5" OFF \
 						"plex-media-server"		"$aar13" OFF \
 						"plymouth"			"$aar14" OFF \
