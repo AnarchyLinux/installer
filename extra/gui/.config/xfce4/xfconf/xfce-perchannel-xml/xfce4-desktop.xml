@@ -7,7 +7,7 @@
         <property name="workspace0" type="empty">
           <property name="color-style" type="int" value="0"/>
           <property name="image-style" type="int" value="3"/>
-          <property name="last-image" type="string" value="/usr/share/anarchy/extra/wallpapers/Anarchy-Splatter.jpeg"/>
+          <property name="last-image" type="string" value="/usr/share/anarchy/extra/wallpapers/Anarchy.jpeg"/>
           <property name="backdrop-cycle-enable" type="bool" value="false"/>
           <property name="backdrop-cycle-random-order" type="bool" value="false"/>
         </property>
@@ -26,7 +26,7 @@
           <property name="image-style" type="int" value="5"/>
           <property name="last-image" type="string" value="/usr/share/backgrounds/xfce/xfce-teal.jpg"/>
         </property>
-        <property name="image-path" type="string" value="/usr/share/pixmaps/Anarchy-Splatter.png"/>
+        <property name="image-path" type="string" value="/usr/share/pixmaps/Anarchy.png"/>
         <property name="image-show" type="bool" value="true"/>
         <property name="image-style" type="int" value="0"/>
       </property>
