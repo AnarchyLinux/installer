@@ -55,7 +55,7 @@ init() {
 check_depends() {
 
 	# Check depends
-	if [ ! -f /usr/bin/7z ] || [ ! -f /usr/bin/mksquashfs ] || [ ! -f /usr/bin/xorriso ] || [ ! -f /usr/bin/wget ] || [ ! -f /usr/bin/arch-chroot ] || [ ! -f /usr/bin/xxd ]; then
+	if [ ! -f /usr/bin/gtk3-demo ] || [ ! -f /usr/bin/7z ] || [ ! -f /usr/bin/mksquashfs ] || [ ! -f /usr/bin/xorriso ] || [ ! -f /usr/bin/wget ] || [ ! -f /usr/bin/arch-chroot ] || [ ! -f /usr/bin/xxd ]; then
 		depends=false
 		until "$depends"
 		  do
@@ -66,11 +66,12 @@ check_depends() {
 			case "$input" in
 				y|Y|yes|Yes|yY|Yy|yy|YY)
 					if [ ! -f /usr/bin/wget ]; then query="$query wget"; fi
-					if [ ! -f /usr/bin/xorriso ]; then query="$query libisoburn"; fi
-					if [ ! -f /usr/bin/mksquashfs ]; then query="$query squashfs-tools"; fi
-					if [ ! -f /usr/bin/7z ]; then query="$query p7zip" ; fi
-					if [ ! -f /usr/bin/arch-chroot ]; then query="$query arch-install-scripts"; fi
-					if [ ! -f /usr/bin/xxd ]; then query="$query xxd"; fi
+					if [ ! -f /usr/bin/xorriso ]; then query+="libisoburn "; fi
+					if [ ! -f /usr/bin/mksquashfs ]; then query+="squashfs-tools "; fi
+					if [ ! -f /usr/bin/7z ]; then query+="p7zip " ; fi
+					if [ ! -f /usr/bin/arch-chroot ]; then query+="arch-install-scripts "; fi
+					if [ ! -f /usr/bin/xxd ]; then query+="xxd "; fi
+					if [ ! -f /usr/bin/gtk3-demo ]; then query+="gtk3 "; fi
 					sudo pacman -Syy $query
 					depends=true
 				;;
