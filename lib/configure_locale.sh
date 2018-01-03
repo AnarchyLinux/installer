@@ -21,7 +21,6 @@ set_keys() {
 	while (true)
 	  do
 		keyboard=$(dialog --nocancel --ok-button "$ok" --menu "$keys_msg" 18 60 10 \
-		"$default" "$default Keymap" \
 		"us" "United States" \
 		"de" "German" \
 		"el" "Greek" \
