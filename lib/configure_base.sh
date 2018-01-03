@@ -15,6 +15,35 @@
 ### License: GPL v2.0
 ###############################################################
 
+install_options() {
+
+	op_title="$install_op_msg"
+        while (true) ; do
+                 install_opt=$(dialog --ok-button "$ok" --cancel-button "$cancel" --menu "$install_opt_msg" 17 72 5 \
+                         "Anarchy-Desktop"       "$install_opt1" \
+                         "Anarchy-Desktop-LTS"   "$install_opt2" \
+                         "Anarchy-Server"        "$install_opt3" \
+                         "Anarchy-Server-LTS"    "$install_opt4" \
+			 "Anarchy-Advanced"      "$install_opt0" 3>&1 1>&2 2>&3)
+                 if [ "$?" -gt "0" ]; then
+                          if (dialog --defaultno --yes-button "$yes" --no-button "$no" --yesno "\n$exit_msg" 10 60) then
+                                  main_menu
+                          fi
+                 else
+                          break
+                 fi
+         done
+
+         case "$install_opt" in
+                 Anarchy-Advanced)       prepare_base
+                                         graphics
+                 ;;
+                 *)                      quick_install
+                 ;;
+         esac
+
+}
+
 prepare_base() {
 
 	op_title="$install_op_msg"
