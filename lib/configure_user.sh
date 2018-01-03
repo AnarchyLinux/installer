@@ -44,7 +44,7 @@ set_user() {
 						dialog --ok-button "$ok" --msgbox "\n$user_err_msg2" 10 60
 					elif (grep "^$user:" "$tmp_passwd" &>/dev/null); then
 						dialog --ok-button "$ok" --msgbox "\n$user_err_msg1" 10 60
-					elif (<<<"$user" egrep "^[0-9]\|[A-Z\[\$\!\'\"\`\\|%&#@()_-+=<>~;:/?.,^{}]\|]" &> /dev/null); then
+					elif (<<<"$user" grep "^[0-9]\|[A-Z\[\$\!\'\"\`\\|%&#@()_-+=<>~;:/?.,^{}]\|]" &> /dev/null); then
 						dialog --ok-button "$ok" --msgbox "\n$user_err_msg" 10 60
 					else
 						while (true)
@@ -275,8 +275,8 @@ set_password() {
 }
 
 add_user() {
-"${user}:${sh}:${sudo_user}:${full_user}:${pass_crypt}"
-        if "$menu_enter" ; then
+
+	if "$menu_enter" ; then
 		if [ "$full_user" == "" ]; then
 			arch-chroot "$ARCH" useradd -m -g users -G audio,network,power,storage,optical -s "$sh" "$user" &>/dev/null &
 	                pid=$! pri=0.1 msg="$wait_load \n\n \Z1> \Z2useradd $user\Zn" load
