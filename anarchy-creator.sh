@@ -300,7 +300,6 @@ build_sys() {
 
 	cd "$customiso"/arch/"$sys" || exit
 	### Install fonts, fbterm, fetchmirrors, arch-wiki
-	sudo pacman --root squashfs-root --cachedir squashfs-root/var/cache/pacman/pkg  --config /etc/pacman.conf --noconfirm -Syu
 	sudo pacman --root squashfs-root --cachedir squashfs-root/var/cache/pacman/pkg  --config /etc/pacman.conf --noconfirm -Sy terminus-font acpi zsh-syntax-highlighting
 	sudo pacman --root squashfs-root --cachedir squashfs-root/var/cache/pacman/pkg  --config /etc/pacman.conf --noconfirm -U /tmp/fetchmirrors/*.pkg.tar.xz
 	sudo pacman --root squashfs-root --cachedir squashfs-root/var/cache/pacman/pkg  --config /etc/pacman.conf --noconfirm -U /tmp/arch-wiki-cli/*.pkg.tar.xz
