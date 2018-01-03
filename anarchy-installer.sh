@@ -61,10 +61,9 @@ main() {
 	set_locale
 	set_zone
 	prepare_drives
-	prepare_base
+	install_options
 	set_hostname
 	set_user
-	graphics
 	add_software
 	install_base
 	configure_system
