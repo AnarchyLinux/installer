@@ -221,6 +221,11 @@ configure_system() {
 		echo "$(date -u "+%F %H:%M") : Enable cups" >> "$log"
 	fi
 
+	### Enable cpupower
+	arch-chroot "$ARCH" systemctl enable cpupower.service
+	pid=$! pri=0.1 msg="\n$cups_load \n\n \Z1> \Z2systemctl enable cpupower\Zn" load
+	echo "$(date -u "+%F %H:%M") : Enable cpupower" >> "$log"
+
 	if "$enable_http" ; then
 		case "$config_http" in
 			"LAMP")

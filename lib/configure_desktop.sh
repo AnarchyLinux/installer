@@ -103,7 +103,7 @@ graphics() {
 			;;
 			"Anarchy-openbox")	config_env="$env"
 						start_term="exec openbox-session"
-						DE+="openbox thunar thunar-volman xfce4-terminal xfce4-panel xfce4-whiskermenu-plugin xcompmgr transset-df obconf lxappearance-obconf wmctrl gxmessage xfce4-pulseaudio-plugin xfdesktop xdotool opensnap ristretto oblogout obmenu-generator openbox-themes $extras "
+						DE+="openbox thunar thunar-volman xfce4-terminal xfce4-panel xfce4-whiskermenu-plugin xcompmgr transset-df obconf lxappearance-obconf wmctrl gxmessage xfce4-pulseaudio-plugin xfdesktop xdotool opensnap ristretto oblogout obmenu-generator openbox-themes polkit-gnome $extras "
 			;;
 			"xfce4") 	start_term="exec startxfce4"
 					DE+="xfce4 "

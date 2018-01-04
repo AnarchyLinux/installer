@@ -89,9 +89,9 @@ update_mirrors() {
 				esac
 
 				if [ "$code" == "$default" ]; then
-					curl -s "$mirror_url" | sed '10,1000d;s/#//' >/etc/pacman.d/mirrorlist.bak &
+					curl -k -s "$mirror_url" | sed '10,1000d;s/#//' >/etc/pacman.d/mirrorlist.bak &
 				else
-					curl -s "$mirror_url" >/etc/pacman.d/mirrorlist.bak &
+					curl -k -s "$mirror_url" >/etc/pacman.d/mirrorlist.bak &
 				fi
 				pid=$! pri=0.1 msg="\n$mirror_load0 \n\n \Z1> \Z2curl $mirror_url\Zn" load
 

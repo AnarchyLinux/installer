@@ -69,28 +69,28 @@ prepare_base() {
 
 	case "$install_menu" in
 		"Arch-Linux-Base")
-			base_install="linux-headers sudo lsb-release " kernel="linux"
+			base_install="linux-headers sudo $base_defaults " kernel="linux"
 		;;
 		"Arch-Linux-Base-Devel")
-			base_install="base-devel linux-headers lsb-release " kernel="linux"
+			base_install="base-devel linux-headers $base_defaults " kernel="linux"
 		;;
 		"Arch-Linux-Hardened")
-			base_install="linux-hardened linux-hardened-headers sudo lsb-release " kernel="linux-hardened"
+			base_install="linux-hardened linux-hardened-headers sudo $base_defaults " kernel="linux-hardened"
 		;;
 		"Arch-Linux-Hardened-Devel")
-			base_install="base-devel linux-hardened linux-hardened-headers lsb-release " kernel="linux-hardened"
+			base_install="base-devel linux-hardened linux-hardened-headers $base_defaults " kernel="linux-hardened"
 		;;
 		"Arch-Linux-LTS-Base")
-			base_install="linux-lts linux-lts-headers sudo lsb-release " kernel="linux-lts"
+			base_install="linux-lts linux-lts-headers sudo $base_defaults " kernel="linux-lts"
 		;;
 		"Arch-Linux-LTS-Base-Devel")
-			base_install="base-devel linux-lts linux-lts-headers lsb-release " kernel="linux-lts"
+			base_install="base-devel linux-lts linux-lts-headers $base_defaults " kernel="linux-lts"
 		;;
 		"Arch-Linux-Zen")
-			base_install="linux-zen linux-zen-headers sudo lsb-release " kernel="linux-zen"
+			base_install="linux-zen linux-zen-headers sudo $base_defaults " kernel="linux-zen"
 		;;
 		"Arch-Linux-Zen-Devel")
-			base_install="base-devel linux-zen linux-zen-headers lsb-release " kernel="linux-zen"
+			base_install="base-devel linux-zen linux-zen-headers $base_defaults " kernel="linux-zen"
 		;;
 	esac
 
@@ -541,15 +541,15 @@ add_software() {
 						add_soft=false
 					fi
 
-					if (<<<"$software" sed "openjdk-7" &>/dev/null); then
+					if (<<<"$software" grep "openjdk-7" &>/dev/null); then
 						software=$(<<<"$software" sed 's/java-openjdk-7/jre7-openjdk-headless jre7-openjdk jdk7-openjdk openjdk7-doc openjdk7-src/')
 					fi
 
-					if (<<<"$software" sed "openjdk-8" &>/dev/null); then
+					if (<<<"$software" grep "openjdk-8" &>/dev/null); then
 						software=$(<<<"$software" sed 's/java-openjdk-8/jre8-openjdk-headless jre8-openjdk jdk8-openjdk openjdk8-doc openjdk8-src/')
 					fi
 
-					if (<<<"$software" sed "openjfx-8" &>/dev/null); then
+					if (<<<"$software" grep "openjfx-8" &>/dev/null); then
 						software=$(<<<"$software" sed 's/java-openjfx-8/java-openjfx java-openjfx-doc java-openjfx-src/')
 					fi
 
