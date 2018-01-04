@@ -1,6 +1,0 @@
-# Any customization should be done in ~/.gtkrc-2.0.mine
-
-gtk-theme-name="Arc-Dark"
-gtk-icon-theme-name="Numix-Circle"
-gtk-font-name="Zekton 11"
-gtk-cursor-theme-name="Adwaita"
