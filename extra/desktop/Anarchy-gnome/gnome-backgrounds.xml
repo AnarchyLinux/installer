@@ -19,6 +19,42 @@
     <scolor>#000000</scolor>
 	</wallpaper>
 
+    <wallpaper deleted="false">
+
+         <name>Anarchy 1.0 Hero</name>
+         <filename>/usr/share/backgrounds/anarchy/Anarchy-1.0-Hero.jpeg</filename>
+         <options>stretched</options>
+     <pcolor>#ffffff</pcolor>
+     <scolor>#000000</scolor>
+    </wallpaper>
+
+    <wallpaper deleted="false">
+ 
+         <name>Anarchy Carbon Mesh</name>
+         <filename>/usr/share/backgrounds/anarchy/Anarchy-Carbon_Mesh.jpeg</filename>
+         <options>stretched</options>
+     <pcolor>#ffffff</pcolor>
+     <scolor>#000000</scolor>
+    </wallpaper>
+
+    <wallpaper deleted="false">
+
+         <name>Anarchy Firefly Glow</name>
+         <filename>/usr/share/backgrounds/anarchy/Anarchy-Firefly-Glow.jpeg</filename>
+         <options>stretched</options>
+     <pcolor>#ffffff</pcolor>
+     <scolor>#000000</scolor>
+     </wallpaper>
+
+     <wallpaper deleted="false">
+
+         <name>Anarchy Splatter</name>
+         <filename>/usr/share/backgrounds/anarchy/Anarchy-Splatter.jpeg</filename>
+         <options>stretched</options>
+     <pcolor>#ffffff</pcolor>
+     <scolor>#000000</scolor>
+    </wallpaper>
+
 	<wallpaper deleted="false">
 		
 		<name>Anarchy Fire</name>
