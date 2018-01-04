@@ -120,12 +120,12 @@ main_menu() {
 			;;
 			"$menu5")	## Begin base install
 					if "$mounted" ; then
-						prepare_base
-						graphics
+						install_options
+						set_hostname
+						set_user
 						add_software
 						install_base
 						configure_system
-						set_hostname
 						add_user
 						reboot_system
 					elif (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$install_err_msg1" 10 60) then
