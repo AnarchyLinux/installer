@@ -12,11 +12,11 @@ This ISO only contains support only for x86_64 (64 bit) systems.
 
 ### Official Anarchy Linux ISO:
 
-http://arch-anywhere.org/
+https://anarchy-linux.org/download/
 
 <p>
-  <img src="http://arch-anywhere.org/images/anarchy-splash.png" width="350"/>
-  <img src="http://arch-anywhere.org/images/installer/1-issue.png" width="350"/>
+  <img src="https://anarchy-linux.org/images/anarchy-splash.png" width="350"/>
+  <img src="https://anarchy-linux.org/images/installer/1-issue.png" width="350"/>
 </p>
 
 ### Features:
@@ -92,12 +92,12 @@ Anarchy, quick, easy, and straight forward, "Keep it simple stupid".
 
 You can find the latest version of Anarchy Linux on the Download page:
 
-http://arch-anywhere.org/download
+https://anarchy-linux.org/download/
 
 
 <p>
-  <img src="http://arch-anywhere.org/images/installer/2-languages.png" width="350"/>
-  <img src="http://arch-anywhere.org/images/installer/7-partition.png" width="350">
-  <img src="http://arch-anywhere.org/images/installer/18-base_install.png" width="350"/>
-  <img src="http://arch-anywhere.org/images/installer/25-install2.png" width="350"/>
+  <img src="https://anarchy-linux.org/images/installer/2-languages.png" width="350"/>
+  <img src="https://anarchy-linux.org/images/installer/7-partition.png" width="350">
+  <img src="https://anarchy-linux.org/images/installer/18-base_install.png" width="350"/>
+  <img src="https://anarchy-linux.org/images/installer/25-install2.png" width="350"/>
 </p>
