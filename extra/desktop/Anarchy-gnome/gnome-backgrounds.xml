@@ -102,15 +102,6 @@
 
 	<wallpaper deleted="false">
 		
-		<name>Drop</name>
-		<filename>/usr/share/backgrounds/anarchy/Drop.jpeg</filename>
-		<options>stretched</options>
-    <pcolor>#ffffff</pcolor>
-    <scolor>#000000</scolor>
-	</wallpaper>
-
-	<wallpaper deleted="false">
-		
 		<name>Faction</name>
 		<filename>/usr/share/backgrounds/anarchy/Faction.jpeg</filename>
 		<options>zoom</options>
