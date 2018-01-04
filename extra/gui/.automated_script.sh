@@ -29,17 +29,12 @@ automated_script ()
     fi
 }
 
-check_vm() {
-
-    case $(systemd-detect-virt) in
-         oracle) modprobe -a vboxguest vboxsf vboxvideo ;;
-    esac
-
-}
-
 if [[ $(tty) == "/dev/tty1" ]]; then
     automated_script
-    check_vm
+    case $(systemd-detect-virt) in
+         oracle) sudo modprobe -a vboxguest vboxsf vboxvideo ;;
+         *) sudo modprobe -r vboxguest vboxsf vboxvideo &>/dev/null ;;
+    esac
     startx &>/dev/null
 
     if [ "$?" -gt "0" ]; then

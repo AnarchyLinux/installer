@@ -133,7 +133,7 @@ quick_desktop() {
     case "$de" in
         "Anarchy-xfce4")    config_env="$de"
                             start_term="exec startxfce4"
-                            DE+="xfce4 xfce4-goodies gimp clementine $extras "
+                            DE+="xfce4 xfce4-goodies $extras "
         ;;
         "Anarchy-budgie")       config_env="$de"
                                 start_term="export XDG_CURRENT_DESKTOP=Budgie:GNOME ; exec budgie-desktop"
@@ -149,7 +149,7 @@ quick_desktop() {
         ;;
         "Anarchy-openbox")      config_env="$de"
                                 start_term="exec openbox-session"
-                                DE+="openbox thunar thunar-volman xfce4-terminal xfce4-panel xfce4-whiskermenu-plugin xcompmgr transset-df obconf lxappearance-obconf wmctrl gxmessage xfce4-pulseaudio-plugin xfdesktop xdotool opensnap ristretto oblogout obmenu-generator openbox-themes gimp clementine polkit-gnome $extras "
+                                DE+="openbox thunar thunar-volman xfce4-terminal xfce4-panel xfce4-whiskermenu-plugin xcompmgr transset-df obconf lxappearance-obconf wmctrl gxmessage xfce4-pulseaudio-plugin xfdesktop xdotool opensnap ristretto oblogout obmenu-generator openbox-themes polkit-gnome $extras "
         ;;
     esac
 

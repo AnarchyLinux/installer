@@ -7,7 +7,7 @@
 ###
 ### By: Dylan Schacht (deadhead)
 ### Email: deadhead3492@gmail.com
-### Webpage: https://anarchy-linux.org
+### Webpage: http://anarchy-linux.org
 ###
 ### Any questions, comments, or bug reports may be sent to above
 ### email address. Enjoy, and keep on using Anarchy.
@@ -363,7 +363,7 @@ build_sys_gui() {
 	sudo cp -r "$aa"/extra/gui/.config "$customiso"/arch/"$sys"/squashfs-root/root
 	sudo cp -r "$customiso"/arch/"$sys"/squashfs-root/root/.zlogin "$customiso"/arch/"$sys"/squashfs-root/home/user
 	sudo arch-chroot squashfs-root chown -R user /home/user/
-	sudo touch "$customiso"/arch/"$sys"/squashfs-root/etc/modules-load.d/virtualbox-guest-modules-arch.conf
+#	sudo touch "$customiso"/arch/"$sys"/squashfs-root/etc/modules-load.d/virtualbox-guest-modules-arch.conf
 
 	### cd back into root system directory, remove old system
 	cd "$customiso"/arch/"$sys" || exit
@@ -436,7 +436,7 @@ check_sums() {
 	sha1_sum=$(sha1sum "$version" | awk '{print $1}')
 	timestamp=$(timedatectl | grep "Universal" | awk '{print $4" "$5" "$6}')
 	echo "Checksums generated. Saved to $(sed 's/.iso//' <<<"$version")-checksums.txt"
-	echo -e "- Anarchy Linux is licensed under GPL v2\n- Developer: Dylan Schacht (deadhead3492@gmail.com)\n- Webpage: https://anarchy-linux.org\n- ISO timestamp: $timestamp\n- $version Official Check Sums:\n\n* md5sum: $md5_sum\n* sha1sum: $sha1_sum" > "$(sed 's/.iso//' <<<"$version")-checksums.txt"
+	echo -e "- Anarchy Linux is licensed under GPL v2\n- Developer: Dylan Schacht (deadhead3492@gmail.com)\n- Webpage: http://anarchy-linux.org\n- ISO timestamp: $timestamp\n- $version Official Check Sums:\n\n* md5sum: $md5_sum\n* sha1sum: $sha1_sum" > "$(sed 's/.iso//' <<<"$version")-checksums.txt"
 
 }
 
