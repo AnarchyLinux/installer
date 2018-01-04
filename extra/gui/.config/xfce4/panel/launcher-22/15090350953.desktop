@@ -3,7 +3,7 @@ Version=1.0
 Type=Application
 Name=Install
 Comment=Install Anarchy Linux
-Exec=sudo anarchy
+Exec=xfce4-terminal --geometry=90x30 --hide-scrollbar --command="sudo anarchy"
 Icon=intel-installer
 Path=
 Terminal=true
