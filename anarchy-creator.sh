@@ -7,7 +7,7 @@
 ###
 ### By: Dylan Schacht (deadhead)
 ### Email: deadhead3492@gmail.com
-### Webpage: http://arch-anywhere.org
+### Webpage: https://anarchy-linux.org
 ###
 ### Any questions, comments, or bug reports may be sent to above
 ### email address. Enjoy, and keep on using Anarchy.
@@ -436,7 +436,7 @@ check_sums() {
 	sha1_sum=$(sha1sum "$version" | awk '{print $1}')
 	timestamp=$(timedatectl | grep "Universal" | awk '{print $4" "$5" "$6}')
 	echo "Checksums generated. Saved to $(sed 's/.iso//' <<<"$version")-checksums.txt"
-	echo -e "- Anarchy Linux is licensed under GPL v2\n- Developer: Dylan Schacht (deadhead3492@gmail.com)\n- Webpage: http://arch-anywhere.org\n- ISO timestamp: $timestamp\n- $version Official Check Sums:\n\n* md5sum: $md5_sum\n* sha1sum: $sha1_sum" > "$(sed 's/.iso//' <<<"$version")-checksums.txt"
+	echo -e "- Anarchy Linux is licensed under GPL v2\n- Developer: Dylan Schacht (deadhead3492@gmail.com)\n- Webpage: https://anarchy-linux.org\n- ISO timestamp: $timestamp\n- $version Official Check Sums:\n\n* md5sum: $md5_sum\n* sha1sum: $sha1_sum" > "$(sed 's/.iso//' <<<"$version")-checksums.txt"
 
 }
 

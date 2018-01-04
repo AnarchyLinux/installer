@@ -7,7 +7,7 @@
 ###
 ### By: Dylan Schacht (deadhead)
 ### Email: deadhead3492@gmail.com
-### Webpage: http://arch-anywhere.org
+### Webpage: https://anarchy-linux.org
 ###
 ### Any questions, comments, or bug reports may be sent to above
 ### email address. Enjoy, and keep on using Arch.
@@ -302,7 +302,7 @@ add_software() {
 				elif [ "$software_menu" == "$aar" ] && ! "$aa_repo" ; then
 					if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$aar_add_msg" 10 60) then
 						if ! (grep "\[anarchy\]" </etc/pacman.conf &>/dev/null); then
-							sed -i -e '$a\\n[anarchy]\nServer = http://arch-anywhere.org/repo/$arch\nSigLevel = Never' /etc/pacman.conf
+							sed -i -e '$a\\n[anarchy]\nServer = https://anarchy-linux.org/repo/$arch\nSigLevel = Never' /etc/pacman.conf
 						fi
 						aa_repo=true
 					else

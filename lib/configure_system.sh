@@ -7,7 +7,7 @@
 ###
 ### By: Dylan Schacht (deadhead)
 ### Email: deadhead3492@gmail.com
-### Webpage: http://arch-anywhere.org
+### Webpage: https://anarchy-linux.org
 ###
 ### Any questions, comments, or bug reports may be sent to above
 ### email address. Enjoy, and keep on using Arch.
@@ -194,7 +194,7 @@ configure_system() {
 	fi
 
 	if "$aa_repo" ; then
-		sed -i -e '$a\\n[anarchy]\nServer = http://arch-anywhere.org/repo/$arch\nSigLevel = Never' "$ARCH"/etc/pacman.conf
+		sed -i -e '$a\\n[anarchy]\nServer = https://anarchy-linux.org/repo/$arch\nSigLevel = Never' "$ARCH"/etc/pacman.conf
 	fi
 
 	if "$dhcp" ; then
