@@ -30,6 +30,12 @@
       <property name="position-locked" type="bool" value="true"/>
       <property name="background-style" type="uint" value="1"/>
       <property name="background-alpha" type="uint" value="0"/>
+      <property name="background-color" type="array">
+        <value type="uint" value="7196"/>
+        <value type="uint" value="8995"/>
+        <value type="uint" value="11051"/>
+        <value type="uint" value="65535"/>
+      </property>
     </property>
     <property name="panel-2" type="empty">
       <property name="position" type="string" value="p=12;x=499;y=919"/>
@@ -45,6 +51,12 @@
         <value type="int" value="19"/>
         <value type="int" value="18"/>
         <value type="int" value="16"/>
+      </property>
+      <property name="background-color" type="array">
+        <value type="uint" value="7196"/>
+        <value type="uint" value="8995"/>
+        <value type="uint" value="11051"/>
+        <value type="uint" value="65535"/>
       </property>
     </property>
   </property>

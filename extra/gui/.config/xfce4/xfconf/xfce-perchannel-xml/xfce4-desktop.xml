@@ -10,6 +10,8 @@
           <property name="last-image" type="string" value="/usr/share/anarchy/extra/wallpapers/Anarchy.jpeg"/>
           <property name="backdrop-cycle-enable" type="bool" value="false"/>
           <property name="backdrop-cycle-random-order" type="bool" value="false"/>
+          <property name="backdrop-cycle-period" type="int" value="1"/>
+          <property name="backdrop-cycle-timer" type="uint" value="10"/>
         </property>
         <property name="workspace1" type="empty">
           <property name="color-style" type="int" value="0"/>

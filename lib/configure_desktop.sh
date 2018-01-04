@@ -26,7 +26,7 @@ graphics() {
 
 	while (true)
 	  do
-		de=$(dialog --ok-button "$done_msg" --cancel-button "$cancel" --menu "$environment_msg" 17 60 8 \
+		de=$(dialog --ok-button "$done_msg" --cancel-button "$cancel" --menu "$environment_msg" 16 60 7 \
 			"Anarchy-budgie"	"$de24" \
 			"Anarchy-cinnamon"	"$de23" \
 			"Anarchy-gnome"		"$de22" \
@@ -87,7 +87,7 @@ graphics() {
 		case "$env" in
 			"Anarchy-xfce4")	config_env="$env"
 						start_term="exec startxfce4"
-						DE+="xfce4 xfce4-goodies gimp vlc clementine $extras "
+						DE+="xfce4 xfce4-goodies $extras "
 			;;
 			"Anarchy-budgie")	config_env="$env"
 						start_term="export XDG_CURRENT_DESKTOP=Budgie:GNOME ; exec budgie-desktop"
@@ -103,7 +103,7 @@ graphics() {
 			;;
 			"Anarchy-openbox")	config_env="$env"
 						start_term="exec openbox-session"
-						DE+="openbox thunar thunar-volman xfce4-terminal xfce4-panel xfce4-whiskermenu-plugin xcompmgr transset-df obconf lxappearance-obconf wmctrl gxmessage xfce4-pulseaudio-plugin xfdesktop xdotool opensnap ristretto oblogout obmenu-generator openbox-themes gimp vlc clementine $extras "
+						DE+="openbox thunar thunar-volman xfce4-terminal xfce4-panel xfce4-whiskermenu-plugin xcompmgr transset-df obconf lxappearance-obconf wmctrl gxmessage xfce4-pulseaudio-plugin xfdesktop xdotool opensnap ristretto oblogout obmenu-generator openbox-themes $extras "
 			;;
 			"xfce4") 	start_term="exec startxfce4"
 					DE+="xfce4 "
@@ -342,7 +342,7 @@ graphics() {
 		fi
 	done
 
-	DE+="$GPU xdg-user-dirs xorg-server xorg-apps xorg-xinit xterm ttf-dejavu gvfs gvfs-smb gvfs-mtp pulseaudio pavucontrol pulseaudio-alsa alsa-utils unzip "
+	DE+="$GPU $de_defaults "
 
 	if [ "$net_util" == "networkmanager" ] ; then
 		if (<<<"$DE" grep "plasma" &> /dev/null); then
@@ -402,32 +402,15 @@ config_env() {
 	mkdir "$ARCH"/usr/share/backgrounds/anarchy
 	cp -r "$aa_dir"/extra/wallpapers/*.jpeg "$ARCH"/usr/share/backgrounds/anarchy/
 
-	case "$config_env" in
-		"Anarchy-xfce4")	cp -r "$aa_dir/extra/desktop/xfce4/.config" "$ARCH"/root/
-					cp -r "$aa_dir/extra/desktop/xfce4/.config" "$ARCH"/etc/skel/
-		;;
-		"Anarchy-budgie")	cp -r "$aa_dir/extra/desktop/budgie/.config" "$ARCH"/root
-					cp -r "$aa_dir/extra/desktop/budgie/.config" "$ARCH"/etc/skel
-		;;
-		"Anarchy-cinnamon")	cp -r "$aa_dir/extra/desktop/cinnamon/.config" "$ARCH"/root
-					cp -r "$aa_dir/extra/desktop/cinnamon/.cinnamon" "$ARCH"/root
-					cp -r "$aa_dir/extra/desktop/cinnamon/.themes" "$ARCH"/root
-					cp -r "$aa_dir/extra/desktop/cinnamon/.config" "$ARCH"/etc/skel
-					cp -r "$aa_dir/extra/desktop/cinnamon/.cinnamon" "$ARCH"/etc/skel
-					cp -r "$aa_dir/extra/desktop/cinnamon/.themes" "$ARCH"/etc/skel
-		;;
-		"Anarchy-gnome")	cp -r "$aa_dir/extra/desktop/gnome/.config" "$ARCH"/root
-					cp -r "$aa_dir/extra/desktop/gnome/.local" "$ARCH"/root
-					cp -r "$aa_dir/extra/desktop/gnome/.config" "$ARCH"/etc/skel
-					cp -r "$aa_dir/extra/desktop/gnome/.local" "$ARCH"/etc/skel
-					cp -r "$aa_dir/extra/desktop/gnome/gnome-backgrounds.xml" "$ARCH"/usr/share/gnome-background-properties
-		;;
-		"Anarchy-openbox")	for file in $(ls -A "$aa_dir/extra/desktop/openbox"); do
-						cp -r "$aa_dir/extra/desktop/openbox/$file" "$ARCH"/root/
-						cp -r "$aa_dir/extra/desktop/openbox/$file" "$ARCH"/etc/skel/
-					done
+	if [ -n "$config_env" ]; then
+		tar -xf "$aa_dir/extra/desktop/$config_env/config.tar.gz" -C "$ARCH"/root
+		tar -xf "$aa_dir/extra/desktop/$config_env/config.tar.gz" -C "$ARCH"/etc/skel
+	fi
 
-					if [ "$virt" == "vbox" ]; then
+	case "$config_env" in
+		"Anarchy-gnome"|"Anarchy-budgie")	cp -r "$aa_dir/extra/desktop/Anarchy-gnome/gnome-backgrounds.xml" "$ARCH"/usr/share/gnome-background-properties
+		;;
+		"Anarchy-openbox")	if [ "$virt" == "vbox" ]; then
 						echo "VBoxClient-all &" >> "$ARCH"/etc/skel/.config/openbox/autostart
 						echo "VBoxClient-all &" >> "$ARCH"/root/.config/openbox/autostart
 					fi

@@ -65,7 +65,7 @@ quick_install() {
                             enable_nm=true
                             multilib=true
                             dhcp=true
-                            base_install="base-devel linux-headers lsb-release zsh zsh-syntax-highlighting grub dialog wireless_tools wpa_supplicant wpa_actiond os-prober "
+                            base_install="base-devel linux-headers lsb-release zsh zsh-syntax-highlighting grub dialog wireless_tools wpa_supplicant wpa_actiond os-prober vim "
 
                             if "$bluetooth" ; then
                                 base_install+="bluez bluez-utils pulseaudio-bluetooth "
@@ -88,7 +88,7 @@ quick_install() {
                                 enable_nm=true
                                 multilib=true
                                 dhcp=true
-                                base_install="base-devel linux-lts linux-lts-headers lsb-release zsh zsh-syntax-highlighting grub dialog wireless_tools wpa_supplicant wpa_actiond os-prober "
+                                base_install="base-devel linux-lts linux-lts-headers lsb-release zsh zsh-syntax-highlighting grub dialog wireless_tools wpa_supplicant wpa_actiond os-prober vim "
 
                                 if "$bluetooth" ; then
                                     base_install+="bluez bluez-utils pulseaudio-bluetooth "
@@ -133,7 +133,7 @@ quick_desktop() {
     case "$de" in
         "Anarchy-xfce4")    config_env="$de"
                             start_term="exec startxfce4"
-                            DE+="xfce4 xfce4-goodies gimp vlc clementine $extras "
+                            DE+="xfce4 xfce4-goodies gimp clementine $extras "
         ;;
         "Anarchy-budgie")       config_env="$de"
                                 start_term="export XDG_CURRENT_DESKTOP=Budgie:GNOME ; exec budgie-desktop"
@@ -149,7 +149,7 @@ quick_desktop() {
         ;;
         "Anarchy-openbox")      config_env="$de"
                                 start_term="exec openbox-session"
-                                DE+="openbox thunar thunar-volman xfce4-terminal xfce4-panel xfce4-whiskermenu-plugin xcompmgr transset-df obconf lxappearance-obconf wmctrl gxmessage xfce4-pulseaudio-plugin xfdesktop xdotool opensnap ristretto oblogout obmenu-generator openbox-themes gimp vlc clementine $extras "
+                                DE+="openbox thunar thunar-volman xfce4-terminal xfce4-panel xfce4-whiskermenu-plugin xcompmgr transset-df obconf lxappearance-obconf wmctrl gxmessage xfce4-pulseaudio-plugin xfdesktop xdotool opensnap ristretto oblogout obmenu-generator openbox-themes gimp clementine $extras "
         ;;
     esac
 

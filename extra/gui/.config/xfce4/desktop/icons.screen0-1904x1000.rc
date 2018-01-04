@@ -1,16 +1,24 @@
 [xfdesktop-version-4.10.3+-rcfile_format]
 4.10.3+=true
 
-[/home/user/Fetchmirrors.desktop]
-row=2
+[/home/user/Desktop/chromium.desktop]
+row=1
 col=0
 
-[/home/user/gparted.desktop]
+[/home/user/Desktop/gparted.desktop]
 row=3
 col=0
 
-[/home/user/Install.desktop]
-row=1
+[/home/user/Desktop/Install.desktop]
+row=4
+col=0
+
+[/home/user/Desktop/exo-terminal-emulator.desktop]
+row=5
+col=0
+
+[/home/user/Desktop/Fetchmirrors.desktop]
+row=2
 col=0
 
 [/home/user]

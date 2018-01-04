@@ -19,7 +19,7 @@ install_options() {
 
 	op_title="$install_op_msg"
         while (true) ; do
-                 install_opt=$(dialog --ok-button "$ok" --cancel-button "$cancel" --menu "$install_opt_msg" 17 72 5 \
+                 install_opt=$(dialog --ok-button "$ok" --cancel-button "$cancel" --menu "$install_opt_msg" 16 72 5 \
                          "Anarchy-Desktop"       "$install_opt1" \
                          "Anarchy-Desktop-LTS"   "$install_opt2" \
                          "Anarchy-Server"        "$install_opt3" \
