@@ -7,7 +7,7 @@
 ###
 ### By: Dylan Schacht (deadhead)
 ### Email: deadhead3492@gmail.com
-### Webpage: http://arch-anywhere.org
+### Webpage: https://anarchy-linux.org
 ###
 ### Any questions, comments, or bug reports may be sent to above
 ### email address. Enjoy, and keep on using Arch.
