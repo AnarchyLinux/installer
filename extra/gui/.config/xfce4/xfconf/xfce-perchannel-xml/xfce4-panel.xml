@@ -92,7 +92,6 @@
     <property name="plugin-16" type="string" value="pager"/>
     <property name="plugin-18" type="string" value="systray">
       <property name="names-visible" type="array">
-        <value type="string" value="vlc"/>
         <value type="string" value="xfce4-power-manager"/>
         <value type="string" value="networkmanager applet"/>
         <value type="string" value="task manager"/>
@@ -103,7 +102,6 @@
     </property>
     <property name="plugin-19" type="string" value="pulseaudio">
       <property name="enable-keyboard-shortcuts" type="bool" value="true"/>
-      <property name="mpris-players" type="string" value=";vlc"/>
     </property>
     <property name="plugin-20" type="string" value="launcher">
       <property name="items" type="array">
