@@ -33,18 +33,18 @@ if [[ $(tty) == "/dev/tty1" ]]; then
     automated_script
     case $(systemd-detect-virt) in
          oracle) sudo modprobe -a vboxguest vboxsf vboxvideo ;;
-         *) sudo rm /usr/bin/VBoxClient /dev/null
-            sudo rm /usr/bin/VBoxClient-all /dev/null
-            sudo rm /usr/bin/VBoxControl /dev/null
-            sudo rm /usr/bin/VBoxService /dev/null ;;
+         *) sudo rm /usr/bin/VBoxClient
+            sudo rm /usr/bin/VBoxClient-all
+            sudo rm /usr/bin/VBoxControl
+            sudo rm /usr/bin/VBoxService ;;
     esac
     startx &>/dev/null
 
     if [ "$?" -gt "0" ]; then
-        echo -e "\nERROR: failed to start xorg server\nFalling back to text mode."
         sudo systemctl stop NetworkManager.service
         sudo systemctl start netctl.service
         cat /etc/issue_cli
+        echo -e "\nERROR: failed to start xorg server\n > Fall back to text mode."
         exit 1
     fi
 fi
