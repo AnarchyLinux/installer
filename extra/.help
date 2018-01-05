@@ -1,9 +1,9 @@
 [0;31m--------------------------------------------------------------------------------[0m
-[0;32m                            Arch Linux Anywhere
-[0;33m  Arch Anywhere contains the resources you need to learn about installing Arch.
+[0;32m                            Anarchy Linux
+[0;33m  Anarchy Linux contains the resources you need to learn about installing Arch.
 [0;33m  This ISO contains a built in Arch Wiki, as well as an automated installer.
 
-[0;33m  To begin the automated installer simply type and press enter:[0;32m arch-anywhere
+[0;33m  To begin the automated installer simply type and press enter:[0;32m anarchy
 [0;33m  You can check the status of your connection with the command:[0;32m iptest
 [0;33m  If you wish to update your mirrorlist you may do so with:[0;32m fetchmirrors
 [0;33m  View a detailed list of system info with the command:[0;32m sysinfo
