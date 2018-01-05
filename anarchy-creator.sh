@@ -322,6 +322,9 @@ build_sys() {
 build_sys_gui() {
 
 	cd "$customiso"/arch/"$sys" || exit
+	echo 'FILES="/etc/modprobe.d/blacklist.conf"' | sudo tee -a "$customiso"/arch/"$sys"/squashfs-root/etc/mkinitcpio.conf > /dev/null
+	echo 'FILES="/etc/modprobe.d/blacklist.conf"' | sudo tee -a "$customiso"/arch/"$sys"/squashfs-root/etc/mkinitcpio-archiso.conf > /dev/null
+	echo -e 'blacklist vboxguest\nblacklist vboxsf\nblacklist vboxvideo' | sudo tee -a "$customiso"/arch/"$sys"/squashfs-root/etc/modprobe.d/blacklist.conf > /dev/null
 	### Install fonts, fbterm, fetchmirrors, arch-wiki, and uvesafb drivers onto system and cleanup
 	sudo pacman --root squashfs-root --cachedir squashfs-root/var/cache/pacman/pkg  --config /etc/pacman.conf --noconfirm -Syu
 	sudo pacman --root squashfs-root --cachedir squashfs-root/var/cache/pacman/pkg  --config /etc/pacman.conf --noconfirm --needed -Sy terminus-font xorg-server xorg-xinit xf86-video-vesa vlc galculator file-roller gparted gimp git networkmanager network-manager-applet pulseaudio pulseaudio-alsa alsa-utils \
@@ -363,7 +366,6 @@ build_sys_gui() {
 	sudo cp -r "$aa"/extra/gui/.config "$customiso"/arch/"$sys"/squashfs-root/root
 	sudo cp -r "$customiso"/arch/"$sys"/squashfs-root/root/.zlogin "$customiso"/arch/"$sys"/squashfs-root/home/user
 	sudo arch-chroot squashfs-root chown -R user /home/user/
-#	sudo touch "$customiso"/arch/"$sys"/squashfs-root/etc/modules-load.d/virtualbox-guest-modules-arch.conf
 
 	### cd back into root system directory, remove old system
 	cd "$customiso"/arch/"$sys" || exit

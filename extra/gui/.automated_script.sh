@@ -33,7 +33,10 @@ if [[ $(tty) == "/dev/tty1" ]]; then
     automated_script
     case $(systemd-detect-virt) in
          oracle) sudo modprobe -a vboxguest vboxsf vboxvideo ;;
-         *) sudo modprobe -r vboxguest vboxsf vboxvideo &>/dev/null ;;
+         *) sudo rm /usr/bin/VBoxClient /dev/null
+            sudo rm /usr/bin/VBoxClient-all /dev/null
+            sudo rm /usr/bin/VBoxControl /dev/null
+            sudo rm /usr/bin/VBoxService /dev/null ;;
     esac
     startx &>/dev/null
 
@@ -41,7 +44,7 @@ if [[ $(tty) == "/dev/tty1" ]]; then
         echo -e "\nERROR: failed to start xorg server\nFalling back to text mode."
         sudo systemctl stop NetworkManager.service
         sudo systemctl start netctl.service
-        cat ~/.issue_cli
+        cat /etc/issue_cli
         exit 1
     fi
 fi
