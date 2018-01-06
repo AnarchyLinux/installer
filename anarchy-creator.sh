@@ -212,8 +212,9 @@ build_conf() {
 
 	### Copy over extra files (dot files, desktop configurations, help file, issue file, hostname file)
 	sudo rm $sq/root/install.txt
-	sudo cp $aa/extra/{.zshrc,.help,.dialogrc} $sq/root/
-	sudo cp $aa/extra/.zshrc $sq/etc/zsh/zshrc
+	sudo cp $aa/extra/shellrc/.zshrc $sq/root
+	sudo cp $aa/extra/{.help,.dialogrc} $sq/root/
+	sudo cp $aa/extra/shellrc/.zshrc $sq/etc/zsh/zshrc
 	sudo cp -r $aa/extra/shellrc/. $sq/usr/share/anarchy/extra/
 	sudo cp -r $aa/extra/{desktop,wallpapers,fonts,anarchy-icon.png} $sq/usr/share/anarchy/extra/
 	cat $aa/extra/.helprc | sudo tee -a $sq/root/.zshrc >/dev/null
@@ -299,7 +300,7 @@ build_sys_gui() {
 	sudo cp -r $aa/extra/fonts/ttf-zekton-rg $sq/usr/share/fonts
 	sudo cp -r $aa/extra/gui/{.xinitrc,.automated_script.sh} $sq/root
 	sudo cp -r $aa/extra/gui/{.xinitrc,.automated_script.sh} $sq/home/user
-	sudo cp -r $aa/extra/.zshrc $sq/home/user/.zshrc
+	sudo cp -r $aa/extra/shellrc/.zshrc $sq/home/user/.zshrc
 	sudo cp -r $sq/root/.zlogin $sq/home/user
 
 	### Configure desktop GUI
