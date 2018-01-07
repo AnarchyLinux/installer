@@ -243,7 +243,6 @@ build_conf() {
 		sudo linux32 arch-chroot $sq pacman-key --refresh-keys
 	fi
 
-	exit
 }
 
 build_sys() {
