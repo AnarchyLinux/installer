@@ -150,8 +150,8 @@ aur_builds() {
 	### Build packages & install if required
 	for pkg in $(echo ${builds[@]}); do
 		if [ ! -d /tmp/$pkg ]; then
-			wget -qO- "$aur/${pkg}.tar.gz" | tar xvz -C /tmp
-			cd $pkg || exit
+			wget -qO- "$aur/${pkg}.tar.gz" | tar xz -C /tmp
+			cd /tmp/$pkg || exit
 			case $pkg in
 				perl-*|numix-*) makepkg -si --needed --noconfirm ;;
 				*) makepkg -s ;;
@@ -234,12 +234,22 @@ build_conf() {
 	echo -e "\n[anarchy-local]\nServer = file:///usr/share/anarchy/pkg\nSigLevel = Never" | sudo tee -a $sq/etc/pacman.conf >/dev/null
 	cd $aa || exit
 
+	if [ "$sys" == "i686" ]; then
+		sudo rm -r $sq/root/.gnupg
+		sudo rm -r $sq/etc/pacman.d/gnupg
+		sudo linux32 arch-chroot $sq dirmngr </dev/null
+		sudo linux32 arch-chroot $sq pacman-key --init
+		sudo linux32 arch-chroot $sq pacman-key --populate archlinux32
+		sudo linux32 arch-chroot $sq pacman-key --refresh-keys
+	fi
+
+	exit
 }
 
 build_sys() {
 
 	### Install fonts, fbterm, fetchmirrors, arch-wiki
-	sudo pacman --root $sq --cachedir $sq/var/cache/pacman/pkg  --config $paconf --noconfirm -Sy terminus-font acpi zsh-syntax-highlighting
+	sudo pacman --root $sq --cachedir $sq/var/cache/pacman/pkg  --config $paconf --gpgdir $sq/etc/pacman.d/gnupg --noconfirm -Sy terminus-font acpi zsh-syntax-highlighting
 	sudo pacman --root $sq --cachedir $sq/var/cache/pacman/pkg  --config $paconf --noconfirm -U /tmp/fetchmirrors/*.pkg.tar.xz
 	sudo pacman --root $sq --cachedir $sq/var/cache/pacman/pkg  --config $paconf --noconfirm -U /tmp/arch-wiki-cli/*.pkg.tar.xz
 	sudo pacman --root $sq --cachedir $sq/var/cache/pacman/pkg  --config $paconf -Sl | awk '/\[installed\]$/ {print $1 "/" $2 "-" $3}' > "$customiso"/arch/pkglist.${sys}.txt
@@ -266,8 +276,8 @@ build_sys_gui() {
 	echo -e 'blacklist vboxguest\nblacklist vboxsf\nblacklist vboxvideo' | sudo tee -a $sq/etc/modprobe.d/blacklist.conf > /dev/null
 
 	### Install fonts, fbterm, fetchmirrors, arch-wiki, and uvesafb drivers onto system and cleanup
-	sudo pacman --root $sq --cachedir $sq/var/cache/pacman/pkg  --config $paconf --noconfirm -Syu
-	sudo pacman --root $sq --cachedir $sq/var/cache/pacman/pkg  --config $paconf --noconfirm --needed -Sy terminus-font xorg-server xorg-xinit xf86-video-vesa vlc galculator file-roller gparted gimp git networkmanager network-manager-applet pulseaudio pulseaudio-alsa alsa-utils \
+	sudo pacman --root $sq --cachedir $sq/var/cache/pacman/pkg  --config $paconf --gpgdir $sq/etc/pacman.d/gnupg --noconfirm -Syu
+	sudo pacman --root $sq --cachedir $sq/var/cache/pacman/pkg  --config $paconf --gpgdir $sq/etc/pacman.d/gnupg --noconfirm --needed -Sy terminus-font xorg-server xorg-xinit xf86-video-vesa vlc galculator file-roller gparted gimp git networkmanager network-manager-applet pulseaudio pulseaudio-alsa alsa-utils \
 		zsh-syntax-highlighting arc-gtk-theme elementary-icon-theme thunar base-devel gvfs xdg-user-dirs xfce4 xfce4-goodies libreoffice-fresh chromium virtualbox-guest-dkms virtualbox-guest-utils linux linux-headers libdvdcss simplescreenrecorder screenfetch htop acpi pavucontrol libutil-linux
 	sudo pacman --root $sq --cachedir $sq/var/cache/pacman/pkg  --config $paconf --noconfirm -U /tmp/fetchmirrors/*.pkg.tar.xz
 	sudo pacman --root $sq --cachedir $sq/var/cache/pacman/pkg  --config $paconf --noconfirm -U /tmp/arch-wiki-cli/*.pkg.tar.xz
