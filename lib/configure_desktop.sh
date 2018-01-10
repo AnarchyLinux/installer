@@ -59,7 +59,6 @@ graphics() {
 			de=$(dialog --separate-output --ok-button "$done_msg" --cancel-button "$back" --checklist "$environment_msg" 19 60 10 \
 				"awesome"               "$de9" OFF \
 				"bspwm"                 "$de13" OFF \
-				"dwm"                   "$de12" OFF \
 				"enlightenment"         "$de7" OFF \
 				"fluxbox"               "$de11" OFF \
 				"i3"                    "$de10" OFF \
@@ -200,9 +199,6 @@ graphics() {
 			;;
 			"awesome") 	start_term="exec awesome"
 					DE+="awesome "
-			;;
-			"dwm") 		start_term="exec dwm"
-					DE+="dwm "
 			;;
 			"i3") 		start_term="exec i3"
 					DE+="i3 "
