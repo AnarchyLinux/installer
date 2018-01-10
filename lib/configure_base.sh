@@ -684,7 +684,6 @@ add_software() {
 						"virtualbox"		"$sys16" OFF \
 						"ufw"			"$sys17" OFF \
 						"wget"			"$sys18" OFF \
-						"xfe"			"$sys23" OFF \
 						"xscreensaver"		"$sys34" OFF 3>&1 1>&2 2>&3)
 					if [ "$?" -gt "0" ]; then
 						add_soft=false
