@@ -64,7 +64,6 @@ graphics() {
 				"i3"                    "$de10" OFF \
 				"openbox"               "$de8" OFF \
 				"sway"                  "$de21" OFF \
-				"windowmaker"           "$de20" OFF \
 				"xmonad"                "$de16" OFF 3>&1 1>&2 2>&3)
 
 			if [ -n "$de" ]; then
@@ -202,13 +201,6 @@ graphics() {
 			;;
 			"i3") 		start_term="exec i3"
 					DE+="i3 "
-			;;
-			"windowmaker")	start_term="exec wmaker"
-					DE+="windowmaker "
-
-					if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$extra_msg7" 10 60) then
-						DE+="windowmaker-extra "
-					fi
 			;;
 			"sway")		start_term="sway"
 					DE+="sway "
