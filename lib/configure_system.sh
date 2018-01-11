@@ -164,7 +164,8 @@ configure_system() {
 				pid=$! pri=0.1 msg="\n$vbox_enable_msg \n\n \Z1> \Z2systemctl enable vboxservice\Zn" load
 				echo "$(date -u "+%F %H:%M") : Enable vboxservice" >> "$log"
 			;;
-			vmware)	(arch-chroot "$ARCH" systemctl enable vmtoolsd.service
+			vmware)	(cat "$ARCH"/proc/version > "$ARCH"/etc/arch-release
+				 arch-chroot "$ARCH" systemctl enable vmtoolsd.service
 				 arch-chroot "$ARCH" systemctl enable vmware-vmblock-fuse.service
 				 mkdir "$ARCH"/etc/init.d
 				 for x in {0..6}; do mkdir -p "$ARCH"/etc/init.d/rc${x}.d; done) &>/dev/null &
