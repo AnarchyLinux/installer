@@ -369,6 +369,8 @@ graphics() {
 				DE+="$DM "
 			fi
 			enable_dm=true
+		else
+			dialog --ok-button "$ok" --msgbox "\n$startx_msg" 10 60
 		fi
 	else
 		dialog --ok-button "$ok" --msgbox "\n$startx_msg" 10 60
