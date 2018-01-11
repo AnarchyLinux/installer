@@ -248,7 +248,7 @@ build_conf() {
 build_sys() {
 
 	### Install fonts, fbterm, fetchmirrors, arch-wiki
-	sudo pacman --root $sq --cachedir $sq/var/cache/pacman/pkg  --config $paconf --gpgdir $sq/etc/pacman.d/gnupg --noconfirm -Sy terminus-font acpi zsh-syntax-highlighting
+	sudo pacman --root $sq --cachedir $sq/var/cache/pacman/pkg  --config $paconf --noconfirm -Sy terminus-font acpi zsh-syntax-highlighting
 	sudo pacman --root $sq --cachedir $sq/var/cache/pacman/pkg  --config $paconf --noconfirm -U /tmp/fetchmirrors/*.pkg.tar.xz
 	sudo pacman --root $sq --cachedir $sq/var/cache/pacman/pkg  --config $paconf --noconfirm -U /tmp/arch-wiki-cli/*.pkg.tar.xz
 	sudo pacman --root $sq --cachedir $sq/var/cache/pacman/pkg  --config $paconf -Sl | awk '/\[installed\]$/ {print $1 "/" $2 "-" $3}' > "$customiso"/arch/pkglist.${sys}.txt
