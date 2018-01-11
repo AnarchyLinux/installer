@@ -42,7 +42,7 @@ init() {
 
 	### Check for existing archiso
 	if (ls "$aa"/archlinux-*-$sys.iso &>/dev/null); then
-		export iso=$(ls $aa/archlinux-*-${sys}.iso | tail -n1 | sed 's!.*/!!')
+		export iso=$(ls "$aa"/archlinux-*-${sys}.iso | tail -n1 | sed 's!.*/!!')
 	fi
 
 	### Link to AUR snapshots
@@ -185,62 +185,62 @@ build_conf() {
 	else
 		cd "$customiso"/arch/"$sys" || exit
 		sudo unsquashfs airootfs.sfs
-		sudo mount -t proc proc $sq/proc/
-		sudo mount -t sysfs sys $sq/sys/
-		sudo mount -o bind /dev $sq/dev/
-		sudo cp $sq/etc/mkinitcpio.conf $sq/etc/mkinitcpio.conf.bak
-		sudo cp $sq/etc/mkinitcpio-archiso.conf $sq/etc/mkinitcpio.conf
+		sudo mount -t proc proc "$sq"/proc/
+		sudo mount -t sysfs sys "$sq"/sys/
+		sudo mount -o bind /dev "$sq"/dev/
+		sudo cp "$sq"/etc/mkinitcpio.conf "$sq"/etc/mkinitcpio.conf.bak
+		sudo cp "$sq"/etc/mkinitcpio-archiso.conf "$sq"/etc/mkinitcpio.conf
 	fi
 
 	### Copy over vconsole.conf (sets font at boot) & locale.gen (enables locale(s) for font) & uvesafb.conf
-	sudo cp $aa/etc/{vconsole.conf,locale.gen} $sq/etc
-	sudo arch-chroot squashfs-root /bin/bash locale-gen
+	sudo cp "$aa"/etc/{vconsole.conf,locale.gen} "$sq"/etc
+	sudo arch-chroot "$sq" /bin/bash locale-gen
 
 	### Copy over main anarchy config, installer script, and arch-wiki,  make executeable
-	sudo cp $aa/etc/anarchy.conf $sq/etc/
-	sudo cp $aa/anarchy-installer.sh $sq/usr/bin/anarchy
-	sudo cp $aa/extra/{sysinfo,iptest} $sq/usr/bin/
-	sudo chmod +x $sq/usr/bin/{anarchy,sysinfo,iptest}
+	sudo cp "$aa"/etc/anarchy.conf "$sq"/etc/
+	sudo cp "$aa"/anarchy-installer.sh "$sq"/usr/bin/anarchy
+	sudo cp "$aa"/extra/{sysinfo,iptest} "$sq"/usr/bin/
+	sudo chmod +x "$sq"/usr/bin/{anarchy,sysinfo,iptest}
 
 	### Create anarchy directory and lang directory copy over all lang files
-	sudo mkdir -p $sq/usr/share/anarchy/{lang,extra,boot,etc}
-	sudo cp $aa/lang/* $sq/usr/share/anarchy/lang
+	sudo mkdir -p "$sq"/usr/share/anarchy/{lang,extra,boot,etc}
+	sudo cp "$aa"/lang/* "$sq"/usr/share/anarchy/lang
 
 	### Create shell function library copy to squashfs-root from /lib
-	sudo mkdir $sq/usr/lib/anarchy
-	sudo cp $aa/lib/* $sq/usr/lib/anarchy
+	sudo mkdir "$sq"/usr/lib/anarchy
+	sudo cp "$aa"/lib/* "$sq"/usr/lib/anarchy
 
 	### Copy over extra files (dot files, desktop configurations, help file, issue file, hostname file)
-	sudo rm $sq/root/install.txt
-	sudo cp $aa/extra/shellrc/.zshrc $sq/root
-	sudo cp $aa/extra/{.help,.dialogrc} $sq/root/
-	sudo cp $aa/extra/shellrc/.zshrc $sq/etc/zsh/zshrc
-	sudo cp -r $aa/extra/shellrc/. $sq/usr/share/anarchy/extra/
-	sudo cp -r $aa/extra/{desktop,wallpapers,fonts,anarchy-icon.png} $sq/usr/share/anarchy/extra/
-	cat $aa/extra/.helprc | sudo tee -a $sq/root/.zshrc >/dev/null
-	sudo cp $aa/etc/{hostname,issue_cli,lsb-release,os-release} $sq/etc/
-	sudo cp -r $aa/boot/{splash.png,loader/} $sq/usr/share/anarchy/boot/
-	sudo cp $aa/etc/{nvidia340.xx,nvidia304.xx} $sq/usr/share/anarchy/etc/
+	sudo rm "$sq"/root/install.txt
+	sudo cp "$aa"/extra/shellrc/.zshrc "$sq"/root
+	sudo cp "$aa"/extra/{.help,.dialogrc} "$sq"/root/
+	sudo cp "$aa"/extra/shellrc/.zshrc "$sq"/etc/zsh/zshrc
+	sudo cp -r "$aa"/extra/shellrc/. "$sq"/usr/share/anarchy/extra/
+	sudo cp -r "$aa"/extra/{desktop,wallpapers,fonts,anarchy-icon.png} "$sq"/usr/share/anarchy/extra/
+	cat "$aa"/extra/.helprc | sudo tee -a "$sq"/root/.zshrc >/dev/null
+	sudo cp "$aa"/etc/{hostname,issue_cli,lsb-release,os-release} "$sq"/etc/
+	sudo cp -r "$aa"/boot/{splash.png,loader/} "$sq"/usr/share/anarchy/boot/
+	sudo cp "$aa"/etc/{nvidia340.xx,nvidia304.xx} "$sq"/usr/share/anarchy/etc/
 
 	### Copy over built packages and create repository
 	sudo mkdir "$customiso"/arch/"$sys"/squashfs-root/usr/share/anarchy/pkg
 
 	for pkg in $(echo ${builds[@]}); do
-		sudo cp /tmp/$pkg/*.pkg.tar.xz $sq/usr/share/anarchy/pkg
+		sudo cp /tmp/$pkg/*.pkg.tar.xz "$sq"/usr/share/anarchy/pkg
 	done
 
-	cd $sq/usr/share/anarchy/pkg || exit
+	cd "$sq"/usr/share/anarchy/pkg || exit
 	sudo repo-add anarchy-local.db.tar.gz *.pkg.tar.xz
-	echo -e "\n[anarchy-local]\nServer = file:///usr/share/anarchy/pkg\nSigLevel = Never" | sudo tee -a $sq/etc/pacman.conf >/dev/null
-	cd $aa || exit
+	echo -e "\n[anarchy-local]\nServer = file:///usr/share/anarchy/pkg\nSigLevel = Never" | sudo tee -a "$sq"/etc/pacman.conf >/dev/null
+	cd "$aa" || exit
 
 	if [ "$sys" == "i686" ]; then
-		sudo rm -r $sq/root/.gnupg
-		sudo rm -r $sq/etc/pacman.d/gnupg
-		sudo linux32 arch-chroot $sq dirmngr </dev/null
-		sudo linux32 arch-chroot $sq pacman-key --init
-		sudo linux32 arch-chroot $sq pacman-key --populate archlinux32
-		sudo linux32 arch-chroot $sq pacman-key --refresh-keys
+		sudo rm -r "$sq"/root/.gnupg
+		sudo rm -r "$sq"/etc/pacman.d/gnupg
+		sudo linux32 arch-chroot "$sq" dirmngr </dev/null
+		sudo linux32 arch-chroot "$sq" pacman-key --init
+		sudo linux32 arch-chroot "$sq" pacman-key --populate archlinux32
+		sudo linux32 arch-chroot "$sq" pacman-key --refresh-keys
 	fi
 
 }
@@ -248,12 +248,12 @@ build_conf() {
 build_sys() {
 
 	### Install fonts, fbterm, fetchmirrors, arch-wiki
-	sudo pacman --root $sq --cachedir $sq/var/cache/pacman/pkg  --config $paconf --noconfirm -Sy terminus-font acpi zsh-syntax-highlighting
-	sudo pacman --root $sq --cachedir $sq/var/cache/pacman/pkg  --config $paconf --noconfirm -U /tmp/fetchmirrors/*.pkg.tar.xz
-	sudo pacman --root $sq --cachedir $sq/var/cache/pacman/pkg  --config $paconf --noconfirm -U /tmp/arch-wiki-cli/*.pkg.tar.xz
-	sudo pacman --root $sq --cachedir $sq/var/cache/pacman/pkg  --config $paconf -Sl | awk '/\[installed\]$/ {print $1 "/" $2 "-" $3}' > "$customiso"/arch/pkglist.${sys}.txt
-	sudo pacman --root $sq --cachedir $sq/var/cache/pacman/pkg  --config $paconf --noconfirm -Scc
-	sudo rm -f $sq/var/cache/pacman/pkg/*
+	sudo pacman --root "$sq" --cachedir "$sq"/var/cache/pacman/pkg  --config $paconf --noconfirm -Sy terminus-font acpi zsh-syntax-highlighting
+	sudo pacman --root "$sq" --cachedir "$sq"/var/cache/pacman/pkg  --config $paconf --noconfirm -U /tmp/fetchmirrors/*.pkg.tar.xz
+	sudo pacman --root "$sq" --cachedir "$sq"/var/cache/pacman/pkg  --config $paconf --noconfirm -U /tmp/arch-wiki-cli/*.pkg.tar.xz
+	sudo pacman --root "$sq" --cachedir "$sq"/var/cache/pacman/pkg  --config $paconf -Sl | awk '/\[installed\]$/ {print $1 "/" $2 "-" $3}' > "$customiso"/arch/pkglist.${sys}.txt
+	sudo pacman --root "$sq" --cachedir "$sq"/var/cache/pacman/pkg  --config $paconf --noconfirm -Scc
+	sudo rm -f "$sq"/var/cache/pacman/pkg/*
 
 	### cd back into root system directory, remove old system
 	cd "$customiso"/arch/"$sys" || exit
@@ -270,54 +270,54 @@ build_sys() {
 build_sys_gui() {
 
 	### Blacklist vbox drivers so they are not loaded on non-vbox
-	echo 'FILES="/etc/modprobe.d/blacklist.conf"' | sudo tee -a $sq/etc/mkinitcpio.conf > /dev/null
-	echo 'FILES="/etc/modprobe.d/blacklist.conf"' | sudo tee -a $sq/etc/mkinitcpio-archiso.conf > /dev/null
-	echo -e 'blacklist vboxguest\nblacklist vboxsf\nblacklist vboxvideo' | sudo tee -a $sq/etc/modprobe.d/blacklist.conf > /dev/null
+	echo 'FILES="/etc/modprobe.d/blacklist.conf"' | sudo tee -a "$sq"/etc/mkinitcpio.conf > /dev/null
+	echo 'FILES="/etc/modprobe.d/blacklist.conf"' | sudo tee -a "$sq"/etc/mkinitcpio-archiso.conf > /dev/null
+	echo -e 'blacklist vboxguest\nblacklist vboxsf\nblacklist vboxvideo' | sudo tee -a "$sq"/etc/modprobe.d/blacklist.conf > /dev/null
 
 	### Install fonts, fbterm, fetchmirrors, arch-wiki, and uvesafb drivers onto system and cleanup
-	sudo pacman --root $sq --cachedir $sq/var/cache/pacman/pkg  --config $paconf --gpgdir $sq/etc/pacman.d/gnupg --noconfirm -Syu
-	sudo pacman --root $sq --cachedir $sq/var/cache/pacman/pkg  --config $paconf --gpgdir $sq/etc/pacman.d/gnupg --noconfirm --needed -Sy terminus-font xorg-server xorg-xinit xf86-video-vesa vlc galculator file-roller gparted gimp git networkmanager network-manager-applet pulseaudio pulseaudio-alsa alsa-utils \
+	sudo pacman --root "$sq" --cachedir "$sq"/var/cache/pacman/pkg  --config $paconf --gpgdir $sq/etc/pacman.d/gnupg --noconfirm -Syu
+	sudo pacman --root "$sq" --cachedir "$sq"/var/cache/pacman/pkg  --config $paconf --gpgdir $sq/etc/pacman.d/gnupg --noconfirm --needed -Sy terminus-font xorg-server xorg-xinit xf86-video-vesa vlc galculator file-roller gparted gimp git networkmanager network-manager-applet pulseaudio pulseaudio-alsa alsa-utils \
 		zsh-syntax-highlighting arc-gtk-theme elementary-icon-theme thunar base-devel gvfs xdg-user-dirs xfce4 xfce4-goodies libreoffice-fresh chromium virtualbox-guest-dkms virtualbox-guest-utils linux linux-headers libdvdcss simplescreenrecorder screenfetch htop acpi pavucontrol libutil-linux
-	sudo pacman --root $sq --cachedir $sq/var/cache/pacman/pkg  --config $paconf --noconfirm -U /tmp/fetchmirrors/*.pkg.tar.xz
-	sudo pacman --root $sq --cachedir $sq/var/cache/pacman/pkg  --config $paconf --noconfirm -U /tmp/arch-wiki-cli/*.pkg.tar.xz
-	sudo pacman --root $sq --cachedir $sq/var/cache/pacman/pkg  --config $paconf --noconfirm -U /tmp/numix-icon-theme-git/*.pkg.tar.xz
-	sudo pacman --root $sq --cachedir $sq/var/cache/pacman/pkg  --config $paconf --noconfirm -U /tmp/numix-circle-icon-theme-git/*.pkg.tar.xz
-	sudo pacman --root $sq --cachedir $sq/var/cache/pacman/pkg  --config $paconf -Sl | awk '/\[installed\]$/ {print $1 "/" $2 "-" $3}' > "$customiso"/arch/pkglist.${sys}.txt
-	sudo pacman --root $sq --cachedir $sq/var/cache/pacman/pkg  --config $paconf --noconfirm -Scc
-	sudo rm -f $sq/var/cache/pacman/pkg/*
-	sudo mv $sq/etc/mkinitcpio.conf.bak $sq/etc/mkinitcpio.conf
+	sudo pacman --root "$sq" --cachedir "$sq"/var/cache/pacman/pkg  --config $paconf --noconfirm -U /tmp/fetchmirrors/*.pkg.tar.xz
+	sudo pacman --root "$sq" --cachedir "$sq"/var/cache/pacman/pkg  --config $paconf --noconfirm -U /tmp/arch-wiki-cli/*.pkg.tar.xz
+	sudo pacman --root "$sq" --cachedir "$sq"/var/cache/pacman/pkg  --config $paconf --noconfirm -U /tmp/numix-icon-theme-git/*.pkg.tar.xz
+	sudo pacman --root "$sq" --cachedir "$sq"/var/cache/pacman/pkg  --config $paconf --noconfirm -U /tmp/numix-circle-icon-theme-git/*.pkg.tar.xz
+	sudo pacman --root "$sq" --cachedir "$sq"/var/cache/pacman/pkg  --config $paconf -Sl | awk '/\[installed\]$/ {print $1 "/" $2 "-" $3}' > "$customiso"/arch/pkglist.${sys}.txt
+	sudo pacman --root "$sq" --cachedir "$sq"/var/cache/pacman/pkg  --config $paconf --noconfirm -Scc
+	sudo rm -f "$sq"/var/cache/pacman/pkg/*
+	sudo mv "$sq"/etc/mkinitcpio.conf.bak "$sq"/etc/mkinitcpio.conf
 
 	### Disable netctl enable networkmanager
-	sudo arch-chroot $sq systemctl disable netctl.service
-	sudo arch-chroot $sq systemctl enable NetworkManager.service
+	sudo arch-chroot "$sq" systemctl disable netctl.service
+	sudo arch-chroot "$sq" systemctl enable NetworkManager.service
 
 	### Copy new kernel
-	sudo rm $sq/boot/initramfs-linux-fallback.img
-	sudo mv $sq/boot/vmlinuz-linux "$customiso"/arch/boot/"$sys"/vmlinuz
-	sudo mv $sq/boot/initramfs-linux.img "$customiso"/arch/boot/"$sys"/archiso.img
+	sudo rm "$sq"/boot/initramfs-linux-fallback.img
+	sudo mv "$sq"/boot/vmlinuz-linux "$customiso"/arch/boot/"$sys"/vmlinuz
+	sudo mv "$sq"/boot/initramfs-linux.img "$customiso"/arch/boot/"$sys"/archiso.img
 
 	### Configure desktop
-	sudo arch-chroot $sq useradd -m -g users -G power,audio,video,storage -s /usr/bin/zsh user
-	sudo arch-chroot $sq su user -c xdg-user-dirs-update
-	sudo sed -i 's/root/user/' $sq/etc/systemd/system/getty@tty1.service.d/autologin.conf
-	sudo cp -r $aa/extra/gui/*.desktop $sq/home/user/Desktop
-	sudo cp -r $aa/extra/gui/*.desktop $sq/usr/share/applications
-	sudo cp -r $aa/extra/gui/{issue,sudoers} $sq/etc/
-	sudo cp -r $aa/extra/anarchy-icon.png $sq/usr/share/pixmaps
-	sudo cp -r $aa/extra/anarchy-icon.png $sq/root/.face
-	sudo cp -r $aa/extra/anarchy-icon.png $sq/home/user/.face
-	sudo cp -r $aa/extra/fonts/ttf-zekton-rg $sq/usr/share/fonts
-	sudo cp -r $aa/extra/gui/{.xinitrc,.automated_script.sh} $sq/root
-	sudo cp -r $aa/extra/gui/{.xinitrc,.automated_script.sh} $sq/home/user
-	sudo cp -r $aa/extra/shellrc/.zshrc $sq/home/user/.zshrc
-	sudo cp -r $sq/root/.zlogin $sq/home/user
+	sudo arch-chroot "$sq" useradd -m -g users -G power,audio,video,storage -s /usr/bin/zsh user
+	sudo arch-chroot "$sq" su user -c xdg-user-dirs-update
+	sudo sed -i 's/root/user/' "$sq"/etc/systemd/system/getty@tty1.service.d/autologin.conf
+	sudo cp -r "$aa"/extra/gui/*.desktop "$sq"/home/user/Desktop
+	sudo cp -r "$aa"/extra/gui/*.desktop "$sq"/usr/share/applications
+	sudo cp -r "$aa"/extra/gui/{issue,sudoers} "$sq"/etc/
+	sudo cp -r "$aa"/extra/anarchy-icon.png "$sq"/usr/share/pixmaps
+	sudo cp -r "$aa"/extra/anarchy-icon.png "$sq"/root/.face
+	sudo cp -r "$aa"/extra/anarchy-icon.png "$sq"/home/user/.face
+	sudo cp -r "$aa"/extra/fonts/ttf-zekton-rg "$sq"/usr/share/fonts
+	sudo cp -r "$aa"/extra/gui/{.xinitrc,.automated_script.sh} "$sq"/root
+	sudo cp -r "$aa"/extra/gui/{.xinitrc,.automated_script.sh} "$sq"/home/user
+	sudo cp -r "$aa"/extra/shellrc/.zshrc "$sq"/home/user/.zshrc
+	sudo cp -r "$sq"/root/.zlogin "$sq"/home/user
 
 	### Configure desktop GUI
-	sudo cp -r "$aa"/extra/gui/.config $sq/home/user/
-        sudo cp -r "$aa"/extra/gui/.config $sq/root
+	sudo cp -r "$aa"/extra/gui/.config "$sq"/home/user/
+	sudo cp -r "$aa"/extra/gui/.config "$sq"/root
 
 	### Fix user permissions
-	sudo arch-chroot $sq chown -R user /home/user/
+	sudo arch-chroot "$sq" chown -R user /home/user/
 
 	### cd back into root system directory, remove old system
 	cd "$customiso"/arch/"$sys" || exit
@@ -325,9 +325,9 @@ build_sys_gui() {
 
 	### Recreate the ISO using compression remove unsquashed system generate checksums
 	echo "Recreating $sys..."
-	sudo umount $sq/proc/
-	sudo umount $sq/sys/
-	sudo umount $sq/dev/
+	sudo umount "$sq"/proc/
+	sudo umount "$sq"/sys/
+	sudo umount "$sq"/dev/
 	sudo mksquashfs squashfs-root airootfs.sfs -b 1024k -comp xz
 	sudo rm -r squashfs-root
 	md5sum airootfs.sfs > airootfs.md5
@@ -359,7 +359,7 @@ create_iso() {
 
 	cd "$aa" || exit
 	xorriso -as mkisofs \
-	 -iso-level 3 \
+	-iso-level 3 \
 	-full-iso9660-filenames \
 	-volid "$iso_label" \
 	-eltorito-boot isolinux/isolinux.bin \
@@ -446,18 +446,18 @@ while (true); do
 				set_version
 				init
 				extract_iso
-	                        build_conf
+				build_conf
 				build_sys
-	                        configure_boot
-	                        create_iso
+				configure_boot
+				create_iso
 				echo "$version ISO generated successfully!."
 				interface="gui"
 				set_version
 				extract_iso
 				build_conf
 				build_sys_gui
-	                        configure_boot
-	                        create_iso
+				configure_boot
+				create_iso
 				echo "$version ISO generated successfully! Exiting ISO creator."
 				exit
 		;;
