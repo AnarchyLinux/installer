@@ -46,7 +46,6 @@ https://anarchy-linux.org/download/
     Bspwm <br />
     Cinnamon <br />
     Deepin <br />
-    DynamicWM <br />
     Enlightenment <br />
     Fluxbox <br />
     Gnome <br />
@@ -58,7 +57,6 @@ https://anarchy-linux.org/download/
     Mate <br />
     Openbox <br />
     SwayWM <br />
-    WindowMaker <br />
     XFCE4 <br />
     Xmonad <br />
 
