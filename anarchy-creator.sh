@@ -76,7 +76,7 @@ check_depends() {
 	if [ ! -f /usr/bin/xxd ]; then query+="xxd "; fi
 	if [ ! -f /usr/bin/gtk3-demo ]; then query+="gtk3 "; fi
 
-	if [ ! -z $query ]; then
+	if [ ! -z "$query" ]; then
 		echo -en "Error: missing dependencies: ${query}\n > Install missing dependencies now? [y/N]: "
 		read -r input
 
