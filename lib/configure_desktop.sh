@@ -390,7 +390,7 @@ config_env() {
 	cp "$aa_dir"/extra/anarchy-icon.png "$ARCH"/etc/skel/.face
 	cp "$aa_dir"/extra/anarchy-icon.png "$ARCH"/usr/share/pixmaps
 	mkdir "$ARCH"/usr/share/backgrounds/anarchy
-	cp -r "$aa_dir"/extra/wallpapers/*.jpeg "$ARCH"/usr/share/backgrounds/anarchy/
+	cp -r "$aa_dir"/extra/wallpapers/* "$ARCH"/usr/share/backgrounds/anarchy/
 
 	if [ -n "$config_env" ]; then
 		tar -xf "$aa_dir/extra/desktop/$config_env/config.tar.gz" -C "$ARCH"/root
