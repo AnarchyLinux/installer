@@ -238,7 +238,7 @@ graphics() {
 				"$default"			 "$gr0" \
 				"xf86-video-ati"     "$gr4" \
 				"xf86-video-intel"   "$gr5" \
-				"xf86-video-nouveau" "$gr9" \
+				"xf86-video-nouveau" "$gr8" \
 				"xf86-video-vesa"	 "$gr1" \
 				"NVIDIA"             "$gr2 ->" 3>&1 1>&2 2>&3)
 			ex="$?"
@@ -247,7 +247,7 @@ graphics() {
 				"$default"			 "$gr0" \
 				"xf86-video-ati"     "$gr4" \
 				"xf86-video-intel"   "$gr5" \
-				"xf86-video-nouveau" "$gr9" \
+				"xf86-video-nouveau" "$gr8" \
 				"xf86-video-vesa"	 "$gr1" 3>&1 1>&2 2>&3)
 			ex="$?"
 		fi
