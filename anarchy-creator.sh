@@ -276,7 +276,7 @@ build_sys_gui() {
 
 	### Install fonts, fbterm, fetchmirrors, arch-wiki, and uvesafb drivers onto system and cleanup
 	sudo pacman --root "$sq" --cachedir "$sq"/var/cache/pacman/pkg  --config $paconf --gpgdir $sq/etc/pacman.d/gnupg --noconfirm -Syu
-	sudo pacman --root "$sq" --cachedir "$sq"/var/cache/pacman/pkg  --config $paconf --gpgdir $sq/etc/pacman.d/gnupg --noconfirm --needed -Sy terminus-font xorg-server xorg-xinit xf86-video-vesa vlc galculator file-roller gparted gimp git networkmanager network-manager-applet pulseaudio pulseaudio-alsa alsa-utils \
+	sudo pacman --root "$sq" --cachedir "$sq"/var/cache/pacman/pkg  --config $paconf --gpgdir $sq/etc/pacman.d/gnupg --noconfirm --needed -Sy terminus-font xorg-server xorg-xinit xf86-video-vesa vlc galculator file-roller gparted gimp git pulseaudio pulseaudio-alsa alsa-utils \
 		zsh-syntax-highlighting arc-gtk-theme elementary-icon-theme thunar base-devel gvfs xdg-user-dirs xfce4 xfce4-goodies libreoffice-fresh chromium virtualbox-guest-dkms virtualbox-guest-utils linux linux-headers libdvdcss simplescreenrecorder screenfetch htop acpi pavucontrol libutil-linux
 	sudo pacman --root "$sq" --cachedir "$sq"/var/cache/pacman/pkg  --config $paconf --noconfirm -U /tmp/fetchmirrors/*.pkg.tar.xz
 	sudo pacman --root "$sq" --cachedir "$sq"/var/cache/pacman/pkg  --config $paconf --noconfirm -U /tmp/arch-wiki-cli/*.pkg.tar.xz
@@ -286,10 +286,6 @@ build_sys_gui() {
 	sudo pacman --root "$sq" --cachedir "$sq"/var/cache/pacman/pkg  --config $paconf --noconfirm -Scc
 	sudo rm -f "$sq"/var/cache/pacman/pkg/*
 	sudo mv "$sq"/etc/mkinitcpio.conf.bak "$sq"/etc/mkinitcpio.conf
-
-	### Disable netctl enable networkmanager
-	sudo arch-chroot "$sq" systemctl disable netctl.service
-	sudo arch-chroot "$sq" systemctl enable NetworkManager.service
 
 	### Copy new kernel
 	sudo rm "$sq"/boot/initramfs-linux-fallback.img
