@@ -260,47 +260,34 @@ graphics() {
 			GPU=$(dialog --ok-button "$ok" --cancel-button "$cancel" --menu "$nvidia_msg" 15 60 4 \
 				"$gr0"		   "->"	  \
 				"nvidia"       "$gr6" \
-				"nvidia-340xx" "$gr7" \
-				"nvidia-304xx" "$gr8" 3>&1 1>&2 2>&3)
+				"nvidia-340xx" "$gr7" 3>&1 1>&2 2>&3)
 
 			if [ "$?" -eq "0" ]; then
 				if [ "$GPU" == "$gr0" ]; then
 					pci_id=$(lspci -nn | grep "VGA" | egrep -o '\[.*\]' | awk '{print $NF}' | sed 's/.*://;s/]//')
-			        if (<"$aa_dir"/etc/nvidia340.xx grep "$pci_id" &>/dev/null); then
-        			    if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$nvidia_340msg" 10 60); then
-        			    	if [ "$kernel" == "lts" ]; then
-						GPU="nvidia-340xx-lts"
-        			    	else
-        			    		GPU="nvidia-340xx"
-        			    	fi
-        			    	GPU+=" nvidia-340xx-libgl nvidia-340xx-utils nvidia-settings"
-        			    	break
-        			    fi
-					elif (<"$aa_dir"/etc/nvidia304.xx grep "$pci_id" &>/dev/null); then
-           				if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$nvidia_304msg" 10 60); then
-           					if [ "$kernel" == "lts" ]; then
-							GPU="nvidia-304xx-lts"
-           					else
-           						GPU="nvidia-304xx"
-           					fi
-           					GPU+=" nvidia-304xx-libgl nvidia-304xx-utils nvidia-settings"
-           					break
-			        	fi
-			        else
-            			if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$nvidia_curmsg" 10 60); then
-            				if [ "$kernel" == "lts" ]; then
-						GPU="nvidia-lts"
-            				else
-            					GPU="nvidia"
-					fi
+					if (<"$aa_dir"/etc/nvidia340.xx grep "$pci_id" &>/dev/null); then
+						if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$nvidia_340msg" 10 60); then
+							if [ "$kernel" == "lts" ]; then
+								GPU="nvidia-340xx-lts"
+							else
+								GPU="nvidia-340xx"
+							fi
+							GPU+=" nvidia-340xx-libgl nvidia-340xx-utils nvidia-settings"
+							break
+						fi
+					elif (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$nvidia_curmsg" 10 60); then
+						if [ "$kernel" == "lts" ]; then
+							GPU="nvidia-lts"
+						else
+							GPU="nvidia"
+						fi
 
-					if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$nvidia_modeset_msg" 10 60) then
-						drm=true
+						if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$nvidia_modeset_msg" 10 60) then
+							drm=true
+						fi
+						GPU+=" nvidia-libgl nvidia-utils nvidia-settings"
+						break
 					fi
-					GPU+=" nvidia-libgl nvidia-utils nvidia-settings"
-            				break
-            			fi
-			        fi
 				elif [ "$GPU" == "nvidia" ]; then
 					if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$nvidia_modeset_msg" 10 60) then
 						drm=true
@@ -404,7 +391,7 @@ config_env() {
 						echo "VBoxClient-all &" >> "$ARCH"/etc/skel/.config/openbox/autostart
 						echo "VBoxClient-all &" >> "$ARCH"/root/.config/openbox/autostart
 					fi
-					
+
 					if [ "$net_util" == "networkmanager" ]; then
 						echo "nm-applet &" >> "$ARCH"/etc/skel/.config/openbox/autostart
 						echo "nm-applet &" >> "$ARCH"/root/.config/openbox/autostart
