@@ -220,7 +220,7 @@ build_conf() {
 	cat "$aa"/extra/.helprc | sudo tee -a "$sq"/root/.zshrc >/dev/null
 	sudo cp "$aa"/etc/{hostname,issue_cli,lsb-release,os-release} "$sq"/etc/
 	sudo cp -r "$aa"/boot/{splash.png,loader/} "$sq"/usr/share/anarchy/boot/
-	sudo cp "$aa"/etc/{nvidia340.xx,nvidia304.xx} "$sq"/usr/share/anarchy/etc/
+	sudo cp "$aa"/etc/nvidia340.xx "$sq"/usr/share/anarchy/etc/
 
 	### Copy over built packages and create repository
 	sudo mkdir "$customiso"/arch/"$sys"/squashfs-root/usr/share/anarchy/pkg
