@@ -38,13 +38,12 @@ if [[ $(tty) == "/dev/tty1" ]]; then
             sudo rm /usr/bin/VBoxControl
             sudo rm /usr/bin/VBoxService ;;
     esac
-    startx &>/dev/null
+    startx &>/tmp/startx.log
 
     if [ "$?" -gt "0" ]; then
-        sudo systemctl stop NetworkManager.service
-        sudo systemctl start netctl.service
         cat /etc/issue_cli
-        echo -e "\nERROR: failed to start xorg server\n > Fall back to text mode."
+        echo -e "\nERROR: failed to start xorg server"
+        echo -e " > Output logged to: /tmp/startx.log\n > Falling back to text mode."
         exit 1
     fi
 fi
