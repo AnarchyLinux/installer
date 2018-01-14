@@ -404,6 +404,11 @@ config_env() {
 						echo "VBoxClient-all &" >> "$ARCH"/etc/skel/.config/openbox/autostart
 						echo "VBoxClient-all &" >> "$ARCH"/root/.config/openbox/autostart
 					fi
+					
+					if [ "$net_util" == "networkmanager" ]; then
+						echo "nm-applet &" >> "$ARCH"/etc/skel/.config/openbox/autostart
+						echo "nm-applet &" >> "$ARCH"/root/.config/openbox/autostart
+					fi
 		;;
 		"Anarchy-xfce4")	mv "$ARCH"/usr/share/backgrounds/anarchy/* "$ARCH"/usr/share/backgrounds/xfce
 		;;
