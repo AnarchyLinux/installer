@@ -335,7 +335,6 @@ add_software() {
 						"powerline-fonts-git"		"$aar15" OFF \
 						"spotify"			"$aar16" OFF \
 						"sublime-text"			"$aar17" OFF \
-						"teamviewer"			"$aar18" OFF \
 						"tor-browser-en"		"$aar19" OFF \
 						"virtualbox-ext-oracle"		"$aar20" OFF \
 						"vivaldi"			"$aar21" OFF \
