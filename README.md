@@ -23,66 +23,66 @@ https://anarchy-linux.org/download/
 
 * Supported Linux installs:
 
-    Choose from base or base-devel Arch Linux install <br />
-    Arch Linux kernel <br />
-    Arch Linux Hardened kernel <br />
-    LTS Linux kernel (long term support) <br />
-    Zen Linux kernel <br />
+    * Choose from base or base-devel Arch Linux install
+    * Arch Linux kernel
+    * Arch Linux Hardened kernel
+    * LTS Linux kernel (long term support)
+    * Zen Linux kernel
 
 * Supported partitioning methods include:
 
-    Full drive automatic partitioning with optional SWAP partition <br />
-    Full drive automatic partitioning with luks on LVM encryption for root and tmp partition with optional encrypted SWAP partition <br />
-    Manual partition (advanced users) uses cfdisk for partitioning select custom mount points <br />
+    * Full drive automatic partitioning with optional SWAP partition
+    * Full drive automatic partitioning with luks on LVM encryption for * root and tmp partition with optional encrypted SWAP partition
+    * Manual partition (advanced users) uses cfdisk for partitioning select * custom mount points
 
 * Supported Desktop Environments + Window Managers:
 
-    Anarchy Cinnamon Edition (developers custom Cinnamon desktop) <br />
-    Anarchy Gnome Edition (developers custom Gnome desktop) <br />
-    Anarchy OpenboxWM Edition (developers custom Openbox desktop) <br />
-    Anarchy XFCE4 Edition (developers custom Xfce4 desktop) <br/>
-    Anarchy Budgie Edition (developers custom Budgie desktop) <br />
-    Awesome <br />
-    Bspwm <br />
-    Cinnamon <br />
-    Deepin <br />
-    Enlightenment <br />
-    Fluxbox <br />
-    Gnome <br />
-    Gnome Flashback <br />
-    i3WM <br />
-    KDE/Plasma <br />
-    LXDE <br />
-    LXQT <br />
-    Mate <br />
-    Openbox <br />
-    SwayWM <br />
-    XFCE4 <br />
-    Xmonad <br />
+    * Anarchy Cinnamon Edition (developers custom Cinnamon desktop)
+    * Anarchy Gnome Edition (developers custom Gnome desktop)
+    * Anarchy OpenboxWM Edition (developers custom Openbox desktop)
+    * Anarchy XFCE4 Edition (developers custom Xfce4 desktop) <br/>
+    * Anarchy Budgie Edition (developers custom Budgie desktop)
+    * Awesome
+    * Bspwm
+    * Cinnamon
+    * Deepin
+    * Enlightenment
+    * Fluxbox
+    * Gnome
+    * Gnome Flashback
+    * i3WM
+    * KDE/Plasma
+    * LXDE
+    * LXQT
+    * Mate
+    * Openbox
+    * SwayWM
+    * XFCE4
+    * Xmonad
 
 * Supported Graphics Drivers:
 
-    ATI/AMD xf86-video-ati open source drivers <br />
-    Intel xf86-video-intel open source drivers <br />
-    NVIDIA: xf86-video-nouveau open source drivers <br />
-    NVIDIA: Stable, 340xx, 304xx closed source drivers <br />
-    VirtualBox Guest Utilities Drivers <br />
+    * ATI/AMD xf86-video-ati open source drivers
+    * Intel xf86-video-intel open source drivers
+    * NVIDIA: xf86-video-nouveau open source drivers
+    * NVIDIA: Stable, 340xx, 304xx closed source drivers
+    * VirtualBox Guest Utilities Drivers
 
 * Bootloader support:
 
-    Grub (Grand Unified Bootloader) <br />
-    Syslinux (SysLinux Bootloader) <br />
-    Systemd-boot (Systemd Bootloader) <br />
-    Support for UEFI boot <br />
-    OsProber (Dual-Boot Support) <br />
+    * Grub (Grand Unified Bootloader)
+    * Syslinux (SysLinux Bootloader)
+    * Systemd-boot (Systemd Bootloader)
+    * Support for UEFI boot
+    * OsProber (Dual-Boot Support)
 
 * Network Utilities:
 
-    Netctl <br />
-    NetworkManager + applet <br />
-    WPA Supplicant <br />
-    WPA ActionD <br />
-    Wireless Tools <br />
+    * Netctl
+    * NetworkManager + applet
+    * WPA Supplicant
+    * WPA ActionD
+    * Wireless Tools
 
 Also contains a long list of optional additional software (audio, games, browsers, media players, cli utils, text editors, servers, etc...) from the Official Arch repos.
 
