@@ -16,7 +16,7 @@ https://anarchy-linux.org/download/
 
 <p>
   <img src="https://anarchy-linux.org/images/anarchy-splash.png" width="350"/>
-  <img src="https://anarchy-linux.org/images/installer/1-issue.png" width="350"/>
+  <img src="https://anarchy-linux.org/images/installer/issue.png" width="350"/>
 </p>
 
 ### Features:
