@@ -1,4 +1,4 @@
-alias help="cat ~/.help"\
+alias help="cat ~/.help"
 alias start="cat /etc/issue_cli"
 alias 1="anarchy"
 alias 2="anarchy -u"
