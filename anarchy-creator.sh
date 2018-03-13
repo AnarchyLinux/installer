@@ -68,7 +68,7 @@ init() {
 check_depends() {
 
 	# Check depends
-	if [ ! -f /usr/bin/wget ]; then query="$query wget"; fi
+	if [ ! -f /usr/bin/wget ]; then query="$query wget "; fi
 	if [ ! -f /usr/bin/xorriso ]; then query+="libisoburn "; fi
 	if [ ! -f /usr/bin/mksquashfs ]; then query+="squashfs-tools "; fi
 	if [ ! -f /usr/bin/7z ]; then query+="p7zip " ; fi
