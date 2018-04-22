@@ -567,6 +567,7 @@ add_software() {
 						"terminology"		"$term10" OFF \
 						"termite"		"$term9" OFF \
 						"tilda"			"$term11" OFF \
+						"tilix"			"$term13" oFF \
 						"tmux"			"$sys14" OFF \
 						"xfce4-terminal"	"$term6" OFF \
 						"yakuake"		"$term7" OFF 3>&1 1>&2 2>&3)
