@@ -489,7 +489,7 @@ add_software() {
 						add_soft=false
 					fi
 					if (<<<"$software" grep "vlc") then
-						software+=" qt4 phonon-qt4-vlc"
+						software+=" qt5 phonon-qt5-vlc"
 					fi
 					if (<<<"$software" grep "multimedia-codecs") then
 						software=$(<<<"$software" sed 's/multimedia-codecs/gst-plugins-bad gst-plugins-base gst-plugins-good gst-plugins-ugly ffmpegthumbnailer gst-libav/')
