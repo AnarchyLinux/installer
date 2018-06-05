@@ -75,6 +75,7 @@ check_depends() {
 	if [ ! -f /usr/bin/arch-chroot ]; then query+="arch-install-scripts "; fi
 	if [ ! -f /usr/bin/xxd ]; then query+="xxd "; fi
 	if [ ! -f /usr/bin/gtk3-demo ]; then query+="gtk3 "; fi
+	if [ ! -f /usr/bin/usr/bin/rankmirrors ]; then query+="pacman-contrib "; fi
 
 	if [ ! -z "$query" ]; then
 		echo -en "Error: missing dependencies: ${query}\n > Install missing dependencies now? [y/N]: "
