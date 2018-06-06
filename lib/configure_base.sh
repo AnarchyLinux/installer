@@ -672,7 +672,6 @@ add_software() {
 						"gparted"		"$sys4" OFF \
 						"gpm"			"$sys5" OFF \
 						"htop"			"$sys6" OFF \
-						"inxi"			"$sys7" OFF \
 						"k3b"			"$sys8" OFF \
 						"nmap"			"$sys9" OFF \
 						"ntfs-3g"		"$sys28" OFF \
