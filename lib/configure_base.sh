@@ -641,7 +641,7 @@ add_software() {
 					fi
 
 					if (grep "cups" <<<"$software" &>/dev/null); then
-						software=$(<<<"$software" sed 's/cups/cups cups-pdf gtk3-print-backends/')
+						software=$(<<<"$software" sed 's/cups/cups cups-pdf/')
 						if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$cups_msg" 10 60) then
 							enable_cups=true
 						fi
