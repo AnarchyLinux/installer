@@ -49,6 +49,7 @@ init() {
 	source "$aa_conf"
 	language
 	source "$lang_file"
+	source "$aa_conf"
 	export reload=true
 
 }

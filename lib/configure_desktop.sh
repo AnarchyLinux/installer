@@ -244,11 +244,11 @@ graphics() {
 			ex="$?"
 		else
 			GPU=$(dialog --ok-button "$ok" --cancel-button "$cancel" --menu "$graphics_msg" 17 60 5 \
-				"$default"			 "$gr0" \
+				"$default"	     "$gr0" \
 				"xf86-video-ati"     "$gr4" \
 				"xf86-video-intel"   "$gr5" \
 				"xf86-video-nouveau" "$gr8" \
-				"xf86-video-vesa"	 "$gr1" 3>&1 1>&2 2>&3)
+				"xf86-video-vesa"    "$gr1" 3>&1 1>&2 2>&3)
 			ex="$?"
 		fi
 
@@ -260,21 +260,32 @@ graphics() {
 			GPU=$(dialog --ok-button "$ok" --cancel-button "$cancel" --menu "$nvidia_msg" 15 60 4 \
 				"$gr0"		   "->"	  \
 				"nvidia"       "$gr6" \
+				"nvidia-390xx" "$gr9" \
 				"nvidia-340xx" "$gr7" 3>&1 1>&2 2>&3)
 
 			if [ "$?" -eq "0" ]; then
 				if [ "$GPU" == "$gr0" ]; then
 					pci_id=$(lspci -nn | grep "VGA" | egrep -o '\[.*\]' | awk '{print $NF}' | sed 's/.*://;s/]//')
-					if (<"$aa_dir"/etc/nvidia340.xx grep "$pci_id" &>/dev/null); then
-						if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$nvidia_340msg" 10 60); then
+					if (<"$aa_dir"/etc/nvidia390.xx grep "$pci_id" &>/dev/null); then
+						if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$nvidia_390msg" 10 60); then
 							if [ "$kernel" == "lts" ]; then
-								GPU="nvidia-340xx-lts"
+								GPU="nvidia-390xx-lts"
 							else
-								GPU="nvidia-340xx"
+								GPU="nvidia-390xx"
 							fi
-							GPU+=" nvidia-340xx-libgl nvidia-340xx-utils nvidia-settings"
+							GPU+=" nvidia-390xx-libgl nvidia-390xx-utils nvidia-settings"
 							break
 						fi
+					elif (<"$aa_dir"/etc/nvidia340.xx grep "$pci_id" &>/dev/null); then
+                                                 if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$nvidia_340msg" 10 60); then
+                                                         if [ "$kernel" == "lts" ]; then
+                                                                 GPU="nvidia-340xx-lts"
+                                                         else
+                                                                 GPU="nvidia-340xx"
+                                                         fi
+                                                         GPU+=" nvidia-340xx-libgl nvidia-340xx-utils nvidia-settings"
+                                                         break
+                                                 fi
 					elif (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$nvidia_curmsg" 10 60); then
 						if [ "$kernel" == "lts" ]; then
 							GPU="nvidia-lts"
