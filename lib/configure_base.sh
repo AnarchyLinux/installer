@@ -336,6 +336,7 @@ add_software() {
 						"spotify"			"$aar16" OFF \
 						"sublime-text"			"$aar17" OFF \
 						"tor-browser-en"		"$aar19" OFF \
+						"teamviewer"			"$aar27" OFF \
 						"virtualbox-ext-oracle"		"$aar20" OFF \
 						"vivaldi"			"$aar21" OFF \
 						"xmacro"			"$aar22" OFF \
