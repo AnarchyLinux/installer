@@ -6,6 +6,8 @@
 
 <p align="center">
     A distribution aimed at bringing the Linux revolution to the world.
+    <br>
+    Anarchy, quick, easy, and straight forward, "Keep it simple stupid".
 </p>
 
 <p align="center">
