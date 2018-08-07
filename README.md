@@ -17,6 +17,20 @@
 </p>
 </html>
 
+# Table of Contents
+
+- [Table of Contents](#table-of-contents)
+- [Introduction](#introduction)
+- [Screenshots](#screenshots)
+- [Features](#features)
+    - [Linux Kernels](#linux-kernels)
+    - [Partitioning Methods](#partitioning-methods)
+    - [DEs & WMs](#des--wms)
+    - [Graphics Drivers:](#graphics-drivers)
+    - [Bootloaders](#bootloaders)
+    - [Network Utilities](#network-utilities)
+- [Download](#download)
+
 # Introduction
 
 Anarchy Linux is an Arch-based distro providing a hassle-free pure installation and polished user experience. Bundled with the Anarchy ISO is a dialog installer that enables you to install from the CLI in semi graphical install mode. Simply boot up and type `anarchy` to invoke the installer script. Every aspect of the install is taken into account from partitioning and general system configuration, to installing your favorite DE/WM and additional software from the official Arch Linux repos.
@@ -58,7 +72,7 @@ This ISO only contains support only for x86_64 (64 bit) systems.
 * Full drive automatic partitioning with luks on LVM encryption for * root and tmp partition with optional encrypted SWAP partition
 * Manual partition (advanced users) uses cfdisk for partitioning select * custom mount points
 
-## Desktop Environments + Window Manager
+## DEs & WMs
 
 * Anarchy Cinnamon Edition (developers custom Cinnamon desktop)
 * Anarchy Gnome Edition (developers custom Gnome desktop)
