@@ -26,7 +26,7 @@
     - [Linux Kernels](#linux-kernels)
     - [Partitioning Methods](#partitioning-methods)
     - [DEs & WMs](#des--wms)
-    - [Graphics Drivers:](#graphics-drivers)
+    - [Graphics Drivers](#graphics-drivers)
     - [Bootloaders](#bootloaders)
     - [Network Utilities](#network-utilities)
 - [Download](#download)
@@ -39,7 +39,7 @@ The Anarchy installer is intended to provide both novice and experienced Linux u
 
 The Anarchy ISO also contains a built-in Arch Wiki allowing users to browse the official Arch Linux Wiki from the CLI. Simply invoke the `arch-wiki` command at any time to search the Arch Wiki. Search args may be passed, e.g. `arch-wiki beginners guide`.
 
-A utility to update and rank the latest Arch Linux mirrorlist is also included in the ISO. It can be invoked by running 'fetchmirrors'. The install process for Anarchy is also 100% compatible with the information found in the install guide on the Arch Wiki.
+A utility to update and rank the latest Arch Linux mirrorlist is also included in the ISO. It can be invoked by running `fetchmirrors`. The install process for Anarchy is also 100% compatible with the information found in the install guide on the Arch Wiki.
 
 Anarchy aims to provide a polished and pure Arch install while leaving open every possible configuration avenue for the user to choose from.
 
@@ -97,7 +97,7 @@ This ISO only contains support only for x86_64 (64 bit) systems.
 * XFCE4
 * Xmonad
 
-## Graphics Drivers:
+## Graphics Drivers
 
 * ATI/AMD xf86-video-ati open source drivers
 * Intel xf86-video-intel open source drivers
