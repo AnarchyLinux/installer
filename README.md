@@ -1,4 +1,21 @@
-# anarchy-linux
+<html>
+<p align="center">
+    <img src="https://user-images.githubusercontent.com/10241434/43771874-12ff77d8-9a73-11e8-99af-dc067a07dcd7.png">
+</p>
+<h2 align="center">Anarchy Linux</h2>
+
+<p align="center">
+    A distribution aimed at bringing the Linux revolution to the world.
+</p>
+
+<p align="center">
+    <a href="https://anarchy-linux.org/">Home page</a> | 
+    <a href="https://anarchy-linux.org/download/">Download</a> |
+    <a href="https://anarchy-linux.org/content/features/">Features</a>
+</p>
+</html>
+
+# Introduction
 
 Anarchy Linux is an Arch based distro providing a hassle free pure install and polished user experience. Bundled with the AnarchyISO is a dialog installer enabling you to install from the cli in semi graphical install mode. Simply boot up and type 'anarchy' to invoke the installer script, every aspect of the install is taken into account from partitioning and general system configuration, to installing your favorite desktop/wm and additional software from the official Arch Linux repos.
 
