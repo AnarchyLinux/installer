@@ -341,7 +341,7 @@ add_software() {
 						"vivaldi"			"$aar21" OFF \
 						"xmacro"			"$aar22" OFF \
 						"yay"				"$aar26" OFF \
-						"yaourt"			"$aar3" OFF 3>&1 1>&2 2>&3)
+						"trizen"			"$aar3" OFF 3>&1 1>&2 2>&3)
 					if [ "$?" -gt "0" ]; then
 						add_soft=false
 					fi
