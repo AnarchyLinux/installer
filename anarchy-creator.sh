@@ -50,7 +50,6 @@ init() {
 
 	### Array packages to be build and added to ISO local repo
 	export builds=(
-		'fetchmirrors'
 		'arch-wiki-cli'
 		'numix-icon-theme-git'
 		'numix-circle-icon-theme-git'
@@ -248,8 +247,8 @@ build_conf() {
 
 build_sys() {
 
-	### Install fonts, fbterm, fetchmirrors, arch-wiki
-	sudo pacman --root "$sq" --cachedir "$sq"/var/cache/pacman/pkg  --config $paconf --noconfirm -Sy terminus-font acpi zsh-syntax-highlighting pacman-contrib
+	### Install fonts, fbterm, reflector, arch-wiki
+	sudo pacman --root "$sq" --cachedir "$sq"/var/cache/pacman/pkg  --config $paconf --noconfirm -Sy terminus-font acpi zsh-syntax-highlighting pacman-contrib python reflector
 	sudo pacman --root "$sq" --cachedir "$sq"/var/cache/pacman/pkg  --config $paconf --noconfirm -U /tmp/fetchmirrors/*.pkg.tar.xz
 	sudo pacman --root "$sq" --cachedir "$sq"/var/cache/pacman/pkg  --config $paconf --noconfirm -U /tmp/arch-wiki-cli/*.pkg.tar.xz
 	sudo pacman --root "$sq" --cachedir "$sq"/var/cache/pacman/pkg  --config $paconf -Sl | awk '/\[installed\]$/ {print $1 "/" $2 "-" $3}' > "$customiso"/arch/pkglist.${sys}.txt
@@ -275,10 +274,10 @@ build_sys_gui() {
 	echo 'FILES="/etc/modprobe.d/blacklist.conf"' | sudo tee -a "$sq"/etc/mkinitcpio-archiso.conf > /dev/null
 	echo -e 'blacklist vboxguest\nblacklist vboxsf\nblacklist vboxvideo' | sudo tee -a "$sq"/etc/modprobe.d/blacklist.conf > /dev/null
 
-	### Install fonts, fbterm, fetchmirrors, arch-wiki, and uvesafb drivers onto system and cleanup
+	### Install fonts, fbterm, arch-wiki, and uvesafb drivers onto system and cleanup
 	sudo pacman --root "$sq" --cachedir "$sq"/var/cache/pacman/pkg  --config $paconf --noconfirm -Syu
 	sudo pacman --root "$sq" --cachedir "$sq"/var/cache/pacman/pkg  --config $paconf --noconfirm --needed -Sy terminus-font xorg-server xorg-xinit xf86-video-vesa vlc galculator file-roller gparted gimp git pulseaudio pulseaudio-alsa alsa-utils \
-		zsh-syntax-highlighting pacman-contrib arc-gtk-theme elementary-icon-theme thunar base-devel gvfs xdg-user-dirs xfce4 xfce4-goodies libreoffice-fresh chromium virtualbox-guest-dkms virtualbox-guest-utils linux linux-headers libdvdcss simplescreenrecorder screenfetch htop acpi pavucontrol libutil-linux
+		zsh-syntax-highlighting pacman-contrib python reflector arc-gtk-theme elementary-icon-theme thunar base-devel gvfs xdg-user-dirs xfce4 xfce4-goodies libreoffice-fresh chromium virtualbox-guest-dkms virtualbox-guest-utils linux linux-headers libdvdcss simplescreenrecorder screenfetch htop acpi pavucontrol libutil-linux
 	sudo pacman --root "$sq" --cachedir "$sq"/var/cache/pacman/pkg  --config $paconf --noconfirm -U /tmp/fetchmirrors/*.pkg.tar.xz
 	sudo pacman --root "$sq" --cachedir "$sq"/var/cache/pacman/pkg  --config $paconf --noconfirm -U /tmp/arch-wiki-cli/*.pkg.tar.xz
 	sudo pacman --root "$sq" --cachedir "$sq"/var/cache/pacman/pkg  --config $paconf --noconfirm -U /tmp/numix-icon-theme-git/*.pkg.tar.xz
