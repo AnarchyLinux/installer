@@ -5,5 +5,5 @@ alias 2="anarchy -u"
 alias 3="arch-wiki"
 alias 4="iptest"
 alias 5="sysinfo"
-alias 6="fetchmirrors"
+alias 6="reflector -h"
 cat /etc/issue_cli
