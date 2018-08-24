@@ -41,23 +41,23 @@ language() {
 
 	case "$ILANG" in
 		"English") export lang_file="$aa_dir"/lang/anarchy-english.conf ;;
-		"Bulgarian") export lang_file="$aa_dir"/lang/anarchy-bulgarian.conf lib=bg bro=bg kdel=bg ;;
-		"Dutch") export lang_file="$aa_dir"/lang/anarchy-dutch.conf lib=nl bro=nl kdel=nl ;;
-		"French") export lang_file="$aa_dir"/lang/anarchy-french.conf lib=fr bro=fr kdel=fr ;;
-		"German") export lang_file="$aa_dir"/lang/anarchy-german.conf lib=de bro=de kdel=de ;;
-		"Greek") export lang_file="$aa_dir"/lang/anarchy-greek.conf lib=el bro=el kdel=el ;;
-		"Hungarian") export lang_file="$aa_dir"/lang/anarchy-hungarian.conf lib=hu bro=hu kdel=hu ;;
-		"Indonesian") export lang_file="$aa_dir"/lang/anarchy-indonesia.conf lib=id bro=id kdel=id ;;
-		"Italian") export lang_file="$aa_dir"/lang/anarchy-italian.conf lib=it bro=it kdel=it ;;
-		"Latvian") export lang_file="$aa_dir"/lang/anarchy-latvian.conf lib=lv bro=lv kdel=lv ;;
-		"Lithuanian") export lang_file="$aa_dir"/lang/anarchy-lithuanian.conf lib=lt bro=lt kdel=lt ;;
-		"Polish") export lang_file="$aa_dir"/lang/anarchy-polish.conf lib=pl bro=pl kdel=pl ;;
-		"Portuguese") export lang_file="$aa_dir"/lang/anarchy-portuguese.conf lib=pt bro=pt-pt kdel=pt ;;
-		"Portuguese-Brazilian") export lang_file="$aa_dir"/lang/anarchy-portuguese-br.conf lib=pt-BR bro=pt-br kdel=pt_br ;;
-		"Romanian") export lang_file="$aa_dir"/lang/anarchy-romanian.conf lib=ro bro=ro kdel=ro ;;
-		"Russian") export lang_file="$aa_dir"/lang/anarchy-russian.conf lib=ru bro=ru kdel=ru ;;
-		"Spanish") export lang_file="$aa_dir"/lang/anarchy-spanish.conf lib=es bro=es-es kdel=es ;;
-		"Swedish") export lang_file="$aa_dir"/lang/anarchy-swedish.conf lib=sv bro=sv-se kdel=sv ;;
+		"Bulgarian") export lang_file="$aa_dir"/lang/anarchy-bulgarian.conf lib=bg bro=bg ;;
+		"Dutch") export lang_file="$aa_dir"/lang/anarchy-dutch.conf lib=nl bro=nl ;;
+		"French") export lang_file="$aa_dir"/lang/anarchy-french.conf lib=fr bro=fr ;;
+		"German") export lang_file="$aa_dir"/lang/anarchy-german.conf lib=de bro=de ;;
+		"Greek") export lang_file="$aa_dir"/lang/anarchy-greek.conf lib=el bro=el ;;
+		"Hungarian") export lang_file="$aa_dir"/lang/anarchy-hungarian.conf lib=hu bro=hu ;;
+		"Indonesian") export lang_file="$aa_dir"/lang/anarchy-indonesia.conf lib=id bro=id ;;
+		"Italian") export lang_file="$aa_dir"/lang/anarchy-italian.conf lib=it bro=it ;;
+		"Latvian") export lang_file="$aa_dir"/lang/anarchy-latvian.conf lib=lv bro=lv ;;
+		"Lithuanian") export lang_file="$aa_dir"/lang/anarchy-lithuanian.conf lib=lt bro=lt ;;
+		"Polish") export lang_file="$aa_dir"/lang/anarchy-polish.conf lib=pl bro=pl ;;
+		"Portuguese") export lang_file="$aa_dir"/lang/anarchy-portuguese.conf lib=pt bro=pt-pt ;;
+		"Portuguese-Brazilian") export lang_file="$aa_dir"/lang/anarchy-portuguese-br.conf lib=pt-BR bro=pt-br ;;
+		"Romanian") export lang_file="$aa_dir"/lang/anarchy-romanian.conf lib=ro bro=ro ;;
+		"Russian") export lang_file="$aa_dir"/lang/anarchy-russian.conf lib=ru bro=ru ;;
+		"Spanish") export lang_file="$aa_dir"/lang/anarchy-spanish.conf lib=es bro=es-es ;;
+		"Swedish") export lang_file="$aa_dir"/lang/anarchy-swedish.conf lib=sv bro=sv-se ;;
 	esac
 
 }
