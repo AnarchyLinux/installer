@@ -150,10 +150,6 @@ graphics() {
 					else
 						DE+="plasma ark aspell-en cdrdao clementine dolphin dolphin-plugins ffmpegthumbs gwenview k3b kate kcalc kdialog kfind kdeconnect kdegraphics-thumbnailers kdenetwork-filesharing kdesu kdelibs4support kipi-plugins khelpcenter konsole kwalletmanager okular spectacle transmission-qt krita kolourpaint korganizer knetattach falkon kdenlive "
 					fi
-
-					if [ -n "$kdel" ]; then
-						DE+="kde-l10n-$kdel "
-					fi
 			;;
 			"deepin")	start_term="exec startdde"
 					DE+="deepin "
