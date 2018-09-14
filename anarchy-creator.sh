@@ -333,7 +333,7 @@ build_sys_gui() {
 
 configure_boot() {
 
-	archiso_label=$(<"$customiso"/loader/entries/archiso-x86_64.conf awk 'NR==5{print $NF}' | sed 's/.*=//')
+	archiso_label=$(<"$customiso"/loader/entries/archiso-x86_64.conf awk 'NR==6{print $NF}' | sed 's/.*=//')
 	archiso_hex=$(<<<"$archiso_label" xxd -p)
 	iso_hex=$(<<<"$iso_label" xxd -p)
 	cp "$aa"/boot/splash.png "$customiso"/arch/boot/syslinux
