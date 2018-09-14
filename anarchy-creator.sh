@@ -186,9 +186,6 @@ build_conf() {
 	else
 		cd "$customiso"/arch/"$sys" || exit
 		sudo unsquashfs airootfs.sfs
-		sudo mount -t proc proc "$sq"/proc/
-		sudo mount -t sysfs sys "$sq"/sys/
-		sudo mount -o bind /dev "$sq"/dev/
 		sudo cp "$sq"/etc/mkinitcpio.conf "$sq"/etc/mkinitcpio.conf.bak
 		sudo cp "$sq"/etc/mkinitcpio-archiso.conf "$sq"/etc/mkinitcpio.conf
 	fi
@@ -270,6 +267,11 @@ build_sys() {
 
 build_sys_gui() {
 
+        ## activating mount points needed by this function
+        sudo mount -t proc proc "$sq"/proc/
+        sudo mount -t sysfs sys "$sq"/sys/
+        sudo mount -o bind /dev "$sq"/dev/
+
 	### Blacklist vbox drivers so they are not loaded on non-vbox
 	echo 'FILES="/etc/modprobe.d/blacklist.conf"' | sudo tee -a "$sq"/etc/mkinitcpio.conf > /dev/null
 	echo 'FILES="/etc/modprobe.d/blacklist.conf"' | sudo tee -a "$sq"/etc/mkinitcpio-archiso.conf > /dev/null
@@ -287,6 +289,11 @@ build_sys_gui() {
 	sudo pacman --root "$sq" --cachedir "$sq"/var/cache/pacman/pkg  --config $paconf --noconfirm -Scc
 	sudo rm -f "$sq"/var/cache/pacman/pkg/*
 	sudo mv "$sq"/etc/mkinitcpio.conf.bak "$sq"/etc/mkinitcpio.conf
+	
+	## mount points are not longer needed. They conflict with arch-chroot.
+        sudo umount "$sq"/proc/
+        sudo umount "$sq"/sys/
+        sudo umount "$sq"/dev/
 
 	### Copy new kernel
 	sudo rm "$sq"/boot/initramfs-linux-fallback.img
@@ -322,9 +329,6 @@ build_sys_gui() {
 
 	### Recreate the ISO using compression remove unsquashed system generate checksums
 	echo "Recreating $sys..."
-	sudo umount "$sq"/proc/
-	sudo umount "$sq"/sys/
-	sudo umount "$sq"/dev/
 	sudo mksquashfs squashfs-root airootfs.sfs -b 1024k -comp xz
 	sudo rm -r squashfs-root
 	md5sum airootfs.sfs > airootfs.md5
