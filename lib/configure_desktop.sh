@@ -155,7 +155,7 @@ graphics() {
 					DE+="deepin "
 
 					if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$extra_msg4" 10 60) then
-						DE+="deepin-extra "
+						DE+="deepin-extra $kernel-headers "
 					fi
  	 		;;
  	 		"xmonad")	start_term="exec xmonad"
