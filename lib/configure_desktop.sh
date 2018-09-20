@@ -92,7 +92,7 @@ graphics() {
 						DE+="budgie-desktop mousepad terminator nautilus gnome-backgrounds gnome-control-center $extras "
 			;;
 			"Anarchy-cinnamon")	config_env="$env"
-						DE+="cinnamon gnome-terminal file-roller p7zip zip unrar terminator $extras "
+						DE+="cinnamon cinnamon-translations gnome-terminal file-roller p7zip zip unrar terminator $extras "
 						start_term="exec cinnamon-session"
 			;;
 			"Anarchy-gnome")	config_env="$env"
@@ -165,7 +165,7 @@ graphics() {
 						DE+="xmonad-contrib "
 		                        fi
 			;;
-			"cinnamon")	DE+="cinnamon gnome-terminal file-roller p7zip zip unrar "
+			"cinnamon")	DE+="cinnamon cinnamon-translations gnome-terminal file-roller p7zip zip unrar "
 					start_term="exec cinnamon-session"
 			;;
 			"lxde")		start_term="exec startlxde"
