@@ -352,7 +352,6 @@ add_software() {
 				;;
 				"$audio")
 					software=$(dialog --ok-button "$ok" --cancel-button "$cancel" --checklist "$software_msg1" 20 63 10 \
-						"amarok"		"$audio12" OFF \
 						"audacity"		"$audio0" OFF \
 						"audacious"		"$audio1" OFF \
 						"clementine"		"$audio10" OFF \
