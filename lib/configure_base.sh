@@ -352,7 +352,6 @@ add_software() {
 				;;
 				"$audio")
 					software=$(dialog --ok-button "$ok" --cancel-button "$cancel" --checklist "$software_msg1" 20 63 10 \
-						"amarok"		"$audio12" OFF \
 						"audacity"		"$audio0" OFF \
 						"audacious"		"$audio1" OFF \
 						"clementine"		"$audio10" OFF \
@@ -674,7 +673,6 @@ add_software() {
 						"gparted"		"$sys4" OFF \
 						"gpm"			"$sys5" OFF \
 						"htop"			"$sys6" OFF \
-						"inxi"			"$sys7" OFF \
 						"k3b"			"$sys8" OFF \
 						"nmap"			"$sys9" OFF \
 						"ntfs-3g"		"$sys28" OFF \
