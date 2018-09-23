@@ -140,7 +140,7 @@ quick_desktop() {
                                 DE+="budgie-desktop mousepad terminator nautilus gnome-backgrounds gnome-control-center $extras "
         ;;
         "Anarchy-cinnamon")     config_env="$de"
-                                DE+="cinnamon gnome-terminal file-roller p7zip zip unrar terminator $extras "
+                                DE+="cinnamon cinnamon-translations gnome-terminal file-roller p7zip zip unrar terminator $extras "
                                 start_term="exec cinnamon-session"
         ;;
         "Anarchy-gnome")        config_env="$de"
