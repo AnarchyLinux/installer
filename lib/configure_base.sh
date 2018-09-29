@@ -278,6 +278,7 @@ add_software() {
 					"$aar"		"$aar_msg" \
 					"$audio"	"$audio_msg" \
 					"$database"	"$database_msg" \
+					"$fonts"	"$fonts_msg" \
 					"$games"	"$games_msg" \
 					"$graphic"	"$graphic_msg" \
 					"$internet"	"$internet_msg" \
@@ -412,6 +413,14 @@ add_software() {
 
 					if (<<<"$software" grep "thunderbird" &>/dev/null) && [ -n "$bro" ] && [ "$bro" != "lv" ]; then
 							software+=" thunderbird-i18n-$bro"
+					fi
+				;;
+				"$fonts")
+					software=$(dialog --ok-button "$ok" --cancel-button "$cancel" --checklist "$software_msg1" 20 63 10 \
+						"bdf-unifont"		"$font0" OFF \
+						"noto-fonts-cjk"	"$font1" OFF 3>&1 1>&2 2>&3)
+					if [ "$?" -gt "0" ]; then
+						add_soft=false
 					fi
 				;;
 				"$games")
