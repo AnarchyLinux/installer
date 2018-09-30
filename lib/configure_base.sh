@@ -320,6 +320,7 @@ add_software() {
 						"android-sdk"			"$aar23" OFF \
 						"android-sdk-platform-tools"	"$aar24" OFF \
 						"arch-wiki-cli"			"$aar0" ON \
+						"discord"			"$aar29 OFF \
 						"downgrade"			"$aar6" OFF \
 						"dolphin-libre"			"$aar7" OFF \
 						"dropbox"			"$aar25" OFF \
