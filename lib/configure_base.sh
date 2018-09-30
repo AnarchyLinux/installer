@@ -316,6 +316,7 @@ add_software() {
 			case "$software_menu" in
 				"$aar")
 					software=$(dialog --ok-button "$ok" --cancel-button "$cancel" --checklist "$software_msg1" 20 63 10 \
+						"amarok"			"$aar2" OFF \
 						"android-sdk"			"$aar23" OFF \
 						"android-sdk-platform-tools"	"$aar24" OFF \
 						"arch-wiki-cli"			"$aar0" ON \
@@ -326,6 +327,7 @@ add_software() {
 						"fetchpkg"			"$aar8" ON \
 						"google-chrome"			"$aar9" OFF \
 						"google-earth"			"$aar10" OFF \
+						"inxi"				"$aar18" OFF \
 						"numix-circle-icon-theme-git"	"$aar11" OFF \
 						"numix-icon-theme-git"		"$aar12" OFF \
 						"octopi"			"$aar4" OFF \
@@ -333,6 +335,7 @@ add_software() {
 						"plex-media-server"		"$aar13" OFF \
 						"plymouth"			"$aar14" OFF \
 						"powerline-fonts-git"		"$aar15" OFF \
+						"scite"				"$aar28" OFF \
 						"spotify"			"$aar16" OFF \
 						"sublime-text"			"$aar17" OFF \
 						"tor-browser-en"		"$aar19" OFF \
@@ -352,7 +355,6 @@ add_software() {
 				;;
 				"$audio")
 					software=$(dialog --ok-button "$ok" --cancel-button "$cancel" --checklist "$software_msg1" 20 63 10 \
-						"amarok"		"$audio12" OFF \
 						"audacity"		"$audio0" OFF \
 						"audacious"		"$audio1" OFF \
 						"clementine"		"$audio10" OFF \
@@ -586,7 +588,6 @@ add_software() {
 						"gvim"			"$edit3" OFF \
 						"mousepad"		"$edit4" OFF \
 						"neovim"		"$edit5" OFF \
-						"scite"			"$edit9" OFF \
 						"vim"			"$edit6" OFF \
 						"zim"			"$edit8" OFF 3>&1 1>&2 2>&3)
 					if [ "$?" -gt "0" ]; then
@@ -674,7 +675,6 @@ add_software() {
 						"gparted"		"$sys4" OFF \
 						"gpm"			"$sys5" OFF \
 						"htop"			"$sys6" OFF \
-						"inxi"			"$sys7" OFF \
 						"k3b"			"$sys8" OFF \
 						"nmap"			"$sys9" OFF \
 						"ntfs-3g"		"$sys28" OFF \
