@@ -338,6 +338,7 @@ add_software() {
 						"plymouth"			"$aar14" OFF \
 						"powerline-fonts-git"		"$aar15" OFF \
 						"scite"				"$aar28" OFF \
+						"skypeforlinux-stable-bin"	"$aar30" OFF \
 						"spotify"			"$aar16" OFF \
 						"sublime-text"			"$aar17" OFF \
 						"tor-browser-en"		"$aar19" OFF \
