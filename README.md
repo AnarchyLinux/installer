@@ -102,7 +102,7 @@ This ISO only contains support only for x86_64 (64 bit) systems.
 * ATI/AMD xf86-video-ati open source drivers
 * Intel xf86-video-intel open source drivers
 * NVIDIA: xf86-video-nouveau open source drivers
-* NVIDIA: Stable, 340xx, 304xx closed source drivers
+* NVIDIA: Stable, 390xx, 340xx closed source drivers
 * VirtualBox Guest Utilities Drivers
 
 ## Bootloaders
