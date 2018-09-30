@@ -18,7 +18,7 @@
 set_version() {
 
 	### Set the ISO release variable here:
-	export iso_rel="1.0.1"
+	export iso_rel="1.0.2"
 
 	### Note ISO label must remain 11 characters long:
 	export iso_label="ANARCHYV101"
