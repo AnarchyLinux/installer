@@ -26,7 +26,7 @@ graphics() {
 
 	while (true)
 	  do
-		de=$(dialog --ok-button "$done_msg" --cancel-button "$cancel" --menu "$environment_msg" 16 60 7 \
+		de=$(dialog --ok-button "$done_msg" --cancel-button "$cancel" --menu "$environment_msg" 16 75 7 \
 			"Anarchy-budgie"	"$de24" \
 			"Anarchy-cinnamon"	"$de23" \
 			"Anarchy-gnome"		"$de22" \
