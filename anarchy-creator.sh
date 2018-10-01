@@ -289,16 +289,16 @@ build_sys_gui() {
 	sudo pacman --root "$sq" --cachedir "$sq"/var/cache/pacman/pkg  --config $paconf --noconfirm -Scc
 	sudo rm -f "$sq"/var/cache/pacman/pkg/*
 	sudo mv "$sq"/etc/mkinitcpio.conf.bak "$sq"/etc/mkinitcpio.conf
+
+        ### Copy new kernel
+	sudo rm "$sq"/boot/initramfs-linux-fallback.img
+	sudo mv "$sq"/boot/vmlinuz-linux "$customiso"/arch/boot/"$sys"/vmlinuz
+	sudo mv "$sq"/boot/initramfs-linux.img "$customiso"/arch/boot/"$sys"/archiso.img
 	
 	## mount points are not longer needed. They conflict with arch-chroot.
         sudo umount "$sq"/proc/
         sudo umount "$sq"/sys/
         sudo umount "$sq"/dev/
-
-	### Copy new kernel
-	sudo rm "$sq"/boot/initramfs-linux-fallback.img
-	sudo mv "$sq"/boot/vmlinuz-linux "$customiso"/arch/boot/"$sys"/vmlinuz
-	sudo mv "$sq"/boot/initramfs-linux.img "$customiso"/arch/boot/"$sys"/archiso.img
 
 	### Configure desktop
 	sudo arch-chroot "$sq" useradd -m -g users -G power,audio,video,storage -s /usr/bin/zsh user
