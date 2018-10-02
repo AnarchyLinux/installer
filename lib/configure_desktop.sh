@@ -36,7 +36,7 @@ graphics() {
 				return
 			fi
 		elif [ "$de" == "$customized_de" ]; then
-			de=$(dialog --separate-output --ok-button "$done_msg" --cancel-button "$back" --checklist "$environment_msg" 19 60 10 \
+			de=$(dialog --separate-output --ok-button "$done_msg" --cancel-button "$back" --checklist "$environment_msg" 15 60 5 \
 				"Anarchy-budgie"	"$de24" OFF \
 				"Anarchy-cinnamon"     	"$de23" OFF \
 				"Anarchy-gnome"		"$de22" OFF \
