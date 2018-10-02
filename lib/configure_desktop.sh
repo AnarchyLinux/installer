@@ -27,17 +27,24 @@ graphics() {
 	while (true)
 	  do
 		de=$(dialog --ok-button "$done_msg" --cancel-button "$cancel" --menu "$environment_msg" 16 75 7 \
-			"Anarchy-budgie"	"$de24" \
-			"Anarchy-cinnamon"	"$de23" \
-			"Anarchy-gnome"		"$de22" \
-			"Anarchy-openbox"	"$de18" \
-			"Anarchy-xfce4"         "$de15" \
+			"$customized_de"	"$customized_de_msg" \
 			"$more_de"		"$more_de_msg" \
 			"$more_wm"		"$more_wm_msg" 3>&1 1>&2 2>&3)
 
 		if [ -z "$de" ]; then
 			if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$desktop_cancel_msg" 10 60) then
 				return
+			fi
+		elif [ "$de" == "$more_de" ]; then
+			de=$(dialog --separate-output --ok-button "$done_msg" --cancel-button "$back" --checklist "$environment_msg" 19 60 10 \
+				"Anarchy-budgie"	"$de24" OFF \
+				"Anarchy-cinnamon"     	"$de23" OFF \
+				"Anarchy-gnome"		"$de22" OFF \
+				"Anarchy-openbox"      	"$de18" OFF \
+				"Anarchy-xfce4"       	"$de15" OFF 3>&1 1>&2 2>&3)
+
+			if [ -n "$de" ]; then
+				break
 			fi
 		elif [ "$de" == "$more_de" ]; then
 			de=$(dialog --separate-output --ok-button "$done_msg" --cancel-button "$back" --checklist "$environment_msg" 19 60 10 \
