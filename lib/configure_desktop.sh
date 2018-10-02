@@ -35,7 +35,7 @@ graphics() {
 			if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$desktop_cancel_msg" 10 60) then
 				return
 			fi
-		elif [ "$de" == "$more_de" ]; then
+		elif [ "$de" == "$customized_de" ]; then
 			de=$(dialog --separate-output --ok-button "$done_msg" --cancel-button "$back" --checklist "$environment_msg" 19 60 10 \
 				"Anarchy-budgie"	"$de24" OFF \
 				"Anarchy-cinnamon"     	"$de23" OFF \
