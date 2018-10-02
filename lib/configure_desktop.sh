@@ -387,6 +387,7 @@ config_env() {
 	cp -r "$aa_dir"/extra/fonts/ttf-zekton-rg "$ARCH"/usr/share/fonts
 	chmod -R 755 "$ARCH"/usr/share/fonts/ttf-zekton-rg
 	arch-chroot "$ARCH" fc-cache -f
+	cp "$aa_dir"/extra/fonts/unifont/unifont-11.0.02.ttf "$ARCH"/usr/share/fonts/TTF
 	cp "$aa_dir"/extra/anarchy-icon.png "$ARCH"/root/.face
 	cp "$aa_dir"/extra/anarchy-icon.png "$ARCH"/etc/skel/.face
 	cp "$aa_dir"/extra/anarchy-icon.png "$ARCH"/usr/share/pixmaps
