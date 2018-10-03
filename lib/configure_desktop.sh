@@ -36,12 +36,12 @@ graphics() {
 				return
 			fi
 		elif [ "$de" == "$customized_de" ]; then
-			de=$(dialog --separate-output --ok-button "$done_msg" --cancel-button "$back" --checklist "$environment_msg" 15 60 5 \
-				"Anarchy-budgie"	"$de24" OFF \
-				"Anarchy-cinnamon"     	"$de23" OFF \
-				"Anarchy-gnome"		"$de22" OFF \
-				"Anarchy-openbox"      	"$de18" OFF \
-				"Anarchy-xfce4"       	"$de15" OFF 3>&1 1>&2 2>&3)
+			de=$(dialog --ok-button "$done_msg" --cancel-button "$back" --menu "$environment_msg" 15 60 5 \
+				"Anarchy-budgie"	"$de24" \
+				"Anarchy-cinnamon"     	"$de23" \
+				"Anarchy-gnome"		"$de22" \
+				"Anarchy-openbox"      	"$de18" \
+				"Anarchy-xfce4"       	"$de15" 3>&1 1>&2 2>&3)
 
 			if [ -n "$de" ]; then
 				break
