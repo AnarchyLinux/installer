@@ -1,0 +1,36 @@
+Utilisation de timedatectl
+Voici un petit mémo sur l’utilisation de la commande timedatectl :
+
+Régler l’heure :
+
+timedatectl set-time 'HH:mm:ss'
+HH:mm:s = Heure, minute, seconde.
+
+Régler la date :
+timedatectl set-time 'A:M:J'
+A:M:J = Année, Mois, Jour.
+
+Régler l’heure et la date :
+timedatectl set-time 'A:M:J HH:mm:ss'
+
+Lister les fuseaux horaires :
+timedatectl list-timezones
+
+Choisir un fuseau horaire (Time Zone) :
+timedatectl set-timezone Europe/Paris
+
+
+Synchroniser avec un ou des serveurs de temps
+Edition du fichier de configuration timesyncd.conf :
+sudo nano /etc/systemd/timesyncd.conf
+
+Définir les serveurs de temps :
+[Time]
+NTP=
+FallbackNTP=0.arch.pool.ntp.org 1.arch.pool.ntp.org 2.arch.pool.ntp.org 3.arch.pool.ntp.org
+
+Activer la synchronisation :
+timedatectl set-ntp true
+
+Stoper la synchronisation :
+timedatectl set-ntp false
