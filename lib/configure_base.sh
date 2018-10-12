@@ -352,10 +352,6 @@ add_software() {
 					if [ "$?" -gt "0" ]; then
 						add_soft=false
 					fi
-
-					if (<<<"$software" grep "dolphin-libre") then
-						software=$(<<<"$software" sed 's/dolphin-libre/dolphin-libreoffice-templates/')
-					fi
 				;;
 				"$audio")
 					software=$(dialog --ok-button "$ok" --cancel-button "$cancel" --checklist "$software_msg1" 20 63 10 \
