@@ -11,9 +11,9 @@
 </p>
 
 <p align="center">
-    <a href="https://anarchy-linux.org/">Home page</a> | 
-    <a href="https://anarchy-linux.org/download/">Download</a> |
-    <a href="https://anarchy-linux.org/content/features/">Features</a>
+    <a href="https://www.anarchylinux.org/">Home page</a> | 
+    <a href="https://www.anarchylinux.org/download/">Download</a> |
+    <a href="https://www.anarchylinux.org/content/features/">Features</a>
 </p>
 </html>
 
@@ -48,12 +48,12 @@ This ISO only contains support only for x86_64 (64 bit) systems.
 # Screenshots
 
 <p>
-  <img src="https://anarchy-linux.org/images/installer/anarchy-splash.png" width="350"/>
-  <img src="https://anarchy-linux.org/images/installer/1-issue.png" width="350"/>
-  <img src="https://anarchy-linux.org/images/installer/2-languages.png" width="350"/>
-  <img src="https://anarchy-linux.org/images/installer/7-partition.png" width="350">
-  <img src="https://anarchy-linux.org/images/installer/18-base_install.png" width="350"/>
-  <img src="https://anarchy-linux.org/images/installer/25-install2.png" width="350"/>
+  <img src="https://www.anarchylinux.org/images/installer/anarchy-splash.png" width="350"/>
+  <img src="https://www.anarchylinux.org/images/installer/1-issue.png" width="350"/>
+  <img src="https://www.anarchylinux.org/images/installer/2-languages.png" width="350"/>
+  <img src="https://www.anarchylinux.org/images/installer/7-partition.png" width="350">
+  <img src="https://www.anarchylinux.org/images/installer/18-base_install.png" width="350"/>
+  <img src="https://www.anarchylinux.org/images/installer/25-install2.png" width="350"/>
 </p>
 
 # Features
@@ -127,4 +127,4 @@ The installer also contains a long list of optional additional software (audio, 
 
 You can find the latest version of Anarchy Linux on the Download page:
 
-https://anarchy-linux.org/download/
+https://www.anarchylinux.org/download/
