@@ -57,7 +57,8 @@ init() {
 		'oh-my-zsh-git'
 		'opensnap'
 		'perl-linux-desktopfiles'
-		'obmenu-generator' )
+		'obmenu-generator'
+		'yay')
 
 	check_depends
 	update_iso
