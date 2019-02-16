@@ -303,7 +303,7 @@ add_software() {
 				elif [ "$software_menu" == "$aar" ] && ! "$aa_repo" ; then
 					if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$aar_add_msg" 10 60) then
 						if ! (grep "\[anarchy\]" </etc/pacman.conf &>/dev/null); then
-							sed -i -e '$a\\n[anarchy]\nServer = https://anarchy-linux.org/repo/$arch\nSigLevel = Never' /etc/pacman.conf
+							sed -i -e '$a\\n[anarchy]\nServer = https://anarchylinux.org/repo/$arch\nSigLevel = Never' /etc/pacman.conf
 						fi
 						aa_repo=true
 					else
