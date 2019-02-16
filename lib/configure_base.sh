@@ -309,7 +309,7 @@ add_software() {
 					#else
 						#continue
 					#fi
-				#fi
+				fi
 			else
 				skip=false
 			fi
