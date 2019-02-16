@@ -184,9 +184,9 @@ configure_system() {
 		fi
 	fi
 
-	if "$add_repo" ; then
-		echo -e "\n[anarchy]\nServer = $aa_repo\nSigLevel = Never" >> "$ARCH"/etc/pacman.conf
-	fi
+	#if "$add_repo" ; then
+		#echo -e "\n[anarchy]\nServer = $aa_repo\nSigLevel = Never" >> "$ARCH"/etc/pacman.conf
+	#fi
 
 	if "$multilib" ; then
 		sed -i '/\[multilib]$/ {
