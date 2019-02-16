@@ -7,7 +7,7 @@
 ###
 ### By: Dylan Schacht (deadhead)
 ### Email: deadhead3492@gmail.com
-### Webpage: http://anarchy-linux.org
+### Webpage: https://anarchylinux.org
 ###
 ### Any questions, comments, or bug reports may be sent to above
 ### email address. Enjoy, and keep on using Anarchy.
@@ -18,7 +18,7 @@
 set_version() {
 
 	### Set the ISO release variable here:
-	export iso_rel="1.0.2"
+	export iso_rel="1.0.3"
 
 	### Note ISO label must remain 11 characters long:
 	export iso_label="ANARCHYV102"
