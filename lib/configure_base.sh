@@ -275,7 +275,6 @@ add_software() {
 			add_soft=true
 			if ! "$skip" ; then
 				software_menu=$(dialog --extra-button --extra-label "$install" --ok-button "$select" --cancel-button "$cancel" --menu "$software_type_msg" 21 63 12 \
-					#"$aar"		"$aar_msg" \
 					"$audio"	"$audio_msg" \
 					"$database"	"$database_msg" \
 					"$fonts"	"$fonts_msg" \
