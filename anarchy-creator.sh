@@ -390,7 +390,7 @@ check_sums() {
 	sha1_sum=$(sha1sum "$version" | awk '{print $1}')
 	timestamp=$(timedatectl | grep "Universal" | awk '{print $4" "$5" "$6}')
 	echo "Checksums generated. Saved to $(sed 's/.iso//' <<<"$version")-checksums.txt"
-	echo -e "- Anarchy Linux is licensed under GPL v2\n- Webpage: http://anarchy-linux.org\n- ISO timestamp: $timestamp\n- $version Official Check Sums:
+	echo -e "- Anarchy Linux is licensed under GPL v2\n- Webpage: http://anarchylinux.org\n- ISO timestamp: $timestamp\n- $version Official Check Sums:
 	* md5sum: $md5_sum
 	* sha1sum: $sha1_sum" > "$(sed 's/.iso//' <<<"$version")-checksums.txt"
 
