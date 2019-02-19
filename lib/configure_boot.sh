@@ -27,8 +27,17 @@ grub_config() {
 		sed -i '/GRUB_CMDLINE_LINUX_DEFAULT=/ s/.$/ nvidia-drm.modeset=1"/;s/" /"/' "$ARCH"/etc/default/grub
 	fi
 
+	# LVM workaround
+	mkdir "$ARCH/hostlvm"
+	mount --bind /run/lvm "$ARCH/hostlvm"
+	anarchy_run="/var/tmp/$anarchy_run.sh"
+	echo "#!/bin/bash" > "$ARCH/$anarchy_run"
+	echo "ln -sf /hostlvm /run/lvm" >> "$ARCH/$anarchy_run"
+	echo "$@" >> "$ARCH/$anarchy_run"
+	chmod 755 "$ARCH/$anarchy_run"
+
 	if "$UEFI" ; then
-		(arch-chroot "$ARCH" grub-install --efi-directory="$esp_mnt" --target=x86_64-efi --bootloader-id=boot
+		(arch-chroot "$ARCH" $anarchy_run grub-install --efi-directory="$esp_mnt" --target=x86_64-efi --bootloader-id=boot
 		cp "$ARCH"/"$esp_mnt"/EFI/boot/grubx64.efi "$ARCH"/"$esp_mnt"/EFI/boot/bootx64.efi) &> /dev/null &
 		pid=$! pri=0.1 msg="\n$grub_load1 \n\n \Z1> \Z2grub-install --efi-directory="$esp_mnt"\Zn" load
 
@@ -37,12 +46,13 @@ grub_config() {
 			pid=$! pri=1 msg="\n$uefi_config_load \n\n \Z1> \Z2mkinitcpio -p $kernel\Zn" load
 		fi
 	else
-		arch-chroot "$ARCH" grub-install /dev/"$DRIVE" &> /dev/null &
+		arch-chroot "$ARCH" $anarchy_run grub-install /dev/"$DRIVE" &> /dev/null &
 		pid=$! pri=0.1 msg="\n$grub_load1 \n\n \Z1> \Z2grub-install /dev/$DRIVE\Zn" load
 	fi
-	arch-chroot "$ARCH" grub-mkconfig -o /boot/grub/grub.cfg &> /dev/null &
+	arch-chroot "$ARCH" $anarchy_run grub-mkconfig -o /boot/grub/grub.cfg &> /dev/null &
 	pid=$! pri=0.1 msg="\n$grub_load2 \n\n \Z1> \Z2grub-mkconfig -o /boot/grub/grub.cfg\Zn" load
 
+	rm -f "$ARCH/$anarchy_run"
 }
 
 syslinux_config() {
