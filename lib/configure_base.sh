@@ -232,10 +232,10 @@ prepare_base() {
 	    fi
 
 	if "$wifi" ; then
-		base_install+="wireless_tools wpa_supplicant wpa_actiond "
+		base_install+="wireless_tools wpa_supplicant "
 	else
 		if (dialog --defaultno --yes-button "$yes" --no-button "$no" --yesno "\n$wifi_option_msg" 10 60) then
-			base_install+="wireless_tools wpa_supplicant wpa_actiond "
+			base_install+="wireless_tools wpa_supplicant "
 		fi
 	fi
 
