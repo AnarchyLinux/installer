@@ -12,7 +12,7 @@ quick_install() {
                             multilib=true
                             dhcp=true
                             desktop=true
-                            base_install="base-devel linux-headers zsh zsh-syntax-highlighting grub dialog networkmanager wireless_tools wpa_supplicant wpa_actiond os-prober $base_defaults "
+                            base_install="base-devel linux-headers zsh zsh-syntax-highlighting grub dialog networkmanager wireless_tools wpa_supplicant os-prober $base_defaults "
 
                             if "$bluetooth" ; then
                                 base_install+="bluez bluez-utils pulseaudio-bluetooth "
@@ -39,7 +39,7 @@ quick_install() {
                                 multilib=true
                                 dhcp=true
                                 desktop=true
-                                base_install="base-devel linux-lts linux-lts-headers zsh zsh-syntax-highlighting grub dialog networkmanager wireless_tools wpa_supplicant wpa_actiond os-prober $base_defaults "
+                                base_install="base-devel linux-lts linux-lts-headers zsh zsh-syntax-highlighting grub dialog networkmanager wireless_tools wpa_supplicant os-prober $base_defaults "
 
                                 if "$bluetooth" ; then
                                     base_install+="bluez bluez-utils pulseaudio-bluetooth "
@@ -65,7 +65,7 @@ quick_install() {
                             enable_nm=true
                             multilib=true
                             dhcp=true
-                            base_install="base-devel linux-headers zsh zsh-syntax-highlighting grub dialog wireless_tools wpa_supplicant wpa_actiond os-prober $base_defaults "
+                            base_install="base-devel linux-headers zsh zsh-syntax-highlighting grub dialog wireless_tools wpa_supplicant os-prober $base_defaults "
 
                             if "$bluetooth" ; then
                                 base_install+="bluez bluez-utils pulseaudio-bluetooth "
@@ -88,7 +88,7 @@ quick_install() {
                                 enable_nm=true
                                 multilib=true
                                 dhcp=true
-                                base_install="base-devel linux-lts linux-lts-headers zsh zsh-syntax-highlighting grub dialog wireless_tools wpa_supplicant wpa_actiond os-prober $base_defaults "
+                                base_install="base-devel linux-lts linux-lts-headers zsh zsh-syntax-highlighting grub dialog wireless_tools wpa_supplicant os-prober $base_defaults "
 
                                 if "$bluetooth" ; then
                                     base_install+="bluez bluez-utils pulseaudio-bluetooth "
@@ -149,7 +149,7 @@ quick_desktop() {
         ;;
         "Anarchy-openbox")      config_env="$de"
                                 start_term="exec openbox-session"
-                                DE+="openbox thunar thunar-volman xfce4-terminal xfce4-panel xfce4-whiskermenu-plugin xcompmgr transset-df obconf lxappearance-obconf wmctrl gxmessage xfce4-pulseaudio-plugin xfdesktop xdotool opensnap ristretto oblogout obmenu-generator openbox-themes polkit-gnome $extras "
+                                DE+="openbox thunar thunar-volman xfce4-terminal xfce4-panel xfce4-whiskermenu-plugin xcompmgr transset-df obconf lxappearance-obconf wmctrl gxmessage xfce4-pulseaudio-plugin xfdesktop xdotool opensnap ristretto oblogout obmenu-generator polkit-gnome $extras "
         ;;
     esac
 
