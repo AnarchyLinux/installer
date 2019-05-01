@@ -21,7 +21,7 @@ set_version() {
 	export iso_rel="1.0.3"
 
 	### Note ISO label must remain 11 characters long:
-	export iso_label="ANARCHYV102"
+	export iso_label="ANARCHYV103"
 
 	### ISO name
 	case "$interface" in
