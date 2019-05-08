@@ -48,12 +48,12 @@ This ISO only contains support only for x86_64 (64 bit) systems.
 # Screenshots
 
 <p>
-  <img src="https://www.anarchylinux.org/images/installer/anarchy-splash.png" width="350"/>
-  <img src="https://www.anarchylinux.org/images/installer/1-issue.png" width="350"/>
-  <img src="https://www.anarchylinux.org/images/installer/2-languages.png" width="350"/>
-  <img src="https://www.anarchylinux.org/images/installer/7-partition.png" width="350">
-  <img src="https://www.anarchylinux.org/images/installer/18-base_install.png" width="350"/>
-  <img src="https://www.anarchylinux.org/images/installer/25-install2.png" width="350"/>
+  <img src="https://www.anarchylinux.org/wp-content/uploads/2019/02/anarchy-splash.png" width="350"/>
+  <img src="https://www.anarchylinux.org/wp-content/uploads/2019/02/1-issue.png" width="350"/>
+  <img src="https://www.anarchylinux.org/wp-content/uploads/2019/02/2-languages.png" width="350"/>
+  <img src="https://www.anarchylinux.org/wp-content/uploads/2019/02/7-partition.png" width="350">
+  <img src="https://www.anarchylinux.org/wp-content/uploads/2019/02/18-base_install.png" width="350"/>
+  <img src="https://www.anarchylinux.org/wp-content/uploads/2019/02/25-install2.png" width="350"/>
 </p>
 
 # Features

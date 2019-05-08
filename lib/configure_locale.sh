@@ -73,7 +73,7 @@ set_locale() {
 		"hu_HU.UTF-8" "Hungary" \
 		"it_IT.UTF-8" "Italian" \
 		"lv_LV.UTF-8" "Latvian" \
-		"en_MX.UTF-8" "Mexico" \
+		"es_MX.UTF-8" "Mexico" \
 		"pt_PT.UTF-8" "Portugal" \
 		"ro_RO.UTF-8" "Romanian" \
 		"ru_RU.UTF-8" "Russian" \

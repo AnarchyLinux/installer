@@ -232,10 +232,10 @@ prepare_base() {
 	    fi
 
 	if "$wifi" ; then
-		base_install+="wireless_tools wpa_supplicant wpa_actiond "
+		base_install+="wireless_tools wpa_supplicant "
 	else
 		if (dialog --defaultno --yes-button "$yes" --no-button "$no" --yesno "\n$wifi_option_msg" 10 60) then
-			base_install+="wireless_tools wpa_supplicant wpa_actiond "
+			base_install+="wireless_tools wpa_supplicant "
 		fi
 	fi
 
@@ -376,7 +376,6 @@ add_software() {
 					software=$(dialog --ok-button "$ok" --cancel-button "$cancel" --checklist "$software_msg1" 20 63 10 \
 						"couchdb"		"$db0" OFF \
 						"mariadb"		"$sys30" OFF \
-						"mongodb"		"$db1" OFF \
 						"percona-server"	"$db2" OFF \
 						"phpmyadmin"		"$sys32" OFF \
 						"php-sqlite"		"$db3" OFF \
@@ -384,6 +383,8 @@ add_software() {
 						"redis"			"$db4" OFF \
 						"rethinkdb"		"$db5" OFF\
 						"sqlite"		"$db6" OFF 3>&1 1>&2 2>&3)
+						# MongoDB has been removed from the official repositories due to its re-licensing issues
+						# "mongodb"		"$db1" OFF
 					if [ "$?" -gt "0" ]; then
 						add_soft=false
 					fi

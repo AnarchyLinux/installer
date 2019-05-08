@@ -18,10 +18,10 @@
 set_version() {
 
 	### Set the ISO release variable here:
-	export iso_rel="1.0.2"
+	export iso_rel="1.0.3"
 
 	### Note ISO label must remain 11 characters long:
-	export iso_label="ANARCHYV102"
+	export iso_label="ANARCHYV103"
 
 	### ISO name
 	case "$interface" in
@@ -280,7 +280,7 @@ build_sys_gui() {
 
 	### Install fonts, fbterm, fetchmirrors, arch-wiki, and uvesafb drivers onto system and cleanup
 	sudo pacman --root "$sq" --cachedir "$sq"/var/cache/pacman/pkg  --config $paconf --noconfirm -Syu
-	sudo pacman --root "$sq" --cachedir "$sq"/var/cache/pacman/pkg  --config $paconf --noconfirm --needed -Sy terminus-font xorg-server xorg-xinit xf86-video-vesa xf86-input-evdev xf86-input-keyboard xf86-input-mouse xf86-input-synaptics vlc galculator file-roller gparted gimp git pulseaudio pulseaudio-alsa alsa-utils \
+	sudo pacman --root "$sq" --cachedir "$sq"/var/cache/pacman/pkg  --config $paconf --noconfirm --needed -Sy terminus-font xorg-server xorg-xinit xterm xf86-video-vesa xf86-input-evdev xf86-input-keyboard xf86-input-mouse xf86-input-synaptics vlc galculator file-roller gparted gimp git pulseaudio pulseaudio-alsa alsa-utils \
 		zsh-syntax-highlighting pacman-contrib arc-gtk-theme elementary-icon-theme thunar base-devel gvfs xdg-user-dirs xfce4 xfce4-goodies libreoffice-fresh chromium virtualbox-guest-dkms virtualbox-guest-utils linux linux-headers libdvdcss simplescreenrecorder screenfetch htop acpi pavucontrol libutil-linux
 	sudo pacman --root "$sq" --cachedir "$sq"/var/cache/pacman/pkg  --config $paconf --noconfirm -U /tmp/fetchmirrors/*.pkg.tar.xz
 	sudo pacman --root "$sq" --cachedir "$sq"/var/cache/pacman/pkg  --config $paconf --noconfirm -U /tmp/arch-wiki-cli/*.pkg.tar.xz
