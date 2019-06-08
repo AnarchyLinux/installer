@@ -18,10 +18,10 @@
 set_version() {
 
 	### Set the ISO release variable here:
-	export iso_rel="1.0.3"
+	export iso_rel="1.0.4"
 
 	### Note ISO label must remain 11 characters long:
-	export iso_label="ANARCHYV103"
+	export iso_label="ANARCHYV104"
 
 	### ISO name
 	case "$interface" in
@@ -51,7 +51,6 @@ init() {
 	### Array packages to be build and added to ISO local repo
 	export builds=(
 		'fetchmirrors'
-		'arch-wiki-cli'
 		'numix-icon-theme-git'
 		'numix-circle-icon-theme-git'
 		'oh-my-zsh-git'
@@ -249,7 +248,7 @@ build_sys() {
 	### Install fonts, fbterm, fetchmirrors, arch-wiki
 	sudo pacman --root "$sq" --cachedir "$sq"/var/cache/pacman/pkg  --config $paconf --noconfirm -Sy terminus-font acpi zsh-syntax-highlighting pacman-contrib
 	sudo pacman --root "$sq" --cachedir "$sq"/var/cache/pacman/pkg  --config $paconf --noconfirm -U /tmp/fetchmirrors/*.pkg.tar.xz
-	sudo pacman --root "$sq" --cachedir "$sq"/var/cache/pacman/pkg  --config $paconf --noconfirm -U /tmp/arch-wiki-cli/*.pkg.tar.xz
+	### sudo pacman --root "$sq" --cachedir "$sq"/var/cache/pacman/pkg  --config $paconf --noconfirm -U /tmp/arch-wiki-cli/*.pkg.tar.xz
 	sudo pacman --root "$sq" --cachedir "$sq"/var/cache/pacman/pkg  --config $paconf -Sl | awk '/\[installed\]$/ {print $1 "/" $2 "-" $3}' > "$customiso"/arch/pkglist.${sys}.txt
 	sudo pacman --root "$sq" --cachedir "$sq"/var/cache/pacman/pkg  --config $paconf --noconfirm -Scc
 	sudo rm -f "$sq"/var/cache/pacman/pkg/*
