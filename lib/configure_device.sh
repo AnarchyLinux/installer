@@ -854,6 +854,8 @@ fs_select() {
 		enable_f2fs=true
 	elif [ "$FS" == "btrfs" ]; then
 		enable_btrfs=true
+  elif [ "$FS" == "xfs" ]; then
+		enable_xfs=true
 	fi
 
 }

@@ -71,6 +71,15 @@ configure_system() {
 		echo "$(date -u "+%F %H:%M") : Configure system for f2fs" >> "$log"
 	fi
 
+  if "$enable_xfs" ; then
+		sed -i '/MODULES=/ s/.$/ xfs )/;s/" /"/' "$ARCH"/etc/mkinitcpio.conf
+		if ! "$crypted" ; then
+			arch-chroot "$ARCH" mkinitcpio -p "$kernel" &>/dev/null &
+			pid=$! pri=1 msg="\n$xfs_config_load \n\n \Z1> \Z2mkinitcpio -p $kernel\Zn" load
+		fi
+		echo "$(date -u "+%F %H:%M") : Configure system for xfs" >> "$log"
+	fi
+
 	if (<<<"$BOOT" egrep "nvme.*" &> /dev/null) then
 		sed -i 's/MODULES="/MODULES="nvme /;s/ "/"/' "$ARCH"/etc/mkinitcpio.conf
 		if ! "$crypted" ; then
