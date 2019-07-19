@@ -574,7 +574,6 @@ add_software() {
 						"pantheon-terminal"	"$term3" OFF \
 						"rxvt-unicode"		"$term4" OFF \
 						"screen"		"$sys11" OFF \
-						"st"			"$term8" OFF \
 						"terminator"		"$term5" OFF \
 						"terminology"		"$term10" OFF \
 						"termite"		"$term9" OFF \

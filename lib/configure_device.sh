@@ -389,7 +389,7 @@ part_menu() {
 	op_title="$manual_op_msg"
 	unset part
 	dev_menu="|  Device:  |  Size:  |  Used:  |  FS:  |  Mount:  |  Type:  |"
-	device_list=$(lsblk -no NAME,SIZE,TYPE,FSTYPE | egrep -v "$USB|loop[0-9]+|sr[0-9]+|fd[0-9]+" | sed 's/[^[:alnum:]_., ]//g' | column -t | sort -k 1,1 | uniq)
+	device_list=$(lsblk -no NAME,SIZE,TYPE,FSTYPE | egrep -v "$USB|loop[0-9]+|sr[0-9]+|fd[0-9]+" | sed 's/[^[:alnum:]_., -]//g' | column -t | sort -k 1,1 | uniq)
 	device_count=$(<<<"$device_list" wc -l)
 
 	if "$screen_h" ; then
@@ -854,6 +854,8 @@ fs_select() {
 		enable_f2fs=true
 	elif [ "$FS" == "btrfs" ]; then
 		enable_btrfs=true
+  elif [ "$FS" == "xfs" ]; then
+		enable_xfs=true
 	fi
 
 }
