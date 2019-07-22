@@ -123,6 +123,10 @@ This ISO only contains support only for x86_64 (64 bit) systems.
 
 The installer also contains a long list of optional additional software (audio, games, browsers, media players, cli utils, text editors, servers, etc...) from the Official Arch repos.
 
+## AUR Support
+
+* yay installed by Default
+
 # Download
 
 You can find the latest version of Anarchy Linux on the Download page:
