@@ -11,3 +11,10 @@
 * Add yay info to [README](README.md)
 * Add `openssh` to Server and Server-LTS installs (@JustMeErazem)
 * Remove broken `du` alias (@JustMeErazem)
+
+## 1.0.4 - June 8, 2019
+
+* Remove QT4 from package list (@condor2)
+* Remove MongoDB from optional software list (@PandaFoss)
+* Add timeout to syslinux config (@PandaFoss)
+* Remove `arch-wiki-cli` from package list (@condor2)
