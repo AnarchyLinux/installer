@@ -50,10 +50,6 @@ DefaultContentLanguage           = "en"
     name    = "Download"
     url     = "/download/"
     weight  = 2
-[[menu.main]]
-    name    = "Screenshots"
-    url     = "/screenshots/"
-    weight  = 3
 
 [languages]
     [languages.en]
