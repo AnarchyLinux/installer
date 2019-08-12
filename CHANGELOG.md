@@ -11,6 +11,7 @@
 * Add yay info to [README](README.md)
 * Add `openssh` to Server and Server-LTS installs (@JustMeErazem)
 * Remove broken `du` alias (@JustMeErazem)
+* Remove OpenJDK 7 from software list (@JustMeErazem)
 
 ## 1.0.4 - June 8, 2019
 
