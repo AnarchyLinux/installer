@@ -26,9 +26,4 @@ echo "Generating site"
 hugo
 
 echo "Updating gh-pages branch"
-cd public 
-git worktree prune
-git checkout gh-pages
-git add ./*
-git commit -m "Publishing to gh-pages"
-git push origin gh-pages
+cd public && git add --all && git commit -m "Publishing to gh-pages" 
