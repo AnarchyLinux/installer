@@ -1,0 +1,67 @@
+baseURL                          = "https://anarchylinux.org/"
+theme                            = "introduction"
+DefaultContentLanguage           = "en"
+
+[params]
+    themeStyle                   = "dark" # "light" or "dark"
+    favicon                      = "/img/fav.ico"
+    showRSSButton                = true
+    fadeIn                       = false
+    fadeInIndex                  = false
+    dateFormat                   = "Jan 2, 2006"
+    email                        = "contact@erazem.eu"
+
+    [params.home]
+        introHeight              = "medium" # "medium", "large" or "fullheight"
+        showLatest               = true # Show latest blog post summary
+        showAllPosts             = false # Set true to list all posts on home page, or set false to link to separate blog list page
+        #numberOfProjectsToShow   = 3 # Maximum number of projects to show on home page
+        localTime                = true
+        timeZone                 = "Europe/Ljubljana"
+        timeFormat               = "HH:mm"
+
+    [params.projects]
+        useTwoColumns            = false # Use a layout with two columns instead of three
+
+    [params.share]
+        twitter                  = false
+        facebook                 = true
+        googlePlus               = false
+        pinterest                = false
+
+    [[params.social]]
+        url   = "https://www.facebook.com/groups/archanywhere/"
+        icon  = "facebook-f"
+        icon_pack = "fab"
+    [[params.social]]
+        url = "mailto:contact@erazem.eu"
+        icon = "envelope"
+        icon_pack = "fas"
+
+[[menu.main]]
+    name    = "Home"
+    url     = "/"
+    weight  = 0
+[[menu.main]]
+    name    = "Blog"
+    url     = "/blog/"
+    weight  = 1
+[[menu.main]]
+    name    = "Download"
+    url     = "/download/"
+    weight  = 2
+[[menu.main]]
+    name    = "Screenshots"
+    url     = "/screenshots/"
+    weight  = 3
+
+[languages]
+    [languages.en]
+        languageName     = "English"
+        languageCode     = "en-us"
+        contentDir       = "content/en"
+        weight           = 0
+        title            = "Anarchy Linux"
+        [languages.en.params]
+            description  = "A simple and intuitive Arch Linux installer"
+            footerText   = "Copyright © 2019 Anarchy Linux – All rights reserved.  |  Website designed by [JustMeErazem](https://erazem.eu), using [Hugo](https://gohugo.io/) and [Introduction](https://github.com/victoriadrake/hugo-theme-introduction)"
