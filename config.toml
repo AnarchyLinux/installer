@@ -1,4 +1,4 @@
-baseURL                          = "https://anarchylinux.org/"
+baseURL                          = "http://justmeerazem.github.io/anarchy-linux/"
 theme                            = "introduction"
 DefaultContentLanguage           = "en"
 
