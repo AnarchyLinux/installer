@@ -41,15 +41,15 @@ DefaultContentLanguage           = "en"
 [[menu.main]]
     name    = "Home"
     url     = "/"
-    weight  = 0
+    weight  = 3
 [[menu.main]]
     name    = "Blog"
     url     = "/blog/"
-    weight  = 1
+    weight  = 2
 [[menu.main]]
     name    = "Download"
-    url     = "/download/"
-    weight  = 2
+    url     = "https://github.com/deadhead420/anarchy-linux/releases/tag/1.0.4"
+    weight  = 1
 
 [languages]
     [languages.en]
