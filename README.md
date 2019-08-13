@@ -129,6 +129,6 @@ The installer also contains a long list of optional additional software (audio, 
 
 # Download
 
-You can find the latest version of Anarchy Linux on the Download page:
+You can find the latest version of Anarchy Linux here:
 
-https://www.anarchylinux.org/download/
+https://github.com/deadhead420/anarchy-linux/releases
