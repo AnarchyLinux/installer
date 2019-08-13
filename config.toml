@@ -3,7 +3,7 @@ theme                            = "introduction"
 DefaultContentLanguage           = "en"
 
 [params]
-    themeStyle                   = "light" # "light" or "dark"
+    themeStyle                   = "dark" # "light" or "dark"
     favicon                      = "/img/fav.ico"
     showRSSButton                = true
     fadeIn                       = false
@@ -12,8 +12,8 @@ DefaultContentLanguage           = "en"
     email                        = "contact@erazem.eu"
 
     [params.home]
-        introHeight              = "medium" # "medium", "large" or "fullheight"
-        showLatest               = true # Show latest blog post summary
+        introHeight              = "fullheight" # "medium", "large" or "fullheight"
+        showLatest               = false # Show latest blog post summary
         showAllPosts             = false # Set true to list all posts on home page, or set false to link to separate blog list page
         #numberOfProjectsToShow   = 3 # Maximum number of projects to show on home page
         localTime                = true

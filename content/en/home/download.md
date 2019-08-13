@@ -9,7 +9,7 @@ Latest version: **1.0.4**
 
 Release date: June 8, 2019
 
-Download: [Github](https://github.com/deadhead420/anarchy-linux/releases/tag/1.0.4)
+[Download](https://github.com/deadhead420/anarchy-linux/releases/tag/1.0.4)
 
 ### Changelog
 
