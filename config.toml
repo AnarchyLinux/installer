@@ -3,7 +3,7 @@ theme                            = "introduction"
 DefaultContentLanguage           = "en"
 
 [params]
-    themeStyle                   = "dark" # "light" or "dark"
+    themeStyle                   = "light" # "light" or "dark"
     favicon                      = "/img/fav.ico"
     showRSSButton                = true
     fadeIn                       = false
