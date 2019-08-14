@@ -1,4 +1,0 @@
-$(document).ready(function() {
-    var time = moment().tz("Europe/Ljubljana").format("HH:mm");
-    $("#time").html(time);
-})
