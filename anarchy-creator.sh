@@ -24,12 +24,16 @@ set_version() {
 	export iso_label="ANARCHYV104"
 
 	### ISO name
+	export version="anarchy-${iso_rel}-${sys}.iso"
+
+	: '
 	case "$interface" in
 		cli)	export version="anarchy-cli-${iso_rel}-$sys.iso"
 		;;
 		gui)	export version="anarchy-${iso_rel}-$sys.iso"
 		;;
 	esac
+	'
 
 }
 
@@ -180,15 +184,17 @@ build_conf() {
 	### Change directory into the ISO where the filesystem is stored.
 	### Unsquash root filesystem 'airootfs.sfs' this creates a directory 'squashfs-root' containing the entire system
 	echo "Preparing $sys"
-	if [ "$interface" == "cli" ]; then
+	#if [ "$interface" == "cli" ]; then
 		cd "$customiso"/arch/"$sys" || exit
 		sudo unsquashfs airootfs.sfs
+	: '
 	else
 		cd "$customiso"/arch/"$sys" || exit
 		sudo unsquashfs airootfs.sfs
 		sudo cp "$sq"/etc/mkinitcpio.conf "$sq"/etc/mkinitcpio.conf.bak
 		sudo cp "$sq"/etc/mkinitcpio-archiso.conf "$sq"/etc/mkinitcpio.conf
 	fi
+	'
 
 	### Copy over vconsole.conf (sets font at boot) & locale.gen (enables locale(s) for font) & uvesafb.conf
 	sudo cp "$aa"/etc/{vconsole.conf,locale.gen} "$sq"/etc
@@ -329,9 +335,7 @@ check_sums() {
 usage() {
 
 	echo "Usage options for: anarchy-creator"
-	echo "	-a|--all)	create cli and gui iso"
 	echo "	-c|--cli)	create anarchy cli iso"
-	echo "	-g|--gui)	create anarchy gui iso"
 	echo "  --i686)		create i686 iso"
 	echo "  --x86_64)	create x86_64 iso (default)"
 
@@ -362,6 +366,8 @@ while (true); do
 				echo "$version ISO generated successfully! Exiting ISO creator."
 				exit
 		;;
+
+		: '
 		-g|--gui)	interface="gui"
 				set_version
 				init
@@ -392,6 +398,7 @@ while (true); do
 				echo "$version ISO generated successfully! Exiting ISO creator."
 				exit
 		;;
+		'
 		*)	usage
 			exit
 		;;
