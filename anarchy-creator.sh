@@ -317,7 +317,6 @@ check_sums() {
 usage() {
 
 	echo "Usage options for: anarchy-creator"
-	echo "	-c|--cli)	create anarchy cli iso"
 	echo "  --i686)		create i686 iso"
 	echo "  --x86_64)	create x86_64 iso (default)"
 
