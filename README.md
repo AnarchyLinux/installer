@@ -16,6 +16,7 @@
 </p>
 </html>
 
+
 # About
 
 Anarchy Linux is an Arch Linux installer providing a hassle-free pure installation and polished user experience.
@@ -28,6 +29,7 @@ That is the Anarchy philosophy.
 
 Anarchy aims to provide a polished and pure Arch install while leaving open every possible configuration avenue for the user to choose from.
 
+
 # Screenshots
 <Replace screenshots with new links from website>
 
@@ -39,6 +41,7 @@ Anarchy aims to provide a polished and pure Arch install while leaving open ever
   <img src="https://www.anarchylinux.org/wp-content/uploads/2019/02/18-base_install.png" width="350"/>
   <img src="https://www.anarchylinux.org/wp-content/uploads/2019/02/25-install2.png" width="350"/>
 </p>
+
 
 # Features
 
@@ -131,8 +134,20 @@ The installer features a long list of optional software from the following categ
 
 The installer has [AUR](https://aur.archlinux.org/) support enabled by default using the [yay](https://github.com/Jguer/yay) AUR helper.
 
+
 # Download
 
 You can find the latest version of Anarchy Linux on the Download page:
 
 https://www.anarchylinux.org/download/
+
+
+# Contributing
+
+We're always looking for new contributors to the project,
+so check out our [contributing guide](CONTRIBUTING.md) for more info.
+
+
+# License
+
+The project is licensed under the [GNU GPLv2 license](LICENSE).
