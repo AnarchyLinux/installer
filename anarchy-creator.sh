@@ -26,15 +26,6 @@ set_version() {
 	### ISO name
 	export version="anarchy-${iso_rel}-${sys}.iso"
 
-	: '
-	case "$interface" in
-		cli)	export version="anarchy-cli-${iso_rel}-$sys.iso"
-		;;
-		gui)	export version="anarchy-${iso_rel}-$sys.iso"
-		;;
-	esac
-	'
-
 }
 
 init() {
@@ -184,17 +175,8 @@ build_conf() {
 	### Change directory into the ISO where the filesystem is stored.
 	### Unsquash root filesystem 'airootfs.sfs' this creates a directory 'squashfs-root' containing the entire system
 	echo "Preparing $sys"
-	#if [ "$interface" == "cli" ]; then
-		cd "$customiso"/arch/"$sys" || exit
-		sudo unsquashfs airootfs.sfs
-	: '
-	else
-		cd "$customiso"/arch/"$sys" || exit
-		sudo unsquashfs airootfs.sfs
-		sudo cp "$sq"/etc/mkinitcpio.conf "$sq"/etc/mkinitcpio.conf.bak
-		sudo cp "$sq"/etc/mkinitcpio-archiso.conf "$sq"/etc/mkinitcpio.conf
-	fi
-	'
+	cd "$customiso"/arch/"$sys" || exit
+	sudo unsquashfs airootfs.sfs
 
 	### Copy over vconsole.conf (sets font at boot) & locale.gen (enables locale(s) for font) & uvesafb.conf
 	sudo cp "$aa"/etc/{vconsole.conf,locale.gen} "$sq"/etc
@@ -366,39 +348,6 @@ while (true); do
 				echo "$version ISO generated successfully! Exiting ISO creator."
 				exit
 		;;
-
-		: '
-		-g|--gui)	interface="gui"
-				set_version
-				init
-				extract_iso
-				build_conf
-				build_sys_gui
-				configure_boot
-				create_iso
-				echo "$version ISO generated successfully! Exiting ISO creator."
-				exit
-		;;
-		-a|--all)	interface="cli"
-				set_version
-				init
-				extract_iso
-				build_conf
-				build_sys
-				configure_boot
-				create_iso
-				echo "$version ISO generated successfully!."
-				interface="gui"
-				set_version
-				extract_iso
-				build_conf
-				build_sys_gui
-				configure_boot
-				create_iso
-				echo "$version ISO generated successfully! Exiting ISO creator."
-				exit
-		;;
-		'
 		*)	usage
 			exit
 		;;
