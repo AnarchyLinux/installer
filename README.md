@@ -12,7 +12,7 @@
 
 <p align="center">
     <a href="https://anarchylinux.org/">Home page</a> | 
-    <a href="https://anarchylinux.org/download/">Download</a>
+    <a href="https://github.com/deadhead420/anarchy-linux/releases">Download</a>
 </p>
 </html>
 
@@ -135,11 +135,9 @@ The installer features a long list of optional software from the following categ
 The installer has [AUR](https://aur.archlinux.org/) support enabled by default using the [yay](https://github.com/Jguer/yay) AUR helper.
 
 
-# Download
+# Downloading
 
-You can find the latest version of Anarchy Linux on the Download page:
-
-https://anarchylinux.org/download/
+Check out our [releases page](https://github.com/deadhead420/anarchy-linux/releases) to download Anarchy Linux.
 
 
 # Contributing
