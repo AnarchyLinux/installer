@@ -11,8 +11,8 @@
 </p>
 
 <p align="center">
-    <a href="https://www.anarchylinux.org/">Home page</a> | 
-    <a href="https://www.anarchylinux.org/download/">Download</a>
+    <a href="https://anarchylinux.org/">Home page</a> | 
+    <a href="https://anarchylinux.org/download/">Download</a>
 </p>
 </html>
 
@@ -34,12 +34,12 @@ Anarchy aims to provide a polished and pure Arch install while leaving open ever
 <Replace screenshots with new links from website>
 
 <p>
-  <img src="https://www.anarchylinux.org/wp-content/uploads/2019/02/anarchy-splash.png" width="350"/>
-  <img src="https://www.anarchylinux.org/wp-content/uploads/2019/02/1-issue.png" width="350"/>
-  <img src="https://www.anarchylinux.org/wp-content/uploads/2019/02/2-languages.png" width="350"/>
-  <img src="https://www.anarchylinux.org/wp-content/uploads/2019/02/7-partition.png" width="350">
-  <img src="https://www.anarchylinux.org/wp-content/uploads/2019/02/18-base_install.png" width="350"/>
-  <img src="https://www.anarchylinux.org/wp-content/uploads/2019/02/25-install2.png" width="350"/>
+  <img src="https://anarchylinux.org/wp-content/uploads/2019/02/anarchy-splash.png" width="350"/>
+  <img src="https://anarchylinux.org/wp-content/uploads/2019/02/1-issue.png" width="350"/>
+  <img src="https://anarchylinux.org/wp-content/uploads/2019/02/2-languages.png" width="350"/>
+  <img src="https://anarchylinux.org/wp-content/uploads/2019/02/7-partition.png" width="350">
+  <img src="https://anarchylinux.org/wp-content/uploads/2019/02/18-base_install.png" width="350"/>
+  <img src="https://anarchylinux.org/wp-content/uploads/2019/02/25-install2.png" width="350"/>
 </p>
 
 
@@ -139,7 +139,7 @@ The installer has [AUR](https://aur.archlinux.org/) support enabled by default u
 
 You can find the latest version of Anarchy Linux on the Download page:
 
-https://www.anarchylinux.org/download/
+https://anarchylinux.org/download/
 
 
 # Contributing
