@@ -1,134 +1,153 @@
-<html>
+<html lang="en">
 <p align="center">
-    <img src="https://user-images.githubusercontent.com/10241434/43771874-12ff77d8-9a73-11e8-99af-dc067a07dcd7.png">
+    <img src="https://user-images.githubusercontent.com/10241434/43771874-12ff77d8-9a73-11e8-99af-dc067a07dcd7.png" alt="Anarchy logo">
 </p>
 <h2 align="center">Anarchy Linux</h2>
 
 <p align="center">
-    A distribution aimed at bringing the Linux revolution to the world.
+    A simple and intuitive Arch Linux installer.
     <br>
     Anarchy, quick, easy, and straight forward, "Keep it simple stupid".
 </p>
 
 <p align="center">
-    <a href="https://www.anarchylinux.org/">Home page</a> | 
-    <a href="https://www.anarchylinux.org/download/">Download</a> |
-    <a href="https://www.anarchylinux.org/content/features/">Features</a>
+    <a href="https://anarchylinux.org/">Home page</a> | 
+    <a href="https://anarchylinux.org/download/">Download</a>
 </p>
 </html>
 
-# Table of Contents
 
-- [Table of Contents](#table-of-contents)
-- [Introduction](#introduction)
-- [Screenshots](#screenshots)
-- [Features](#features)
-    - [Linux Kernels](#linux-kernels)
-    - [Partitioning Methods](#partitioning-methods)
-    - [DEs & WMs](#des--wms)
-    - [Graphics Drivers](#graphics-drivers)
-    - [Bootloaders](#bootloaders)
-    - [Network Utilities](#network-utilities)
-- [Download](#download)
+# About
 
-# Introduction
+Anarchy Linux is an Arch Linux installer providing a hassle-free pure installation and polished user experience.
+Every aspect of the install is taken into account from partitioning and general system configuration,
+to installing your favorite DE/WM and additional software from the official Arch Linux repos.
 
-Anarchy Linux is an Arch-based distro providing a hassle-free pure installation and polished user experience. Bundled with the Anarchy ISO is a dialog installer that enables you to install from the CLI in semi graphical install mode. Simply boot up and type `anarchy` to invoke the installer script. Every aspect of the install is taken into account from partitioning and general system configuration, to installing your favorite DE/WM and additional software from the official Arch Linux repos.
-
-The Anarchy installer is intended to provide both novice and experienced Linux users a simple and pain free way to install Arch Linux. Install when you want it, where you want it, and how you want it. That is the Anarchy philosophy.
-
-The Anarchy ISO also contains a built-in Arch Wiki allowing users to browse the official Arch Linux Wiki from the CLI. Simply invoke the `arch-wiki` command at any time to search the Arch Wiki. Search args may be passed, e.g. `arch-wiki beginners guide`.
-
-A utility to update and rank the latest Arch Linux mirrorlist is also included in the ISO. It can be invoked by running `fetchmirrors`. The install process for Anarchy is also 100% compatible with the information found in the install guide on the Arch Wiki.
+The Anarchy installer is intended to provide both novice and experienced Linux users a simple and pain free way to install Arch Linux.
+Install when you want it, where you want it, and how you want it.
+That is the Anarchy philosophy.
 
 Anarchy aims to provide a polished and pure Arch install while leaving open every possible configuration avenue for the user to choose from.
 
-This ISO only contains support only for x86_64 (64 bit) systems.
 
 # Screenshots
+<Replace screenshots with new links from website>
 
 <p>
-  <img src="https://www.anarchylinux.org/wp-content/uploads/2019/02/anarchy-splash.png" width="350"/>
-  <img src="https://www.anarchylinux.org/wp-content/uploads/2019/02/1-issue.png" width="350"/>
-  <img src="https://www.anarchylinux.org/wp-content/uploads/2019/02/2-languages.png" width="350"/>
-  <img src="https://www.anarchylinux.org/wp-content/uploads/2019/02/7-partition.png" width="350">
-  <img src="https://www.anarchylinux.org/wp-content/uploads/2019/02/18-base_install.png" width="350"/>
-  <img src="https://www.anarchylinux.org/wp-content/uploads/2019/02/25-install2.png" width="350"/>
+  <img src="https://anarchylinux.org/wp-content/uploads/2019/02/anarchy-splash.png" width="350"/>
+  <img src="https://anarchylinux.org/wp-content/uploads/2019/02/1-issue.png" width="350"/>
+  <img src="https://anarchylinux.org/wp-content/uploads/2019/02/2-languages.png" width="350"/>
+  <img src="https://anarchylinux.org/wp-content/uploads/2019/02/7-partition.png" width="350">
+  <img src="https://anarchylinux.org/wp-content/uploads/2019/02/18-base_install.png" width="350"/>
+  <img src="https://anarchylinux.org/wp-content/uploads/2019/02/25-install2.png" width="350"/>
 </p>
+
 
 # Features
 
-## Linux Kernels
+### Large selection of kernels
 
-* Choose from base or base-devel Arch Linux install
-* Arch Linux kernel
-* Arch Linux Hardened kernel
-* LTS Linux kernel (long term support)
-* Zen Linux kernel
+* `base` or `base-devel` system installation
+* **default** linux kernel
+* **hardened** linux kernel
+* **LTS** (Long Term Support) linux kernel
+* **zen** linux kernel
 
-## Partitioning Methods
+### Multiple partitioning methods
 
-* Full drive automatic partitioning with optional SWAP partition
-* Full drive automatic partitioning with luks on LVM encryption for * root and tmp partition with optional encrypted SWAP partition
-* Manual partition (advanced users) uses cfdisk for partitioning select * custom mount points
+* Automatic partitioning (optional swap)
+* Automatic LUKS-encrypted partitioning on LVM (optional encrypted swap)
+* Manual partitioning
 
-## DEs & WMs
+### A whole bunch of optional DEs and WMs
 
-* Anarchy Cinnamon Edition (developers custom Cinnamon desktop)
-* Anarchy Gnome Edition (developers custom Gnome desktop)
-* Anarchy OpenboxWM Edition (developers custom Openbox desktop)
-* Anarchy XFCE4 Edition (developers custom Xfce4 desktop) <br/>
-* Anarchy Budgie Edition (developers custom Budgie desktop)
-* Awesome
+(*Desktop Environments and Window Managers*)
+
+#### Completely customized
+
+* Anarchy Cinnamon edition
+* Anarchy GNOME edition
+* Anarchy OpenboxWM edition
+* Anarchy XFCE edition
+* Anarchy Budgie edition
+
+#### Not customized
+
+* AwesomeWM
 * Bspwm
 * Cinnamon
 * Deepin
 * Enlightenment
 * Fluxbox
-* Gnome
-* Gnome Flashback
-* i3WM
+* GNOME
+* GNOME Flashback
+* i3
 * KDE/Plasma
 * LXDE
 * LXQT
 * Mate
 * Openbox
-* SwayWM
-* XFCE4
+* Sway
+* XFCE
 * Xmonad
 
-## Graphics Drivers
+### A selection of graphics drivers
 
-* ATI/AMD xf86-video-ati open source drivers
-* Intel xf86-video-intel open source drivers
-* NVIDIA: xf86-video-nouveau open source drivers
-* NVIDIA: Stable, 390xx, 340xx closed source drivers
+* ATI/AMD `xf86-video-ati` open source drivers
+* Intel `xf86-video-intel` open source drivers
+* NVIDIA `xf86-video-nouveau` open source drivers
+* NVIDIA `stable`, `390xx`, `340xx` proprietary drivers
 * VirtualBox Guest Utilities Drivers
 
-## Bootloaders
+### Your choice of bootloaders
 
-* Grub (Grand Unified Bootloader)
-* Syslinux (SysLinux Bootloader)
-* Systemd-boot (Systemd Bootloader)
-* Support for UEFI boot
-* OsProber (Dual-Boot Support)
+* GRUB2
+* Syslinux
+* Systemd-boot
 
-## Network Utilities
+With support for UEFI and os-prober (for dual booting)
+
+### Network utilities
 
 * Netctl
-* NetworkManager + applet
+* NetworkManager + its applet
 * WPA Supplicant
 * WPA ActionD
 * Wireless Tools
 
-The installer also contains a long list of optional additional software (audio, games, browsers, media players, cli utils, text editors, servers, etc...) from the Official Arch repos.
+### Additional optional software
 
-## AUR Support
+The installer features a long list of optional software from the following categories:
 
-* yay installed by Default
+* Audio
+* Games
+* Graphics
+* Internet
+* Multimedia
+* Office
+* Terminal
+* Text editors
+* Shells
+* System
+
+### AUR support
+
+The installer has [AUR](https://aur.archlinux.org/) support enabled by default using the [yay](https://github.com/Jguer/yay) AUR helper.
+
 
 # Download
 
-You can find the latest version of Anarchy Linux here:
+You can find the latest version of Anarchy Linux on the Download page:
 
-https://github.com/deadhead420/anarchy-linux/releases
+https://anarchylinux.org/download/
+
+
+# Contributing
+
+We're always looking for new contributors to the project,
+so check out our [contributing guide](CONTRIBUTING.md) for more info.
+
+
+# License
+
+The project is licensed under the [GNU GPLv2 license](LICENSE).
