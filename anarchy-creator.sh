@@ -335,23 +335,25 @@ fi
 
 while (true); do
 	case "$1" in
-		--i686|--x86_64) shift
+		--i686|--x86_64)
+		    shift
 		;;
-		-c|--cli)	interface="cli"
-				set_version
-				init
-				extract_iso
-				build_conf
-				build_sys
-				configure_boot
-				create_iso
-				echo "$version ISO generated successfully! Exiting ISO creator."
-				exit
+		*)
+            set_version
+            init
+            extract_iso
+            build_conf
+            build_sys
+            configure_boot
+            create_iso
+            echo "$version ISO generated successfully! Exiting ISO creator."
+            exit
 		;;
-		*)	usage
+		-h|--help)
+		    usage
 			exit
 		;;
-	esac
+    esac
 done
 
 # vim: ai:ts=8:sw=8:sts=8:noet
