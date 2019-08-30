@@ -39,7 +39,6 @@ zle -N history-beginning-search-forward-end history-search-end
 
 ### Set variables
 #################
-export GREP_OPTIONS='--color=auto'
 PATH="/usr/local/bin:/usr/local/sbin/:$PATH"
 HISTFILE=$HOME/.zhistory
 HISTSIZE=1000
