@@ -1,5 +1,5 @@
 ---
-title: 'Bug report'
+name: 'Bug report'
 about: Please use the bug report template to help speed up the fixing process.
 labels: bug
 ---
