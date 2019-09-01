@@ -45,7 +45,7 @@ If you maybe know how to solve this issue, you can describe the fixes here.
 
 Please check off as many of these as possible (if you actually did them):
 
-* [ ] I've checked for any [existing issues](https://github.com/deadhead420/anarchy-linux/issues?utf8=%E2%9C%93&q=is%3Aissue) similar to mine and tried the solutions provided there
+* [ ] I've checked for any existing issues similar to mine and tried the solutions provided there
 * [ ] I've checked online for any existing fixes to my issue and added the link above
 * [ ] I've tried taking logs and submitting them above
 
