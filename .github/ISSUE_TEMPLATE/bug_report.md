@@ -43,7 +43,7 @@ If you maybe know how to solve this issue, you can describe the fixes here.
 
 ## Bug submission checklist
 
-Please check off as many of these as possible (if you actually did them):
+Please check off as many of these as possible prior to submitting a bug report (if you actually did them - add an 'x' between square brackets):
 
 * [ ] I've checked for any existing issues similar to mine and tried the solutions provided there
 * [ ] I've checked online for any existing fixes to my issue and added the link above
