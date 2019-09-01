@@ -1,7 +1,7 @@
 ---
-name: Bug report
+title: 'Bug report'
 about: Please use the bug report template to help speed up the fixing process.
-
+labels: bug
 ---
 
 ## Basic info:
@@ -29,15 +29,13 @@ Describe what happened instead (what was the bug).
 
 ## Extra info
 
-Include any logs if possible, or terminal outputs.
+Include any logs, terminal outputs, screenshots or links to websites you've checked regarding this issue.
 Add the logs as code blocks like below:
 
 ```
 Logs,
 Terminal output
 ```
-
-Also add links to any website that you've visited regarding this issue.
 
 ## Possible fixes
 
