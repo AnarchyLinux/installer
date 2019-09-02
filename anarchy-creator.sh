@@ -25,6 +25,9 @@
 # * Exit 3: Missing wget (update_arch_iso)
 # * Exit 4: Failed to create iso (create_iso)
 
+# Exit on error
+set -o errexit
+
 # Clears the screen and adds a banner
 prettify() {
     clear
@@ -71,6 +74,7 @@ init() {
 }
 
 check_dependencies() { # prev: check_depends
+    echo "Checking dependencies ..."
 	if [[ ! -f /usr/bin/wget ]]; then dependencies="$dependencies wget "; fi
 	if [[ ! -f /usr/bin/xorriso ]]; then dependencies+="libisoburn "; fi
 	if [[ ! -f /usr/bin/mksquashfs ]]; then dependencies+="squashfs-tools "; fi
@@ -80,7 +84,7 @@ check_dependencies() { # prev: check_depends
 	if [[ ! -f /usr/bin/gtk3-demo ]]; then dependencies+="gtk3 "; fi
     if [[ ! -f /usr/bin/rankmirrors ]]; then dependencies+="pacman-contrib "; fi
 	if [[ ! -z "$dependencies" ]]; then
-		echo -en "Missing dependencies: ${dependencies}\n Install missing dependencies now? [y/N]: "
+		echo -en "Missing dependencies: ${dependencies}\n\nInstall missing dependencies now? [y/N]: "
 		read -r input
 
 		case ${input} in
@@ -90,6 +94,8 @@ check_dependencies() { # prev: check_depends
 			;;
 		esac
 	fi
+	echo "Done"
+	echo ""
 }
 
 update_arch_iso() { # prev: update_iso
@@ -104,11 +110,11 @@ update_arch_iso() { # prev: update_iso
 		export arch_iso_link="https://mirror.archlinux32.org/archisos/${arch_iso_latest}"
 	fi
 
-	echo "Checking for updated Arch Linux image..."
+	echo "Checking for updated Arch Linux image ..."
 	export iso_date=$(<<<"${arch_iso_link}" sed 's!.*/!!')
 	if [[ "${iso_date}" != "${local_arch_iso}" ]]; then
 		if [[ -z "${local_arch_iso}" ]]; then
-			echo -en "\nError: No Arch Linux image found under ${working_dir}\n Download it? [y/N]: "
+			echo -en "\nNo Arch Linux image found under ${working_dir}\n\nDownload it? [y/N]: "
 			read -r input
 
 			case "${input}" in
@@ -131,10 +137,10 @@ update_arch_iso() { # prev: update_iso
 
 		if "${update}" ; then
 			cd "${working_dir}" || exit
-			prettify
+			echo ""
 			echo "Downloading Arch Linux image ..."
 			echo "(Don't resize the window or it will mess up the progress bar)"
-			wget -q --show-progress "${arch_iso_link}"
+			wget -c -q --show-progress "${arch_iso_link}"
 			if [[ "$?" -gt "0" ]]; then
 				echo "Error: You need 'wget' to download the image, exiting."
 				exit 3
@@ -142,11 +148,15 @@ update_arch_iso() { # prev: update_iso
 			export local_arch_iso=$(ls "${working_dir}"/archlinux-*-"${system_architecture}".iso | tail -n1 | sed 's!.*/!!')
 		fi
 	fi
+	echo "Done"
+	echo ""
 }
 
 local_repo_builds() { # prev: aur_builds
 	# Update pacman databases
 	sudo pacman -Sy
+
+	echo "Building AUR packages for local repo ..."
 
 	# Begin build loop checking /tmp for existing builds, then build packages & install if required
 	for pkg in $(echo "${local_aur_packages[@]}"); do
@@ -159,6 +169,9 @@ local_repo_builds() { # prev: aur_builds
 			esac
 		fi
 	done
+
+	echo "Done"
+	echo ""
 }
 
 extract_arch_iso() { # prev: extract_iso
@@ -168,8 +181,13 @@ extract_arch_iso() { # prev: extract_iso
 		sudo rm -rf "${custom_iso}"
 	fi
 
+	echo "Extracting Arch Linux image ..."
+
 	# Extract Arch iso to mount directory and continue with build
 	7z x "${local_arch_iso}" -o"${custom_iso}"
+
+	echo "Done"
+	echo ""
 }
 
 copy_config_files() { # prev: build_conf
