@@ -154,6 +154,7 @@ update_arch_iso() { # prev: update_iso
 
 local_repo_builds() { # prev: aur_builds
 	# Update pacman databases
+	echo "Enter password to build AUR packages:"
 	sudo pacman -Sy
 
 	echo "Building AUR packages for local repo ..."
@@ -288,6 +289,7 @@ configure_boot() {
 }
 
 create_iso() {
+    echo "Creating new Anarchy Linux image ..."
 	cd "${working_dir}" || exit
 	xorriso -as mkisofs \
 	-iso-level 3 \
@@ -359,7 +361,7 @@ while (true); do
             build_system
             configure_boot
             create_iso
-            echo "${anarchy_iso_name} image generated successfully, exiting."
+            echo "${anarchy_iso_name} image generated successfully."
             exit 0
 		;;
     esac
