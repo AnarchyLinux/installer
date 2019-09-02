@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+
+# Stop spellcheck from spamming to declare and assign seperately (not important in our case)
 # shellcheck disable=SC2155
 
 ###############################################################
