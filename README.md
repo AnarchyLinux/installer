@@ -142,16 +142,16 @@ Check out our [releases page](https://github.com/deadhead420/anarchy-linux/relea
 We recommend you use the latest release to make sure it has the most up to date features and bug fixes.
 
 
-# Installing
+# Installation
 
-## **Installing on Windows**
+### **Windows**
 
 The best tool to flash Anarchy Linux to a USB is [Win32DiskImager](https://sourceforge.net/projects/win32diskimager/).
 Download it, choose the Anarchy image (ISO), select the wanted USB and press write.
 
 THIS WILL COMPLETELY WIPE YOUR USB! YOU HAVE BEEN WARNED.
 
-## **Installing on Linux**
+### **Linux**
 
 The fastest method, although not the safest or easiest for most beginners is to use `dd`.
 
