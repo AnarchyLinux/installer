@@ -1,16 +1,16 @@
-baseURL                         = "https://anarchylinux.org/"
-theme                           = "terrassa"
-defaultContentLanguage          = "en"
-language                        = "en-GB"
-enableRobotsTXT                 = true
-title                           = "Anarchy Linux"
-author                          = "Erazem Kokot"
-paginate                        = 3
+baseURL = "https://anarchylinux.org/"
+theme = "terrassa"
+defaultContentLanguage = "en"
+language = "en-GB"
+enableRobotsTXT = true
+title = "Anarchy Linux"
+author = "Erazem Kokot"
+paginate = 3
 
 [params]
-    description                 = "A simple and intuitive Arch Linux installer"
-    favicon                     = "favicon.ico"
-    logo                        = ""
+    description = "A simple and intuitive Arch Linux installer"
+    favicon = "favicon.ico"
+    logo = ""
     
 [params.hero]
     textColor = ""
