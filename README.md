@@ -31,16 +31,8 @@ Anarchy aims to provide a polished and pure Arch install while leaving open ever
 
 
 # Screenshots
-<Replace screenshots with new links from website>
 
-<p>
-  <img src="https://anarchylinux.org/wp-content/uploads/2019/02/anarchy-splash.png" width="350"/>
-  <img src="https://anarchylinux.org/wp-content/uploads/2019/02/1-issue.png" width="350"/>
-  <img src="https://anarchylinux.org/wp-content/uploads/2019/02/2-languages.png" width="350"/>
-  <img src="https://anarchylinux.org/wp-content/uploads/2019/02/7-partition.png" width="350">
-  <img src="https://anarchylinux.org/wp-content/uploads/2019/02/18-base_install.png" width="350"/>
-  <img src="https://anarchylinux.org/wp-content/uploads/2019/02/25-install2.png" width="350"/>
-</p>
+About three main screenshots coming...
 
 
 # Features
