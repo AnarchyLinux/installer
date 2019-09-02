@@ -31,16 +31,8 @@ Anarchy aims to provide a polished and pure Arch install while leaving open ever
 
 
 # Screenshots
-<Replace screenshots with new links from website>
 
-<p>
-  <img src="https://anarchylinux.org/wp-content/uploads/2019/02/anarchy-splash.png" width="350"/>
-  <img src="https://anarchylinux.org/wp-content/uploads/2019/02/1-issue.png" width="350"/>
-  <img src="https://anarchylinux.org/wp-content/uploads/2019/02/2-languages.png" width="350"/>
-  <img src="https://anarchylinux.org/wp-content/uploads/2019/02/7-partition.png" width="350">
-  <img src="https://anarchylinux.org/wp-content/uploads/2019/02/18-base_install.png" width="350"/>
-  <img src="https://anarchylinux.org/wp-content/uploads/2019/02/25-install2.png" width="350"/>
-</p>
+About three main screenshots coming...
 
 
 # Features
@@ -138,6 +130,32 @@ The installer has [AUR](https://aur.archlinux.org/) support enabled by default u
 # Downloading
 
 Check out our [releases page](https://github.com/deadhead420/anarchy-linux/releases) to download Anarchy Linux.
+
+We recommend you use the latest release to make sure it has the most up to date features and bug fixes.
+
+
+# Installation
+
+### **Windows**
+
+The best tool to flash Anarchy Linux to a USB is [Win32DiskImager](https://sourceforge.net/projects/win32diskimager/).
+Download it, choose the Anarchy image (ISO), select the wanted USB and press write.
+
+THIS WILL COMPLETELY WIPE YOUR USB! YOU HAVE BEEN WARNED.
+
+### **Linux**
+
+The fastest method, although not the safest or easiest for most beginners is to use `dd`.
+
+DON'T COPY AND PASTE THE TEXT BELOW AS ANY DISK YOU SELECT WILL BE COMPLETELY WIPED!
+
+Replace `x` with your USB device's letter (use `lsblk` to check which letter it was assigned, usually it's "b"):
+
+```
+sudo dd if=./<anarchy-image.iso> of=/dev/sdx bs=4M status=progress && sync
+```
+
+You can also use GUI based software such as [Etcher](https://www.balena.io/etcher/).
 
 
 # Contributing
