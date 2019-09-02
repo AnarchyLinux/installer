@@ -24,12 +24,7 @@ set_version() {
 	export iso_label="ANARCHYV104"
 
 	### ISO name
-	case "$interface" in
-		cli)	export version="anarchy-cli-${iso_rel}-$sys.iso"
-		;;
-		gui)	export version="anarchy-${iso_rel}-$sys.iso"
-		;;
-	esac
+	export version="anarchy-${iso_rel}-${sys}.iso"
 
 }
 
@@ -180,15 +175,8 @@ build_conf() {
 	### Change directory into the ISO where the filesystem is stored.
 	### Unsquash root filesystem 'airootfs.sfs' this creates a directory 'squashfs-root' containing the entire system
 	echo "Preparing $sys"
-	if [ "$interface" == "cli" ]; then
-		cd "$customiso"/arch/"$sys" || exit
-		sudo unsquashfs airootfs.sfs
-	else
-		cd "$customiso"/arch/"$sys" || exit
-		sudo unsquashfs airootfs.sfs
-		sudo cp "$sq"/etc/mkinitcpio.conf "$sq"/etc/mkinitcpio.conf.bak
-		sudo cp "$sq"/etc/mkinitcpio-archiso.conf "$sq"/etc/mkinitcpio.conf
-	fi
+	cd "$customiso"/arch/"$sys" || exit
+	sudo unsquashfs airootfs.sfs
 
 	### Copy over vconsole.conf (sets font at boot) & locale.gen (enables locale(s) for font) & uvesafb.conf
 	sudo cp "$aa"/etc/{vconsole.conf,locale.gen} "$sq"/etc
@@ -252,76 +240,6 @@ build_sys() {
 	sudo pacman --root "$sq" --cachedir "$sq"/var/cache/pacman/pkg  --config $paconf -Sl | awk '/\[installed\]$/ {print $1 "/" $2 "-" $3}' > "$customiso"/arch/pkglist.${sys}.txt
 	sudo pacman --root "$sq" --cachedir "$sq"/var/cache/pacman/pkg  --config $paconf --noconfirm -Scc
 	sudo rm -f "$sq"/var/cache/pacman/pkg/*
-
-	### cd back into root system directory, remove old system
-	cd "$customiso"/arch/"$sys" || exit
-	rm airootfs.sfs
-
-	### Recreate the ISO using compression remove unsquashed system generate checksums
-	echo "Recreating $sys..."
-	sudo mksquashfs squashfs-root airootfs.sfs -b 1024k -comp xz
-	sudo rm -r squashfs-root
-	md5sum airootfs.sfs > airootfs.md5
-
-}
-
-build_sys_gui() {
-
-        ## activating mount points needed by this function
-        sudo mount -t proc proc "$sq"/proc/
-        sudo mount -t sysfs sys "$sq"/sys/
-        sudo mount -o bind /dev "$sq"/dev/
-
-	### Blacklist vbox drivers so they are not loaded on non-vbox
-	echo 'FILES="/etc/modprobe.d/blacklist.conf"' | sudo tee -a "$sq"/etc/mkinitcpio.conf > /dev/null
-	echo 'FILES="/etc/modprobe.d/blacklist.conf"' | sudo tee -a "$sq"/etc/mkinitcpio-archiso.conf > /dev/null
-	echo -e 'blacklist vboxguest\nblacklist vboxsf\nblacklist vboxvideo' | sudo tee -a "$sq"/etc/modprobe.d/blacklist.conf > /dev/null
-
-	### Install fonts, fbterm, fetchmirrors, arch-wiki, and uvesafb drivers onto system and cleanup
-	sudo pacman --root "$sq" --cachedir "$sq"/var/cache/pacman/pkg  --config $paconf --noconfirm -Syu
-	sudo pacman --root "$sq" --cachedir "$sq"/var/cache/pacman/pkg  --config $paconf --noconfirm --needed -Sy terminus-font xorg-server xorg-xinit xterm xf86-video-vesa xf86-input-evdev xf86-input-keyboard xf86-input-mouse xf86-input-synaptics vlc galculator file-roller gparted gimp git pulseaudio pulseaudio-alsa alsa-utils \
-		zsh-syntax-highlighting pacman-contrib arc-gtk-theme elementary-icon-theme thunar base-devel gvfs xdg-user-dirs xfce4 xfce4-goodies libreoffice-fresh chromium virtualbox-guest-dkms virtualbox-guest-utils linux linux-headers libdvdcss simplescreenrecorder screenfetch htop acpi pavucontrol libutil-linux
-	sudo pacman --root "$sq" --cachedir "$sq"/var/cache/pacman/pkg  --config $paconf --noconfirm -U /tmp/fetchmirrors/*.pkg.tar.xz
-	sudo pacman --root "$sq" --cachedir "$sq"/var/cache/pacman/pkg  --config $paconf --noconfirm -U /tmp/arch-wiki-cli/*.pkg.tar.xz
-	sudo pacman --root "$sq" --cachedir "$sq"/var/cache/pacman/pkg  --config $paconf --noconfirm -U /tmp/numix-icon-theme-git/*.pkg.tar.xz
-	sudo pacman --root "$sq" --cachedir "$sq"/var/cache/pacman/pkg  --config $paconf --noconfirm -U /tmp/numix-circle-icon-theme-git/*.pkg.tar.xz
-	sudo pacman --root "$sq" --cachedir "$sq"/var/cache/pacman/pkg  --config $paconf -Sl | awk '/\[installed\]$/ {print $1 "/" $2 "-" $3}' > "$customiso"/arch/pkglist.${sys}.txt
-	sudo pacman --root "$sq" --cachedir "$sq"/var/cache/pacman/pkg  --config $paconf --noconfirm -Scc
-	sudo rm -f "$sq"/var/cache/pacman/pkg/*
-	sudo mv "$sq"/etc/mkinitcpio.conf.bak "$sq"/etc/mkinitcpio.conf
-
-        ### Copy new kernel
-	sudo rm "$sq"/boot/initramfs-linux-fallback.img
-	sudo mv "$sq"/boot/vmlinuz-linux "$customiso"/arch/boot/"$sys"/vmlinuz
-	sudo mv "$sq"/boot/initramfs-linux.img "$customiso"/arch/boot/"$sys"/archiso.img
-	
-	## mount points are not longer needed. They conflict with arch-chroot.
-        sudo umount "$sq"/proc/
-        sudo umount "$sq"/sys/
-        sudo umount "$sq"/dev/
-
-	### Configure desktop
-	sudo arch-chroot "$sq" useradd -m -g users -G power,audio,video,storage -s /usr/bin/zsh user
-	sudo arch-chroot "$sq" su user -c xdg-user-dirs-update
-	sudo sed -i 's/root/user/' "$sq"/etc/systemd/system/getty@tty1.service.d/autologin.conf
-	sudo cp -r "$aa"/extra/gui/*.desktop "$sq"/home/user/Desktop
-	sudo cp -r "$aa"/extra/gui/*.desktop "$sq"/usr/share/applications
-	sudo cp -r "$aa"/extra/gui/{issue,sudoers} "$sq"/etc/
-	sudo cp -r "$aa"/extra/anarchy-icon.png "$sq"/usr/share/pixmaps
-	sudo cp -r "$aa"/extra/anarchy-icon.png "$sq"/root/.face
-	sudo cp -r "$aa"/extra/anarchy-icon.png "$sq"/home/user/.face
-	sudo cp -r "$aa"/extra/fonts/ttf-zekton-rg "$sq"/usr/share/fonts
-	sudo cp -r "$aa"/extra/gui/{.xinitrc,.automated_script.sh} "$sq"/root
-	sudo cp -r "$aa"/extra/gui/{.xinitrc,.automated_script.sh} "$sq"/home/user
-	sudo cp -r "$aa"/extra/shellrc/.zshrc "$sq"/home/user/.zshrc
-	sudo cp -r "$sq"/root/.zlogin "$sq"/home/user
-
-	### Configure desktop GUI
-	sudo cp -r "$aa"/extra/gui/.config "$sq"/home/user/
-	sudo cp -r "$aa"/extra/gui/.config "$sq"/root
-
-	### Fix user permissions
-	sudo arch-chroot "$sq" chown -R user /home/user/
 
 	### cd back into root system directory, remove old system
 	cd "$customiso"/arch/"$sys" || exit
@@ -399,9 +317,6 @@ check_sums() {
 usage() {
 
 	echo "Usage options for: anarchy-creator"
-	echo "	-a|--all)	create cli and gui iso"
-	echo "	-c|--cli)	create anarchy cli iso"
-	echo "	-g|--gui)	create anarchy gui iso"
 	echo "  --i686)		create i686 iso"
 	echo "  --x86_64)	create x86_64 iso (default)"
 
@@ -419,53 +334,25 @@ fi
 
 while (true); do
 	case "$1" in
-		--i686|--x86_64) shift
+		--i686|--x86_64)
+		    shift
 		;;
-		-c|--cli)	interface="cli"
-				set_version
-				init
-				extract_iso
-				build_conf
-				build_sys
-				configure_boot
-				create_iso
-				echo "$version ISO generated successfully! Exiting ISO creator."
-				exit
+		*)
+            set_version
+            init
+            extract_iso
+            build_conf
+            build_sys
+            configure_boot
+            create_iso
+            echo "$version ISO generated successfully! Exiting ISO creator."
+            exit
 		;;
-		-g|--gui)	interface="gui"
-				set_version
-				init
-				extract_iso
-				build_conf
-				build_sys_gui
-				configure_boot
-				create_iso
-				echo "$version ISO generated successfully! Exiting ISO creator."
-				exit
-		;;
-		-a|--all)	interface="cli"
-				set_version
-				init
-				extract_iso
-				build_conf
-				build_sys
-				configure_boot
-				create_iso
-				echo "$version ISO generated successfully!."
-				interface="gui"
-				set_version
-				extract_iso
-				build_conf
-				build_sys_gui
-				configure_boot
-				create_iso
-				echo "$version ISO generated successfully! Exiting ISO creator."
-				exit
-		;;
-		*)	usage
+		-h|--help)
+		    usage
 			exit
 		;;
-	esac
+    esac
 done
 
 # vim: ai:ts=8:sw=8:sts=8:noet
