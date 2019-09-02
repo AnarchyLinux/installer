@@ -1,0 +1,12 @@
+.git
+.gitignore
+LICENSE
+README.md
+theme.toml
+
+/archetypes/
+/assets/
+/images/
+/layouts/
+/static/
+

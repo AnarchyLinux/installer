@@ -1,0 +1,11 @@
+{{ define "main" }}
+<main class="content">
+	{{ $paginator := .Paginate (where .Data.Pages.ByDate.Reverse "Type" "posts") }}
+
+	{{ range $paginator.Pages }}
+	{{ .Render "card" }}
+	{{ end }}
+
+	{{ template "_internal/pagination.html" . }}
+</main>
+{{ end }}

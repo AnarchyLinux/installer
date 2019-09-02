@@ -1,0 +1,10 @@
+@keyframes focus {
+    0% {
+        filter: blur(14px);
+        opacity: 0;
+    }
+    100% {
+        filter: blur(0);
+        opacity: 1;
+    }
+}

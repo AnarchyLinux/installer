@@ -1,0 +1,183 @@
+@media only screen and (max-width: 1024px) {
+	.hero {
+		background-position: 20% 0;
+		background-size: cover;
+	}
+
+	.section {
+		margin: 2.75rem 19%;
+	}
+
+	.post__body {
+		margin: 0 19%;
+	}
+
+	.pagination {
+		width: 40%;
+	}
+
+	.footer__contact {
+		align-items: start;
+		flex-direction: column;
+		padding: 1.75rem 4.5rem;
+	}
+
+	.footer__contact__item {
+		padding-bottom: 1.75rem;
+	}
+
+	.footer__contact__item:last-of-type {
+		padding-bottom: 0;
+	}
+
+	.copy {
+		align-items: flex-end;
+		padding-right: 4.5rem;
+	}
+}
+
+@media only screen and (max-width: 992px) {
+	.hero__caption > h1 {
+		font-size: var(--subtitle);
+	}
+
+	.hero__caption > h2 {
+		font-size: 1.25rem;
+	}
+
+	.pagination {
+		width: 50%;
+	}
+
+	.footer__social {
+		padding: 1rem 0;
+	}
+}
+
+@media only screen and (max-width: 768px) {
+	.header__title {
+		font-size: 1rem;
+	}
+
+	.menu {
+		display: none;
+		visibility: hidden;
+	}
+
+	.hamburger-menu {
+		display: grid;
+		visibility: visible;
+	}
+
+	.hamburger__items__item {
+		margin-right: 1.75rem;
+	}
+
+	.section {
+		margin: 2.75rem 9%;
+	}
+
+	.card {
+		width: 85%;
+	}
+
+	.contact__form {
+		grid-template-areas: "name" "email" "msg" "submit";
+	}
+
+	.contact__field > input {
+		width: 25rem;
+	}
+
+	.contact__field--name {
+		margin-right: 0;
+	}
+
+	.contact__field--msg {
+		margin-top: 0;
+	}
+
+	.contact__field--submit {
+		margin: 1.75rem 0;
+	}
+
+	.post__header {
+		padding: 0 10%;
+	}
+
+	.post__body {
+		margin: 0 9%;
+	}
+
+	.post__body > blockquote > p {
+		margin: 0 5%;
+	}
+
+	.post__footer {
+		margin: 0 10% 0.75rem;
+	}
+
+	.pagination {
+		width: 70%;
+	}
+}
+
+@media only screen and (max-width: 576px) {
+	.header__title {
+		margin-left: 1.75rem;
+	}
+
+	.toggle {
+		right: 1.75rem;
+	}
+
+	.hero {
+		background-position: 30% 0;
+	}
+
+	.hero__caption {
+		margin: 0 1.75rem 0;
+	}
+
+	.contact__field > input {
+		width: 20rem;
+	}
+
+	.card {
+		width: 90%;
+	}
+
+	.pagination {
+		width: 90%;
+	}
+
+	.footer {
+		grid-template-areas: "social" "contact" "copy";
+		grid-template-columns: 1fr;
+	}
+
+	.footer__social__link {
+		height: 40px;
+		line-height: 40px;
+		margin: 0.75rem;
+		width: 40px;
+	}
+
+	.footer__contact {
+		padding: 1.75rem;
+	}
+
+	.copy {
+		justify-content: center;
+		margin-bottom: 1.75rem;
+		margin-left: 5%;
+		margin-right: 5%;
+		padding: 0;
+	}
+}
+
+@media only screen and (max-width: 340px) {
+	.contact__field > input {
+		width: 17rem;
+	}
+}

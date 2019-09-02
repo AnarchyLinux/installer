@@ -1,0 +1,13 @@
+<nav class="menu" aria-label="menu">
+    <ul class="menu__items" aria-label="menu">
+        {{ $current := . }}
+        {{ range .Site.Menus.main }}
+        <li class="menu__items__item" aria-label="{{ .Name }}">
+            <a href="{{ .URL }}" class="menu__items__item__link {{ if $current.IsMenuCurrent "main" . }}active{{ end }}"
+                alt="{{ .Name }}" role="menuitem">
+                {{ .Name }}
+            </a>
+        </li>
+        {{ end }}
+    </ul>
+</nav>

@@ -1,0 +1,66 @@
+<footer class="footer">
+    {{ if $.Site.Params.social }}
+    {{ $items := $.Site.Params.social }}
+    {{ $len := (len $items) }}
+
+    {{ if gt $len 0 }}
+    <div class="footer__social">
+        {{ range $k, $v := $items }}
+        {{ if $v}}
+        <a href="{{ $v }}" class="footer__social__link" alt="{{ $k }}" target="_blank" aria-label="{{ $v }}" rel="noopener">
+            <span>
+                <i class="fab fa-{{ $k }}"></i>
+            </span>
+        </a>
+        {{ end }}
+        {{ end }}
+    </div>
+    {{ end }}
+    {{ end }}
+
+    <address class="footer__contact">
+        {{ if $.Site.Params.contact.email }}
+        <p class="footer__contact__item">
+            <span><i class="far fa-envelope"></i></span>
+            <a href="mailto:{{ $.Site.Params.contact.email}}" class="footer__contact__link" alt="Email">
+                {{ $.Site.Params.contact.email }}
+            </a>
+        </p>
+        {{ end }}
+
+        {{ if $.Site.Params.contact.phone }}
+        <p class="footer__contact__item">
+            <span><i class="fas fa-phone"></i></span>
+            <a href="tel:{{ $.Site.Params.contact.phone }}" class="footer__contact__link" alt="Phone">
+                {{ $.Site.Params.contact.phone }}
+            </a>
+        </p>
+        {{ end }}
+
+        {{ if $.Site.Params.contact.skype }}
+        <p class="footer__contact__item">
+            <span><i class="fab fa-skype"></i></span>
+            <a href="skype:{{ $.Site.Params.contact.skype }}" class="footer__contact__link" alt="Skype">
+                {{ $.Site.Params.contact.skype }}
+            </a>
+        </p>
+        {{ end }}
+
+        {{ if $.Site.Params.contact.address }}
+        <p class="footer__contact__item">
+            <span><i class="fas fa-map-marker-alt"></i></span>
+            {{ $.Site.Params.contact.address }}
+        </p>
+        {{ end }}
+    </address>
+
+    <div class="copy">
+        {{ if $.Site.Params.copy.copy }}
+        <p>{{ $.Site.Params.copy.copy }}</p>
+        {{ else }}
+        <p>© {{ now.Format "2006" }} - {{ $.Site.Title }}</p>
+        {{ end }}
+    </div>
+
+    {{ partial "scripts.html" . }}
+</footer>

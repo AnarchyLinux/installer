@@ -1,0 +1,96 @@
+baseurl = "/"
+title = "Terrassa"
+author = "Daniel Zaragoza (Danielkvist)"
+googleAnalytics = ""
+defaultContentLanguage = "en"
+language = "en-US"
+paginate = 3
+
+theme = "hugo-terrassa-theme"
+themesDir = "../.." # Not necessary on production sites
+
+[params]
+    description = "Terrassa is a simple, fast and responsive theme for Hugo with a strong focus on accessibility made from scratch."
+    favicon = "favicon.ico"
+    logo = ""
+
+[params.hero]
+    textColor = "" # Empty for default color
+
+[params.cta] # Call To Action 
+    show = true
+    cta = "Contact"
+    link = "contact" # Relative URL
+
+[params.separator] # Separators between sections on the home page
+    show = false
+
+[params.fa] # Font Awesome options
+    version = "5.7.2"
+    integrity = "sha384-0pzryjIRos8mFBWMzSSZApWtPl/5++eIfzYmTgBBmXYdhvxPc+XcFEk+zJwDgWbP"
+
+[params.form] # Contact form
+    netlify = true
+    action = "https://formspree.io/your@email.com"
+    method = "POST"
+    inputNameName = "name"
+    inputNameLabel = "Name"
+    inputNamePlaceholder = "Your name"
+    inputEmailName = "email"
+    inputEmailLabel = "Email"
+    inputEmailPlaceholder = "Your email"
+    inputMsgName = "message"
+    inputMsgLabel = "Write something"
+    inputMsgLength = 750
+    inputSubmitValue = "Send"
+
+[params.posts]
+    showAuthor = true
+    showDate = true
+    showTags = true
+    dateFormat = "Monday, Jan, 2006"
+
+[params.contact] # Contact info
+    email = "example@gmail.com"
+    phone = "xxx xxx xxx"
+    skype = ""
+    address = "419 Creek St. Revere, MA 02151"
+
+[params.social]
+    twitter = "https://twitter.com/john"
+    facebook = "https://facebook.com/john"
+    github = "https://github.com/john"
+    gitlab = ""
+    codepen = "https://codepen.io/john"
+    instagram = "https://instagram.com/john"
+    pinterest = ""
+    youtube = ""
+    linkedin = ""
+    weibo = ""
+    mastodon = ""
+    tumblr = ""
+    flickr = ""
+    "500px" = ""
+
+[params.copy] # Copyright
+    copy = "" # Empty for default content
+
+[privacy]
+    [privacy.googleAnalytics]
+        anonymizeIP = true
+        disable = false
+        respectDoNotTrack = true
+        useSessionStorage = false
+    [privacy.instagram]
+        disable = false
+        simple = false
+    [privacy.twitter]
+        disable = false
+        enableDNT = true
+        simple = false
+    [privacy.vimeo]
+        disable = false
+        simple = false
+    [privacy.youtube]
+        disable = false
+        privacyEnhanced = true

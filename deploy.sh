@@ -1,6 +1,4 @@
 #!/usr/bin/env bash
-# You'll need hugo-extended to build the website
-# Download the latest release from here: https://github.com/gohugoio/hugo/releases
 
 set -e
 

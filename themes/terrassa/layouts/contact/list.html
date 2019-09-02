@@ -1,0 +1,46 @@
+{{ define "main" }}
+<main class="contact">
+    <h1 class="contact__title">{{ .Title }}</h1>
+    <p class="contact__content">{{ .Description }}</p>
+
+    {{ if $.Site.Params.form.netlify }}
+    <form name="contact" method="POST" data-netlify="true" class="contact__form" id="contactForm">
+        {{ else }}
+        <form action="{{ $.Site.Params.form.action }}" method="{{ lower $.Site.Params.form.method }}" class="contact__form"
+            id="contactForm">
+            {{ end }}
+
+            <!-- Name -->
+            <div class="contact__field contact__field--name">
+                <label for="{{ $.Site.Params.form.inputNameName }}">{{ $.Site.Params.form.inputNameLabel }}</label>
+                <input type="text" name="{{ $.Site.Params.form.inputNameName }}" placeholder="{{ $.Site.Params.form.inputNamePlaceholder }}"
+                    class="contact__form__input contact__form__name" id="{{ $.Site.Params.form.inputNameName }}"
+                    aria-labelledby="{{ $.Site.Params.form.inputNameName }}" required>
+            </div>
+
+            <!-- Email -->
+            <div class="contact__field contact__field--email">
+                <label for="{{ $.Site.Params.form.inputEmailName }}">{{ $.Site.Params.form.inputEmailLabel }}</label>
+                <input type="email" name="{{ $.Site.Params.form.inputEmailName }}" placeholder="{{ $.Site.Params.form.inputEmailPlaceholder }}"
+                    class="contact__form__input contact__form__email" id="{{ $.Site.Params.form.inputEmailName }}"
+                    aria-labelledby="{{ $.Site.Params.form.InputEmailName }}" required>
+            </div>
+
+            <!-- Message -->
+            <div class="contact__field contact__field--msg">
+                <label for="{{ $.Site.Params.form.inputMsgName }}">{{ $.Site.Params.form.inputMsgLabel }}</label>
+                <textarea name="{{ $.Site.Params.form.inputMsgName }}" id="{{ $.Site.Params.form.inputMsgName }}" form="contactForm"
+                    maxlength="{{ $.Site.Params.form.inputMsgLength }}" id="{{ $.Site.Params.form.inputMsgName }}"
+                    arial-labelledby="{{ $.Site.Params.form.InputMsgName }}" required></textarea>
+            </div>
+
+            <!-- Submit -->
+            <div class="contact__field contact__field--submit">
+                <button type="submit" class="ripple-btn submit" onclick="cleanForm" aria-label="{{ $.Site.Params.form.inputSubmitValue }}">
+                    {{ $.Site.Params.form.inputSubmitValue }}
+                </button>
+            </div>
+
+        </form>
+</main>
+{{ end }}

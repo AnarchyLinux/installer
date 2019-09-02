@@ -1,0 +1,12 @@
+{{ if and $.Site.Params.posts.showTags .Params.Tags }}
+<ul class="tags">
+    {{ range .Params.Tags }}
+    {{ $url := printf "%stags/%s/" $.Site.BaseURL . }}
+    <li class="tags__tag">
+        <a href="{{ $url }}" class="tag__link" alt="{{ . }}.">
+            #{{ . }}
+        </a>
+    </li>
+    {{ end }}
+</ul>
+{{ end }}

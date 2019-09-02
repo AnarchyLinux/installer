@@ -1,0 +1,28 @@
+<article class="card">
+    <header class="card__header">
+        <h1 class="card__header__title">
+            <a href="{{ .Permalink }}" class="card__header__link" alt="{{ .Title }}.">
+                {{ .Title }}
+            </a>
+        </h1>
+        {{ if ne .Type "page" }}
+        {{ if and $.Site.Params.posts.showDate $.Site.Params.posts.showAuthor }}
+        <p class="card__header__date date">
+            {{ dateFormat $.Site.Params.posts.dateFormat .Date }} By {{ $.Params.author }}.
+        </p>
+        {{ else if $.Site.Params.posts.showDate }}
+        <p class="card__header__date date">{{ dateFormat $.Site.Params.posts.dateFormat .Date }}</p>
+        {{ else if $.Site.Params.posts.showAuthor }}
+        <p class="card__header__author author">By {{ $.Params.author }}.</p>
+        {{ end }}
+        {{ end }}
+    </header>
+
+    <main class="card__body">
+        {{ .Content | truncate 480 }}
+    </main>
+
+    <footer class="card__footer">
+        {{ .Render "tags" }}
+    </footer>
+</article>

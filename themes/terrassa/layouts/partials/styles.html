@@ -1,0 +1,11 @@
+{{ $reset := resources.Get "css/reset.css" }}
+{{ $base := resources.Get "css/base.css" }}
+{{ $style := resources.Get "css/style.css" }}
+{{ $media := resources.Get "css/media-queries.css" }}
+{{ $animations := resources.Get "css/animations.css" }}
+{{ $custom := resources.Get "css/custom.css" }}
+{{ $bundle := slice $reset $base $style $media $animations $custom | resources.Concat "css/bundle.css" }}
+
+{{ $css := $bundle | resources.Minify }}
+
+<link rel="stylesheet" href="{{ $css.Permalink }}">

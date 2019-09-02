@@ -1,63 +1,54 @@
-baseURL                          = "https://justmeerazem.github.io/anarchy-linux/"
-theme                            = "introduction"
-DefaultContentLanguage           = "en"
+baseURL                         = "https://anarchylinux.org/"
+theme                           = "terrassa"
+defaultContentLanguage          = "en"
+language                        = "en-GB"
+enableRobotsTXT                 = true
+title                           = "Anarchy Linux"
+author                          = "Erazem Kokot"
+paginate                        = 3
 
 [params]
-    themeStyle                   = "dark" # "light" or "dark"
-    favicon                      = "/img/fav.ico"
-    showRSSButton                = true
-    fadeIn                       = false
-    fadeInIndex                  = false
-    dateFormat                   = "Jan 2, 2006"
-    email                        = "contact@erazem.eu"
+    description                 = "A simple and intuitive Arch Linux installer"
+    favicon                     = "favicon.ico"
+    logo                        = ""
+    
+[params.hero]
+    textColor = ""
 
-    [params.home]
-        introHeight              = "fullheight" # "medium", "large" or "fullheight"
-        showLatest               = false # Show latest blog post summary
-        showAllPosts             = false # Set true to list all posts on home page, or set false to link to separate blog list page
-        #numberOfProjectsToShow   = 3 # Maximum number of projects to show on home page
-        localTime                = true
-        timeZone                 = "Europe/Ljubljana"
-        timeFormat               = "HH:mm"
+[params.cta] # Call To Action 
+    show = true
+    cta = "Download"
+    link = "https://github.com/deadhead420/anarchy-linux/releases"
 
-    [params.projects]
-        useTwoColumns            = false # Use a layout with two columns instead of three
+[params.separator] # Separators between sections on the home page
+    show = true
 
-    [params.share]
-        twitter                  = false
-        facebook                 = true
-        googlePlus               = false
-        pinterest                = false
+[params.fa] # Font Awesome options
+    version = "5.7.2"
+    integrity = "sha384-0pzryjIRos8mFBWMzSSZApWtPl/5++eIfzYmTgBBmXYdhvxPc+XcFEk+zJwDgWbP"
 
-    [[params.social]]
-        url   = "https://www.facebook.com/groups/archanywhere/"
-        icon  = "facebook-f"
-        icon_pack = "fab"
-    [[params.social]]
-        url = "mailto:contact@erazem.eu"
-        icon = "envelope"
-        icon_pack = "fas"
+[params.form] # Contact form
+    netlify = false
+    action = "https://formspree.io/contact@erazem.eu"
+    method = "POST"
+    inputNameName = "name"
+    inputNameLabel = "Name"
+    inputNamePlaceholder = "Your name"
+    inputEmailName = "email"
+    inputEmailLabel = "Email"
+    inputEmailPlaceholder = "Your email"
+    inputMsgName = "message"
+    inputMsgLabel = "Message"
+    inputMsgLength = 750
+    inputSubmitValue = "Send"
 
-[[menu.main]]
-    name    = "Home"
-    url     = "/"
-    weight  = 3
-[[menu.main]]
-    name    = "Blog"
-    url     = "/blog/"
-    weight  = 2
-[[menu.main]]
-    name    = "Download"
-    url     = "https://github.com/deadhead420/anarchy-linux/releases/tag/1.0.4"
-    weight  = 1
+[params.posts]
+    showAuthor = false
+    showDate = true
+    showTags = true
+    dateFormat = "January 2, 2006"
 
-[languages]
-    [languages.en]
-        languageName     = "English"
-        languageCode     = "en-us"
-        contentDir       = "content/en"
-        weight           = 0
-        title            = "Anarchy Linux"
-        [languages.en.params]
-            description  = "A simple and intuitive Arch Linux installer"
-            footerText   = "Copyright © 2019 Anarchy Linux – All rights reserved.  |  Website designed by [JustMeErazem](https://erazem.eu), using [Hugo](https://gohugo.io/) and [Introduction](https://github.com/victoriadrake/hugo-theme-introduction)"
+
+
+[params.copy] # Copyright
+    copy = "Licensed under the CC-BY-SA-4.0 license" # Empty for default content

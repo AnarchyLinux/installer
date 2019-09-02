@@ -1,0 +1,179 @@
+html,
+body,
+h1, 
+h2, 
+h3, 
+h4, 
+h5, 
+h6,
+a, 
+p, 
+span,
+em, 
+small, 
+strong,
+sub, 
+sup,
+mark, 
+del, 
+ins, 
+strike,
+abbr, 
+dfn,
+blockquote, 
+q, 
+cite,
+code, 
+pre,
+li, 
+dl, 
+dt, 
+dd,
+div, 
+section, 
+article,
+main, 
+aside, 
+nav,
+header, 
+hgroup, 
+footer,
+img, 
+figure, 
+figcaption,
+address, 
+time,
+audio, 
+video,
+canvas, 
+iframe,
+details, 
+summary,
+fieldset, 
+form, 
+label, 
+legend,
+table, 
+caption,
+tbody, 
+tfoot, 
+thead {
+    border: 0;
+    padding: 0;
+    margin: 0;
+}
+
+html {
+    box-sizing: border-box;
+    font-size: 1em;
+}
+
+*,
+*::before,
+*::after {
+    box-sizing: inherit;
+}
+
+a {
+    text-decoration: none;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Ubuntu, Oxygen, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+    font-kerning: auto;
+    -moz-osx-font-smoothing: grayscale;
+    -webkit-font-smoothing: antialised;
+    font-weight: 400;
+    height: 100vh;
+    hyphens: auto;
+    line-height: 1.62;
+    overflow-wrap: break-word;
+    text-rendering: optimizeLegibility;
+}
+
+blockquote,
+q {
+    quotes: none;
+}
+
+blockquote:after,
+blockquote:before,
+q:after,
+q:before {
+    content: "";
+}
+
+h1,
+h2,
+h3,
+h4 {
+    font-weight: inherit;
+    line-height: 1.2;
+    margin: 1.414rem 0 0.5rem;
+}
+
+hr {
+    box-sizing: content-box;
+    overflow: visible;
+}
+
+img,
+video,
+figure {
+    display: block;
+    height: auto;
+    max-width: 100%;
+}
+
+img {
+    border-style: none;
+}
+
+main,
+header,
+footer {
+    display: block;
+}
+
+ol,
+ul {
+    list-style: none;
+    margin-left: 0;
+    margin-right: 0;
+    padding: 0;
+}
+
+p {
+    margin-bottom: 1.1rem;
+}
+
+pre,
+code,
+kbd {
+    font-family: monospace;
+    font-size: 1em;
+    white-space: pre-wrap;
+}
+
+select {
+    text-transform: none;
+}
+
+table, td, tr, th {
+    margin: auto;
+    border-collapse: collapse;
+    border: 1px solid var(--primary-text);
+    padding: 10px;
+}
+
+[hidden] {
+    display: none;
+}
+
+[disabled] {
+    cursor: not-allowed;
+}
+
+:focus:not(:focus-visible) {
+    outline: none;
+}
