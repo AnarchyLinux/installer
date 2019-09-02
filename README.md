@@ -127,13 +127,6 @@ The installer features a long list of optional software from the following categ
 The installer has [AUR](https://aur.archlinux.org/) support enabled by default using the [yay](https://github.com/Jguer/yay) AUR helper.
 
 
-# Downloading
-
-Check out our [releases page](https://github.com/deadhead420/anarchy-linux/releases) to download Anarchy Linux.
-
-We recommend you use the latest release to make sure it has the most up to date features and bug fixes.
-
-
 # Installation
 
 ### **Windows**
