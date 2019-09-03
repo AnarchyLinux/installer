@@ -25,9 +25,6 @@
 # * Exit 3: Missing wget (update_arch_iso)
 # * Exit 4: Failed to create iso (create_iso)
 
-# Exit on error
-set -o errexit
-
 # Clears the screen and adds a banner
 prettify() {
     clear
@@ -194,10 +191,13 @@ extract_arch_iso() { # prev: extract_iso
 copy_config_files() { # prev: build_conf
 	# Change directory into the iso, where the filesystem is stored.
 	# Unsquash root filesystem 'airootfs.sfs', this creates a directory 'squashfs-root' containing the entire system
-	echo "Preparing ${system_architecture}"
+	echo "Unsquashing ${system_architecture} image ..."
 	cd "${custom_iso}"/arch/"${system_architecture}" || exit
 	sudo unsquashfs airootfs.sfs
+	echo "Done"
+	echo ""
 
+    echo "Copying Anarchy files ..."
 	# Copy over vconsole.conf (sets font at boot), locale.gen (enables locale(s) for font) & uvesafb.conf
 	sudo cp "${working_dir}"/etc/vconsole.conf "${working_dir}"/etc/locale.gen "${squashfs}"/etc
 	sudo arch-chroot "${squashfs}" /bin/bash locale-gen
@@ -248,28 +248,36 @@ copy_config_files() { # prev: build_conf
 		sudo linux32 arch-chroot "${squashfs}" pacman-key --populate archlinux32
 		sudo linux32 arch-chroot "${squashfs}" pacman-key --refresh-keys
 	fi
+	echo "Done"
+	echo ""
 }
 
 build_system() { # prev: build_sys
+    echo "Installing packages to new system ..."
 	# Install fonts, fbterm, fetchmirrors etc.
 	sudo pacman --root "${squashfs}" --cachedir "${squashfs}"/var/cache/pacman/pkg  --config "${pacman_config}" --noconfirm -Sy terminus-font acpi zsh-syntax-highlighting pacman-contrib
 	sudo pacman --root "${squashfs}" --cachedir "${squashfs}"/var/cache/pacman/pkg  --config "${pacman_config}" --noconfirm -U /tmp/fetchmirrors/*.pkg.tar.xz
 	sudo pacman --root "${squashfs}" --cachedir "${squashfs}"/var/cache/pacman/pkg  --config "${pacman_config}" -Sl | awk '/\[installed\]$/ {print $1 "/" $2 "-" $3}' > "${custom_iso}"/arch/pkglist."${system_architecture}".txt
 	sudo pacman --root "${squashfs}" --cachedir "${squashfs}"/var/cache/pacman/pkg  --config "${pacman_config}" --noconfirm -Scc
 	sudo rm -f "${squashfs}"/var/cache/pacman/pkg/*
+	echo "Done"
+	echo ""
 
 	# cd back into root system directory, remove old system
 	cd "${custom_iso}"/arch/"${system_architecture}" || exit
 	rm airootfs.sfs
 
 	# Recreate the iso using compression, remove unsquashed system, generate checksums
-	echo "Recreating ${system_architecture}..."
+	echo "Recreating ${system_architecture} image ..."
 	sudo mksquashfs squashfs-root airootfs.sfs -b 1024k -comp xz
 	sudo rm -r squashfs-root
 	md5sum airootfs.sfs > airootfs.md5
+	echo "Done"
+	echo ""
 }
 
 configure_boot() {
+    echo "Configuring boot ..."
 	arch_iso_label=$(<"${custom_iso}"/loader/entries/archiso-x86_64.conf awk 'NR==6{print $NF}' | sed 's/.*=//')
 	arch_iso_hex=$(<<<"${arch_iso_label}" xxd -p)
 	anarchy_iso_hex=$(<<<"${anarchy_iso_label}" xxd -p)
@@ -286,6 +294,8 @@ configure_boot() {
 		echo "Press any key to continue." ; read input
 	fi
 	mv efiboot1.img efiboot.img
+	echo "Done"
+	echo ""
 }
 
 create_iso() {
