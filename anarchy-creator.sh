@@ -85,7 +85,7 @@ check_dependencies() { # prev: check_depends
 		read -r input
 
 		case ${input} in
-			y|Y) sudo pacman -Sy "${dependencies}" ;;
+			y|Y) sudo pacman -Sy ${dependencies} ;;
 			*) echo "Error: Missing dependencies, exiting."
 			exit 1
 			;;
@@ -151,7 +151,6 @@ update_arch_iso() { # prev: update_iso
 
 local_repo_builds() { # prev: aur_builds
 	# Update pacman databases
-	echo "Enter password to build AUR packages:"
 	sudo pacman -Sy
 
 	echo "Building AUR packages for local repo ..."
