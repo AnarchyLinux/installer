@@ -5,9 +5,9 @@
 <h2 align="center">Anarchy Linux</h2>
 
 <p align="center">
-    A distribution aimed at bringing the Linux revolution to the world.
+    A simple and intuitive Arch Linux installer.
     <br>
-    Anarchy, quick, easy, and straight forward, "Keep it simple stupid".
+    Anarchy: quick, easy, and straight forward, following the "Keep it simple stupid" principle.
 </p>
 
 <p align="center">
