@@ -5,7 +5,7 @@
 
 ###############################################################
 ### Anarchy Linux Install Script
-### anarchy-creator.sh
+### iso-generator.sh
 ###
 ### Copyright (C) 2018 Dylan Schacht
 ###
@@ -339,7 +339,7 @@ generate_checksums() {
 
 usage() {
     clear
-	echo "Usage: anarchy-creator.sh [architecture]"
+	echo "Usage: iso-generator.sh [architecture]"
 	echo "  --i686)     create i686 (32-bit) installer"
 	echo "  --x86_64)   create x86_64 (64-bit) installer (default)"
 	echo ""

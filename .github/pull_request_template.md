@@ -9,7 +9,7 @@ Write all your text below the comments or delete them if you want.
 
 ## Issues closed
 
-<!-- Tag any relevant issues your PR closes by prepending their number with a # (e.g. "Fixes #123"). -->
+<!-- Tag any relevant issues your PR closes by prepending their number with a # (e.g. "Closes #123"). -->
 
 ## How to test / reproduce
 
