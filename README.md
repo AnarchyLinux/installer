@@ -1,21 +1,25 @@
-<html lang="en">
-<p align="center">
-    <img src="https://user-images.githubusercontent.com/10241434/43771874-12ff77d8-9a73-11e8-99af-dc067a07dcd7.png" alt="Anarchy logo">
-</p>
-<h2 align="center">Anarchy Linux</h2>
+<style>
+     img, h2, p {
+      display: block;
+      margin-left: auto;
+      margin-right: auto;
+      width: 40%;
+    }
+</style>
 
-<p align="center">
+<img src="https://user-images.githubusercontent.com/10241434/43771874-12ff77d8-9a73-11e8-99af-dc067a07dcd7.png" alt="Anarchy logo">
+<h2>Anarchy Linux</h2>
+
+<p>
     A simple and intuitive Arch Linux installer.
     <br>
     Anarchy, quick, easy, and straight forward, "Keep it simple stupid".
 </p>
 
-<p align="center">
+<p>
     <a href="https://anarchylinux.org/">Home page</a> | 
     <a href="https://github.com/deadhead420/anarchy-linux/releases">Download</a>
 </p>
-</html>
-
 
 # About
 
@@ -128,6 +132,28 @@ The installer has [AUR](https://aur.archlinux.org/) support enabled by default u
 
 
 # Installation
+
+### **Verifying the checksums**
+
+It's recommended that you verify the checksums before using Anarchy.
+
+On Linux, this is a very simple thing to do.
+Run the following command in a terminal:
+
+`sha256sum -c anarchy-(version)-(architecture).iso.sha256sum`
+
+If the image (ISO file) was fully and correctly downloaded you should see something like this:
+
+`anarchy-1.0.5-x86_64.iso: OK`
+
+On Windows you have to get some external tools.
+An example is [sha256sum.exe](http://www.labtestproject.com/files/win/sha256sum/sha256sum.exe), which you can run in cmd like so:
+
+`sha256sum.exe anarchy-(version)-(architecture).iso`
+
+Note that unlike its Linux counterpart, it will only display the sha256 checksum of the image,
+not compare it with the generated checksums as well.
+So make sure to open the .sha256sum file in a text editor and compare the hashes yourself.
 
 ### **Windows**
 
