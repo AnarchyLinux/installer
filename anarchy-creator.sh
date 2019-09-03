@@ -25,6 +25,12 @@
 # * Exit 3: Missing wget (update_arch_iso)
 # * Exit 4: Failed to create iso (create_iso)
 
+# Exit on error
+set -o errexit
+
+# Enable tracing of what gets executed
+#set -o xtrace
+
 # Clears the screen and adds a banner
 prettify() {
     clear
