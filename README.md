@@ -1,9 +1,20 @@
-# Anarchy Linux
+<html lang="en">
+<p align="center">
+    <img src="https://user-images.githubusercontent.com/10241434/43771874-12ff77d8-9a73-11e8-99af-dc067a07dcd7.png" alt="Anarchy logo">
+</p>
+<h2 align="center">Anarchy Linux</h2>
 
-![Anarchy logo](https://user-images.githubusercontent.com/10241434/43771874-12ff77d8-9a73-11e8-99af-dc067a07dcd7.png)
+<p align="center">
+    A distribution aimed at bringing the Linux revolution to the world.
+    <br>
+    Anarchy, quick, easy, and straight forward, "Keep it simple stupid".
+</p>
 
-* [Home page](https://anarchylinux.org/)
-* [Download](https://github.com/deadhead420/anarchy-linux/releases)
+<p align="center">
+    <a href="https://www.anarchylinux.org/">Home page</a> | 
+    <a href="https://github.com/deadhead420/anarchy-linux/releases">Download</a>
+</p>
+</html>
 
 ## About
 
