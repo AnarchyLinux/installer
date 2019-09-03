@@ -1,29 +1,11 @@
-<html lang="en">
-<style>
-    img, p, h2 {
-      display: block;
-      margin-left: auto;
-      margin-right: auto;
-      width: 40%;
-    }
-</style>
+# Anarchy Linux
 
-<img src="https://user-images.githubusercontent.com/10241434/43771874-12ff77d8-9a73-11e8-99af-dc067a07dcd7.png" alt="Anarchy logo">
-<h2>Anarchy Linux</h2>
+![Anarchy logo](https://user-images.githubusercontent.com/10241434/43771874-12ff77d8-9a73-11e8-99af-dc067a07dcd7.png)
 
-<p>
-    A simple and intuitive Arch Linux installer.
-    <br>
-    Anarchy, quick, easy, and straight forward, "Keep it simple stupid".
-</p>
+* [Home page](https://anarchylinux.org/)
+* [Download](https://github.com/deadhead420/anarchy-linux/releases)
 
-<p>
-    <a href="https://anarchylinux.org/">Home page</a> | 
-    <a href="https://github.com/deadhead420/anarchy-linux/releases">Download</a>
-</p>
-</html>
-
-# About
+## About
 
 Anarchy Linux is an Arch Linux installer providing a hassle-free pure installation and polished user experience.
 Every aspect of the install is taken into account from partitioning and general system configuration,
@@ -36,12 +18,12 @@ That is the Anarchy philosophy.
 Anarchy aims to provide a polished and pure Arch install while leaving open every possible configuration avenue for the user to choose from.
 
 
-# Screenshots
+## Screenshots
 
 About three main screenshots coming...
 
 
-# Features
+## Features
 
 ### Large selection of kernels
 
@@ -133,7 +115,7 @@ The installer features a long list of optional software from the following categ
 The installer has [AUR](https://aur.archlinux.org/) support enabled by default using the [yay](https://github.com/Jguer/yay) AUR helper.
 
 
-# Installation
+## Installation
 
 ### **Verifying the checksums**
 
@@ -179,12 +161,12 @@ sudo dd if=./<anarchy-image.iso> of=/dev/sdx bs=4M status=progress && sync
 You can also use GUI based software such as [Etcher](https://www.balena.io/etcher/).
 
 
-# Contributing
+## Contributing
 
 We're always looking for new contributors to the project,
 so check out our [contributing guide](CONTRIBUTING.md) for more info.
 
 
-# License
+## License
 
 The project is licensed under the [GNU GPLv2 license](LICENSE).
