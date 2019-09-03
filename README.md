@@ -1,26 +1,26 @@
 <html lang="en">
-    <style>
-         img, h2, p {
-          display: block;
-          margin-left: auto;
-          margin-right: auto;
-          width: 40%;
-        }
-    </style>
-    
-    <img src="https://user-images.githubusercontent.com/10241434/43771874-12ff77d8-9a73-11e8-99af-dc067a07dcd7.png" alt="Anarchy logo">
-    <h2>Anarchy Linux</h2>
-    
-    <p>
-        A simple and intuitive Arch Linux installer.
-        <br>
-        Anarchy, quick, easy, and straight forward, "Keep it simple stupid".
-    </p>
-    
-    <p>
-        <a href="https://anarchylinux.org/">Home page</a> | 
-        <a href="https://github.com/deadhead420/anarchy-linux/releases">Download</a>
-    </p>
+<style>
+    img, p, h2 {
+      display: block;
+      margin-left: auto;
+      margin-right: auto;
+      width: 40%;
+    }
+</style>
+
+<img src="https://user-images.githubusercontent.com/10241434/43771874-12ff77d8-9a73-11e8-99af-dc067a07dcd7.png" alt="Anarchy logo">
+<h2>Anarchy Linux</h2>
+
+<p>
+    A simple and intuitive Arch Linux installer.
+    <br>
+    Anarchy, quick, easy, and straight forward, "Keep it simple stupid".
+</p>
+
+<p>
+    <a href="https://anarchylinux.org/">Home page</a> | 
+    <a href="https://github.com/deadhead420/anarchy-linux/releases">Download</a>
+</p>
 </html>
 
 # About
