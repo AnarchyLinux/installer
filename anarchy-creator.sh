@@ -326,13 +326,10 @@ create_iso() {
 
 generate_checksums() {
 	echo "Generating image checksums..."
-	md5_sum=$(md5sum "${anarchy_iso_name}" | awk '{print $1}')
-	sha1_sum=$(sha1sum "${anarchy_iso_name}" | awk '{print $1}')
-	timestamp=$(timedatectl | grep "Universal" | awk '{print $4" "$5" "$6}')
-	echo "Checksums generated. Saved to $(sed 's/.iso//' <<<"${anarchy_iso_name}")-checksums.txt"
-	echo -e "- Anarchy Linux is licensed under GPL v2\n- Webpage: https://anarchylinux.org\n- Image timestamp: ${timestamp}\n- ${anarchy_iso_name} Official Checksums:
-	* md5sum: ${md5_sum}
-	* sha1sum: ${sha1_sum}" > "$(sed 's/.iso//' <<<"${anarchy_iso_name}")-checksums.txt"
+	local sha_256_sum=$(sha256sum "${anarchy_iso_name}")
+	echo "${sha_256_sum}" > "${anarchy_iso_name}".sha256sum
+	echo "Done"
+	echo ""
 }
 
 usage() {
