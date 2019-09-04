@@ -5,7 +5,7 @@ language = "en-GB"
 enableRobotsTXT = true
 title = "Anarchy Linux"
 author = "Erazem Kokot"
-paginate = 3
+paginate = 5 # Number of blog posts on one page
 
 [params]
     description = "A simple and intuitive Arch Linux installer"
