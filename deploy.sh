@@ -20,8 +20,8 @@ rm -rf public/*
 echo "Generating site"
 hugo
 
-echo "Updating gh-pages branch"
+echo "Commiting to gh-pages branch"
 cd public && git add --all && git commit -m "Publish to gh-pages (deploy.sh)"
 
-echo "For security reasons you have to manually push to upstream"
-echo "e.g. 'git push upstream gh-pages'"
+echo "Pushing to gh-pages branch"
+git push upstream gh-pages
