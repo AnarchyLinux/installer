@@ -496,7 +496,8 @@ add_software() {
 						"smplayer"				"$media4" OFF \
 						"snappy-player"				"$media11" OFF \
 						"totem"					"$media5" OFF \
-						"vlc"         	   			"$media6" OFF 3>&1 1>&2 2>&3)
+						"vlc"         	   			"$media6" OFF \
+						"youtube-dl" "$media12" OFF 3>&1 1>&2 2>&3)
 					if [ "$?" -gt "0" ]; then
 						add_soft=false
 					fi
@@ -540,9 +541,10 @@ add_software() {
 						"go"			"$prg3" OFF \
 						"go-tools"		"$prg4" OFF \
 						"java-runtime-common"	"$prg5" OFF \
-						"java-openjdk-7"	"$prg6" OFF \
-						"java-openjdk-8"	"$prg7" OFF \
+						"jdk8-openjdk"	"$prg7" OFF \
 						"java-openjfx-8"	"$prg8" OFF \
+						"jdk11-openjdk" "$prg14" OFF \
+						"jdk-openjdk" "$prg15" OFF \
 						"perl"			"$prg9" OFF \
 						"php"			"$prg10" OFF \
 						"python"		"$prg11" OFF \
