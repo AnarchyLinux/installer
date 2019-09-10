@@ -204,7 +204,7 @@ copy_config_files() { # prev: build_conf
 
     echo "Copying Anarchy files ..."
 	# Copy over vconsole.conf (sets font at boot), locale.gen (enables locale(s) for font) & uvesafb.conf
-	sudo cp "${working_dir}"/etc/vconsole.conf "${working_dir}"/etc/locale.gen "${squashfs}"/etc
+	sudo cp "${working_dir}"/etc/vconsole.conf "${working_dir}"/etc/locale.gen "${squashfs}"/etc/
 	sudo arch-chroot "${squashfs}" /bin/bash locale-gen
 
 	# Copy over main Anarchy config and installer script, make them executable
@@ -215,15 +215,15 @@ copy_config_files() { # prev: build_conf
 
 	# Create Anarchy and lang directories, copy over all lang files
 	sudo mkdir -p "${squashfs}"/usr/share/anarchy/lang "${squashfs}"/usr/share/anarchy/extra "${squashfs}"/usr/share/anarchy/boot "${squashfs}"/usr/share/anarchy/etc
-	sudo cp "${working_dir}"/lang/* "${squashfs}"/usr/share/anarchy/lang
+	sudo cp "${working_dir}"/lang/* "${squashfs}"/usr/share/anarchy/lang/
 
 	# Create shell function library, copy /lib to squashfs-root
 	sudo mkdir "${squashfs}"/usr/lib/anarchy
-	sudo cp "${working_dir}"/lib/* "${squashfs}"/usr/lib/anarchy
+	sudo cp "${working_dir}"/lib/* "${squashfs}"/usr/lib/anarchy/
 
 	# Copy over extra files (dotfiles, desktop configurations, help file, issue file, hostname file)
 	sudo rm "${squashfs}"/root/install.txt
-	sudo cp "${working_dir}"/extra/shellrc/.zshrc "${squashfs}"/root
+	sudo cp "${working_dir}"/extra/shellrc/.zshrc "${squashfs}"/root/
 	sudo cp "${working_dir}"/extra/.help "${working_dir}"/extra/.dialogrc "${squashfs}"/root/
 	sudo cp "${working_dir}"/extra/shellrc/.zshrc "${squashfs}"/etc/zsh/zshrc
 	sudo cp -r "${working_dir}"/extra/shellrc/. "${squashfs}"/usr/share/anarchy/extra/
@@ -237,7 +237,7 @@ copy_config_files() { # prev: build_conf
 	sudo mkdir "${custom_iso}"/arch/"${system_architecture}"/squashfs-root/usr/share/anarchy/pkg
 
 	for pkg in $(echo "${local_aur_packages[@]}"); do
-		sudo cp /tmp/"${pkg}"/*.pkg.tar.xz "${squashfs}"/usr/share/anarchy/pkg
+		sudo cp /tmp/"${pkg}"/*.pkg.tar.xz "${squashfs}"/usr/share/anarchy/pkg/
 	done
 
 	cd "${squashfs}"/usr/share/anarchy/pkg || exit
@@ -286,8 +286,7 @@ configure_boot() {
 	arch_iso_label=$(<"${custom_iso}"/loader/entries/archiso-x86_64.conf awk 'NR==6{print $NF}' | sed 's/.*=//')
 	arch_iso_hex=$(<<<"${arch_iso_label}" xxd -p)
 	anarchy_iso_hex=$(<<<"${anarchy_iso_label}" xxd -p)
-	cp "${working_dir}"/boot/splash.png "${custom_iso}"/arch/boot/syslinux
-	cp "${working_dir}"/boot/iso/archiso_head.cfg "${custom_iso}"/arch/boot/syslinux
+	cp "${working_dir}"/boot/splash.png "${working_dir}"/boot/iso/archiso_head.cfg "${custom_iso}"/arch/boot/syslinux/
 	sed -i "s/${arch_iso_label}/${anarchy_iso_label}/;s/Arch Linux archiso/Anarchy Linux/" "${custom_iso}"/loader/entries/archiso-x86_64.conf
 	sed -i "s/${arch_iso_label}/${anarchy_iso_label}/;s/Arch Linux/Anarchy Linux/" "${custom_iso}"/arch/boot/syslinux/archiso_sys.cfg
 	sed -i "s/${arch_iso_label}/${anarchy_iso_label}/;s/Arch Linux/Anarchy Linux/" "${custom_iso}"/arch/boot/syslinux/archiso_pxe.cfg
