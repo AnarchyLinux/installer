@@ -30,71 +30,71 @@
 
 init() {
 
-	if [[ $(basename "$0") = "anarchy" ]]; then
-		anarchy_directory="/usr/share/anarchy" # prev: aa_dir
-		anarchy_config="/etc/anarchy.conf" # prev: aa_conf
-		anarchy_scripts="/usr/lib/anarchy" # prev: aa_lib
-	else
-		anarchy_directory=$(dirname "$(readlink -f "$0")") # Anarchy git repository
-		anarchy_config="${anarchy_directory}"/etc/anarchy.conf
-		anarchy_scripts="${anarchy_directory}"/lib
-	fi
+    if [[ $(basename "$0") = "anarchy" ]]; then
+        anarchy_directory="/usr/share/anarchy" # prev: aa_dir
+        anarchy_config="/etc/anarchy.conf" # prev: aa_conf
+        anarchy_scripts="/usr/lib/anarchy" # prev: aa_lib
+    else
+        anarchy_directory=$(dirname "$(readlink -f "$0")") # Anarchy git repository
+        anarchy_config="${anarchy_directory}"/etc/anarchy.conf
+        anarchy_scripts="${anarchy_directory}"/lib
+    fi
 
-	trap '' 2
+    trap '' 2
 
-	for script in "${anarchy_scripts}"/*.sh ; do
-	    [[ -e "${script}" ]] || break
-	    # shellcheck source=/usr/lib/anarchy/*.sh
-		source "${script}"
-	done
+    for script in "${anarchy_scripts}"/*.sh ; do
+        [[ -e "${script}" ]] || break
+        # shellcheck source=/usr/lib/anarchy/*.sh
+        source "${script}"
+    done
 
     # shellcheck source=/etc/anarchy.conf
-	source "${anarchy_config}"
-	language
-	# shellcheck source=/usr/share/anarchy/lang/
-	source "${lang_file}"
-	# shellcheck source=/etc/anarchy.conf
-	source "${anarchy_config}"
-	export reload=true
+    source "${anarchy_config}"
+    language
+    # shellcheck source=/usr/share/anarchy/lang/
+    source "${lang_file}"
+    # shellcheck source=/etc/anarchy.conf
+    source "${anarchy_config}"
+    export reload=true
 
 }
 
 main() {
 
     set_keys
-	update_mirrors
-	check_connection
-	set_locale
-	set_zone
-	prepare_drives
-	install_options
-	set_hostname
-	set_user
-	add_software
-	install_base
-	configure_system
-	add_user
-	reboot_system
+    update_mirrors
+    check_connection
+    set_locale
+    set_zone
+    prepare_drives
+    install_options
+    set_hostname
+    set_user
+    add_software
+    install_base
+    configure_system
+    add_user
+    reboot_system
 
 }
 
 dialog() {
 
-	if "$screen_h" ; then
-		if "$LAPTOP" ; then
-			backtitle="$backtitle $(acpi)"
-		fi
-		/usr/bin/dialog --colors --backtitle "$backtitle" --title "$op_title" "$@"
-	else
-		/usr/bin/dialog --colors --title "$title" "$@"
-	fi
+    if "$screen_h" ; then
+        if "$LAPTOP" ; then
+            backtitle="$backtitle $(acpi)"
+        fi
+        /usr/bin/dialog --colors --backtitle "$backtitle" --title "$op_title" "$@"
+    else
+        /usr/bin/dialog --colors --title "$title" "$@"
+    fi
 
 }
 
 if [[ "$UID" -ne "0" ]]; then
-	echo "Error: anarchy requires root privilege"
-	echo "       Use: sudo anarchy"
-	exit 1
+    echo "Error: anarchy requires root privilege"
+    echo "       Use: sudo anarchy"
+    exit 1
 fi
 
 opt="$1"

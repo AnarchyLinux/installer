@@ -24,9 +24,9 @@ cpu_type=$(lscpu | grep "Model name:" | cut -c 22-)
 cpu_cores=$(lscpu | grep "^CPU(s):" | cut -c 22-)
 
 if (lscpu | grep "CPU max MHz" &> /dev/null) then
-	cpu_freq=$(lscpu | grep "CPU max MHz:" | cut -c 22-)
+    cpu_freq=$(lscpu | grep "CPU max MHz:" | cut -c 22-)
 else
-	cpu_freq=$(lscpu | grep "CPU MHz:" | cut -c 22-)
+    cpu_freq=$(lscpu | grep "CPU MHz:" | cut -c 22-)
 fi
 
 mem_total=$(free -m | awk 'NR==2 {print $2}')
