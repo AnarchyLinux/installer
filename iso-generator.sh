@@ -40,27 +40,27 @@ prettify() {
 
 set_version() {
     # Label must be 11 characters long
-    export anarchy_iso_label="ANARCHYV105" # prev: iso_label
-    export anarchy_iso_release="1.0.5" # prev: iso_rel
-    export anarchy_iso_name="anarchy-${anarchy_iso_release}-${system_architecture}.iso" # prev: version
+    anarchy_iso_label="ANARCHYV105" # prev: iso_label
+    anarchy_iso_release="1.0.5" # prev: iso_rel
+    anarchy_iso_name="anarchy-${anarchy_iso_release}-${system_architecture}.iso" # prev: version
 }
 
 init() {
     # Location variables
-    export working_dir=$(pwd) # prev: aa
-    export custom_iso="${working_dir}"/customiso # prev: customiso
-    export squashfs="${custom_iso}"/arch/"${system_architecture}"/squashfs-root # prev: sq
+    working_dir=$(pwd) # prev: aa
+    custom_iso="${working_dir}"/customiso # prev: customiso
+    squashfs="${custom_iso}"/arch/"${system_architecture}"/squashfs-root # prev: sq
 
     # Check for existing Arch iso
     if (ls "${working_dir}"/archlinux-*-"${system_architecture}".iso &>/dev/null); then
-        export local_arch_iso=$(ls "${working_dir}"/archlinux-*-"${system_architecture}".iso | tail -n1 | sed 's!.*/!!') # Outputs Arch iso filename prev: iso
+        local_arch_iso=$(ls "${working_dir}"/archlinux-*-"${system_architecture}".iso | tail -n1 | sed 's!.*/!!') # Outputs Arch iso filename prev: iso
     fi
 
     # Link to AUR snapshots
     aur_snapshot_link="https://aur.archlinux.org/cgit/aur.git/snapshot/" # prev: aur
 
     # Packages to add to local repo
-    export local_aur_packages=( # prev: builds
+    local_aur_packages=( # prev: builds
         'fetchmirrors'
         'numix-icon-theme-git'
         'numix-circle-icon-theme-git'
@@ -106,15 +106,15 @@ update_arch_iso() { # prev: update_iso
 
     # Check for latest Arch Linux iso
     if [[ "${system_architecture}" == "x86_64" ]]; then
-        export arch_iso_latest=$(curl -s https://www.archlinux.org/download/ | grep "Current Release" | awk '{print $3}' | sed -e 's/<.*//') # prev: archiso_latest
-        export arch_iso_link="https://mirrors.kernel.org/archlinux/iso/${arch_iso_latest}/archlinux-${arch_iso_latest}-x86_64.iso" # prev: archiso_link
+        arch_iso_latest=$(curl -s https://www.archlinux.org/download/ | grep "Current Release" | awk '{print $3}' | sed -e 's/<.*//') # prev: archiso_latest
+        arch_iso_link="https://mirrors.kernel.org/archlinux/iso/${arch_iso_latest}/archlinux-${arch_iso_latest}-x86_64.iso" # prev: archiso_link
     else
-        export arch_iso_latest=$(curl -s https://mirror.archlinux32.org/archisos/ | grep -o ">.*.iso<" | tail -1 | sed 's/>//;s/<//')
-        export arch_iso_link="https://mirror.archlinux32.org/archisos/${arch_iso_latest}"
+        arch_iso_latest=$(curl -s https://mirror.archlinux32.org/archisos/ | grep -o ">.*.iso<" | tail -1 | sed 's/>//;s/<//')
+        arch_iso_link="https://mirror.archlinux32.org/archisos/${arch_iso_latest}"
     fi
 
     echo "Checking for updated Arch Linux image ..."
-    export iso_date=$(<<<"${arch_iso_link}" sed 's!.*/!!')
+    iso_date=$(<<<"${arch_iso_link}" sed 's!.*/!!')
     if [[ "${iso_date}" != "${local_arch_iso}" ]]; then
         if [[ -z "${local_arch_iso}" ]]; then
             echo -en "\nNo Arch Linux image found under ${working_dir}\n\nDownload it? [y/N]: "
@@ -148,7 +148,7 @@ update_arch_iso() { # prev: update_iso
                 echo "Error: You need 'wget' to download the image, exiting."
                 exit 3
             fi
-            export local_arch_iso=$(ls "${working_dir}"/archlinux-*-"${system_architecture}".iso | tail -n1 | sed 's!.*/!!')
+            local_arch_iso=$(ls "${working_dir}"/archlinux-*-"${system_architecture}".iso | tail -n1 | sed 's!.*/!!')
         fi
     fi
     echo "Done"
