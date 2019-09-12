@@ -100,4 +100,4 @@ ctrl_c() {
 
 }
 
-# vim: ai:ts=8:sw=8:sts=8:noet
+# vim: ai:ts=4:sw=4:et
