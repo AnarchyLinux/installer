@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 ###############################################################
 ### Anarchy Linux Install Script
 ### language.sh
