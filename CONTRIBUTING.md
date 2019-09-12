@@ -21,6 +21,17 @@ we use `good first issue` and `help wanted` tags,
 so you can find some great issues you can help fix [right here](https://github.com/deadhead420/anarchy-linux/contribute).
 Of course you can help fix any issue, those are just the ones we recommend to new contributors.
 
+### Style guide
+
+* Follow bash best practices (Google them)
+* Use "${variable}" instead of $variable
+* Use double square brackets ("[[ condition ]]") for conditionals
+* Use 4 spaces for indentation instead of tabs
+* Use "#!/usr/bin/env bash" as a shebang
+
+If you need help remembering commands or want to check out some tips
+visit [devhints.io](https://devhints.io/bash) to do so.
+
 ## Update the documentation
 
 Maybe you don't know how to code or don't want to contribute code.
@@ -29,9 +40,10 @@ That's ok, we appreciate other kinds of help too.
 If you've found a typo in our readme or on [our website](https://github.com/deadhead420/anarchy-linux/tree/website-source),
 you can always help fix it and submit a pull request.
 
-Our website is generated with [hugo](https://github.com/deadhead420/anarchy-linux/tree/website-source) and uses the [introdution theme](https://github.com/victoriadrake/hugo-theme-introduction).
+Our website is generated with [hugo](https://github.com/deadhead420/anarchy-linux/tree/website-source)
+and uses the [introdution theme](https://github.com/victoriadrake/hugo-theme-introduction).
 
-## Translating the project
+## Translate the project
 
 Anarchy Linux, although a relatively simple project,
 still has a bunch of languages included, all of which need contributors.
