@@ -53,8 +53,8 @@ syslinux_config() {
 		esp_mnt=$(<<<$esp_mnt sed "s!$ARCH!!")
 		(mkdir -p ${ARCH}${esp_mnt}/EFI/syslinux
 		cp -r "$ARCH"/usr/lib/syslinux/efi64/* ${ARCH}${esp_mnt}/EFI/syslinux/
-		cp "$aa_dir"/boot/loader/syslinux/syslinux_efi.cfg ${ARCH}${esp_mnt}/EFI/syslinux/syslinux.cfg
-		cp "$aa_dir"/boot/splash.png ${ARCH}${esp_mnt}/EFI/syslinux
+		cp "${anarchy_directory}"/boot/loader/syslinux/syslinux_efi.cfg ${ARCH}${esp_mnt}/EFI/syslinux/syslinux.cfg
+		cp "${anarchy_directory}"/boot/splash.png ${ARCH}${esp_mnt}/EFI/syslinux
 
 		if [ "$kernel" == "linux-lts" ]; then
 			sed -i 's/vmlinuz-linux/vmlinuz-linux-lts/' ${ARCH}${esp_mnt}/EFI/syslinux/syslinux.cfg
@@ -85,8 +85,8 @@ syslinux_config() {
 
 	else
 		(syslinux-install_update -i -a -m -c "$ARCH"
-		cp "$aa_dir"/boot/loader/syslinux/syslinux.cfg "$ARCH"/boot/syslinux/
-		cp "$aa_dir"/boot/splash.png "$ARCH"/boot/syslinux/) &> /dev/null &
+		cp "${anarchy_directory}"/boot/loader/syslinux/syslinux.cfg "$ARCH"/boot/syslinux/
+		cp "${anarchy_directory}"/boot/splash.png "$ARCH"/boot/syslinux/) &> /dev/null &
 		pid=$! pri=0.1 msg="\n$syslinux_load \n\n \Z1> \Z2syslinux-install_update -i -a -m -c $ARCH\Zn" load
 
 		if [ "$kernel" == "linux-lts" ]; then

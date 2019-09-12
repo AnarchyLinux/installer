@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 ###############################################################
 ### Anarchy Linux Install Script
 ###
@@ -30,35 +30,40 @@
 
 init() {
 
-	if [ $(basename "$0") = "anarchy" ]; then
-		aa_dir="/usr/share/anarchy" # Anarchy ISO
-		aa_conf="/etc/anarchy.conf"
-		aa_lib="/usr/lib/anarchy"
+	if [[ $(basename "$0") = "anarchy" ]]; then
+		anarchy_directory="/usr/share/anarchy" # prev: aa_dir
+		anarchy_config="/etc/anarchy.conf" # prev: aa_conf
+		anarchy_scripts="/usr/lib/anarchy" # prev: aa_lib
 	else
-		aa_dir=$(dirname $(readlink -f "$0")) # Anarchy git repository
-		aa_conf="$aa_dir"/etc/anarchy.conf
-		aa_lib="$aa_dir"/lib
+		anarchy_directory=$(dirname "$(readlink -f "$0")") # Anarchy git repository
+		anarchy_config="${anarchy_directory}"/etc/anarchy.conf
+		anarchy_scripts="${anarchy_directory}"/lib
 	fi
 
 	trap '' 2
 
-	for file in $(ls "$aa_lib") ; do
-		source "$aa_lib"/"$file"
+	for script in "${anarchy_scripts}"/*.sh ; do
+	    [[ -e "${script}" ]] || break
+	    # shellcheck source=/usr/lib/anarchy/*.sh
+		source "${script}"
 	done
 
-	source "$aa_conf"
+    # shellcheck source=/etc/anarchy.conf
+	source "${anarchy_config}"
 	language
-	source "$lang_file"
-	source "$aa_conf"
+	# shellcheck source=/usr/share/anarchy/lang/
+	source "${lang_file}"
+	# shellcheck source=/etc/anarchy.conf
+	source "${anarchy_config}"
 	export reload=true
 
 }
 
 main() {
 
+    set_keys
 	update_mirrors
 	check_connection
-	set_keys
 	set_locale
 	set_zone
 	prepare_drives
@@ -86,7 +91,7 @@ dialog() {
 
 }
 
-if [ "$UID" -ne "0" ]; then
+if [[ "$UID" -ne "0" ]]; then
 	echo "Error: anarchy requires root privilege"
 	echo "       Use: sudo anarchy"
 	exit 1
