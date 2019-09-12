@@ -28,6 +28,8 @@ Of course you can help fix any issue, those are just the ones we recommend to ne
 * Use double square brackets ("[[ condition ]]") for conditionals
 * Use 4 spaces for indentation instead of tabs
 * Use "#!/usr/bin/env bash" as a shebang
+* Write good comments where needed
+* Use different error codes when exiting (0 for proper exit, 1-* for error exits)
 
 If you need help remembering commands or want to check out some tips
 visit [devhints.io](https://devhints.io/bash) to do so.
