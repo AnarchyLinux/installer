@@ -269,7 +269,7 @@ graphics() {
 			if [ "$?" -eq "0" ]; then
 				if [ "$GPU" == "$gr0" ]; then
 					pci_id=$(lspci -nn | grep "VGA" | egrep -o '\[.*\]' | awk '{print $NF}' | sed 's/.*://;s/]//')
-					if (<"$aa_dir"/etc/nvidia390.xx grep "$pci_id" &>/dev/null); then
+					if (<"${anarchy_directory}"/etc/nvidia390.xx grep "$pci_id" &>/dev/null); then
 						if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$nvidia_390msg" 10 60); then
 							if [ "$kernel" == "lts" ]; then
 								GPU="nvidia-390xx-lts"
@@ -279,7 +279,7 @@ graphics() {
 							GPU+=" nvidia-390xx-libgl nvidia-390xx-utils nvidia-settings"
 							break
 						fi
-					elif (<"$aa_dir"/etc/nvidia340.xx grep "$pci_id" &>/dev/null); then
+					elif (<"${anarchy_directory}"/etc/nvidia340.xx grep "$pci_id" &>/dev/null); then
                                                  if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$nvidia_340msg" 10 60); then
                                                          if [ "$kernel" == "lts" ]; then
                                                                  GPU="nvidia-340xx-lts"
@@ -384,23 +384,23 @@ graphics() {
 
 config_env() {
 
-	cp -r "$aa_dir"/extra/fonts/ttf-zekton-rg "$ARCH"/usr/share/fonts
+	cp -r "${anarchy_directory}"/extra/fonts/ttf-zekton-rg "$ARCH"/usr/share/fonts
 	chmod -R 755 "$ARCH"/usr/share/fonts/ttf-zekton-rg
 	arch-chroot "$ARCH" fc-cache -f
-	cp "$aa_dir"/extra/fonts/unifont/unifont-11.0.02.ttf "$ARCH"/usr/share/fonts/TTF
-	cp "$aa_dir"/extra/anarchy-icon.png "$ARCH"/root/.face
-	cp "$aa_dir"/extra/anarchy-icon.png "$ARCH"/etc/skel/.face
-	cp "$aa_dir"/extra/anarchy-icon.png "$ARCH"/usr/share/pixmaps
+	cp "${anarchy_directory}"/extra/fonts/unifont/unifont-11.0.02.ttf "$ARCH"/usr/share/fonts/TTF
+	cp "${anarchy_directory}"/extra/anarchy-icon.png "$ARCH"/root/.face
+	cp "${anarchy_directory}"/extra/anarchy-icon.png "$ARCH"/etc/skel/.face
+	cp "${anarchy_directory}"/extra/anarchy-icon.png "$ARCH"/usr/share/pixmaps
 	mkdir "$ARCH"/usr/share/backgrounds/anarchy
-	cp -r "$aa_dir"/extra/wallpapers/* "$ARCH"/usr/share/backgrounds/anarchy/
+	cp -r "${anarchy_directory}"/extra/wallpapers/* "$ARCH"/usr/share/backgrounds/anarchy/
 
 	if [ -n "$config_env" ]; then
-		tar -xf "$aa_dir/extra/desktop/$config_env/config.tar.gz" -C "$ARCH"/root
-		tar -xf "$aa_dir/extra/desktop/$config_env/config.tar.gz" -C "$ARCH"/etc/skel
+		tar -xf "${anarchy_directory}/extra/desktop/$config_env/config.tar.gz" -C "$ARCH"/root
+		tar -xf "${anarchy_directory}/extra/desktop/$config_env/config.tar.gz" -C "$ARCH"/etc/skel
 	fi
 
 	case "$config_env" in
-		"Anarchy-gnome"|"Anarchy-budgie")	cp -r "$aa_dir/extra/desktop/Anarchy-gnome/gnome-backgrounds.xml" "$ARCH"/usr/share/gnome-background-properties
+		"Anarchy-gnome"|"Anarchy-budgie")	cp -r "${anarchy_directory}/extra/desktop/Anarchy-gnome/gnome-backgrounds.xml" "$ARCH"/usr/share/gnome-background-properties
 		;;
 		"Anarchy-openbox")	if [ "$virt" == "vbox" ]; then
 						echo "VBoxClient-all &" >> "$ARCH"/etc/skel/.config/openbox/autostart

@@ -189,7 +189,7 @@ configure_system() {
 		pid=$! pri="0.1" msg="$wait_load \n\n \Z1> \Z2anarchy configure desktop\Zn" load
 
 		if [ "$DM" == "lightdm" ]; then
-			cp -r "$aa_dir"/extra/desktop/lightdm/lightdm-gtk-greeter.conf "$ARCH"/etc/lightdm/
+			cp -r "${anarchy_directory}"/extra/desktop/lightdm/lightdm-gtk-greeter.conf "$ARCH"/etc/lightdm/
 		fi
 	fi
 
@@ -276,31 +276,31 @@ configure_system() {
 		cp "$ARCH"/etc/skel/.bash_profile "$ARCH"/root/
 	elif [ "$sh" == "/usr/bin/zsh" ]; then
 		if [ "$shrc" == "$default" ]; then
-			cp "$aa_dir"/extra/.zshrc "$ARCH"/root/.zshrc
-			cp "$aa_dir"/extra/.zshrc "$ARCH"/etc/skel/.zshrc
+			cp "${anarchy_directory}"/extra/.zshrc "$ARCH"/root/.zshrc
+			cp "${anarchy_directory}"/extra/.zshrc "$ARCH"/etc/skel/.zshrc
 		elif [ "$shrc" == "oh-my-zsh" ]; then
-			cp "$aa_dir"/extra/.zshrc-oh-my "$ARCH"/root/.zshrc
-			cp "$aa_dir"/extra/.zshrc-oh-my "$ARCH"/etc/skel/.zshrc
+			cp "${anarchy_directory}"/extra/.zshrc-oh-my "$ARCH"/root/.zshrc
+			cp "${anarchy_directory}"/extra/.zshrc-oh-my "$ARCH"/etc/skel/.zshrc
 		elif [ "$shrc" == "grml-zsh-config" ]; then
-			cp "$aa_dir"/extra/.zshrc-grml "$ARCH"/root/.zshrc
-			cp "$aa_dir"/extra/.zshrc-grml "$ARCH"/etc/skel/.zshrc
+			cp "${anarchy_directory}"/extra/.zshrc-grml "$ARCH"/root/.zshrc
+			cp "${anarchy_directory}"/extra/.zshrc-grml "$ARCH"/etc/skel/.zshrc
 		else
 			touch "$ARCH"/root/.zshrc
 			touch "$ARCH"/etc/skel/.zshrc
 		fi
 	elif [ "$shell" == "fish" ]; then
-		echo "exec fish" >> "$aa_dir"/extra/.bashrc-root
-		echo "exec fish" >> "$aa_dir"/extra/.bashrc
+		echo "exec fish" >> "${anarchy_directory}"/extra/.bashrc-root
+		echo "exec fish" >> "${anarchy_directory}"/extra/.bashrc
 	elif [ "$shell" == "tcsh" ]; then
-		cp "$aa_dir"/extra/{.tcshrc,.tcshrc.conf} "$ARCH"/root/
-		cp "$aa_dir"/extra/{.tcshrc,.tcshrc.conf} "$ARCH"/etc/skel/
+		cp "${anarchy_directory}"/extra/{.tcshrc,.tcshrc.conf} "$ARCH"/root/
+		cp "${anarchy_directory}"/extra/{.tcshrc,.tcshrc.conf} "$ARCH"/etc/skel/
 	elif [ "$shell" == "mksh" ]; then
-		cp "$aa_dir"/extra/.mkshrc "$ARCH"/root/
-		cp "$aa_dir"/extra/.mkshrc "$ARCH"/etc/skel/
+		cp "${anarchy_directory}"/extra/.mkshrc "$ARCH"/root/
+		cp "${anarchy_directory}"/extra/.mkshrc "$ARCH"/etc/skel/
 	fi
 
-	cp "$aa_dir"/extra/.bashrc-root "$ARCH"/root/.bashrc
-	cp "$aa_dir"/extra/.bashrc "$ARCH"/etc/skel/
+	cp "${anarchy_directory}"/extra/.bashrc-root "$ARCH"/root/.bashrc
+	cp "${anarchy_directory}"/extra/.bashrc "$ARCH"/etc/skel/
 	(cp /etc/lsb-release "$ARCH"/etc
 	cp /etc/os-release "$ARCH"/etc
 	mv "$ARCH"/etc/arch-release "$ARCH"/etc/anarchy-release) &>/dev/null
