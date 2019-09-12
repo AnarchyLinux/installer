@@ -22,13 +22,3 @@ Describe in as much detail as possible below. -->
 
 <!-- Links to websites that are relevant to this feature request,
 such as other Github/Gitlab/... repos or websites mentioning the feature or its implementation. -->
-
-## Feature request checklist
-
-<!--
-The checkmark below will signal to us that you yourself will try to implement the feature,
-so we can focus on other issues.
-Put an 'x' between the square brackets to tick the field.
--->
-
-* [ ] I think I can implement this feature myself
