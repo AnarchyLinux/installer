@@ -56,9 +56,9 @@ init() {
 
 main() {
 
+    set_keys
 	update_mirrors
 	check_connection
-	set_keys
 	set_locale
 	set_zone
 	prepare_drives
