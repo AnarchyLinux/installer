@@ -13,7 +13,7 @@
 <p align="center">
     <a href="https://www.anarchylinux.org/">Home page</a> | 
     <a href="https://github.com/deadhead420/anarchy-linux/releases">Download</a> |
-    <a href="https://matrix.to/#/+anarchy-linux:matrix.org">Matrix Chat</a>
+    <a href="https://t.me/anarchy_linux">Telegram group</a>
 </p>
 </html>
 
