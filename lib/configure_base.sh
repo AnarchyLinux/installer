@@ -381,10 +381,10 @@ add_software() {
                         "php-sqlite"		"$db3" OFF \
                         "postgresql"		"$sys31" OFF \
                         "redis"			"$db4" OFF \
-                        "rethinkdb"		"$db5" OFF\
                         "sqlite"		"$db6" OFF 3>&1 1>&2 2>&3)
                         # MongoDB has been removed from the official repositories due to its re-licensing issues
                         # "mongodb"		"$db1" OFF
+                        # "rethinkdb"		"$db5" OFF
                     if [ "$?" -gt "0" ]; then
                         add_soft=false
                     fi
