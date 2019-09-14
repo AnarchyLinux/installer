@@ -37,19 +37,19 @@ prepare_drives() {
         elif [ "$PART" != "$method2" ]; then
             dev_menu="           Device: | Size: | Type:  |"
             if "$screen_h" ; then
-                cat <<-EOF > "$tmp_menu"
-                        dialog --colors --backtitle "$backtitle" --title "$title" --ok-button "$ok" --cancel-button "$cancel" --menu "$drive_msg \n\n $dev_menu" 16 60 5 \\
-                    EOF
+				cat <<-EOF > "$tmp_menu"
+					dialog --colors --backtitle "$backtitle" --title "$title" --ok-button "$ok" --cancel-button "$cancel" --menu "$drive_msg \n\n $dev_menu" 16 60 5 \\
+				EOF
             else
-                cat <<-EOF > "$tmp_menu"
-                        dialog --colors --title "$title" --ok-button "$ok" --cancel-button "$cancel" --menu "$drive_msg \n\n $dev_menu" 16 60 5 \\
-                    EOF
+				cat <<-EOF > "$tmp_menu"
+					dialog --colors --title "$title" --ok-button "$ok" --cancel-button "$cancel" --menu "$drive_msg \n\n $dev_menu" 16 60 5 \\
+				EOF
             fi
 
-            cat <<-EOF >> "$tmp_menu"
-                $(lsblk -nio NAME,SIZE,TYPE | egrep "disk|raid[0-9]+$" | sed 's/[^[:alnum:]_., ]//g' | column -t | sort -k 1,1 | uniq | awk '{print "\""$1"\"""  ""\"| "$2" | "$3" |==>\""" \\"}' | column -t)
-                3>&1 1>&2 2>&3
-            EOF
+			cat <<-EOF >> "$tmp_menu"
+				$(lsblk -nio NAME,SIZE,TYPE | egrep "disk|raid[0-9]+$" | sed 's/[^[:alnum:]_., ]//g' | column -t | sort -k 1,1 | uniq | awk '{print "\""$1"\"""  ""\"| "$2" | "$3" |==>\""" \\"}' | column -t)
+				3>&1 1>&2 2>&3
+			EOF
 
             DRIVE=$(bash "$tmp_menu")
             rm "$tmp_menu"
