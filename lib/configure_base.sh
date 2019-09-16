@@ -539,9 +539,9 @@ add_software() {
                         "go-tools"		"$prg4" OFF \
                         "java-runtime-common"	"$prg5" OFF \
                         "jdk8-openjdk"	"$prg7" OFF \
-                        "java-openjfx"	 "$prg8" OFF \
+                        "java-openjfx"	"$prg8" OFF \
                         "jdk11-openjdk" "$prg14" OFF \
-                        "jdk-openjdk" "$prg15" OFF \
+                        "jdk-openjdk"   "$prg15" OFF \
                         "perl"			"$prg9" OFF \
                         "php"			"$prg10" OFF \
                         "python"		"$prg11" OFF \
@@ -551,17 +551,17 @@ add_software() {
                         add_soft=false
                     fi
 
-                    if (<<<"$software" grep "openjdk-7" &>/dev/null); then
-                        software=$(<<<"$software" sed 's/java-openjdk-7/jre7-openjdk-headless jre7-openjdk jdk7-openjdk openjdk7-doc openjdk7-src/')
-                    fi
+                    #if (<<<"$software" grep "openjdk-7" &>/dev/null); then
+                        #software=$(<<<"$software" sed 's/java-openjdk-7/jre7-openjdk-headless jre7-openjdk jdk7-openjdk openjdk7-doc openjdk7-src/')
+                    #fi
 
-                    if (<<<"$software" grep "openjdk-8" &>/dev/null); then
-                        software=$(<<<"$software" sed 's/java-openjdk-8/jre8-openjdk-headless jre8-openjdk jdk8-openjdk openjdk8-doc openjdk8-src/')
-                    fi
+                    #if (<<<"$software" grep "openjdk-8" &>/dev/null); then
+                        #software=$(<<<"$software" sed 's/java-openjdk-8/jre8-openjdk-headless jre8-openjdk jdk8-openjdk openjdk8-doc openjdk8-src/')
+                    #fi
 
-                    if (<<<"$software" grep "openjfx-8" &>/dev/null); then
-                        software=$(<<<"$software" sed 's/java-openjfx-8/java-openjfx java-openjfx-doc java-openjfx-src/')
-                    fi
+                    #if (<<<"$software" grep "openjfx-8" &>/dev/null); then
+                        #software=$(<<<"$software" sed 's/java-openjfx-8/java-openjfx java-openjfx-doc java-openjfx-src/')
+                    #fi
 
 
                 ;;
