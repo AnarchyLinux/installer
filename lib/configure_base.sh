@@ -429,7 +429,6 @@ add_software() {
                         "aisleriot"	"$game11" OFF \
                         "bsd-games"	"$game1" OFF \
                         "bzflag"	"$game2" OFF \
-                        "flightgear"	"$game3" OFF \
                         "gnuchess"      "$game4" OFF \
                         "steam"		"$game10" OFF \
                         "supertux"	"$game5" OFF \
