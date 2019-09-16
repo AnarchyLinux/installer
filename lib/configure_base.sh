@@ -433,7 +433,6 @@ add_software() {
                         "steam"		"$game10" OFF \
                         "supertux"	"$game5" OFF \
                         "supertuxkart"	"$game6" OFF \
-                        "urbanterror"	"$game7" OFF \
                         "warsow"	"$game8" OFF \
                         "xonotic"	"$game9" OFF 3>&1 1>&2 2>&3)
                     if [ "$?" -gt "0" ]; then
