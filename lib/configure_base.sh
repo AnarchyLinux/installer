@@ -539,7 +539,7 @@ add_software() {
                         "go-tools"		"$prg4" OFF \
                         "java-runtime-common"	"$prg5" OFF \
                         "jdk8-openjdk"	"$prg7" OFF \
-                        "java-openjfx-8"	"$prg8" OFF \
+                        "java-openjfx"	 "$prg8" OFF \
                         "jdk11-openjdk" "$prg14" OFF \
                         "jdk-openjdk" "$prg15" OFF \
                         "perl"			"$prg9" OFF \
