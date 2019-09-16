@@ -533,7 +533,7 @@ add_software() {
                 "$programming")
                     software=$(dialog --ok-button "$ok" --cancel-button "$cancel" --checklist "$software_msg1" 20 63 10 \
                         "clisp"			"$prg0" OFF \
-                        "dlang-dmd"		"$prg1" OFF \
+                        "dmd"		    "$prg1" OFF \
                         "dart"			"$prg2" OFF \
                         "go"			"$prg3" OFF \
                         "go-tools"		"$prg4" OFF \
