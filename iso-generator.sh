@@ -35,11 +35,12 @@ set -o errexit
 working_dir=$(pwd) # prev: aa
 log_dir="${working_dir}"/log
 log_file="${log_dir}/install-$(date +%d%m%y).log"
-touch ${log_file}
 
 if [[ -d ${log_dir} ]]; then
     mkdir ${log_dir}
 fi
+
+touch ${log_file}
 
 # Clears the screen and adds a banner
 prettify() {
