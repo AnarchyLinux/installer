@@ -137,7 +137,7 @@ update_arch_iso() { # prev: update_iso
         if [[ -z "${local_arch_iso}" ]]; then
             echo "No Arch Linux image found under ${working_dir}" | tee -a ${log_file}
             echo "Download it? [y/N]: " | tee -a ${log_file}
-            read -r input | tee -a ${log_file}
+            read -r input
 
             case "${input}" in
                 y|Y|yes|YES|Yes) update=true ;;
@@ -148,7 +148,7 @@ update_arch_iso() { # prev: update_iso
         else
             echo "Updated Arch Linux image available: ${arch_iso_latest}" | tee -a ${log_file}
             echo "Download it? [y/N]: " | tee -a ${log_file}
-            read -r input | tee -a ${log_file}
+            read -r input
 
             case "${input}" in
                 y|Y|yes|YES|Yes) update=true ;;
