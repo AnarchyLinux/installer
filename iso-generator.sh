@@ -39,13 +39,15 @@ set_up_logging() {
     if [[ ! -d ${log_dir} ]]; then
         mkdir ${log_dir}
     fi
-    
-    touch ${log_file}
+
+    if [[ ! -f ${log_file} ]]; then
+        touch ${log_file}
+    fi
 }
 
 log() {
     read entry
-    echo -e "$(date -u "+%d/%m/%Y %H:%M") : ${entry}" | log
+    echo -e "$(date -u "+%d/%m/%Y %H:%M") : ${entry}" | tee ${log_file}
 }
 
 # Clears the screen and adds a banner
@@ -57,7 +59,7 @@ prettify() {
 
 set_version() {
     # Label must be 11 characters long
-    anarchy_iso_label="ANARCHYV105" | log # prev: iso_label
+    anarchy_iso_label="ANARCHYV105" # prev: iso_label
     anarchy_iso_release="1.0.5" # prev: iso_rel
     anarchy_iso_name="anarchy-${anarchy_iso_release}-${system_architecture}.iso" # prev: version
 }
@@ -121,7 +123,7 @@ check_dependencies() { # prev: check_depends
             ;;
         esac
     fi
-    echo "Done"
+    echo "Done installing dependencies" | log
     echo ""
 }
 
