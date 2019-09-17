@@ -99,7 +99,7 @@ check_dependencies() { # prev: check_depends
     if [[ ! -z "$dependencies" ]]; then
         echo "Missing dependencies: ${dependencies}" | tee -a ${log_file}
         echo "Install them now? [y/N]: " | tee -a ${log_file}
-        read -r input | tee -a ${log_file}
+        read -r input
 
         case ${input} in
             y|Y|yes|YES|Yes)
