@@ -36,7 +36,7 @@ working_dir=$(pwd) # prev: aa
 log_dir="${working_dir}"/log
 log_file="${log_dir}/install-$(date +%d%m%y).log"
 
-if [[ -d ${log_dir} ]]; then
+if [[ ! -d ${log_dir} ]]; then
     mkdir ${log_dir}
 fi
 
