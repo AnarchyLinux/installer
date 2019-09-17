@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# Stop spellcheck from spamming to declare and assign seperately (not important in our case)
+# Stop shellcheck from spamming to declare and assign separately (not important in our case)
 # shellcheck disable=SC2155
 
 ###############################################################
@@ -31,6 +31,15 @@ set -o errexit
 # Enable tracing of what gets executed
 #set -o xtrace
 
+# Set up proper logging
+working_dir=$(pwd) # prev: aa
+log_dir="${working_dir}"/log
+log_file="${log_dir}/install-$(date +%d%m%y).log"
+
+if [[ -d ${log_dir} ]]; then
+    mkdir ${log_dir}
+fi
+
 # Clears the screen and adds a banner
 prettify() {
     clear
@@ -47,7 +56,6 @@ set_version() {
 
 init() {
     # Location variables
-    working_dir=$(pwd) # prev: aa
     custom_iso="${working_dir}"/customiso # prev: customiso
     squashfs="${custom_iso}"/arch/"${system_architecture}"/squashfs-root # prev: sq
 
@@ -77,7 +85,7 @@ init() {
 }
 
 check_dependencies() { # prev: check_depends
-    echo "Checking dependencies ..."
+    echo "Checking dependencies ..." | tee ${log_file}
     if [[ ! -f /usr/bin/wget ]]; then dependencies="$dependencies wget "; fi
     if [[ ! -f /usr/bin/xorriso ]]; then dependencies+="libisoburn "; fi
     if [[ ! -f /usr/bin/mksquashfs ]]; then dependencies+="squashfs-tools "; fi
@@ -87,12 +95,20 @@ check_dependencies() { # prev: check_depends
     if [[ ! -f /usr/bin/gtk3-demo ]]; then dependencies+="gtk3 "; fi
     if [[ ! -f /usr/bin/rankmirrors ]]; then dependencies+="pacman-contrib "; fi
     if [[ ! -z "$dependencies" ]]; then
-        echo -en "Missing dependencies: ${dependencies}\n\nInstall missing dependencies now? [y/N]: "
-        read -r input
+        echo "Missing dependencies: ${dependencies}" | tee ${log_file}
+        echo "Install them now? [y/N]: " | tee ${log_file}
+        read -r input | tee ${log_file}
 
         case ${input} in
-            y|Y) sudo pacman -Sy ${dependencies} ;;
-            *) echo "Error: Missing dependencies, exiting."
+            y|Y|yes|YES|Yes)
+                for pkg in ${dependencies}; do
+                    echo "Installing ${pkg}" | tee ${log_file}
+                    sudo pacman -Sy ${pkg}
+                    echo "${pkg} installed" | tee ${log_file}
+                done
+                ;;
+            *)
+            echo "Error: Missing dependencies, exiting." | tee ${log_file}
             exit 1
             ;;
         esac
@@ -113,26 +129,28 @@ update_arch_iso() { # prev: update_iso
         arch_iso_link="https://mirror.archlinux32.org/archisos/${arch_iso_latest}"
     fi
 
-    echo "Checking for updated Arch Linux image ..."
+    echo "Checking for updated Arch Linux image ..." | tee ${log_file}
     iso_date=$(<<<"${arch_iso_link}" sed 's!.*/!!')
     if [[ "${iso_date}" != "${local_arch_iso}" ]]; then
         if [[ -z "${local_arch_iso}" ]]; then
-            echo -en "\nNo Arch Linux image found under ${working_dir}\n\nDownload it? [y/N]: "
-            read -r input
+            echo "No Arch Linux image found under ${working_dir}" | tee ${log_file}
+            echo "Download it? [y/N]: " | tee ${log_file}
+            read -r input | tee ${log_file}
 
             case "${input}" in
-                y|Y) update=true ;;
-                *) echo "Error: anarchy-creator requires an Arch Linux image located in: ${working_dir}, exiting."
+                y|Y|yes|YES|Yes) update=true ;;
+                *) echo "Error: anarchy-creator requires an Arch Linux image located in: ${working_dir}, exiting." | tee ${log_file}
                 exit 2
                 ;;
             esac
         else
-            echo -en "Updated Arch Linux image available: ${arch_iso_latest}\n Download it? [y/N]: "
-            read -r input
+            echo "Updated Arch Linux image available: ${arch_iso_latest}" | tee ${log_file}
+            echo "Download it? [y/N]: " | tee ${log_file}
+            read -r input | tee ${log_file}
 
             case "${input}" in
-                y|Y) update=true ;;
-                n|N) echo -e "Using old image: ${local_arch_iso}"
+                y|Y|yes|YES|Yes) update=true ;;
+                *) echo -e "Using old image: ${local_arch_iso}" | tee ${log_file}
                 sleep 1
                 ;;
             esac
@@ -141,103 +159,107 @@ update_arch_iso() { # prev: update_iso
         if "${update}" ; then
             cd "${working_dir}" || exit
             echo ""
-            echo "Downloading Arch Linux image ..."
+            echo "Downloading Arch Linux image ..." | tee ${log_file}
             echo "(Don't resize the window or it will mess up the progress bar)"
             wget -c -q --show-progress "${arch_iso_link}"
             if [[ "$?" -gt "0" ]]; then
-                echo "Error: You need 'wget' to download the image, exiting."
+                echo "Error: You need 'wget' to download the image, exiting." | tee ${log_file}
                 exit 3
             fi
             local_arch_iso=$(ls "${working_dir}"/archlinux-*-"${system_architecture}".iso | tail -n1 | sed 's!.*/!!')
         fi
     fi
-    echo "Done"
+    echo "Done" | tee ${log_file}
     echo ""
 }
 
 local_repo_builds() { # prev: aur_builds
-    # Update pacman databases
+    echo "Updating pacman databases ..." | tee ${log_file}
     sudo pacman -Sy
+    echo "Done updating pacman databases" | tee ${log_file}
 
-    echo "Building AUR packages for local repo ..."
+    echo "Building AUR packages for local repo ..." | tee ${log_file}
 
     # Begin build loop checking /tmp for existing builds, then build packages & install if required
     for pkg in $(echo "${local_aur_packages[@]}"); do
         if [[ ! -d "/tmp/${pkg}" ]]; then
+            echo "Downloading ${pkg} ..." | tee ${log_file}
             wget -qO- "${aur_snapshot_link}/${pkg}.tar.gz" | tar xz -C /tmp
             cd /tmp/"${pkg}" || exit
+            echo "Making ${pkg} ..." | tee ${log_file}
             case "${pkg}" in
                 perl-*|numix-*) makepkg -si --needed --noconfirm ;;
                 *) makepkg -s ;;
             esac
+            echo "${pkg} added successfully" | tee ${log_file}
         fi
     done
 
-    echo "Done"
+    echo "Done making packages" | tee ${log_file}
     echo ""
 }
 
 extract_arch_iso() { # prev: extract_iso
-    cd "${working_dir}" || exit
+    cd "${working_dir}" || exit | tee ${log_file}
 
     if [[ -d "${custom_iso}" ]]; then
         sudo rm -rf "${custom_iso}"
     fi
 
-    echo "Extracting Arch Linux image ..."
+    echo "Extracting Arch Linux image ..." | tee ${log_file}
 
     # Extract Arch iso to mount directory and continue with build
     7z x "${local_arch_iso}" -o"${custom_iso}"
 
-    echo "Done"
+    echo "Done extracting image" | tee ${log_file}
     echo ""
 }
 
 copy_config_files() { # prev: build_conf
     # Change directory into the iso, where the filesystem is stored.
     # Unsquash root filesystem 'airootfs.sfs', this creates a directory 'squashfs-root' containing the entire system
-    echo "Unsquashing ${system_architecture} image ..."
-    cd "${custom_iso}"/arch/"${system_architecture}" || exit
+    echo "Unsquashing ${system_architecture} image ..." | tee ${log_file}
+    cd "${custom_iso}"/arch/"${system_architecture}" | tee ${log_file} || exit
     sudo unsquashfs airootfs.sfs
-    echo "Done"
+    echo "Done unsquashing airootfs.sfs" | tee ${log_file}
     echo ""
 
-    echo "Copying Anarchy files ..."
+    echo "Copying Anarchy files ..." | tee ${log_file}
     # Copy over vconsole.conf (sets font at boot), locale.gen (enables locale(s) for font) & uvesafb.conf
-    sudo cp "${working_dir}"/etc/vconsole.conf "${working_dir}"/etc/locale.gen "${squashfs}"/etc/
-    sudo arch-chroot "${squashfs}" /bin/bash locale-gen
+    sudo cp "${working_dir}"/etc/vconsole.conf "${working_dir}"/etc/locale.gen "${squashfs}"/etc/ | tee ${log_file}
+    sudo arch-chroot "${squashfs}" /bin/bash locale-gen | tee ${log_file}
 
     # Copy over main Anarchy config and installer script, make them executable
-    sudo cp "${working_dir}"/etc/anarchy.conf "${squashfs}"/etc/
-    sudo cp "${working_dir}"/anarchy-installer.sh "${squashfs}"/usr/bin/anarchy
-    sudo cp "${working_dir}"/extra/sysinfo "${working_dir}"/extra/iptest "${squashfs}"/usr/bin/
-    sudo chmod +x "${squashfs}"/usr/bin/anarchy "${squashfs}"/usr/bin/sysinfo "${squashfs}"/usr/bin/iptest
+    sudo cp "${working_dir}"/etc/anarchy.conf "${squashfs}"/etc/ | tee ${log_file}
+    sudo cp "${working_dir}"/anarchy-installer.sh "${squashfs}"/usr/bin/anarchy | tee ${log_file}
+    sudo cp "${working_dir}"/extra/sysinfo "${working_dir}"/extra/iptest "${squashfs}"/usr/bin/ | tee ${log_file}
+    sudo chmod +x "${squashfs}"/usr/bin/anarchy "${squashfs}"/usr/bin/sysinfo "${squashfs}"/usr/bin/iptest | tee ${log_file}
 
     # Create Anarchy and lang directories, copy over all lang files
-    sudo mkdir -p "${squashfs}"/usr/share/anarchy/lang "${squashfs}"/usr/share/anarchy/extra "${squashfs}"/usr/share/anarchy/boot "${squashfs}"/usr/share/anarchy/etc
-    sudo cp "${working_dir}"/lang/* "${squashfs}"/usr/share/anarchy/lang/
+    sudo mkdir -p "${squashfs}"/usr/share/anarchy/lang "${squashfs}"/usr/share/anarchy/extra "${squashfs}"/usr/share/anarchy/boot "${squashfs}"/usr/share/anarchy/etc | tee ${log_file}
+    sudo cp "${working_dir}"/lang/* "${squashfs}"/usr/share/anarchy/lang/ | tee ${log_file}
 
     # Create shell function library, copy /lib to squashfs-root
-    sudo mkdir "${squashfs}"/usr/lib/anarchy
-    sudo cp "${working_dir}"/lib/* "${squashfs}"/usr/lib/anarchy/
+    sudo mkdir "${squashfs}"/usr/lib/anarchy | tee ${log_file}
+    sudo cp "${working_dir}"/lib/* "${squashfs}"/usr/lib/anarchy/ | tee ${log_file}
 
     # Copy over extra files (dotfiles, desktop configurations, help file, issue file, hostname file)
-    sudo rm "${squashfs}"/root/install.txt
-    sudo cp "${working_dir}"/extra/shellrc/.zshrc "${squashfs}"/root/
-    sudo cp "${working_dir}"/extra/.help "${working_dir}"/extra/.dialogrc "${squashfs}"/root/
-    sudo cp "${working_dir}"/extra/shellrc/.zshrc "${squashfs}"/etc/zsh/zshrc
-    sudo cp -r "${working_dir}"/extra/shellrc/. "${squashfs}"/usr/share/anarchy/extra/
-    sudo cp -r "${working_dir}"/extra/desktop "${working_dir}"/extra/wallpapers "${working_dir}"/extra/fonts "${working_dir}"/extra/anarchy-icon.png "${squashfs}"/usr/share/anarchy/extra/
+    sudo rm "${squashfs}"/root/install.txt | tee ${log_file}
+    sudo cp "${working_dir}"/extra/shellrc/.zshrc "${squashfs}"/root/ | tee ${log_file}
+    sudo cp "${working_dir}"/extra/.help "${working_dir}"/extra/.dialogrc "${squashfs}"/root/ | tee ${log_file}
+    sudo cp "${working_dir}"/extra/shellrc/.zshrc "${squashfs}"/etc/zsh/zshrc | tee ${log_file}
+    sudo cp -r "${working_dir}"/extra/shellrc/. "${squashfs}"/usr/share/anarchy/extra/ | tee ${log_file}
+    sudo cp -r "${working_dir}"/extra/desktop "${working_dir}"/extra/wallpapers "${working_dir}"/extra/fonts "${working_dir}"/extra/anarchy-icon.png "${squashfs}"/usr/share/anarchy/extra/ | tee ${log_file}
     cat "${working_dir}"/extra/.helprc | sudo tee -a "${squashfs}"/root/.zshrc >/dev/null
-    sudo cp "${working_dir}"/etc/hostname "${working_dir}"/etc/issue_cli "${working_dir}"/etc/lsb-release "${working_dir}"/etc/os-release "${squashfs}"/etc/
-    sudo cp -r "${working_dir}"/boot/splash.png "${working_dir}"/boot/loader/ "${squashfs}"/usr/share/anarchy/boot/
-    sudo cp "${working_dir}"/etc/nvidia340.xx "${squashfs}"/usr/share/anarchy/etc/
+    sudo cp "${working_dir}"/etc/hostname "${working_dir}"/etc/issue_cli "${working_dir}"/etc/lsb-release "${working_dir}"/etc/os-release "${squashfs}"/etc/ | tee ${log_file}
+    sudo cp -r "${working_dir}"/boot/splash.png "${working_dir}"/boot/loader/ "${squashfs}"/usr/share/anarchy/boot/ | tee ${log_file}
+    sudo cp "${working_dir}"/etc/nvidia340.xx "${squashfs}"/usr/share/anarchy/etc/ | tee ${log_file}
 
     # Copy over built packages and create repository
-    sudo mkdir "${custom_iso}"/arch/"${system_architecture}"/squashfs-root/usr/share/anarchy/pkg
+    sudo mkdir "${custom_iso}"/arch/"${system_architecture}"/squashfs-root/usr/share/anarchy/pkg | tee ${log_file}
 
     for pkg in $(echo "${local_aur_packages[@]}"); do
-        sudo cp /tmp/"${pkg}"/*.pkg.tar.xz "${squashfs}"/usr/share/anarchy/pkg/
+        sudo cp /tmp/"${pkg}"/*.pkg.tar.xz "${squashfs}"/usr/share/anarchy/pkg/ | tee ${log_file}
     done
 
     cd "${squashfs}"/usr/share/anarchy/pkg || exit
@@ -246,26 +268,26 @@ copy_config_files() { # prev: build_conf
     cd "${working_dir}" || exit
 
     if [[ "${system_architecture}" == "i686" ]]; then
-        sudo rm -r "${squashfs}"/root/.gnupg
-        sudo rm -r "${squashfs}"/etc/pacman.d/gnupg
+        sudo rm -r "${squashfs}"/root/.gnupg | tee ${log_file}
+        sudo rm -r "${squashfs}"/etc/pacman.d/gnupg | tee ${log_file}
         sudo linux32 arch-chroot "${squashfs}" dirmngr </dev/null
         sudo linux32 arch-chroot "${squashfs}" pacman-key --init
         sudo linux32 arch-chroot "${squashfs}" pacman-key --populate archlinux32
         sudo linux32 arch-chroot "${squashfs}" pacman-key --refresh-keys
     fi
-    echo "Done"
+    echo "Done" | tee ${log_file}
     echo ""
 }
 
 build_system() { # prev: build_sys
-    echo "Installing packages to new system ..."
+    echo "Installing packages to new system ..." | tee ${log_file}
     # Install fonts, fbterm, fetchmirrors etc.
     sudo pacman --root "${squashfs}" --cachedir "${squashfs}"/var/cache/pacman/pkg  --config "${pacman_config}" --noconfirm -Sy terminus-font acpi zsh-syntax-highlighting pacman-contrib
     sudo pacman --root "${squashfs}" --cachedir "${squashfs}"/var/cache/pacman/pkg  --config "${pacman_config}" --noconfirm -U /tmp/fetchmirrors/*.pkg.tar.xz
     sudo pacman --root "${squashfs}" --cachedir "${squashfs}"/var/cache/pacman/pkg  --config "${pacman_config}" -Sl | awk '/\[installed\]$/ {print $1 "/" $2 "-" $3}' > "${custom_iso}"/arch/pkglist."${system_architecture}".txt
     sudo pacman --root "${squashfs}" --cachedir "${squashfs}"/var/cache/pacman/pkg  --config "${pacman_config}" --noconfirm -Scc
     sudo rm -f "${squashfs}"/var/cache/pacman/pkg/*
-    echo "Done"
+    echo "Done" | tee ${log_file}
     echo ""
 
     # cd back into root system directory, remove old system
@@ -273,38 +295,39 @@ build_system() { # prev: build_sys
     rm airootfs.sfs
 
     # Recreate the iso using compression, remove unsquashed system, generate checksums
-    echo "Recreating ${system_architecture} image ..."
+    echo "Recreating ${system_architecture} image ..." | tee ${log_file}
     sudo mksquashfs squashfs-root airootfs.sfs -b 1024k -comp xz
     sudo rm -r squashfs-root
     md5sum airootfs.sfs > airootfs.md5
-    echo "Done"
+    echo "Done recreating ${system_architecture} image" | tee ${log_file}
     echo ""
 }
 
 configure_boot() {
-    echo "Configuring boot ..."
+    echo "Configuring boot ..." | tee ${log_file}
     arch_iso_label=$(<"${custom_iso}"/loader/entries/archiso-x86_64.conf awk 'NR==6{print $NF}' | sed 's/.*=//')
     arch_iso_hex=$(<<<"${arch_iso_label}" xxd -p)
     anarchy_iso_hex=$(<<<"${anarchy_iso_label}" xxd -p)
-    cp "${working_dir}"/boot/splash.png "${custom_iso}"/arch/boot/syslinux/
-    cp "${working_dir}"/boot/iso/archiso_head.cfg "${custom_iso}"/arch/boot/syslinux/
+    cp "${working_dir}"/boot/splash.png "${custom_iso}"/arch/boot/syslinux/ | tee ${log_file}
+    cp "${working_dir}"/boot/iso/archiso_head.cfg "${custom_iso}"/arch/boot/syslinux/ | tee ${log_file}
     sed -i "s/${arch_iso_label}/${anarchy_iso_label}/;s/Arch Linux archiso/Anarchy Linux/" "${custom_iso}"/loader/entries/archiso-x86_64.conf
     sed -i "s/${arch_iso_label}/${anarchy_iso_label}/;s/Arch Linux/Anarchy Linux/" "${custom_iso}"/arch/boot/syslinux/archiso_sys.cfg
     sed -i "s/${arch_iso_label}/${anarchy_iso_label}/;s/Arch Linux/Anarchy Linux/" "${custom_iso}"/arch/boot/syslinux/archiso_pxe.cfg
     cd "${custom_iso}"/EFI/archiso/ || exit
-    echo -e "Replacing label hex in efiboot.img...\n${arch_iso_label} ${arch_iso_hex} > ${anarchy_iso_label} ${anarchy_iso_hex}"
+    echo -e "Replacing label hex in efiboot.img...\n${arch_iso_label} ${arch_iso_hex} > ${anarchy_iso_label} ${anarchy_iso_hex}" | tee ${log_file}
     xxd -c 256 -p efiboot.img | sed "s/${arch_iso_hex}/${anarchy_iso_hex}/" | xxd -r -p > efiboot1.img
     if ! (xxd -c 256 -p efiboot1.img | grep "${anarchy_iso_hex}" &>/dev/null); then
-        echo "\nError: failed to replace label hex in efiboot.img"
-        echo "Press any key to continue." ; read input
+        echo "\nError: failed to replace label hex in efiboot.img" | tee ${log_file}
+        echo "Press any key to continue." | tee ${log_file}
+        read input
     fi
     mv efiboot1.img efiboot.img
-    echo "Done"
+    echo "Done" | tee ${log_file}
     echo ""
 }
 
 create_iso() {
-    echo "Creating new Anarchy Linux image ..."
+    echo "Creating new Anarchy Linux image ..." | tee ${log_file}
     cd "${working_dir}" || exit
     xorriso -as mkisofs \
     -iso-level 3 \
@@ -321,19 +344,19 @@ create_iso() {
     "${custom_iso}"
 
     if [[ "$?" -eq "0" ]]; then
-        rm -rf "${custom_iso}"
+        rm -rf "${custom_iso}" | tee ${log_file}
         generate_checksums
     else
-        echo "Error: Image creation failed, exiting."
+        echo "Error: Image creation failed, exiting." | tee ${log_file}
         exit 4
     fi
 }
 
 generate_checksums() {
-    echo "Generating image checksums..."
+    echo "Generating image checksum ..." | tee ${log_file}
     local sha_256_sum=$(sha256sum "${anarchy_iso_name}")
     echo "${sha_256_sum}" > "${anarchy_iso_name}".sha256sum
-    echo "Done"
+    echo "Done generating image checksum" | tee ${log_file}
     echo ""
 }
 
@@ -373,7 +396,7 @@ while (true); do
             build_system
             configure_boot
             create_iso
-            echo "${anarchy_iso_name} image generated successfully."
+            echo "${anarchy_iso_name} image generated successfully." | tee ${log_file}
             exit 0
         ;;
     esac
