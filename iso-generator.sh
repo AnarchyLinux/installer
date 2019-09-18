@@ -383,6 +383,31 @@ generate_checksums() {
     echo ""
 }
 
+# Starts if the iso-generator is interrupted
+cleanup() {
+    echo "An unexpected error has occured, starting cleanup ..." | log
+
+    # Check if customiso is mounted
+    if mount | grep ${custom_iso} > /dev/null; then
+        echo "Unmounting customiso directory ..." | log
+        sudo umount ${custom_iso}
+    fi
+
+    # Check and clean the customiso directory
+    if [[ -d ${custom_iso} ]]; then
+        echo "Removing customiso directory ..." | log
+        # We have to use sudo in case root owns files inside customiso
+        sudo rm -rf ${custom_iso}
+    fi
+
+    echo "Cleaned up successfully" | log
+
+    echo "Please report this issue to our Github issue tracker: https://git.io/JeOxK"
+    echo "Make sure to include the relevant log: ${log_file}" | log
+
+    echo "You can also ask about the issue in our Telegram: https://t.me/anarchy_linux"
+}
+
 usage() {
     clear
     echo "Usage: iso-generator.sh [architecture]"
@@ -390,6 +415,9 @@ usage() {
     echo "  --x86_64)   create x86_64 (64-bit) installer (default)"
     echo ""
 }
+
+# Enables the cleanup function in case of an unexpected error
+trap cleanup EXIT
 
 if (<<<"$@" grep "\-\-i686" >/dev/null); then
     system_architecture=i686 # prev: sys
