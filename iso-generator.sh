@@ -47,7 +47,7 @@ set_up_logging() {
 
 log() {
     read entry
-    echo -e "$(date -u "+%d/%m/%Y %H:%M") : ${entry}" | tee ${log_file}
+    echo -e "$(date -u "+%d/%m/%Y %H:%M") : ${entry}" | tee -a ${log_file}
 }
 
 # Clears the screen and adds a banner
