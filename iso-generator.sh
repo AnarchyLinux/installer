@@ -229,7 +229,7 @@ copy_config_files() { # prev: build_conf
     # Change directory into the iso, where the filesystem is stored.
     # Unsquash root filesystem 'airootfs.sfs', this creates a directory 'squashfs-root' containing the entire system
     echo "Unsquashing ${system_architecture} image ..." | log
-    cd "${custom_iso}"/arch/"${system_architecture}" | log || exit
+    cd "${custom_iso}"/arch/"${system_architecture}" || exit
     sudo unsquashfs airootfs.sfs
     echo "Done unsquashing airootfs.sfs" | log
     echo ""
