@@ -399,7 +399,7 @@ uninstall_dependencies() {
                 echo "Chose to remove dependencies" | log
                 for pkg in ${dependencies}; do
                     echo "Removing ${pkg}" | log
-                    sudo pacman -Sy ${pkg}
+                    sudo pacman -Rs ${pkg}
                     echo "${pkg} removed" | log
                 done
                 echo "Removed all dependencies" | log
