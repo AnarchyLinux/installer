@@ -106,11 +106,12 @@ check_dependencies() { # prev: check_depends
     if [[ ! -f /usr/bin/rankmirrors ]]; then dependencies+="pacman-contrib "; fi
     if [[ ! -z "$dependencies" ]]; then
         echo "Missing dependencies: ${dependencies}" | log
-        echo "Install them now? [y/N]: " | log
+        echo "Install them now? [y/N]: "
         read -r input
 
         case ${input} in
             y|Y|yes|YES|Yes)
+                echo "Chose to install dependencies" | log
                 for pkg in ${dependencies}; do
                     echo "Installing ${pkg}" | log
                     sudo pacman -Sy ${pkg}
@@ -118,6 +119,7 @@ check_dependencies() { # prev: check_depends
                 done
                 ;;
             *)
+            echo "Chose not to install dependencies" | log
             echo "Error: Missing dependencies, exiting." | log
             exit 1
             ;;
@@ -144,23 +146,32 @@ update_arch_iso() { # prev: update_iso
     if [[ "${iso_date}" != "${local_arch_iso}" ]]; then
         if [[ -z "${local_arch_iso}" ]]; then
             echo "No Arch Linux image found under ${working_dir}" | log
-            echo "Download it? [y/N]: " | log
+            echo "Download it? [y/N]: "
             read -r input
 
             case "${input}" in
-                y|Y|yes|YES|Yes) update=true ;;
-                *) echo "Error: anarchy-creator requires an Arch Linux image located in: ${working_dir}, exiting." | log
+                y|Y|yes|YES|Yes)
+                    echo "Chose to download image" | log
+                    update=true ;;
+                *)
+                echo "Chose not to download image" | log
+                echo "Error: anarchy-creator requires an Arch Linux image located in: ${working_dir}, exiting." | log
                 exit 2
                 ;;
             esac
         else
             echo "Updated Arch Linux image available: ${arch_iso_latest}" | log
-            echo "Download it? [y/N]: " | log
+            echo "Download it? [y/N]: "
             read -r input
 
             case "${input}" in
-                y|Y|yes|YES|Yes) update=true ;;
-                *) echo -e "Using old image: ${local_arch_iso}" | log
+                y|Y|yes|YES|Yes)
+                    echo "Chose to update image" | log
+                    update=true
+                    ;;
+                *)
+                echo "Chose not to update image" | log
+                echo -e "Using old image: ${local_arch_iso}" | log
                 sleep 1
                 ;;
             esac
@@ -201,7 +212,7 @@ local_repo_builds() { # prev: aur_builds
                 perl-*|numix-*) makepkg -si --needed --noconfirm ;;
                 *) makepkg -s ;;
             esac
-            echo "${pkg} added successfully"
+            echo "${pkg} added successfully" | log
         fi
     done
 
@@ -274,7 +285,7 @@ copy_config_files() { # prev: build_conf
     sudo mkdir "${custom_iso}"/arch/"${system_architecture}"/squashfs-root/usr/share/anarchy/pkg
 
     for pkg in $(echo "${local_aur_packages[@]}"); do
-        sudo cp /tmp/"${pkg}"/*.pkg.tar.xz "${squashfs}"/usr/share/anarchy/pkg/ | log
+        sudo cp /tmp/"${pkg}"/*.pkg.tar.xz "${squashfs}"/usr/share/anarchy/pkg/
     done
 
     cd "${squashfs}"/usr/share/anarchy/pkg || exit
@@ -283,8 +294,8 @@ copy_config_files() { # prev: build_conf
     cd "${working_dir}" || exit
 
     if [[ "${system_architecture}" == "i686" ]]; then
-        sudo rm -r "${squashfs}"/root/.gnupg | log
-        sudo rm -r "${squashfs}"/etc/pacman.d/gnupg | log
+        sudo rm -r "${squashfs}"/root/.gnupg
+        sudo rm -r "${squashfs}"/etc/pacman.d/gnupg
         sudo linux32 arch-chroot "${squashfs}" dirmngr </dev/null
         sudo linux32 arch-chroot "${squashfs}" pacman-key --init
         sudo linux32 arch-chroot "${squashfs}" pacman-key --populate archlinux32
