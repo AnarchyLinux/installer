@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+# Stop shellcheck from spamming to declare and assign separately (not important in our case)
+# shellcheck disable=SC2155
+
 ###############################################################
 ### Anarchy Linux Install Script
 ### iso-generator.sh
