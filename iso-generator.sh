@@ -40,7 +40,7 @@ set_up_logging() {
     fi
 
     # Create log file with incremental numbering if it already exists
-    log_file=$(touch "iso-generator-$(date +%d%m%y)`ls iso-generator-"$(date +%d%m%y)"* | wc -l`.log")
+    log_file=${log_dir}/$(touch "iso-generator-$(date +%d%m%y)-`ls iso-generator-"$(date +%d%m%y)"-* | wc -l`.log")
 }
 
 log() {
