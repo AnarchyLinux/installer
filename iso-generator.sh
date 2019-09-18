@@ -94,14 +94,14 @@ init() {
 
 check_dependencies() { # prev: check_depends
     echo "Checking dependencies ..." | log
-    if [[ ! -f /usr/bin/wget ]]; then dependencies="$dependencies wget "; fi
-    if [[ ! -f /usr/bin/xorriso ]]; then dependencies+="libisoburn "; fi
-    if [[ ! -f /usr/bin/mksquashfs ]]; then dependencies+="squashfs-tools "; fi
-    if [[ ! -f /usr/bin/7z ]]; then dependencies+="p7zip " ; fi
-    if [[ ! -f /usr/bin/arch-chroot ]]; then dependencies+="arch-install-scripts "; fi
-    if [[ ! -f /usr/bin/xxd ]]; then dependencies+="xxd "; fi
-    if [[ ! -f /usr/bin/gtk3-demo ]]; then dependencies+="gtk3 "; fi
-    if [[ ! -f /usr/bin/rankmirrors ]]; then dependencies+="pacman-contrib "; fi
+    if [[ ! -x /usr/bin/wget ]]; then dependencies="$dependencies wget "; fi
+    if [[ ! -x /usr/bin/xorriso ]]; then dependencies+="libisoburn "; fi
+    if [[ ! -x /usr/bin/mksquashfs ]]; then dependencies+="squashfs-tools "; fi
+    if [[ ! -x /usr/bin/7z ]]; then dependencies+="p7zip " ; fi
+    if [[ ! -x /usr/bin/arch-chroot ]]; then dependencies+="arch-install-scripts "; fi
+    if [[ ! -x /usr/bin/xxd ]]; then dependencies+="xxd "; fi
+    if [[ ! -x /usr/bin/gtk3-demo ]]; then dependencies+="gtk3 "; fi
+    if [[ ! -x /usr/bin/rankmirrors ]]; then dependencies+="pacman-contrib "; fi
     if [[ ! -z "$dependencies" ]]; then
         echo "Missing dependencies: ${dependencies}" | log
         echo "Install them now? [y/N]: "
