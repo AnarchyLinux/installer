@@ -381,9 +381,16 @@ generate_checksums() {
     echo ""
 }
 
+# Logs last command to display it in cleanup
+command_log() {
+    current_command=${BASH_COMMAND}
+    last_command=${current_command}
+}
+
 # Starts if the iso-generator is interrupted
 cleanup() {
-    echo "An unexpected error has occured, starting cleanup ..." | log
+    echo "An error occured: ${last_command} exited with error code $?" | log
+    echo "Starting cleanup" | log
 
     # Check if customiso is mounted
     if mount | grep ${custom_iso} > /dev/null; then
@@ -399,10 +406,8 @@ cleanup() {
     fi
 
     echo "Cleaned up successfully" | log
-
     echo "Please report this issue to our Github issue tracker: https://git.io/JeOxK"
-    echo "Make sure to include the relevant log: ${log_file}" | log
-
+    echo "Make sure to include the relevant log: ${log_file}"
     echo "You can also ask about the issue in our Telegram: https://t.me/anarchy_linux"
 }
 
@@ -414,9 +419,6 @@ usage() {
     echo ""
 }
 
-# Enables the cleanup function in case of an unexpected error
-trap cleanup EXIT
-
 if (<<<"$@" grep "\-\-i686" >/dev/null); then
     system_architecture=i686 # prev: sys
     pacman_config=etc/i686-pacman.conf # prev: paconf
@@ -426,6 +428,10 @@ else
     system_architecture=x86_64
     pacman_config=/etc/pacman.conf
 fi
+
+# Enable traps
+trap command_log DEBUG
+trap cleanup EXIT
 
 while (true); do
     case "$1" in
