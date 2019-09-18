@@ -104,7 +104,8 @@ check_dependencies() { # prev: check_depends
     if [[ ! -x /usr/bin/xxd ]]; then dependencies+="xxd "; fi
     if [[ ! -x /usr/bin/gtk3-demo ]]; then dependencies+="gtk3 "; fi
     if [[ ! -x /usr/bin/rankmirrors ]]; then dependencies+="pacman-contrib "; fi
-    if [[ ! -x /usr/bin/go ]]; then dependencies+="go "; fi # Needed by yay (compilation)
+    if [[ ! -x /usr/bin/go ]]; then dependencies+="go "; fi # Needed by yay (for compilation)
+    if [[ ! $(pacman -Qg base-devel > /dev/null 2>&1) ]]; then dependencies+="base-devel "; fi
     if [[ ! -z "${dependencies}" ]]; then
         echo "Missing dependencies: ${dependencies}" | log
         echo "Install them now? [y/N]: "
