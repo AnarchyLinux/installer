@@ -44,6 +44,7 @@ set_up_logging() {
 }
 
 log() {
+    local entry
     read entry
     echo -e "$(date -u "+%d/%m/%Y %H:%M") : ${entry}" | tee -a ${log_file}
 }
@@ -94,7 +95,7 @@ init() {
 
 check_dependencies() { # prev: check_depends
     echo "Checking dependencies ..." | log
-    if [[ ! -x /usr/bin/wget ]]; then dependencies="$dependencies wget "; fi
+    if [[ ! -x /usr/bin/wget ]]; then dependencies="${dependencies} wget "; fi
     if [[ ! -x /usr/bin/xorriso ]]; then dependencies+="libisoburn "; fi
     if [[ ! -x /usr/bin/mksquashfs ]]; then dependencies+="squashfs-tools "; fi
     if [[ ! -x /usr/bin/7z ]]; then dependencies+="p7zip " ; fi
@@ -102,9 +103,10 @@ check_dependencies() { # prev: check_depends
     if [[ ! -x /usr/bin/xxd ]]; then dependencies+="xxd "; fi
     if [[ ! -x /usr/bin/gtk3-demo ]]; then dependencies+="gtk3 "; fi
     if [[ ! -x /usr/bin/rankmirrors ]]; then dependencies+="pacman-contrib "; fi
-    if [[ ! -z "$dependencies" ]]; then
+    if [[ ! -z "${dependencies}" ]]; then
         echo "Missing dependencies: ${dependencies}" | log
         echo "Install them now? [y/N]: "
+        local input
         read -r input
 
         case ${input} in
@@ -145,6 +147,7 @@ update_arch_iso() { # prev: update_iso
         if [[ -z "${local_arch_iso}" ]]; then
             echo "No Arch Linux image found under ${working_dir}" | log
             echo "Download it? [y/N]: "
+            local input
             read -r input
 
             case "${input}" in
@@ -160,6 +163,7 @@ update_arch_iso() { # prev: update_iso
         else
             echo "Updated Arch Linux image available: ${arch_iso_latest}" | log
             echo "Download it? [y/N]: "
+            local input
             read -r input
 
             case "${input}" in
@@ -381,6 +385,32 @@ generate_checksums() {
     echo ""
 }
 
+uninstall_dependencies() {
+    echo "Installed dependencies: ${dependencies}" | log
+    echo "Uninstall these dependencies? [y/N]: "
+    local input
+    read -r input
+
+    if [[ ! -z "$dependencies" ]]; then
+        case ${input} in
+            y|Y|yes|YES|Yes)
+                echo "Chose to remove dependencies" | log
+                for pkg in ${dependencies}; do
+                    echo "Removing ${pkg}" | log
+                    sudo pacman -Sy ${pkg}
+                    echo "${pkg} removed" | log
+                done
+                echo "Removed all dependencies" | log
+                exit 0
+                ;;
+            *)
+                echo "Chose not to remove dependencies" | log
+                exit 0
+                ;;
+        esac
+    fi
+}
+
 # Logs last command to display it in cleanup
 command_log() {
     current_command=${BASH_COMMAND}
@@ -453,6 +483,7 @@ while (true); do
             configure_boot
             create_iso
             echo "${anarchy_iso_name} image generated successfully." | log
+            uninstall_dependencies
             exit 0
         ;;
     esac
