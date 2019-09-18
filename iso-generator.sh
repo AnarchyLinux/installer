@@ -1,8 +1,5 @@
 #!/usr/bin/env bash
 
-# Stop shellcheck from spamming to declare and assign separately (not important in our case)
-# shellcheck disable=SC2155
-
 ###############################################################
 ### Anarchy Linux Install Script
 ### iso-generator.sh
@@ -34,15 +31,13 @@ set -o errexit
 set_up_logging() {
     working_dir=$(pwd) # prev: aa
     log_dir="${working_dir}"/log
-    log_file="${log_dir}/install-$(date +%d%m%y).log"
     
     if [[ ! -d ${log_dir} ]]; then
         mkdir ${log_dir}
     fi
 
-    if [[ ! -f ${log_file} ]]; then
-        touch ${log_file}
-    fi
+    # Create log file with incremental numbering if it already exists
+    log_file=$(touch "iso-generator-$(date +%d%m%y)`ls iso-generator-"$(date +%d%m%y)"* | wc -l`.log")
 }
 
 log() {
