@@ -22,8 +22,7 @@
 # Error codes:
 # * Exit 1: Missing dependencies (check_dependencies)
 # * Exit 2: Missing Arch iso (update_arch_iso)
-# * Exit 3: Missing wget (update_arch_iso)
-# * Exit 4: Failed to create iso (create_iso)
+# * Exit 3: Failed to create iso (create_iso)
 
 # Exit on error
 set -o errexit
@@ -185,10 +184,6 @@ update_arch_iso() { # prev: update_iso
             echo "Downloading Arch Linux image ..." | log
             echo "(Don't resize the window or it will mess up the progress bar)"
             wget -c -q --show-progress "${arch_iso_link}"
-            if [[ "$?" -gt "0" ]]; then
-                echo "Error: You need 'wget' to download the image, exiting." | log
-                exit 3
-            fi
             local_arch_iso=$(ls "${working_dir}"/archlinux-*-"${system_architecture}".iso | tail -n1 | sed 's!.*/!!')
         fi
     fi
@@ -376,7 +371,7 @@ create_iso() {
         generate_checksums
     else
         echo "Error: Image creation failed, exiting." | log
-        exit 4
+        exit 3
     fi
 }
 
