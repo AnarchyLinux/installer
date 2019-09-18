@@ -86,6 +86,7 @@ init() {
         'perl-linux-desktopfiles'
         'obmenu-generator'
         'yay'
+        'powerpill'
     )
 
     check_dependencies
@@ -103,6 +104,7 @@ check_dependencies() { # prev: check_depends
     if [[ ! -x /usr/bin/xxd ]]; then dependencies+="xxd "; fi
     if [[ ! -x /usr/bin/gtk3-demo ]]; then dependencies+="gtk3 "; fi
     if [[ ! -x /usr/bin/rankmirrors ]]; then dependencies+="pacman-contrib "; fi
+    if [[ ! -x /usr/bin/go ]]; then dependencies+="go "; fi # Needed by yay (compilation)
     if [[ ! -z "${dependencies}" ]]; then
         echo "Missing dependencies: ${dependencies}" | log
         echo "Install them now? [y/N]: "
