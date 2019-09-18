@@ -105,7 +105,43 @@ check_dependencies() { # prev: check_depends
     if [[ ! -x /usr/bin/gtk3-demo ]]; then dependencies+="gtk3 "; fi
     if [[ ! -x /usr/bin/rankmirrors ]]; then dependencies+="pacman-contrib "; fi
     if [[ ! -x /usr/bin/go ]]; then dependencies+="go "; fi # Needed by yay (for compilation)
-    if [[ ! $(pacman -Qg base-devel > /dev/null 2>&1) ]]; then dependencies+="base-devel "; fi
+
+    base_devel_packages=(
+    'autoconf'
+    'automake'
+    'binutils'
+    'bison'
+    'fakeroot'
+    'file'
+    'findutils'
+    'flex'
+    'gawk'
+    'gcc'
+    'gettext'
+    'grep'
+    'groff'
+    'gzip'
+    'libtool'
+    'm4'
+    'make'
+    'pacman'
+    'patch'
+    'pkgconf'
+    'sed'
+    'sudo'
+    'systemd'
+    'texinfo'
+    'util-linux'
+    'which'
+    )
+
+    for pkg in "${base_devel_packages[@]}"; do
+        if [[ ! -x /usr/bin/${pkg} ]]; then
+            dependencies+="base-devel "
+            break
+        fi
+    done
+
     if [[ ! -z "${dependencies}" ]]; then
         echo "Missing dependencies: ${dependencies}" | log
         echo "Install them now? [y/N]: "
@@ -117,7 +153,7 @@ check_dependencies() { # prev: check_depends
                 echo "Chose to install dependencies" | log
                 for pkg in ${dependencies}; do
                     echo "Installing ${pkg}" | log
-                    sudo pacman -Sy ${pkg}
+                    sudo pacman --noconfirm -S ${pkg}
                     echo "${pkg} installed" | log
                 done
                 ;;
