@@ -1,8 +1,5 @@
 #!/usr/bin/env bash
 
-# Stop shellcheck from spamming to declare and assign separately (not important in our case)
-# shellcheck disable=SC2155
-
 ###############################################################
 ### Anarchy Linux Install Script
 ### iso-generator.sh
@@ -377,7 +374,8 @@ create_iso() {
 
 generate_checksums() {
     echo "Generating image checksum ..." | log
-    local sha_256_sum=$(sha256sum "${anarchy_iso_name}")
+    local sha_256_sum
+    sha_256_sum=$(sha256sum "${anarchy_iso_name}")
     echo "${sha_256_sum}" > "${anarchy_iso_name}".sha256sum
     echo "Done generating image checksum"
     echo ""
