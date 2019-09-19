@@ -5,23 +5,11 @@ Write all your text below the comments or delete them if you want.
 
 ## Description
 
-<!-- Describe what your pull request does. -->
+<!-- An in-depth description of what your pull request does. -->
 
-## Issues closed
+## Affected issues
 
 <!-- Tag any relevant issues your PR closes by prepending their number with a # (e.g. "Closes #123"). -->
-
-## How to test / reproduce
-
-<!-- Describe how to test your pull request and any changes it made to Anarchy. -->
-
-## Changes include
-
-<!-- Tick the box that most closely describes what your issue does -->
-
-* [ ] Bugfix (non-breaking change that solves an issue)
-* [ ] New feature (non-breaking change that adds functionality)
-* [ ] Breaking change (change that is not backwards-compatible and/or changes current functionality)
 
 ## Pull request checklist
 
@@ -29,4 +17,5 @@ Write all your text below the comments or delete them if you want.
 Put an 'x' between the square brackets to tick the field. -->
 
 * [ ] I have tested my code
-* [ ] I have updated any relevant documentation (depends on the type of PR)
+* [ ] I have read the [contributing guide](https://github.com/deadhead420/anarchy-linux/blob/HEAD/CONTRIBUTING.md)
+* [ ] I have followed best practices and commented my code well
