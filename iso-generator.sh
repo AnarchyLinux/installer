@@ -117,7 +117,7 @@ check_dependencies() { # prev: check_depends
     )
 
     for dep in "${dependencies[@]}"; do
-        if ! pacman -Qi ${dep}; then
+        if ! pacman -Qi ${dep} > /dev/null; then
             missing_deps+=("${dep}")
         fi
     done
