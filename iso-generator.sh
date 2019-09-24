@@ -381,7 +381,7 @@ create_iso() {
     -output "${anarchy_iso_name}" \
     "${custom_iso}"
 
-    if [[ "$?" -eq "0" ]]; then
+    if [[ "$?" -eq 0 ]]; then
         rm -rf "${custom_iso}"
         generate_checksums
     else
@@ -431,7 +431,13 @@ command_log() {
 
 # Starts if the iso-generator is interrupted
 cleanup() {
-    echo "An error occured: ${last_command} exited with error code $?" | log
+    # Check if user exited or if there was an error
+    if [[ "${last_command}" == "init" ]]; then
+        echo "User force stopped the script" | log
+    else
+        echo "An error occured: ${last_command} exited with error code $?" | log
+    fi
+
     echo "Starting cleanup" | log
 
     # Check if customiso is mounted
@@ -447,10 +453,13 @@ cleanup() {
         sudo rm -rf ${custom_iso}
     fi
 
+    if [[ "${last_command}" != "init" ]]; then
+        echo "Please report this issue to our Github issue tracker: https://git.io/JeOxK"
+        echo "Make sure to include the relevant log: ${log_file}"
+        echo "You can also ask about the issue in our Telegram: https://t.me/anarchy_linux"
+    fi
+
     echo "Cleaned up successfully" | log
-    echo "Please report this issue to our Github issue tracker: https://git.io/JeOxK"
-    echo "Make sure to include the relevant log: ${log_file}"
-    echo "You can also ask about the issue in our Telegram: https://t.me/anarchy_linux"
 }
 
 usage() {
