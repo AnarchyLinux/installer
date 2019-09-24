@@ -438,8 +438,6 @@ cleanup() {
         echo "An error occured: ${last_command} exited with error code $?" | log
     fi
 
-    echo "Starting cleanup" | log
-
     # Check if customiso is mounted
     if mount | grep ${custom_iso} > /dev/null; then
         echo "Unmounting customiso directory ..." | log
@@ -458,8 +456,6 @@ cleanup() {
         echo "Make sure to include the relevant log: ${log_file}"
         echo "You can also ask about the issue in our Telegram: https://t.me/anarchy_linux"
     fi
-
-    echo "Cleaned up successfully" | log
 }
 
 usage() {
