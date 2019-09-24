@@ -36,12 +36,13 @@ set_up_logging() {
         mkdir ${log_dir}
     fi
 
-    # Create log file with incremental numbering if it already exists
-    if [[ -z "$(ls ${log_dir}/iso-generator-"$(date +%d%m%y)"*)" ]]; then
-        log_file=$(touch ${log_dir}/"iso-generator-$(date +%d%m%y).log")
-    else
-        log_file=$(touch ${log_dir}/"iso-generator-$(date +%d%m%y)-`ls ${log_dir}/iso-generator-"$(date +%d%m%y)"* | wc -l`.log")
+    # Remove existing logs and create a new one
+    if [[ "$(ls ${log_dir})" ]]; then
+        rm "${log_dir}"/*
     fi
+
+    log_file="${log_dir}"/iso-generator-"$(date +%d%m%y)".log
+    touch "${log_file}"
 }
 
 log() {
