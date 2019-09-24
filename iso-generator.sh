@@ -96,54 +96,34 @@ init() {
 
 check_dependencies() { # prev: check_depends
     echo "Checking dependencies ..." | log
-    if [[ ! -x /usr/bin/wget ]]; then dependencies="${dependencies} wget "; fi
-    if [[ ! -x /usr/bin/xorriso ]]; then dependencies+="libisoburn "; fi
-    if [[ ! -x /usr/bin/mksquashfs ]]; then dependencies+="squashfs-tools "; fi
-    if [[ ! -x /usr/bin/7z ]]; then dependencies+="p7zip " ; fi
-    if [[ ! -x /usr/bin/arch-chroot ]]; then dependencies+="arch-install-scripts "; fi
-    if [[ ! -x /usr/bin/xxd ]]; then dependencies+="xxd "; fi
-    if [[ ! -x /usr/bin/gtk3-demo ]]; then dependencies+="gtk3 "; fi
-    if [[ ! -x /usr/bin/rankmirrors ]]; then dependencies+="pacman-contrib "; fi
-    if [[ ! -x /usr/bin/go ]]; then dependencies+="go "; fi # Needed by yay (for compilation)
 
-    base_devel_packages=(
-    'autoconf'
-    'automake'
-    'binutils'
-    'bison'
-    'fakeroot'
-    'file'
-    'findutils'
-    'flex'
-    'gawk'
-    'gcc'
-    'gettext'
-    'grep'
-    'groff'
-    'gzip'
-    'libtool'
-    'm4'
-    'make'
-    'pacman'
-    'patch'
+    # Dependencies with same name packages
+    dependencies=(
+    'wget'
+    'libisoburn'
+    'squashfs-tools'
+    'p7zip'
+    'arch-install-scripts'
+    'xxd'
+    'gtk3'
+    'pacman-contrib'
     'pkgconf'
-    'sed'
-    'sudo'
-    'systemd'
-    'texinfo'
-    'util-linux'
-    'which'
+    'patch'
+    'gcc'
+    'make'
+    'binutils'
+    'file'
+    'go'
     )
 
-    for pkg in "${base_devel_packages[@]}"; do
-        if [[ ! -x /usr/bin/${pkg} ]]; then
-            dependencies+="base-devel "
-            break
+    for dep in "${dependencies[@]}"; do
+        if ! pacman -Qi ${dep}; then
+            missing_deps+=("${dep}")
         fi
     done
 
-    if [[ ! -z "${dependencies}" ]]; then
-        echo "Missing dependencies: ${dependencies}" | log
+    if [[ ${#missing_deps[@]} -ne 0 ]]; then
+        echo "Missing dependencies: ${missing_deps[*]}" | log
         echo "Install them now? [y/N]: "
         local input
         read -r input
@@ -151,9 +131,9 @@ check_dependencies() { # prev: check_depends
         case ${input} in
             y|Y|yes|YES|Yes)
                 echo "Chose to install dependencies" | log
-                for pkg in ${dependencies}; do
-                    echo "Installing ${pkg}" | log
-                    sudo pacman --noconfirm -S ${pkg}
+                for pkg in "${missing_deps[@]}"; do
+                    echo "Installing ${pkg} ..." | log
+                    sudo pacman --noconfirm -Sy ${pkg}
                     echo "${pkg} installed" | log
                 done
                 ;;
@@ -425,17 +405,17 @@ generate_checksums() {
 }
 
 uninstall_dependencies() {
-    echo "Installed dependencies: ${dependencies}" | log
+    echo "Installed dependencies: ${missing_deps[*]}" | log
     echo "Uninstall these dependencies? [y/N]: "
     local input
     read -r input
 
-    if [[ ! -z "$dependencies" ]]; then
+    if [[ ${#missing_deps[@]} -ne 0 ]]; then
         case ${input} in
             y|Y|yes|YES|Yes)
                 echo "Chose to remove dependencies" | log
-                for pkg in ${dependencies}; do
-                    echo "Removing ${pkg}" | log
+                for pkg in "${missing_deps[@]}"; do
+                    echo "Removing ${pkg} ..." | log
                     sudo pacman -Rs ${pkg}
                     echo "${pkg} removed" | log
                 done
