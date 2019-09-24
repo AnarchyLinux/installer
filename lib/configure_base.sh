@@ -427,15 +427,12 @@ add_software() {
                 "$games")
                     software=$(dialog --ok-button "$ok" --cancel-button "$cancel" --checklist "$software_msg1" 20 70 10 \
                         "aisleriot"	"$game11" OFF \
-                        "alienarena"	"$game0" OFF \
                         "bsd-games"	"$game1" OFF \
                         "bzflag"	"$game2" OFF \
-                        "flightgear"	"$game3" OFF \
                         "gnuchess"      "$game4" OFF \
                         "steam"		"$game10" OFF \
                         "supertux"	"$game5" OFF \
                         "supertuxkart"	"$game6" OFF \
-                        "urbanterror"	"$game7" OFF \
                         "warsow"	"$game8" OFF \
                         "xonotic"	"$game9" OFF 3>&1 1>&2 2>&3)
                     if [ "$?" -gt "0" ]; then
@@ -536,15 +533,15 @@ add_software() {
                 "$programming")
                     software=$(dialog --ok-button "$ok" --cancel-button "$cancel" --checklist "$software_msg1" 20 63 10 \
                         "clisp"			"$prg0" OFF \
-                        "dlang-dmd"		"$prg1" OFF \
+                        "dmd"		    "$prg1" OFF \
                         "dart"			"$prg2" OFF \
                         "go"			"$prg3" OFF \
                         "go-tools"		"$prg4" OFF \
                         "java-runtime-common"	"$prg5" OFF \
                         "jdk8-openjdk"	"$prg7" OFF \
-                        "java-openjfx-8"	"$prg8" OFF \
+                        "java-openjfx"	"$prg8" OFF \
                         "jdk11-openjdk" "$prg14" OFF \
-                        "jdk-openjdk" "$prg15" OFF \
+                        "jdk-openjdk"   "$prg15" OFF \
                         "perl"			"$prg9" OFF \
                         "php"			"$prg10" OFF \
                         "python"		"$prg11" OFF \
@@ -554,17 +551,17 @@ add_software() {
                         add_soft=false
                     fi
 
-                    if (<<<"$software" grep "openjdk-7" &>/dev/null); then
-                        software=$(<<<"$software" sed 's/java-openjdk-7/jre7-openjdk-headless jre7-openjdk jdk7-openjdk openjdk7-doc openjdk7-src/')
-                    fi
+                    #if (<<<"$software" grep "openjdk-7" &>/dev/null); then
+                        #software=$(<<<"$software" sed 's/java-openjdk-7/jre7-openjdk-headless jre7-openjdk jdk7-openjdk openjdk7-doc openjdk7-src/')
+                    #fi
 
-                    if (<<<"$software" grep "openjdk-8" &>/dev/null); then
-                        software=$(<<<"$software" sed 's/java-openjdk-8/jre8-openjdk-headless jre8-openjdk jdk8-openjdk openjdk8-doc openjdk8-src/')
-                    fi
+                    #if (<<<"$software" grep "openjdk-8" &>/dev/null); then
+                        #software=$(<<<"$software" sed 's/java-openjdk-8/jre8-openjdk-headless jre8-openjdk jdk8-openjdk openjdk8-doc openjdk8-src/')
+                    #fi
 
-                    if (<<<"$software" grep "openjfx-8" &>/dev/null); then
-                        software=$(<<<"$software" sed 's/java-openjfx-8/java-openjfx java-openjfx-doc java-openjfx-src/')
-                    fi
+                    #if (<<<"$software" grep "openjfx-8" &>/dev/null); then
+                        #software=$(<<<"$software" sed 's/java-openjfx-8/java-openjfx java-openjfx-doc java-openjfx-src/')
+                    #fi
 
 
                 ;;
