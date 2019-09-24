@@ -23,6 +23,7 @@
 
 # Exit on error
 set -o errexit
+set -o errtrace
 
 # Enable tracing of what gets executed
 #set -o xtrace
@@ -471,7 +472,7 @@ fi
 
 # Enable traps
 trap command_log DEBUG
-trap cleanup EXIT
+trap cleanup ERR
 
 while (true); do
     case "$1" in
