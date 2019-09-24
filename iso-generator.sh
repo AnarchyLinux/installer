@@ -413,11 +413,9 @@ uninstall_dependencies() {
                     echo "${pkg} removed" | log
                 done
                 echo "Removed all dependencies" | log
-                exit 0
                 ;;
             *)
                 echo "Chose not to remove dependencies" | log
-                exit 0
                 ;;
         esac
     fi
