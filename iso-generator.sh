@@ -86,7 +86,6 @@ init() {
         'perl-linux-desktopfiles'
         'obmenu-generator'
         'yay'
-        'powerpill'
     )
 
     check_dependencies
