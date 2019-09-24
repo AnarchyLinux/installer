@@ -499,8 +499,8 @@ while (true); do
             build_system
             configure_boot
             create_iso
-            echo "${anarchy_iso_name} image generated successfully." | log
             uninstall_dependencies
+            echo "${anarchy_iso_name} image generated successfully." | log
             exit 0
         ;;
     esac
