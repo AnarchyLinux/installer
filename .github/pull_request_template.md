@@ -17,5 +17,5 @@ Write all your text below the comments or delete them if you want.
 Put an 'x' between the square brackets to tick the field. -->
 
 * [ ] I have tested my code
-* [ ] I have read the [contributing guide](https://github.com/deadhead420/anarchy-linux/blob/HEAD/CONTRIBUTING.md)
+* [ ] I have read the [contributing guide](https://github.com/AnarchyLinux/anarchy-linux/blob/HEAD/CONTRIBUTING.md)
 * [ ] I have followed best practices and commented my code well
