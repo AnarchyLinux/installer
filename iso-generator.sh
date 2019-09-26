@@ -406,12 +406,12 @@ generate_checksums() {
 }
 
 uninstall_dependencies() {
-    echo -e "Installed dependencies: ${missing_deps[*]}" | log
-    echo -e "Uninstall these dependencies? [y/N]: "
-    local input
-    read -r input
-
     if [[ "${#missing_deps[@]}" -ne 0 ]]; then
+        echo -e "Installed dependencies: ${missing_deps[*]}" | log
+        echo -e "Uninstall these dependencies? [y/N]: "
+        local input
+        read -r input
+
         case "${input}" in
             y|Y|yes|YES|Yes)
                 echo -e "Chose to remove dependencies" | log
