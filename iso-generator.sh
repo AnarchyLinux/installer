@@ -32,8 +32,8 @@ set_up_logging() {
     working_dir=$(pwd) # prev: aa
     log_dir="${working_dir}"/log
     
-    if [[ ! -d ${log_dir} ]]; then
-        mkdir ${log_dir}
+    if [[ ! -d "${log_dir}" ]]; then
+        mkdir "${log_dir}"
     fi
 
     # Remove existing logs and create a new one
@@ -48,7 +48,7 @@ set_up_logging() {
 log() {
     local entry
     read entry
-    echo -e "$(date -u "+%d/%m/%Y %H:%M") : ${entry}" | tee -a ${log_file}
+    echo -e "$(date -u "+%d/%m/%Y %H:%M") : ${entry}" | tee -a "${log_file}"
 }
 
 # Clears the screen and adds a banner
@@ -123,18 +123,18 @@ check_dependencies() { # prev: check_depends
         fi
     done
 
-    if [[ ${#missing_deps[@]} -ne 0 ]]; then
+    if [[ "${#missing_deps[@]}" -ne 0 ]]; then
         echo "Missing dependencies: ${missing_deps[*]}" | log
         echo "Install them now? [y/N]: "
         local input
         read -r input
 
-        case ${input} in
+        case "${input}" in
             y|Y|yes|YES|Yes)
                 echo "Chose to install dependencies" | log
                 for pkg in "${missing_deps[@]}"; do
                     echo "Installing ${pkg} ..." | log
-                    sudo pacman --noconfirm -Sy ${pkg}
+                    sudo pacman --noconfirm -Sy "${pkg}"
                     echo "${pkg} installed" | log
                 done
                 ;;
@@ -302,13 +302,13 @@ copy_config_files() { # prev: build_conf
 
     cd "${squashfs}"/usr/share/anarchy/pkg || exit
     sudo repo-add anarchy-local.db.tar.gz *.pkg.tar.xz
-    echo -e "\n[anarchy-local]\nServer = file:///usr/share/anarchy/pkg\nSigLevel = Never" | sudo tee -a "${squashfs}"/etc/pacman.conf >/dev/null
+    echo -e "\n[anarchy-local]\nServer = file:///usr/share/anarchy/pkg\nSigLevel = Never" | sudo tee -a "${squashfs}"/etc/pacman.conf > /dev/null
     cd "${working_dir}" || exit
 
     if [[ "${system_architecture}" == "i686" ]]; then
         sudo rm -r "${squashfs}"/root/.gnupg
         sudo rm -r "${squashfs}"/etc/pacman.d/gnupg
-        sudo linux32 arch-chroot "${squashfs}" dirmngr </dev/null
+        sudo linux32 arch-chroot "${squashfs}" dirmngr < /dev/null
         sudo linux32 arch-chroot "${squashfs}" pacman-key --init
         sudo linux32 arch-chroot "${squashfs}" pacman-key --populate archlinux32
         sudo linux32 arch-chroot "${squashfs}" pacman-key --refresh-keys
@@ -405,8 +405,8 @@ uninstall_dependencies() {
     local input
     read -r input
 
-    if [[ ${#missing_deps[@]} -ne 0 ]]; then
-        case ${input} in
+    if [[ "${#missing_deps[@]}" -ne 0 ]]; then
+        case "${input}" in
             y|Y|yes|YES|Yes)
                 echo "Chose to remove dependencies" | log
                 for pkg in "${missing_deps[@]}"; do
@@ -425,8 +425,8 @@ uninstall_dependencies() {
 
 # Logs last command to display it in cleanup
 command_log() {
-    current_command=${BASH_COMMAND}
-    last_command=${current_command}
+    current_command="${BASH_COMMAND}"
+    last_command="${current_command}"
 }
 
 # Starts if the iso-generator is interrupted
@@ -439,16 +439,16 @@ cleanup() {
     fi
 
     # Check if customiso is mounted
-    if mount | grep ${custom_iso} > /dev/null; then
+    if mount | grep "${custom_iso}" > /dev/null; then
         echo "Unmounting customiso directory ..." | log
-        sudo umount ${custom_iso}
+        sudo umount "${custom_iso}"
     fi
 
     # Check and clean the customiso directory
-    if [[ -d ${custom_iso} ]]; then
+    if [[ -d "${custom_iso}" ]]; then
         echo "Removing customiso directory ..." | log
         # We have to use sudo in case root owns files inside customiso
-        sudo rm -rf ${custom_iso}
+        sudo rm -rf "${custom_iso}"
     fi
 
     if [[ "${last_command}" != "init" ]]; then
@@ -466,7 +466,7 @@ usage() {
     echo ""
 }
 
-if (<<<"$@" grep "\-\-i686" >/dev/null); then
+if (<<<"$@" grep "\-\-i686" > /dev/null); then
     system_architecture=i686 # prev: sys
     pacman_config=etc/i686-pacman.conf # prev: paconf
     sudo wget "https://raw.githubusercontent.com/archlinux32/packages/master/core/pacman-mirrorlist/mirrorlist" -O /etc/pacman.d/mirrorlist32
