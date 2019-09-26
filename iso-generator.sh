@@ -75,10 +75,20 @@ init() {
     # Location variables
     custom_iso="${working_dir}"/customiso # prev: customiso
     squashfs="${custom_iso}"/arch/"${system_architecture}"/squashfs-root # prev: sq
+    out_dir="${working_dir}"/out # Directory for generated isos
 
     # Check for existing Arch iso
     if (ls "${working_dir}"/archlinux-*-"${system_architecture}".iso &>/dev/null); then
         local_arch_iso=$(ls "${working_dir}"/archlinux-*-"${system_architecture}".iso | tail -n1 | sed 's!.*/!!') # Outputs Arch iso filename prev: iso
+    fi
+
+    if [[ ! -d "${out_dir}" ]]; then
+        mkdir "${out_dir}"
+    fi
+
+    # Remove existing Anarchy iso with same name
+    if [[ "$(ls ${out_dir}/${local_arch_iso})" ]]; then
+        rm "${out_dir}"/"${local_arch_iso}"
     fi
 
     # Link to AUR snapshots
@@ -384,7 +394,7 @@ create_iso() {
     -eltorito-alt-boot \
     -e EFI/archiso/efiboot.img \
     -no-emul-boot -isohybrid-gpt-basdat \
-    -output "${anarchy_iso_name}" \
+    -output "${out_dir}"/"${anarchy_iso_name}" \
     "${custom_iso}"
 
     if [[ "$?" -eq 0 ]]; then
