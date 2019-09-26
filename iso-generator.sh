@@ -28,6 +28,12 @@ set -o errtrace
 # Enable tracing of what gets executed
 #set -o xtrace
 
+# Define colors
+color_blank='\e[0m'
+color_green='\e[1;32m'
+color_red='\e[1;31m'
+color_white="\e[1m"
+
 set_up_logging() {
     working_dir=$(pwd) # prev: aa
     log_dir="${working_dir}"/log
