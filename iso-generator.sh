@@ -87,8 +87,8 @@ init() {
     fi
 
     # Remove existing Anarchy iso with same name
-    if [[ "$(ls ${out_dir}/${local_arch_iso})" ]]; then
-        rm "${out_dir}"/"${local_arch_iso}"
+    if [[ "$(ls ${out_dir}/${anarchy_iso_name})" ]]; then
+        rm "${out_dir}"/"${anarchy_iso_name}"
     fi
 
     # Link to AUR snapshots
