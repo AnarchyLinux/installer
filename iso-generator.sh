@@ -230,7 +230,7 @@ local_repo_builds() { # prev: aur_builds
         echo -e "Making ${pkg} ..." | log
         wget -qO- "${aur_snapshot_link}/${pkg}.tar.gz" | tar xz -C /tmp
         cd /tmp/"${pkg}" || exit
-        makepkg -si --noconfirm --nocheck
+        makepkg -s --noconfirm --nocheck
         echo -e "${pkg} made successfully" | log
     done
 
