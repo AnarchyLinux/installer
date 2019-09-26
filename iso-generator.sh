@@ -75,10 +75,20 @@ init() {
     # Location variables
     custom_iso="${working_dir}"/customiso # prev: customiso
     squashfs="${custom_iso}"/arch/"${system_architecture}"/squashfs-root # prev: sq
+    out_dir="${working_dir}"/out # Directory for generated isos
 
     # Check for existing Arch iso
     if (ls "${working_dir}"/archlinux-*-"${system_architecture}".iso &>/dev/null); then
         local_arch_iso=$(ls "${working_dir}"/archlinux-*-"${system_architecture}".iso | tail -n1 | sed 's!.*/!!') # Outputs Arch iso filename prev: iso
+    fi
+
+    if [[ ! -d "${out_dir}" ]]; then
+        mkdir "${out_dir}"
+    fi
+
+    # Remove existing Anarchy iso with same name
+    if [[ "$(ls ${out_dir}/${anarchy_iso_name})" ]]; then
+        rm "${out_dir}"/"${anarchy_iso_name}"
     fi
 
     # Link to AUR snapshots
@@ -230,7 +240,7 @@ local_repo_builds() { # prev: aur_builds
         echo -e "Making ${pkg} ..." | log
         wget -qO- "${aur_snapshot_link}/${pkg}.tar.gz" | tar xz -C /tmp
         cd /tmp/"${pkg}" || exit
-        makepkg -s --noconfirm --nocheck
+        makepkg -sf --noconfirm --nocheck
         echo -e "${pkg} made successfully" | log
     done
 
@@ -384,7 +394,7 @@ create_iso() {
     -eltorito-alt-boot \
     -e EFI/archiso/efiboot.img \
     -no-emul-boot -isohybrid-gpt-basdat \
-    -output "${anarchy_iso_name}" \
+    -output "${out_dir}"/"${anarchy_iso_name}" \
     "${custom_iso}"
 
     if [[ "$?" -eq 0 ]]; then
@@ -399,8 +409,8 @@ create_iso() {
 generate_checksums() {
     echo -e "Generating image checksum ..." | log
     local sha_256_sum
-    sha_256_sum=$(sha256sum "${anarchy_iso_name}")
-    echo -e "${sha_256_sum}" > "${anarchy_iso_name}".sha256sum
+    sha_256_sum=$(sha256sum "${out_dir}"/"${anarchy_iso_name}")
+    echo -e "${sha_256_sum}" > "${out_dir}"/"${anarchy_iso_name}".sha256sum
     echo -e "Done generating image checksum"
     echo -e ""
 }
