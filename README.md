@@ -12,7 +12,7 @@
 
 <p align="center">
     <a href="https://www.anarchylinux.org/">Home page</a> | 
-    <a href="https://github.com/AnarchyLinux/anarchy-linux/releases">Download</a> |
+    <a href="https://github.com/AnarchyLinux/installer/releases">Download</a> |
     <a href="https://t.me/anarchy_linux">Telegram group</a>
 </p>
 </html>
