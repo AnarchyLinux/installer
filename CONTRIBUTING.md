@@ -18,7 +18,7 @@ check out [devhints](https://devhints.io/)'s [bash cheatsheet](https://devhints.
 
 For beginners there are even more good news,
 we use `good first issue` and `help wanted` tags,
-so you can find some great issues you can help fix [right here](https://github.com/AnarchyLinux/anarchy-linux/contribute).
+so you can find some great issues you can help fix [right here](https://github.com/AnarchyLinux/installer/contribute).
 Of course you can help fix any issue, those are just the ones we recommend to new contributors.
 
 ### Style guide
@@ -39,10 +39,10 @@ visit [devhints.io](https://devhints.io/bash) to do so.
 Maybe you don't know how to code or don't want to contribute code.
 That's ok, we appreciate other kinds of help too.
 
-If you've found a typo in our readme or on [our website](https://github.com/AnarchyLinux/anarchy-linux/tree/website-source),
+If you've found a typo in our readme or on [our website](https://github.com/AnarchyLinux/installer/tree/website-source),
 you can always help fix it and submit a pull request.
 
-Our website is generated with [hugo](https://github.com/AnarchyLinux/anarchy-linux/tree/website-source)
+Our website is generated with [hugo](https://github.com/AnarchyLinux/installer/tree/website-source)
 and uses the [introdution theme](https://github.com/victoriadrake/hugo-theme-introduction).
 
 ## Translate the project
