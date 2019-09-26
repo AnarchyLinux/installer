@@ -39,11 +39,8 @@ visit [devhints.io](https://devhints.io/bash) to do so.
 Maybe you don't know how to code or don't want to contribute code.
 That's ok, we appreciate other kinds of help too.
 
-If you've found a typo in our readme or on [our website](https://github.com/AnarchyLinux/installer/tree/website-source),
-you can always help fix it and submit a pull request.
-
-Our website is generated with [hugo](https://github.com/AnarchyLinux/installer/tree/website-source)
-and uses the [introdution theme](https://github.com/victoriadrake/hugo-theme-introduction).
+If you've found a typo in our readme or want to help create [a wiki](https://github.com/AnarchyLinux/installer/wiki),
+please do.
 
 ## Translate the project
 
