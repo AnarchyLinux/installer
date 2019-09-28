@@ -87,7 +87,7 @@ init() {
     fi
 
     # Remove existing Anarchy iso with same name
-    if [[ "$(ls ${out_dir}/${anarchy_iso_name})" ]]; then
+    if [[ -e "${out_dir}"/"${anarchy_iso_name}" ]]; then
         rm "${out_dir}"/"${anarchy_iso_name}"
     fi
 
