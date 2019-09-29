@@ -619,8 +619,8 @@ cleanup() {
 usage() {
     clear
     echo -e "${color_white}Usage: iso-generator.sh [options]${color_blank}"
-    echo -e "${color_white}     --i686)     create i686 (32-bit) installer${color_blank}"
-    echo -e "${color_white}     --x86_64)   create x86_64 (64-bit) installer (default)${color_blank}"
+    echo -e "${color_white}     --i686)             create i686 (32-bit) installer${color_blank}"
+    echo -e "${color_white}     --x86_64)           create x86_64 (64-bit) installer (default)${color_blank}"
     echo -e "${color_white}     -c | --no-color)    Disable color output${color_blank}"
     echo -e "${color_white}     -i | --no-input)    Don't ask user for input${color_blank}"
     echo -e ""
