@@ -506,6 +506,14 @@ while (true); do
             usage
             exit 0
         ;;
+        -c|--no-color)
+            show_color=false
+            shift
+        ;;
+        -i|--no-input)
+            user_input=false
+            shift
+        ;;
         *)
             prettify
             set_up_logging
