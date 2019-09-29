@@ -2,17 +2,15 @@
 
 ## Release v1.0.6
 
-* Update Portuguese translations
+* Update French, Portuguese, Romanian and Spanish translations
 * Move keyboard selection menu to after selecting a language
 * Remove `rethinkdb`, `alienarena`, `flightgear` and `urbanterror` (moved to the AUR)
-* Update Spanish translations
 * Rename `dlang-dmd`, `java-openjfx`
 * Add `yay` to custom DE installations
 * Remove some Anarchy branding info (`lsb-release` and `os-release`)
 * Output generated Anarchy ISO to `out/` directory
 * Log iso-generator actions to `log/` directory
 * Update error reporting of iso-generator
-* Update Romanian translations
 * Add Qtile Window Manager as an optional DE/WM
 * Codebase cleanup
 * Fix translations not working
