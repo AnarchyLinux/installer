@@ -244,11 +244,13 @@ update_arch_iso() { # prev: update_iso
                 case "${input}" in
                     y|Y|yes|YES|Yes)
                         echo -e "Chose to update image" | log
+                        local_arch_checksum=$(ls "${working_dir}"/sha*sum* | tail -n1 | sed 's!.*/!!')
                         update=true
                         ;;
                     *)
                     echo -e "Chose not to update image" | log
                     echo -e "Using old image: ${local_arch_iso}" | log
+                    local_arch_checksum=$(ls "${working_dir}"/sha*sum* | tail -n1 | sed 's!.*/!!')
                     sleep 1
                     ;;
                 esac
@@ -276,6 +278,7 @@ update_arch_iso() { # prev: update_iso
 check_arch_iso() {
     echo -e "Comparing Arch Linux checksums ..."
     checksum=false
+    local_arch_checksum=$(ls "${working_dir}"/sha*sum* | tail -n1 | sed 's!.*/!!')
 
     # Check if checksum exists
     if [[ -e "${local_arch_checksum}" ]]; then
