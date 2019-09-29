@@ -31,7 +31,6 @@ set -o errtrace
 # Declare important variables
 working_dir=$(pwd) # prev: aa
 log_dir="${working_dir}"/log
-log_file="${log_dir}"/iso-generator-"$(date +%d%m%y)".log
 out_dir="${working_dir}"/out # Directory for generated ISOs
 
 # Define colors depending on script arguments
@@ -54,6 +53,8 @@ set_up_logging() {
     if [[ ! -d "${log_dir}" ]]; then
         mkdir "${log_dir}"
     fi
+
+    log_file="${log_dir}"/iso-generator-"$(date +%d%m%y)".log
 
     # Remove existing logs and create a new one
     if [[ -e "${log_dir}"/"${log_file}" ]]; then
