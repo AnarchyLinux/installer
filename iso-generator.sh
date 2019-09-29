@@ -28,11 +28,21 @@ set -o errtrace
 # Enable tracing of what gets executed
 #set -o xtrace
 
-# Define colors
-color_blank='\e[0m'
-color_green='\e[1;32m'
-color_red='\e[1;31m'
-color_white="\e[1m"
+# Define colors depending on script arguments
+set_up_colors() {
+    if [[ "${show_color}" == true ]]; then
+        color_blank='\e[0m'
+        color_green='\e[1;32m'
+        color_red='\e[1;31m'
+        color_white="\e[1m"
+    else
+        # Replace all colors with reset codes
+        color_blank='\e[0m'
+        color_green='\e[0m'
+        color_red='\e[0m'
+        color_white="\e[0m"
+    fi
+}
 
 set_up_logging() {
     working_dir=$(pwd) # prev: aa
@@ -142,25 +152,41 @@ check_dependencies() { # prev: check_depends
 
     if [[ "${#missing_deps[@]}" -ne 0 ]]; then
         echo -e "Missing dependencies: ${missing_deps[*]}" | log
-        echo -e "Install them now? [y/N]: "
-        local input
-        read -r input
+        if [[ "${user_input}" == true ]]; then
+            echo -e "Install them now? [y/N]: "
+            local input
+            read -r input
 
-        case "${input}" in
-            y|Y|yes|YES|Yes)
-                echo -e "Chose to install dependencies" | log
-                for pkg in "${missing_deps[@]}"; do
-                    echo -e "Installing ${pkg} ..." | log
-                    sudo pacman --noconfirm -Sy "${pkg}"
-                    echo -e "${pkg} installed" | log
-                done
+            case "${input}" in
+                y|Y|yes|YES|Yes)
+                    echo -e "Chose to install dependencies" | log
+                    for pkg in "${missing_deps[@]}"; do
+                        echo -e "Installing ${pkg} ..." | log
+                        if [[ "${show_color}" == true ]]; then
+                            sudo pacman --noconfirm -Sy "${pkg}"
+                        else
+                            sudo pacman --noconfirm --color never -Sy "${pkg}"
+                        fi
+                        echo -e "${pkg} installed" | log
+                    done
+                    ;;
+                *)
+                echo -e "Chose not to install dependencies" | log
+                echo -e "${color_red}Error: Missing dependencies, exiting.${color_blank}" | log
+                exit 1
                 ;;
-            *)
-            echo -e "Chose not to install dependencies" | log
-            echo -e "${color_red}Error: Missing dependencies, exiting.${color_blank}" | log
-            exit 1
-            ;;
-        esac
+            esac
+        else
+            for pkg in "${missing_deps[@]}"; do
+                echo -e "Installing ${pkg} ..." | log
+                if [[ "${show_color}" == true ]]; then
+                    sudo pacman --noconfirm -Sy "${pkg}"
+                else
+                    sudo pacman --noconfirm --color never -Sy "${pkg}"
+                fi
+                echo -e "${pkg} installed" | log
+            done
+        fi
     fi
     echo -e "Done installing dependencies"
     echo -e ""
@@ -183,37 +209,46 @@ update_arch_iso() { # prev: update_iso
     if [[ "${iso_date}" != "${local_arch_iso}" ]]; then
         if [[ -z "${local_arch_iso}" ]]; then
             echo -e "No Arch Linux image found under ${working_dir}" | log
-            echo -e "Download it? [y/N]: "
-            local input
-            read -r input
+            if [[ "${user_input}" == true ]]; then
+                echo -e "Download it? [y/N]: "
+                local input
+                read -r input
 
-            case "${input}" in
-                y|Y|yes|YES|Yes)
-                    echo -e "Chose to download image" | log
-                    update=true ;;
-                *)
-                echo -e "Chose not to download image" | log
-                echo -e "${color_red}Error: anarchy-creator requires an Arch Linux image located in: ${working_dir}, exiting.${color_blank}" | log
-                exit 2
-                ;;
-            esac
+                case "${input}" in
+                    y|Y|yes|YES|Yes)
+                        echo -e "Chose to download image" | log
+                        update=true
+                        ;;
+                    *)
+                    echo -e "Chose not to download image" | log
+                    echo -e "${color_red}Error: anarchy-creator requires an Arch Linux image located in: ${working_dir}, exiting.${color_blank}" | log
+                    exit 2
+                    ;;
+                esac
+            else
+                update=true
+            fi
         else
             echo -e "Updated Arch Linux image available: ${arch_iso_latest}" | log
-            echo -e "Download it? [y/N]: "
-            local input
-            read -r input
+            if [[ "${user_input}" == true ]]; then
+                echo -e "Download it? [y/N]: "
+                local input
+                read -r input
 
-            case "${input}" in
-                y|Y|yes|YES|Yes)
-                    echo -e "Chose to update image" | log
-                    update=true
+                case "${input}" in
+                    y|Y|yes|YES|Yes)
+                        echo -e "Chose to update image" | log
+                        update=true
+                        ;;
+                    *)
+                    echo -e "Chose not to update image" | log
+                    echo -e "Using old image: ${local_arch_iso}" | log
+                    sleep 1
                     ;;
-                *)
-                echo -e "Chose not to update image" | log
-                echo -e "Using old image: ${local_arch_iso}" | log
-                sleep 1
-                ;;
-            esac
+                esac
+            else
+                update=true
+            fi
         fi
 
         if "${update}" ; then
@@ -231,7 +266,7 @@ update_arch_iso() { # prev: update_iso
 
 local_repo_builds() { # prev: aur_builds
     echo -e "Updating pacman databases ..." | log
-    sudo pacman -Sy
+    sudo pacman -Sy --noconfirm
     echo -e "Done updating pacman databases"
 
     echo -e "Building AUR packages for local repo ..." | log
@@ -241,7 +276,11 @@ local_repo_builds() { # prev: aur_builds
         echo -e "Making ${pkg} ..." | log
         wget -qO- "${aur_snapshot_link}/${pkg}.tar.gz" | tar xz -C /tmp
         cd /tmp/"${pkg}" || exit
-        makepkg -sif --noconfirm --nocheck
+        if [[ "${show_color}" == true ]]; then
+            makepkg -sif --noconfirm --nocheck
+        else
+            makepkg -sif --noconfirm --nocheck --nocolor
+        fi
         echo -e "${pkg} made successfully" | log
     done
 
@@ -419,24 +458,26 @@ generate_checksums() {
 uninstall_dependencies() {
     if [[ "${#missing_deps[@]}" -ne 0 ]]; then
         echo -e "Installed dependencies: ${missing_deps[*]}" | log
-        echo -e "Uninstall these dependencies? [y/N]: "
-        local input
-        read -r input
+        if [[ "${user_input}" == true ]]; then
+            echo -e "Uninstall these dependencies? [y/N]: "
+            local input
+            read -r input
 
-        case "${input}" in
-            y|Y|yes|YES|Yes)
-                echo -e "Chose to remove dependencies" | log
-                for pkg in "${missing_deps[@]}"; do
-                    echo -e "Removing ${pkg} ..." | log
-                    sudo pacman -Rs ${pkg}
-                    echo -e "${pkg} removed" | log
-                done
-                echo -e "Removed all dependencies" | log
-                ;;
-            *)
-                echo -e "Chose not to remove dependencies" | log
-                ;;
-        esac
+            case "${input}" in
+                y|Y|yes|YES|Yes)
+                    echo -e "Chose to remove dependencies" | log
+                    for pkg in "${missing_deps[@]}"; do
+                        echo -e "Removing ${pkg} ..." | log
+                        sudo pacman -Rs ${pkg}
+                        echo -e "${pkg} removed" | log
+                    done
+                    echo -e "Removed all dependencies" | log
+                    ;;
+                *)
+                    echo -e "Chose not to remove dependencies" | log
+                    ;;
+            esac
+        fi
     fi
 }
 
@@ -478,8 +519,10 @@ cleanup() {
 usage() {
     clear
     echo -e "${color_white}Usage: iso-generator.sh [architecture]${color_blank}"
-    echo -e "${color_white}  --i686)     create i686 (32-bit) installer${color_blank}"
-    echo -e "${color_white}  --x86_64)   create x86_64 (64-bit) installer (default)${color_blank}"
+    echo -e "${color_white}     --i686)     create i686 (32-bit) installer${color_blank}"
+    echo -e "${color_white}     --x86_64)   create x86_64 (64-bit) installer (default)${color_blank}"
+    echo -e "${color_white}     -c | --no-color)    Disable color output${color_blank}"
+    echo -e "${color_white}     -i | --no-input)    Don't ask user for input${color_blank}"
     echo -e ""
 }
 
@@ -496,6 +539,10 @@ fi
 # Enable traps
 trap command_log DEBUG
 trap cleanup ERR
+
+# Enable color output and user input by default
+show_color=true
+user_input=true
 
 while (true); do
     case "$1" in
