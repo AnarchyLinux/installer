@@ -19,7 +19,8 @@
 # Error codes:
 # * Exit 1: Missing dependencies (check_dependencies)
 # * Exit 2: Missing Arch iso (update_arch_iso)
-# * Exit 3: Failed to create iso (create_iso)
+# * Exit 3: Checksum did not match for Arch ISO (check_arch_iso)
+# * Exit 4: Failed to create iso (create_iso)
 
 # Exit on error
 set -o errexit
@@ -121,6 +122,7 @@ init() {
 
     check_dependencies
     update_arch_iso
+    check_arch_iso
     local_repo_builds
 }
 
@@ -258,14 +260,102 @@ update_arch_iso() { # prev: update_iso
         if "${update}" ; then
             cd "${working_dir}" || exit
             echo -e ""
-            echo -e "Downloading Arch Linux image ..." | log
+            echo -e "Downloading Arch Linux image and checksum ..." | log
             echo -e "(Don't resize the window or it will mess up the progress bar)"
             wget -c -q --show-progress "${arch_iso_link}"
             local_arch_iso=$(ls "${working_dir}"/archlinux-*-"${system_architecture}".iso | tail -n1 | sed 's!.*/!!')
+            wget -c -q --show-progress "${arch_checksum_link}"
+            local_arch_checksum=$(ls "${working_dir}"/sha*sum* | tail -n1 | sed 's!.*/!!')
         fi
     fi
     echo -e "Done checking for Arch Linux image"
     echo -e ""
+}
+
+check_arch_iso() {
+    echo -e "Comparing Arch Linux checksums ..."
+    checksum=false
+
+    # Check if checksum exists
+    if [[ -e "${local_arch_checksum}" ]]; then
+        # Check checksum depending on architecture
+        if [[ "${system_architecture}" == "x86_64" ]]; then
+            if [[ sha1sum -C "${local_arch_checksum}" > /dev/null ]]; then
+                echo -e "${local_arch_iso}: OK" | log
+                checksum=true
+            fi
+        else
+            if [[ sha256sum -C "${local_arch_checksum}" > /dev/null ]]; then
+                echo -e "${local_arch_iso}: OK" | log
+                checksum=true
+            fi
+        fi
+    else
+        echo -e "No checksum found!"
+        if [[ "${user_input}" == true ]]; then
+            echo -e "Download it? [Y/n]: "
+            local input
+            read -r input
+
+            case "${input}" in
+                n|N|no|NO|No)
+                    echo -e "Chose not to download checksum" | log
+                    ;;
+                *)
+                echo -e "Chose to download checksum" | log
+                wget -c -q --show-progress "${arch_checksum_link}"
+                if [[ "${system_architecture}" == "x86_64" ]]; then
+                    if [[ sha1sum -C "${local_arch_checksum}" > /dev/null ]]; then
+                        echo -e "${local_arch_iso}: OK" | log
+                        checksum=true
+                    fi
+                else
+                    if [[ sha256sum -C "${local_arch_checksum}" > /dev/null ]]; then
+                        echo -e "${local_arch_iso}: OK" | log
+                        checksum=true
+                    fi
+                fi
+                ;;
+            esac
+        else
+            # Automatically download and compare checksum
+            wget -c -q --show-progress "${arch_checksum_link}"
+            if [[ "${system_architecture}" == "x86_64" ]]; then
+                if [[ sha1sum -C "${local_arch_checksum}" > /dev/null ]]; then
+                    echo -e "${local_arch_iso}: OK" | log
+                    checksum=true
+                fi
+            else
+                if [[ sha256sum -C "${local_arch_checksum}" > /dev/null ]]; then
+                    echo -e "${local_arch_iso}: OK" | log
+                    checksum=true
+                fi
+            fi
+        fi
+    fi
+
+    if [[ "${checksum}" == false ]]; then
+        echo -e "Checksum did not match ISO file!"
+        if [[ "${user_input}" == true ]]; then
+            echo -e "Continue anyway? [y/N]: "
+            local input
+            read -r input
+
+            case "${input}" in
+                y|Y|yes|YES|Yes)
+                    echo -e "Chose to continue" | log
+                    ;;
+                *)
+                    echo -e "Chose not to continue" | log
+                    echo -e "${color_red}Error: Checksum did not match file, exiting!${color_blank}"
+                    exit 3
+                    ;;
+            esac
+        else
+            echo -e "${color_red}Error: Checksum did not match file, exiting!${color_blank}"
+            exit 3
+        fi
+    fi
 }
 
 local_repo_builds() { # prev: aur_builds
@@ -446,7 +536,7 @@ create_iso() {
         generate_checksums
     else
         echo -e "${color_red}Error: Image creation failed, exiting.${color_blank}" | log
-        exit 3
+        exit 4
     fi
 }
 
