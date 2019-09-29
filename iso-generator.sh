@@ -308,6 +308,7 @@ check_arch_iso() {
                 *)
                 echo -e "Chose to download checksum" | log
                 wget -c -q --show-progress "${arch_checksum_link}"
+                local_arch_checksum=$(ls "${working_dir}"/sha*sum* | tail -n1 | sed 's!.*/!!')
                 if [[ "${system_architecture}" == "x86_64" ]]; then
                     if [[ $(sha1sum --check --ignore-missing "${local_arch_checksum}") ]]; then
                         echo -e "${local_arch_iso}: OK" | log
@@ -324,6 +325,7 @@ check_arch_iso() {
         else
             # Automatically download and compare checksum
             wget -c -q --show-progress "${arch_checksum_link}"
+            local_arch_checksum=$(ls "${working_dir}"/sha*sum* | tail -n1 | sed 's!.*/!!')
             if [[ "${system_architecture}" == "x86_64" ]]; then
                 if [[ $(sha1sum --check --ignore-missing "${local_arch_checksum}") ]]; then
                     echo -e "${local_arch_iso}: OK" | log
