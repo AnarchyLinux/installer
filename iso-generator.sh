@@ -253,6 +253,7 @@ update_arch_iso() { # prev: update_iso
                     ;;
                 esac
             else
+                local_arch_checksum=$(ls "${working_dir}"/sha*sum* | tail -n1 | sed 's!.*/!!')
                 update=true
             fi
         fi
