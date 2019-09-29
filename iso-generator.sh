@@ -201,9 +201,11 @@ update_arch_iso() { # prev: update_iso
     if [[ "${system_architecture}" == "x86_64" ]]; then
         arch_iso_latest=$(curl -s https://www.archlinux.org/download/ | grep "Current Release" | awk '{print $3}' | sed -e 's/<.*//') # prev: archiso_latest
         arch_iso_link="https://mirrors.kernel.org/archlinux/iso/${arch_iso_latest}/archlinux-${arch_iso_latest}-x86_64.iso" # prev: archiso_link
+        arch_checksum_link="https://mirrors.edge.kernel.org/archlinux/iso/${arch_iso_latest}/sha1sums.txt"
     else
         arch_iso_latest=$(curl -s https://mirror.archlinux32.org/archisos/ | grep -o ">.*.iso<" | tail -1 | sed 's/>//;s/<//')
         arch_iso_link="https://mirror.archlinux32.org/archisos/${arch_iso_latest}"
+        arch_checksum_link="https://mirror.archlinux32.org/archisos/sha512sums"
     fi
 
     echo -e "Checking for updated Arch Linux image ..." | log
