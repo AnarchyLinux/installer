@@ -71,6 +71,7 @@ graphics() {
                 "i3"                    "$de10" OFF \
                 "openbox"               "$de8" OFF \
                 "sway"                  "$de21" OFF \
+                "qtile"                 "${de25}" OFF \
                 "xmonad"                "$de16" OFF 3>&1 1>&2 2>&3)
 
             if [ -n "$de" ]; then
@@ -207,6 +208,10 @@ graphics() {
             ;;
             "sway")		start_term="sway"
                     DE+="sway "
+            ;;
+            "qtile")    config_env="${env}"
+                    start_term="exec qtile"
+                    DE+="qtile "
             ;;
         esac
     done <<< "$de"
