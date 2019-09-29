@@ -262,10 +262,10 @@ update_arch_iso() { # prev: update_iso
             echo -e ""
             echo -e "Downloading Arch Linux image and checksum ..." | log
             echo -e "(Don't resize the window or it will mess up the progress bar)"
-            wget -c -q --show-progress "${arch_iso_link}"
-            local_arch_iso=$(ls "${working_dir}"/archlinux-*-"${system_architecture}".iso | tail -n1 | sed 's!.*/!!')
             wget -c -q --show-progress "${arch_checksum_link}"
             local_arch_checksum=$(ls "${working_dir}"/sha*sum* | tail -n1 | sed 's!.*/!!')
+            wget -c -q --show-progress "${arch_iso_link}"
+            local_arch_iso=$(ls "${working_dir}"/archlinux-*-"${system_architecture}".iso | tail -n1 | sed 's!.*/!!')
         fi
     fi
     echo -e "Done checking for Arch Linux image"
