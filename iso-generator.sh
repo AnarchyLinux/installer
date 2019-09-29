@@ -28,6 +28,12 @@ set -o errtrace
 # Enable tracing of what gets executed
 #set -o xtrace
 
+# Declare important variables
+working_dir=$(pwd) # prev: aa
+log_dir="${working_dir}"/log
+log_file="${log_dir}"/iso-generator-"$(date +%d%m%y)".log
+out_dir="${working_dir}"/out # Directory for generated ISOs
+
 # Define colors depending on script arguments
 set_up_colors() {
     if [[ "${show_color}" == true ]]; then
@@ -45,19 +51,15 @@ set_up_colors() {
 }
 
 set_up_logging() {
-    working_dir=$(pwd) # prev: aa
-    log_dir="${working_dir}"/log
-    
     if [[ ! -d "${log_dir}" ]]; then
         mkdir "${log_dir}"
     fi
 
     # Remove existing logs and create a new one
-    if [[ "$(ls ${log_dir})" ]]; then
-        rm "${log_dir}"/*
+    if [[ -e "${log_dir}"/"${log_file}" ]]; then
+        rm "${log_dir}"/"${log_file}"
     fi
 
-    log_file="${log_dir}"/iso-generator-"$(date +%d%m%y)".log
     touch "${log_file}"
 }
 
@@ -85,7 +87,6 @@ init() {
     # Location variables
     custom_iso="${working_dir}"/customiso # prev: customiso
     squashfs="${custom_iso}"/arch/"${system_architecture}"/squashfs-root # prev: sq
-    out_dir="${working_dir}"/out # Directory for generated isos
 
     # Check for existing Arch iso
     if (ls "${working_dir}"/archlinux-*-"${system_architecture}".iso &>/dev/null); then
@@ -561,6 +562,21 @@ while (true); do
             user_input=false
             shift
         ;;
+        -o|--output-dir)
+            shift
+            out_dir=$1
+            shift
+        ;;
+        -l|--log-dir)
+            shift
+            log_dir=$1
+            shift
+        ;;
+        #-a|--arch-iso)
+        #    shift
+        #    local_arch_iso=$1
+        #    shift
+        #;;
         *)
             prettify
             set_up_logging
