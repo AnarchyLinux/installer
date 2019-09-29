@@ -548,9 +548,8 @@ create_iso() {
 
 generate_checksums() {
     echo -e "Generating image checksum ..." | log
-    local sha_256_sum
-    sha_256_sum=$(sha256sum "${out_dir}"/"${anarchy_iso_name}")
-    echo -e "${sha_256_sum}" > "${out_dir}"/"${anarchy_iso_name}".sha256sum
+    cd "${out_dir}"
+    echo -e "$(sha256sum "${anarchy_iso_name}")" > "${anarchy_iso_name}".sha256sum
     echo -e "Done generating image checksum"
     echo -e ""
 }
