@@ -38,14 +38,9 @@ install_base() {
     # Remove packages that disappear from official repositories
     for package in "${base_install[@]}"; do 
 		if [[ $(pacman -Ssq "$package" | grep -q "^$package" ; echo $?) -ne 0 ]]; then
-			removed+=($package)
 			base_install=("${base_install[@]/$package}")
 		fi
 	done
-        
-    if [[ ${#removed[@]} -ne 0 ]]; then
-        echo "$(date -u "+%F %H:%M") : Packages removed:\n$(<${removed[@]})" >> "$log"
-    fi
     
     until "$INSTALLED"
       do
