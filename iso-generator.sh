@@ -104,6 +104,7 @@ init() {
         'perl-linux-desktopfiles'
         'obmenu-generator'
         'yay'
+        'openbox-themes'
     )
 
     check_dependencies
