@@ -284,12 +284,12 @@ check_arch_iso() {
     if [[ -e "${local_arch_checksum}" ]]; then
         # Check checksum depending on architecture
         if [[ "${system_architecture}" == "x86_64" ]]; then
-            if [[ $(sha1sum --check "${local_arch_checksum}") > /dev/null ]]; then
+            if [[ $(sha1sum --check --ignore-missing "${local_arch_checksum}") > /dev/null ]]; then
                 echo -e "${local_arch_iso}: OK" | log
                 checksum=true
             fi
         else
-            if [[ $(sha256sum --check "${local_arch_checksum}") > /dev/null ]]; then
+            if [[ $(sha256sum --check --ignore-missing "${local_arch_checksum}") > /dev/null ]]; then
                 echo -e "${local_arch_iso}: OK" | log
                 checksum=true
             fi
@@ -309,12 +309,12 @@ check_arch_iso() {
                 echo -e "Chose to download checksum" | log
                 wget -c -q --show-progress "${arch_checksum_link}"
                 if [[ "${system_architecture}" == "x86_64" ]]; then
-                    if [[ $(sha1sum --check "${local_arch_checksum}") > /dev/null ]]; then
+                    if [[ $(sha1sum --check --ignore-missing "${local_arch_checksum}") > /dev/null ]]; then
                         echo -e "${local_arch_iso}: OK" | log
                         checksum=true
                     fi
                 else
-                    if [[ $(sha256sum --check "${local_arch_checksum}") > /dev/null ]]; then
+                    if [[ $(sha256sum --check --ignore-missing "${local_arch_checksum}") > /dev/null ]]; then
                         echo -e "${local_arch_iso}: OK" | log
                         checksum=true
                     fi
@@ -325,12 +325,12 @@ check_arch_iso() {
             # Automatically download and compare checksum
             wget -c -q --show-progress "${arch_checksum_link}"
             if [[ "${system_architecture}" == "x86_64" ]]; then
-                if [[ $(sha1sum --check "${local_arch_checksum}") > /dev/null ]]; then
+                if [[ $(sha1sum --check --ignore-missing "${local_arch_checksum}") > /dev/null ]]; then
                     echo -e "${local_arch_iso}: OK" | log
                     checksum=true
                 fi
             else
-                if [[ $(sha256sum --check "${local_arch_checksum}") > /dev/null ]]; then
+                if [[ $(sha256sum --check --ignore-missing "${local_arch_checksum}") > /dev/null ]]; then
                     echo -e "${local_arch_iso}: OK" | log
                     checksum=true
                 fi
