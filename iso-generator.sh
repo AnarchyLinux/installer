@@ -276,7 +276,7 @@ update_arch_iso() { # prev: update_iso
 }
 
 check_arch_iso() {
-    echo -e "Comparing Arch Linux checksums ..."
+    echo -e "Comparing Arch Linux checksums ..." | log
     checksum=false
     local_arch_checksum=$(ls "${working_dir}"/sha*sum* | tail -n1 | sed 's!.*/!!')
 
@@ -295,7 +295,7 @@ check_arch_iso() {
             fi
         fi
     else
-        echo -e "No checksum found!"
+        echo -e "No checksum found!" | log
         if [[ "${user_input}" == true ]]; then
             echo -e "Download it? [Y/n]: "
             local input
@@ -339,7 +339,7 @@ check_arch_iso() {
     fi
 
     if [[ "${checksum}" == false ]]; then
-        echo -e "Checksum did not match ISO file!"
+        echo -e "Checksum did not match ISO file!" | log
         if [[ "${user_input}" == true ]]; then
             echo -e "Continue anyway? [y/N]: "
             local input
@@ -351,12 +351,12 @@ check_arch_iso() {
                     ;;
                 *)
                     echo -e "Chose not to continue" | log
-                    echo -e "${color_red}Error: Checksum did not match file, exiting!${color_blank}"
+                    echo -e "${color_red}Error: Checksum did not match file, exiting!${color_blank}" | log
                     exit 3
                     ;;
             esac
         else
-            echo -e "${color_red}Error: Checksum did not match file, exiting!${color_blank}"
+            echo -e "${color_red}Error: Checksum did not match file, exiting!${color_blank}" | log
             exit 3
         fi
     fi
