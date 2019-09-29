@@ -53,8 +53,6 @@ init() {
     language
     # shellcheck source=/usr/share/anarchy/lang/
     source "${lang_file}"
-    # shellcheck source=/etc/anarchy.conf
-    source "${anarchy_config}"
     export reload=true
 
 }
