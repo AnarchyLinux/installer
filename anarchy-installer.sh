@@ -1,4 +1,10 @@
 #!/usr/bin/env bash
+# Main script for the installation,
+# which calls all other scripts
+
+# Disable warning about variables not being assigned (since they are in other files)
+# shellcheck disable=SC2154
+
 ###############################################################
 ### Anarchy Linux Install Script
 ###
@@ -29,7 +35,6 @@
 ################################################################
 
 init() {
-
     if [[ $(basename "$0") = "anarchy" ]]; then
         anarchy_directory="/usr/share/anarchy" # prev: aa_dir
         anarchy_config="/etc/anarchy.conf" # prev: aa_conf
@@ -51,16 +56,12 @@ init() {
     # shellcheck source=/etc/anarchy.conf
     source "${anarchy_config}"
     language
-    # shellcheck source=/usr/share/anarchy/lang/
-    source "${lang_file}"
-    # shellcheck source=/etc/anarchy.conf
-    source "${anarchy_config}"
+    # shellcheck source=/usr/share/anarchy/lang
+    source "${lang_file}" # /lib/language.sh:43-60
     export reload=true
-
 }
 
 main() {
-
     set_keys
     update_mirrors
     check_connection
@@ -75,29 +76,31 @@ main() {
     configure_system
     add_user
     reboot_system
-
 }
 
 dialog() {
-
-    if "$screen_h" ; then
-        if "$LAPTOP" ; then
-            backtitle="$backtitle $(acpi)"
+    # If terminal height is more than 25 lines add a backtitle
+    if "${screen_h}" ; then # /etc/anarchy.conf:62
+        if "${LAPTOP}" ; then # /etc/anarchy.conf:75
+            # Show battery life next to Anarchy heading
+            backtitle="${backtitle} $(acpi)"
         fi
-        /usr/bin/dialog --colors --backtitle "$backtitle" --title "$op_title" "$@"
+        # op_title is the current menu title
+        /usr/bin/dialog --colors --backtitle "${backtitle}" --title "${op_title}" "$@"
     else
-        /usr/bin/dialog --colors --title "$title" "$@"
+        # title is the main title (Anarchy)
+        /usr/bin/dialog --colors --title "${title}" "$@"
     fi
-
 }
 
-if [[ "$UID" -ne "0" ]]; then
+if [[ "${UID}" -ne "0" ]]; then
     echo "Error: anarchy requires root privilege"
     echo "       Use: sudo anarchy"
     exit 1
 fi
 
-opt="$1"
+# Read optional arguments
+opt="$1" # /etc/anarchy.conf:105
 init
 main
 

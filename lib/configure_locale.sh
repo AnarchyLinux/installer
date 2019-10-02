@@ -46,10 +46,6 @@ set_keys() {
         fi
     done
 
-    if "$GUI" ; then
-        setxkbmap "$keyboard"
-    fi
-
     localectl set-keymap "$keyboard"
     echo "$(date -u "+%F %H:%M") : Set keymap to: $keyboard" >> "$log"
 

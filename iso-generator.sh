@@ -19,7 +19,8 @@
 # Error codes:
 # * Exit 1: Missing dependencies (check_dependencies)
 # * Exit 2: Missing Arch iso (update_arch_iso)
-# * Exit 3: Failed to create iso (create_iso)
+# * Exit 3: Checksum did not match for Arch ISO (check_arch_iso)
+# * Exit 4: Failed to create iso (create_iso)
 
 # Exit on error
 set -o errexit
@@ -28,26 +29,39 @@ set -o errtrace
 # Enable tracing of what gets executed
 #set -o xtrace
 
-# Define colors
-color_blank='\e[0m'
-color_green='\e[1;32m'
-color_red='\e[1;31m'
-color_white="\e[1m"
+# Declare important variables
+working_dir=$(pwd) # prev: aa
+log_dir="${working_dir}"/log
+out_dir="${working_dir}"/out # Directory for generated ISOs
+
+# Define colors depending on script arguments
+set_up_colors() {
+    if [[ "${show_color}" == true ]]; then
+        color_blank='\e[0m'
+        color_green='\e[1;32m'
+        color_red='\e[1;31m'
+        color_white="\e[1m"
+    else
+        # Replace all colors with reset codes
+        color_blank='\e[0m'
+        color_green='\e[0m'
+        color_red='\e[0m'
+        color_white="\e[0m"
+    fi
+}
 
 set_up_logging() {
-    working_dir=$(pwd) # prev: aa
-    log_dir="${working_dir}"/log
-    
     if [[ ! -d "${log_dir}" ]]; then
         mkdir "${log_dir}"
     fi
 
+    log_file="${log_dir}"/iso-generator-"$(date +%d%m%y)".log
+
     # Remove existing logs and create a new one
-    if [[ "$(ls ${log_dir})" ]]; then
-        rm "${log_dir}"/*
+    if [[ -e "${log_dir}"/"${log_file}" ]]; then
+        rm "${log_dir}"/"${log_file}"
     fi
 
-    log_file="${log_dir}"/iso-generator-"$(date +%d%m%y)".log
     touch "${log_file}"
 }
 
@@ -75,7 +89,6 @@ init() {
     # Location variables
     custom_iso="${working_dir}"/customiso # prev: customiso
     squashfs="${custom_iso}"/arch/"${system_architecture}"/squashfs-root # prev: sq
-    out_dir="${working_dir}"/out # Directory for generated isos
 
     # Check for existing Arch iso
     if (ls "${working_dir}"/archlinux-*-"${system_architecture}".iso &>/dev/null); then
@@ -104,10 +117,12 @@ init() {
         'perl-linux-desktopfiles'
         'obmenu-generator'
         'yay'
+        'openbox-themes'
     )
 
     check_dependencies
     update_arch_iso
+    check_arch_iso
     local_repo_builds
 }
 
@@ -141,25 +156,41 @@ check_dependencies() { # prev: check_depends
 
     if [[ "${#missing_deps[@]}" -ne 0 ]]; then
         echo -e "Missing dependencies: ${missing_deps[*]}" | log
-        echo -e "Install them now? [y/N]: "
-        local input
-        read -r input
+        if [[ "${user_input}" == true ]]; then
+            echo -e "Install them now? [y/N]: "
+            local input
+            read -r input
 
-        case "${input}" in
-            y|Y|yes|YES|Yes)
-                echo -e "Chose to install dependencies" | log
-                for pkg in "${missing_deps[@]}"; do
-                    echo -e "Installing ${pkg} ..." | log
-                    sudo pacman --noconfirm -Sy "${pkg}"
-                    echo -e "${pkg} installed" | log
-                done
+            case "${input}" in
+                y|Y|yes|YES|Yes)
+                    echo -e "Chose to install dependencies" | log
+                    for pkg in "${missing_deps[@]}"; do
+                        echo -e "Installing ${pkg} ..." | log
+                        if [[ "${show_color}" == true ]]; then
+                            sudo pacman --noconfirm -Sy "${pkg}"
+                        else
+                            sudo pacman --noconfirm --color never -Sy "${pkg}"
+                        fi
+                        echo -e "${pkg} installed" | log
+                    done
+                    ;;
+                *)
+                echo -e "Chose not to install dependencies" | log
+                echo -e "${color_red}Error: Missing dependencies, exiting.${color_blank}" | log
+                exit 1
                 ;;
-            *)
-            echo -e "Chose not to install dependencies" | log
-            echo -e "${color_red}Error: Missing dependencies, exiting.${color_blank}" | log
-            exit 1
-            ;;
-        esac
+            esac
+        else
+            for pkg in "${missing_deps[@]}"; do
+                echo -e "Installing ${pkg} ..." | log
+                if [[ "${show_color}" == true ]]; then
+                    sudo pacman --noconfirm -Sy "${pkg}"
+                else
+                    sudo pacman --noconfirm --color never -Sy "${pkg}"
+                fi
+                echo -e "${pkg} installed" | log
+            done
+        fi
     fi
     echo -e "Done installing dependencies"
     echo -e ""
@@ -172,9 +203,11 @@ update_arch_iso() { # prev: update_iso
     if [[ "${system_architecture}" == "x86_64" ]]; then
         arch_iso_latest=$(curl -s https://www.archlinux.org/download/ | grep "Current Release" | awk '{print $3}' | sed -e 's/<.*//') # prev: archiso_latest
         arch_iso_link="https://mirrors.kernel.org/archlinux/iso/${arch_iso_latest}/archlinux-${arch_iso_latest}-x86_64.iso" # prev: archiso_link
+        arch_checksum_link="https://mirrors.edge.kernel.org/archlinux/iso/${arch_iso_latest}/sha1sums.txt"
     else
         arch_iso_latest=$(curl -s https://mirror.archlinux32.org/archisos/ | grep -o ">.*.iso<" | tail -1 | sed 's/>//;s/<//')
         arch_iso_link="https://mirror.archlinux32.org/archisos/${arch_iso_latest}"
+        arch_checksum_link="https://mirror.archlinux32.org/archisos/sha512sums"
     fi
 
     echo -e "Checking for updated Arch Linux image ..." | log
@@ -182,44 +215,58 @@ update_arch_iso() { # prev: update_iso
     if [[ "${iso_date}" != "${local_arch_iso}" ]]; then
         if [[ -z "${local_arch_iso}" ]]; then
             echo -e "No Arch Linux image found under ${working_dir}" | log
-            echo -e "Download it? [y/N]: "
-            local input
-            read -r input
+            if [[ "${user_input}" == true ]]; then
+                echo -e "Download it? [y/N]: "
+                local input
+                read -r input
 
-            case "${input}" in
-                y|Y|yes|YES|Yes)
-                    echo -e "Chose to download image" | log
-                    update=true ;;
-                *)
-                echo -e "Chose not to download image" | log
-                echo -e "${color_red}Error: anarchy-creator requires an Arch Linux image located in: ${working_dir}, exiting.${color_blank}" | log
-                exit 2
-                ;;
-            esac
+                case "${input}" in
+                    y|Y|yes|YES|Yes)
+                        echo -e "Chose to download image" | log
+                        update=true
+                        ;;
+                    *)
+                    echo -e "Chose not to download image" | log
+                    echo -e "${color_red}Error: anarchy-creator requires an Arch Linux image located in: ${working_dir}, exiting.${color_blank}" | log
+                    exit 2
+                    ;;
+                esac
+            else
+                update=true
+            fi
         else
             echo -e "Updated Arch Linux image available: ${arch_iso_latest}" | log
-            echo -e "Download it? [y/N]: "
-            local input
-            read -r input
+            if [[ "${user_input}" == true ]]; then
+                echo -e "Download it? [y/N]: "
+                local input
+                read -r input
 
-            case "${input}" in
-                y|Y|yes|YES|Yes)
-                    echo -e "Chose to update image" | log
-                    update=true
+                case "${input}" in
+                    y|Y|yes|YES|Yes)
+                        echo -e "Chose to update image" | log
+                        local_arch_checksum=$(ls "${working_dir}"/sha*sum* | tail -n1 | sed 's!.*/!!')
+                        update=true
+                        ;;
+                    *)
+                    echo -e "Chose not to update image" | log
+                    echo -e "Using old image: ${local_arch_iso}" | log
+                    local_arch_checksum=$(ls "${working_dir}"/sha*sum* | tail -n1 | sed 's!.*/!!')
+                    sleep 1
                     ;;
-                *)
-                echo -e "Chose not to update image" | log
-                echo -e "Using old image: ${local_arch_iso}" | log
-                sleep 1
-                ;;
-            esac
+                esac
+            else
+                local_arch_checksum=$(ls "${working_dir}"/sha*sum* | tail -n1 | sed 's!.*/!!')
+                update=true
+            fi
         fi
 
         if "${update}" ; then
             cd "${working_dir}" || exit
             echo -e ""
-            echo -e "Downloading Arch Linux image ..." | log
+            echo -e "Downloading Arch Linux image and checksum ..." | log
             echo -e "(Don't resize the window or it will mess up the progress bar)"
+            wget -c -q --show-progress "${arch_checksum_link}"
+            local_arch_checksum=$(ls "${working_dir}"/sha*sum* | tail -n1 | sed 's!.*/!!')
             wget -c -q --show-progress "${arch_iso_link}"
             local_arch_iso=$(ls "${working_dir}"/archlinux-*-"${system_architecture}".iso | tail -n1 | sed 's!.*/!!')
         fi
@@ -228,9 +275,98 @@ update_arch_iso() { # prev: update_iso
     echo -e ""
 }
 
+check_arch_iso() {
+    echo -e "Comparing Arch Linux checksums ..." | log
+    checksum=false
+    local_arch_checksum=$(ls "${working_dir}"/sha*sum* | tail -n1 | sed 's!.*/!!')
+
+    # Check if checksum exists
+    if [[ -e "${local_arch_checksum}" ]]; then
+        # Check checksum depending on architecture
+        if [[ "${system_architecture}" == "x86_64" ]]; then
+            if [[ $(sha1sum --check --ignore-missing "${local_arch_checksum}") ]]; then
+                echo -e "${local_arch_iso}: OK" | log
+                checksum=true
+            fi
+        else
+            if [[ $(sha256sum --check --ignore-missing "${local_arch_checksum}") ]]; then
+                echo -e "${local_arch_iso}: OK" | log
+                checksum=true
+            fi
+        fi
+    else
+        echo -e "No checksum found!" | log
+        if [[ "${user_input}" == true ]]; then
+            echo -e "Download it? [Y/n]: "
+            local input
+            read -r input
+
+            case "${input}" in
+                n|N|no|NO|No)
+                    echo -e "Chose not to download checksum" | log
+                    ;;
+                *)
+                echo -e "Chose to download checksum" | log
+                wget -c -q --show-progress "${arch_checksum_link}"
+                local_arch_checksum=$(ls "${working_dir}"/sha*sum* | tail -n1 | sed 's!.*/!!')
+                if [[ "${system_architecture}" == "x86_64" ]]; then
+                    if [[ $(sha1sum --check --ignore-missing "${local_arch_checksum}") ]]; then
+                        echo -e "${local_arch_iso}: OK" | log
+                        checksum=true
+                    fi
+                else
+                    if [[ $(sha256sum --check --ignore-missing "${local_arch_checksum}") ]]; then
+                        echo -e "${local_arch_iso}: OK" | log
+                        checksum=true
+                    fi
+                fi
+                ;;
+            esac
+        else
+            # Automatically download and compare checksum
+            wget -c -q --show-progress "${arch_checksum_link}"
+            local_arch_checksum=$(ls "${working_dir}"/sha*sum* | tail -n1 | sed 's!.*/!!')
+            if [[ "${system_architecture}" == "x86_64" ]]; then
+                if [[ $(sha1sum --check --ignore-missing "${local_arch_checksum}") ]]; then
+                    echo -e "${local_arch_iso}: OK" | log
+                    checksum=true
+                fi
+            else
+                if [[ $(sha256sum --check --ignore-missing "${local_arch_checksum}") ]]; then
+                    echo -e "${local_arch_iso}: OK" | log
+                    checksum=true
+                fi
+            fi
+        fi
+    fi
+
+    if [[ "${checksum}" == false ]]; then
+        echo -e "Checksum did not match ISO file!" | log
+        if [[ "${user_input}" == true ]]; then
+            echo -e "Continue anyway? [y/N]: "
+            local input
+            read -r input
+
+            case "${input}" in
+                y|Y|yes|YES|Yes)
+                    echo -e "Chose to continue" | log
+                    ;;
+                *)
+                    echo -e "Chose not to continue" | log
+                    echo -e "${color_red}Error: Checksum did not match file, exiting!${color_blank}" | log
+                    exit 3
+                    ;;
+            esac
+        else
+            echo -e "${color_red}Error: Checksum did not match file, exiting!${color_blank}" | log
+            exit 3
+        fi
+    fi
+}
+
 local_repo_builds() { # prev: aur_builds
     echo -e "Updating pacman databases ..." | log
-    sudo pacman -Sy
+    sudo pacman -Sy --noconfirm
     echo -e "Done updating pacman databases"
 
     echo -e "Building AUR packages for local repo ..." | log
@@ -240,7 +376,11 @@ local_repo_builds() { # prev: aur_builds
         echo -e "Making ${pkg} ..." | log
         wget -qO- "${aur_snapshot_link}/${pkg}.tar.gz" | tar xz -C /tmp
         cd /tmp/"${pkg}" || exit
-        makepkg -sif --noconfirm --nocheck
+        if [[ "${show_color}" == true ]]; then
+            makepkg -sif --noconfirm --nocheck
+        else
+            makepkg -sif --noconfirm --nocheck --nocolor
+        fi
         echo -e "${pkg} made successfully" | log
     done
 
@@ -402,15 +542,14 @@ create_iso() {
         generate_checksums
     else
         echo -e "${color_red}Error: Image creation failed, exiting.${color_blank}" | log
-        exit 3
+        exit 4
     fi
 }
 
 generate_checksums() {
     echo -e "Generating image checksum ..." | log
-    local sha_256_sum
-    sha_256_sum=$(sha256sum "${out_dir}"/"${anarchy_iso_name}")
-    echo -e "${sha_256_sum}" > "${out_dir}"/"${anarchy_iso_name}".sha256sum
+    cd "${out_dir}"
+    echo -e "$(sha256sum "${anarchy_iso_name}")" > "${anarchy_iso_name}".sha256sum
     echo -e "Done generating image checksum"
     echo -e ""
 }
@@ -418,24 +557,26 @@ generate_checksums() {
 uninstall_dependencies() {
     if [[ "${#missing_deps[@]}" -ne 0 ]]; then
         echo -e "Installed dependencies: ${missing_deps[*]}" | log
-        echo -e "Uninstall these dependencies? [y/N]: "
-        local input
-        read -r input
+        if [[ "${user_input}" == true ]]; then
+            echo -e "Uninstall these dependencies? [y/N]: "
+            local input
+            read -r input
 
-        case "${input}" in
-            y|Y|yes|YES|Yes)
-                echo -e "Chose to remove dependencies" | log
-                for pkg in "${missing_deps[@]}"; do
-                    echo -e "Removing ${pkg} ..." | log
-                    sudo pacman -Rs ${pkg}
-                    echo -e "${pkg} removed" | log
-                done
-                echo -e "Removed all dependencies" | log
-                ;;
-            *)
-                echo -e "Chose not to remove dependencies" | log
-                ;;
-        esac
+            case "${input}" in
+                y|Y|yes|YES|Yes)
+                    echo -e "Chose to remove dependencies" | log
+                    for pkg in "${missing_deps[@]}"; do
+                        echo -e "Removing ${pkg} ..." | log
+                        sudo pacman -Rs ${pkg}
+                        echo -e "${pkg} removed" | log
+                    done
+                    echo -e "Removed all dependencies" | log
+                    ;;
+                *)
+                    echo -e "Chose not to remove dependencies" | log
+                    ;;
+            esac
+        fi
     fi
 }
 
@@ -476,9 +617,11 @@ cleanup() {
 
 usage() {
     clear
-    echo -e "${color_white}Usage: iso-generator.sh [architecture]${color_blank}"
-    echo -e "${color_white}  --i686)     create i686 (32-bit) installer${color_blank}"
-    echo -e "${color_white}  --x86_64)   create x86_64 (64-bit) installer (default)${color_blank}"
+    echo -e "${color_white}Usage: iso-generator.sh [options]${color_blank}"
+    echo -e "${color_white}     --i686)             create i686 (32-bit) installer${color_blank}"
+    echo -e "${color_white}     --x86_64)           create x86_64 (64-bit) installer (default)${color_blank}"
+    echo -e "${color_white}     -c | --no-color)    Disable color output${color_blank}"
+    echo -e "${color_white}     -i | --no-input)    Don't ask user for input${color_blank}"
     echo -e ""
 }
 
@@ -496,6 +639,10 @@ fi
 trap command_log DEBUG
 trap cleanup ERR
 
+# Enable color output and user input by default
+show_color=true
+user_input=true
+
 while (true); do
     case "$1" in
         --i686|--x86_64)
@@ -505,6 +652,29 @@ while (true); do
             usage
             exit 0
         ;;
+        -c|--no-color)
+            show_color=false
+            shift
+        ;;
+        -i|--no-input)
+            user_input=false
+            shift
+        ;;
+        -o|--output-dir)
+            shift
+            out_dir=$1
+            shift
+        ;;
+        -l|--log-dir)
+            shift
+            log_dir=$1
+            shift
+        ;;
+        #-a|--arch-iso)
+        #    shift
+        #    local_arch_iso=$1
+        #    shift
+        #;;
         *)
             prettify
             set_up_logging

@@ -34,14 +34,7 @@ install_base() {
     else
         height="16"
     fi
-    
-    # Remove packages that disappear from official repositories
-    for package in "${base_install[@]}"; do 
-		if [[ $(pacman -Ssq "$package" | grep -q "^$package" ; echo $?) -ne 0 ]]; then
-			base_install=("${base_install[@]/$package}")
-		fi
-	done
-    
+
     until "$INSTALLED"
       do
         if (dialog --yes-button "$install" --no-button "$cancel" --yesno "\n$install_var" "$height" 65); then

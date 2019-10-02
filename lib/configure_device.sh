@@ -861,30 +861,15 @@ fs_select() {
 }
 
 select_util() {
-
     gpart=false
 
-    if "$GUI" ; then
-        UTIL=$(dialog --menu "$vfat_msg" 14 65 4 \
-            "gparted"	"$part_util" \
-            "cfdisk"	"$part_util0" \
-            "fdisk"		"$part_util1" \
-            "gdisk"		"$part_util2" 3>&1 1>&2 2>&3)
-        if [ "$?" -gt "0" ]; then
-            part_menu
-        elif [ "$UTIL" == "gparted" ]; then
-            gpart=true
-        fi
-    else
-        UTIL=$(dialog --menu "$vfat_msg" 13 65 3 \
-            "cfdisk"	"$part_util0" \
-            "fdisk"		"$part_util1" \
-            "gdisk"		"$part_util2" 3>&1 1>&2 2>&3)
-        if [ "$?" -gt "0" ]; then
-            part_menu
-        fi
+    UTIL=$(dialog --menu "$vfat_msg" 13 65 3 \
+        "cfdisk"	"$part_util0" \
+        "fdisk"		"$part_util1" \
+        "gdisk"		"$part_util2" 3>&1 1>&2 2>&3)
+    if [ "$?" -gt "0" ]; then
+        part_menu
     fi
-
 }
 
 # vim: ai:ts=4:sw=4:et

@@ -71,6 +71,7 @@ graphics() {
                 "i3"                    "$de10" OFF \
                 "openbox"               "$de8" OFF \
                 "sway"                  "$de21" OFF \
+                "qtile"                 "${de25}" OFF \
                 "xmonad"                "$de16" OFF 3>&1 1>&2 2>&3)
 
             if [ -n "$de" ]; then
@@ -108,7 +109,7 @@ graphics() {
             ;;
             "Anarchy-openbox")	config_env="$env"
                         start_term="exec openbox-session"
-                        DE+="openbox thunar thunar-volman xfce4-terminal xfce4-panel xfce4-whiskermenu-plugin xcompmgr transset-df obconf lxappearance-obconf wmctrl gxmessage xfce4-pulseaudio-plugin xfdesktop xdotool opensnap ristretto oblogout obmenu-generator polkit-gnome tumbler $extras "
+                        DE+="openbox thunar thunar-volman xfce4-terminal xfce4-panel xfce4-whiskermenu-plugin xcompmgr transset-df obconf lxappearance-obconf wmctrl gxmessage xfce4-pulseaudio-plugin xfdesktop xdotool opensnap ristretto oblogout obmenu-generator polkit-gnome tumbler openbox-themes $extras "
             ;;
             "xfce4") 	start_term="exec startxfce4"
                     DE+="xfce4 "
@@ -207,6 +208,10 @@ graphics() {
             ;;
             "sway")		start_term="sway"
                     DE+="sway "
+            ;;
+            "qtile")    config_env="${env}"
+                    start_term="exec qtile"
+                    DE+="qtile "
             ;;
         esac
     done <<< "$de"
