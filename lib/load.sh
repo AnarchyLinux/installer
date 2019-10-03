@@ -47,8 +47,8 @@ load() {
     {	int="1"
             while ps | grep "${pid}" &> /dev/null
                 do
-                    sleep ${pri}
-                    echo ${int}
+                    sleep "${pri}"
+                    echo "${int}"
                     if [ "${int}" -lt "100" ]; then
                         int=$((int+1))
                     fi
