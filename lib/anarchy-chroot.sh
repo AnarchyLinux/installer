@@ -28,60 +28,60 @@ anarchy_chroot() {
       do
         echo -n "${Yellow}<${Red}root${Yellow}@${Green}${hostname}-chroot${Yellow}>: $working_dir>${Red}# ${ColorOff}" ; while IFS= read -r -n 1 -s char
           do
-            if [ "$char" == $'\x1b' ]; then
+            if [ "${char}" == $'\x1b' ]; then
                 while IFS= read -r -n 2 -s rest
                   do
-                    char+="$rest"
+                    char+="${rest}"
                     break
                 done
             fi
 
-            if [ "$char" == $'\x1b[D' ]; then
+            if [ "${char}" == $'\x1b[D' ]; then
                 pos=-1
-            elif [ "$char" == $'\x1b[C' ]; then
+            elif [ "${char}" == $'\x1b[C' ]; then
                 pos=1
-            elif [[ $char == $'\177' ]];  then
+            elif [[ ${char} == $'\177' ]];  then
                 input="${input%?}"
-                echo -ne "\r\033[K${Yellow}<${Red}root${Yellow}@${Green}${hostname}-chroot${Yellow}>: $working_dir>${Red}# ${ColorOff}${input}"
+                echo -ne "\r\033[K${Yellow}<${Red}root${Yellow}@${Green}${hostname}-chroot${Yellow}>: ${working_dir}>${Red}# ${ColorOff}${input}"
             ## User input up
-            elif [ "$char" == $'\x1b[A' ]; then
-                if [ $histindex -gt 0 ]; then
+            elif [ "${char}" == $'\x1b[A' ]; then
+                if [ ${histindex} -gt 0 ]; then
                     histindex+=-1
                     input=$(echo -ne "${history[$histindex]}")
-                    echo -ne "\r\033[K${Yellow}<${Red}root${Yellow}@${Green}${hostname}-chroot${Yellow}>: $working_dir>${Red}# ${ColorOff}${history[$histindex]}"
+                    echo -ne "\r\033[K${Yellow}<${Red}root${Yellow}@${Green}${hostname}-chroot${Yellow}>: ${working_dir}>${Red}# ${ColorOff}${history[$histindex]}"
                 fi
             ## User input down
-                elif [ "$char" == $'\x1b[B' ]; then
-                        if [ $histindex -lt $((${#history[@]} - 1)) ]; then
+                elif [ "${char}" == $'\x1b[B' ]; then
+                        if [ ${histindex} -lt $((${#history[@]} - 1)) ]; then
                     histindex+=1
                     input=$(echo -ne "${history[$histindex]}")
-                    echo -ne "\r\033[K${Yellow}<${Red}root${Yellow}@${Green}${hostname}-chroot${Yellow}>: $working_dir>${Red}# ${ColorOff}${history[$histindex]}"
+                    echo -ne "\r\033[K${Yellow}<${Red}root${Yellow}@${Green}${hostname}-chroot${Yellow}>: ${working_dir}>${Red}# ${ColorOff}${history[$histindex]}"
                 fi
             ### Newline
-                elif [ -z "$char" ]; then
+                elif [ -z "${char}" ]; then
                 echo
-                    history+=( "$input" )
+                    history+=( "${input}" )
                         histindex=${#history[@]}
                 break
             else
-                echo -n "$char"
-                input+="$char"
+                echo -n "${char}"
+                input+="${char}"
             fi
         done
 
-        if [ "$input" == "anarchy" ] || [ "$input" == "exit" ]; then
+        if [ "${input}" == "anarchy" ] || [ "${input}" == "exit" ]; then
             rm /tmp/chroot_dir.var &> /dev/null
             clear
             break
-        elif (<<<"$input" grep "^cd " &> /dev/null); then
-            ch_dir=$(<<<$input cut -c4-)
-            arch-chroot "$ARCH" /bin/bash -c "cd $working_dir ; cd $ch_dir ; pwd > /etc/chroot_dir.var"
-            mv "$ARCH"/etc/chroot_dir.var /tmp/
+        elif (<<<"${input}" grep "^cd " &> /dev/null); then
+            ch_dir=$(<<<"${input}" cut -c4-)
+            arch-chroot "${ARCH}" /bin/bash -c "cd ${working_dir} ; cd ${ch_dir} ; pwd > /etc/chroot_dir.var"
+            mv "${ARCH}"/etc/chroot_dir.var /tmp/
             working_dir=$(</tmp/chroot_dir.var)
-        elif  (<<<"$input" grep "^help" &> /dev/null); then
-            echo -e "$arch_chroot_msg"
+        elif  (<<<"${input}" grep "^help" &> /dev/null); then
+            echo -e "${arch_chroot_msg}"
             else
-            arch-chroot "$ARCH" /bin/bash -c "cd $working_dir ; $input"
+            arch-chroot "${ARCH}" /bin/bash -c "cd ${working_dir} ; ${input}"
         fi
         input=
     done
