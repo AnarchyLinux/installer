@@ -15,12 +15,15 @@
 ### License: GPL v2.0
 ###############################################################
 
+# Disable shellcheck warning about variables being referenced but not assigned
+# shellcheck disable=2154
+
 set_keys() {
 
-    op_title="$key_op_msg"
+    op_title="${key_op_msg}"
     while (true)
       do
-        keyboard=$(dialog --nocancel --ok-button "$ok" --menu "$keys_msg" 18 60 10 \
+        keyboard=$(dialog --nocancel --ok-button "${ok}" --menu "${keys_msg}" 18 60 10 \
         "us" "United States" \
         "de" "German" \
         "el" "Greek" \
@@ -33,11 +36,11 @@ set_keys() {
         "ru" "Russian" \
         "sv" "Swedish" \
         "uk" "United Kingdom" \
-        "$other"       "$other-keymaps"		 3>&1 1>&2 2>&3)
-        source "$lang_file"
+        "${other}"       "${other}-keymaps"		 3>&1 1>&2 2>&3)
+        source "${lang_file}"
 
-        if [ "$keyboard" = "$other" ]; then
-            keyboard=$(dialog --ok-button "$ok" --cancel-button "$cancel" --menu "$keys_msg" 19 60 10  $key_maps 3>&1 1>&2 2>&3)
+        if [ "${keyboard}" = "${other}" ]; then
+            keyboard=$(dialog --ok-button "${ok}" --cancel-button "${cancel}" --menu "${keys_msg}" 19 60 10  "${key_maps}" 3>&1 1>&2 2>&3)
             if [ "$?" -eq "0" ]; then
                 break
             fi
@@ -46,17 +49,17 @@ set_keys() {
         fi
     done
 
-    localectl set-keymap "$keyboard"
-    echo "$(date -u "+%F %H:%M") : Set keymap to: $keyboard" >> "$log"
+    localectl set-keymap "${keyboard}"
+    echo "$(date -u "+%F %H:%M") : Set keymap to: ${keyboard}" >> "${log}"
 
 }
 
 set_locale() {
 
-    op_title="$locale_op_msg"
+    op_title="${locale_op_msg}"
     while (true)
       do
-        LOCALE=$(dialog --nocancel --ok-button "$ok" --menu "$locale_msg" 18 60 11 \
+        LOCALE=$(dialog --nocancel --ok-button "${ok}" --menu "${locale_msg}" 18 60 11 \
         "en_US.UTF-8" "United States" \
         "en_AU.UTF-8" "Australia" \
         "pt_BR.UTF-8" "Brazil" \
@@ -75,10 +78,10 @@ set_locale() {
         "ru_RU.UTF-8" "Russian" \
         "es_ES.UTF-8" "Spanish" \
         "sv_SE.UTF-8" "Swedish" \
-        "$other"       "$other-locale"		 3>&1 1>&2 2>&3)
+        "${other}"       "${other}-locale"		 3>&1 1>&2 2>&3)
 
-        if [ "$LOCALE" = "$other" ]; then
-            LOCALE=$(dialog --ok-button "$ok" --cancel-button "$cancel" --menu "$locale_msg" 18 60 11 $localelist 3>&1 1>&2 2>&3)
+        if [ "${LOCALE}" = "${other}" ]; then
+            LOCALE=$(dialog --ok-button "${ok}" --cancel-button "${cancel}" --menu "${locale_msg}" 18 60 11 "${localelist}" 3>&1 1>&2 2>&3)
             if [ "$?" -eq "0" ]; then
                 break
             fi
@@ -87,24 +90,24 @@ set_locale() {
         fi
     done
 
-    echo "$(date -u "+%F %H:%M") : Set locale to: $LOCALE" >> "$log"
+    echo "$(date -u "+%F %H:%M") : Set locale to: ${LOCALE}" >> "${log}"
 
 }
 
 
 set_zone() {
 
-    op_title="$zone_op_msg"
+    op_title="${zone_op_msg}"
     while (true)
       do
-        ZONE=$(dialog --nocancel --ok-button "$ok" --menu "$zone_msg0" 18 60 11 $zonelist 3>&1 1>&2 2>&3)
-        if (find /usr/share/zoneinfo -maxdepth 1 -type d | sed -n -e 's!^.*/!!p' | grep "$ZONE" &> /dev/null); then
-            sublist=$(find /usr/share/zoneinfo/"$ZONE" -maxdepth 1 | sed -n -e 's!^.*/!!p' | sort | sed 's/$/ -/g' | grep -v "$ZONE")
-            SUBZONE=$(dialog --ok-button "$ok" --cancel-button "$back" --menu "$zone_msg1" 18 60 11 $sublist 3>&1 1>&2 2>&3)
+        ZONE=$(dialog --nocancel --ok-button "${ok}" --menu "${zone_msg0}" 18 60 11 "${zonelist}" 3>&1 1>&2 2>&3)
+        if (find /usr/share/zoneinfo -maxdepth 1 -type d | sed -n -e 's!^.*/!!p' | grep "${ZONE}" &> /dev/null); then
+            sublist=$(find /usr/share/zoneinfo/"${ZONE}" -maxdepth 1 | sed -n -e 's!^.*/!!p' | sort | sed 's/$/ -/g' | grep -v "${ZONE}")
+            SUBZONE=$(dialog --ok-button "${ok}" --cancel-button "${back}" --menu "${zone_msg1}" 18 60 11 "${sublist}" 3>&1 1>&2 2>&3)
             if [ "$?" -eq "0" ]; then
-                if (find /usr/share/zoneinfo/"$ZONE" -maxdepth 1 -type  d | sed -n -e 's!^.*/!!p' | grep "$SUBZONE" &> /dev/null); then
-                    sublist=$(find /usr/share/zoneinfo/"$ZONE"/"$SUBZONE" -maxdepth 1 | sed -n -e 's!^.*/!!p' | sort | sed 's/$/ -/g' | grep -v "$SUBZONE")
-                    SUB_SUBZONE=$(dialog --ok-button "$ok" --cancel-button "$back" --menu "$zone_msg1" 15 60 7 $sublist 3>&1 1>&2 2>&3)
+                if (find /usr/share/zoneinfo/"${ZONE}" -maxdepth 1 -type  d | sed -n -e 's!^.*/!!p' | grep "${SUBZONE}" &> /dev/null); then
+                    sublist=$(find /usr/share/zoneinfo/"${ZONE}"/"${SUBZONE}" -maxdepth 1 | sed -n -e 's!^.*/!!p' | sort | sed 's/$/ -/g' | grep -v "${SUBZONE}")
+                    SUB_SUBZONE=$(dialog --ok-button "${ok}" --cancel-button "${back}" --menu "${zone_msg1}" 15 60 7 "${sublist}" 3>&1 1>&2 2>&3)
                     if [ "$?" -eq "0" ]; then
                         ZONE="${ZONE}/${SUBZONE}/${SUB_SUBZONE}"
                         break
@@ -119,7 +122,7 @@ set_zone() {
         fi
     done
 
-    echo "$(date -u "+%F %H:%M") : Set timezone to: $ZONE" >> "$log"
+    echo "$(date -u "+%F %H:%M") : Set timezone to: ${ZONE}" >> "${log}"
 
 }
 
