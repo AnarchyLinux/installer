@@ -69,10 +69,10 @@ prepare_base() {
 
     case "$install_menu" in
         "Arch-Linux-Base")
-            base_install="linux-headers sudo $base_defaults " kernel="linux"
+            base_install="linux linux-headers sudo $base_defaults " kernel="linux"
         ;;
         "Arch-Linux-Base-Devel")
-            base_install="base-devel linux-headers $base_defaults " kernel="linux"
+            base_install="base-devel linux linux-headers $base_defaults " kernel="linux"
         ;;
         "Arch-Linux-Hardened")
             base_install="linux-hardened linux-hardened-headers sudo $base_defaults " kernel="linux-hardened"

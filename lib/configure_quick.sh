@@ -11,7 +11,7 @@ quick_install() {
                             multilib=true
                             dhcp=true
                             desktop=true
-                            base_install="base-devel linux-headers zsh zsh-syntax-highlighting grub dialog networkmanager wireless_tools wpa_supplicant os-prober ${base_defaults} "
+                            base_install="base-devel linux linux-headers zsh zsh-syntax-highlighting grub dialog networkmanager wireless_tools wpa_supplicant os-prober ${base_defaults} "
 
                             if "${bluetooth}" ; then
                                 base_install+="bluez bluez-utils pulseaudio-bluetooth "
@@ -64,7 +64,7 @@ quick_install() {
                             enable_nm=true
                             multilib=true
                             dhcp=true
-                            base_install="base-devel openssh linux-headers zsh zsh-syntax-highlighting grub dialog wireless_tools wpa_supplicant os-prober ${base_defaults} "
+                            base_install="base-devel linux openssh linux-headers zsh zsh-syntax-highlighting grub dialog wireless_tools wpa_supplicant os-prober ${base_defaults} "
 
                             if "${bluetooth}" ; then
                                 base_install+="bluez bluez-utils pulseaudio-bluetooth "
