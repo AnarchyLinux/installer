@@ -226,7 +226,7 @@ update_arch_iso() { # prev: update_iso
                         ;;
                     *)
                     echo -e "Chose not to download image" | log
-                    echo -e "${color_red}Error: anarchy-creator requires an Arch Linux image located in: ${working_dir}, exiting.${color_blank}" | log
+                    echo -e "${color_red}Error: iso-generator requires an Arch Linux image located in: ${working_dir}, exiting.${color_blank}" | log
                     exit 2
                     ;;
                 esac
