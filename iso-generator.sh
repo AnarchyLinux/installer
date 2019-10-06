@@ -116,7 +116,7 @@ init() {
         'opensnap'
         'perl-linux-desktopfiles'
         'obmenu-generator'
-        'yay'
+        'yay-bin'
         'openbox-themes'
     )
 
