@@ -145,7 +145,6 @@ check_dependencies() { # prev: check_depends
     'make'
     'binutils'
     'file'
-    'go'
     )
 
     for dep in "${dependencies[@]}"; do
