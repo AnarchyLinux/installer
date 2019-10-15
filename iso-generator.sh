@@ -80,8 +80,8 @@ prettify() {
 
 set_version() {
     # Label must be 11 characters long
-    anarchy_iso_label="ANARCHYV106" # prev: iso_label
-    anarchy_iso_release="1.0.6" # prev: iso_rel
+    anarchy_iso_label="ANARCHYV107" # prev: iso_label
+    anarchy_iso_release="1.0.7" # prev: iso_rel
     anarchy_iso_name="anarchy-${anarchy_iso_release}-${system_architecture}.iso" # prev: version
 }
 

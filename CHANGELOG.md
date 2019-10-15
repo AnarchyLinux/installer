@@ -1,5 +1,33 @@
 # Changelog
 
+## Release v1.0.7
+
+**Please always update the live Anarchy installer before using it,
+either by pressing 2 in the main menu or by executing `anarchy -u`,
+even if you have downloaded the latest release (there are always newer patches).**
+
+* Add additional optional arguments to `iso-generator.sh` (--no-color, --no-input)
+* Allow choosing custom log and output directories
+* Finally actually compare checksums for upstream Arch ISOs (even with preexisting Arch ISOs)
+* Lint a few scripts (more lintings are planned in the future)
+* Properly generate Anarchy ISO checksum (now only filename, instead of the absolute path to file)
+* French translation updates
+* Removal of old, unused Anarchy repo code
+* Allow choosing additional DEs/WMs from the optional software menu
+* Start using `yay-bin` instead of `yay`
+* Remove `go` dependency of yay
+* Prepare for removal of i686 code
+* Update installation packages (e.g. add `linux` package to base install - see [Arch News](https://www.archlinux.org/news/base-group-replaced-by-mandatory-base-package-manual-intervention-required/))
+
+### Removal of i686 code/releases
+
+We have decided to completely remove i686 code, since currently the compilation
+process did not work properly and nobody was willing to maintain it.
+
+If someone willing to maintain i686 support steps up, we will gladly re-add it.
+Please either message us on [Telegram](https://t.me/anarchy_linux)
+or using the [contact form](https://www.anarchylinux.org/contact.html) on our website.
+
 ## Release v1.0.6
 
 * Update French, Portuguese, Romanian and Spanish translations
