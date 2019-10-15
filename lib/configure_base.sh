@@ -219,17 +219,15 @@ prepare_base() {
         fi
     done
 
-    if [ "$arch" == "x86_64" ]; then
-        if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n\n$multilib_msg" 11 60) then
-            multilib=true
-            echo "$(date -u "+%F %H:%M") : Include multilib" >> "$log"
-        fi
+    if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n\n$multilib_msg" 11 60) then
+        multilib=true
+        echo "$(date -u "+%F %H:%M") : Include multilib" >> "$log"
     fi
 
-        if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n\n$dhcp_msg" 11 60) then
-            dhcp=true
-            echo "$(date -u "+%F %H:%M") : Enable dhcp" >> "$log"
-        fi
+    if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n\n$dhcp_msg" 11 60) then
+        dhcp=true
+        echo "$(date -u "+%F %H:%M") : Enable dhcp" >> "$log"
+    fi
 
     if "$wifi" ; then
         base_install+="wireless_tools wpa_supplicant "
@@ -304,7 +302,7 @@ add_software() {
                 #elif [ "$software_menu" == "$aar" ] && ! "$aa_repo" ; then
                     #if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$aar_add_msg" 10 60) then
                         #if ! (grep "\[anarchy\]" </etc/pacman.conf &>/dev/null); then
-                            #sed -i -e '$a\\n[anarchy]\nServer = https://anarchylinux.org/repo/$arch\nSigLevel = Never' /etc/pacman.conf
+                            #sed -i -e '$a\\n[anarchy]\nServer = https://anarchylinux.org/repo/x86_64F\nSigLevel = Never' /etc/pacman.conf
                         #fi
                         #aa_repo=true
                     #else

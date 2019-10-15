@@ -82,17 +82,17 @@ set_version() {
     # Label must be 11 characters long
     anarchy_iso_label="ANARCHYV107" # prev: iso_label
     anarchy_iso_release="1.0.7" # prev: iso_rel
-    anarchy_iso_name="anarchy-${anarchy_iso_release}-${system_architecture}.iso" # prev: version
+    anarchy_iso_name="anarchy-${anarchy_iso_release}.iso" # prev: version
 }
 
 init() {
     # Location variables
     custom_iso="${working_dir}"/customiso # prev: customiso
-    squashfs="${custom_iso}"/arch/"${system_architecture}"/squashfs-root # prev: sq
+    squashfs="${custom_iso}"/arch/x84_64/squashfs-root # prev: sq
 
     # Check for existing Arch iso
-    if (ls "${working_dir}"/archlinux-*-"${system_architecture}".iso &>/dev/null); then
-        local_arch_iso=$(ls "${working_dir}"/archlinux-*-"${system_architecture}".iso | tail -n1 | sed 's!.*/!!') # Outputs Arch iso filename prev: iso
+    if (ls "${working_dir}"/archlinux-*-x86_64.iso &>/dev/null); then
+        local_arch_iso=$(ls "${working_dir}"/archlinux-*-x86_64.iso | tail -n1 | sed 's!.*/!!') # Outputs Arch iso filename prev: iso
     fi
 
     if [[ ! -d "${out_dir}" ]]; then
@@ -199,15 +199,9 @@ update_arch_iso() { # prev: update_iso
     update=false
 
     # Check for latest Arch Linux iso
-    if [[ "${system_architecture}" == "x86_64" ]]; then
-        arch_iso_latest=$(curl -s https://www.archlinux.org/download/ | grep "Current Release" | awk '{print $3}' | sed -e 's/<.*//') # prev: archiso_latest
-        arch_iso_link="https://mirrors.kernel.org/archlinux/iso/${arch_iso_latest}/archlinux-${arch_iso_latest}-x86_64.iso" # prev: archiso_link
-        arch_checksum_link="https://mirrors.edge.kernel.org/archlinux/iso/${arch_iso_latest}/sha1sums.txt"
-    else
-        arch_iso_latest=$(curl -s https://mirror.archlinux32.org/archisos/ | grep -o ">.*.iso<" | tail -1 | sed 's/>//;s/<//')
-        arch_iso_link="https://mirror.archlinux32.org/archisos/${arch_iso_latest}"
-        arch_checksum_link="https://mirror.archlinux32.org/archisos/sha512sums"
-    fi
+    arch_iso_latest=$(curl -s https://www.archlinux.org/download/ | grep "Current Release" | awk '{print $3}' | sed -e 's/<.*//') # prev: archiso_latest
+    arch_iso_link="https://mirrors.kernel.org/archlinux/iso/${arch_iso_latest}/archlinux-${arch_iso_latest}-x86_64.iso" # prev: archiso_link
+    arch_checksum_link="https://mirrors.edge.kernel.org/archlinux/iso/${arch_iso_latest}/sha1sums.txt"
 
     echo -e "Checking for updated Arch Linux image ..." | log
     iso_date=$(<<<"${arch_iso_link}" sed 's!.*/!!')
@@ -243,18 +237,18 @@ update_arch_iso() { # prev: update_iso
                 case "${input}" in
                     y|Y|yes|YES|Yes)
                         echo -e "Chose to update image" | log
-                        local_arch_checksum=$(ls "${working_dir}"/sha*sum* | tail -n1 | sed 's!.*/!!')
+                        local_arch_checksum=$(ls "${working_dir}"/sha1sums.txt | tail -n1 | sed 's!.*/!!')
                         update=true
                         ;;
                     *)
                     echo -e "Chose not to update image" | log
                     echo -e "Using old image: ${local_arch_iso}" | log
-                    local_arch_checksum=$(ls "${working_dir}"/sha*sum* | tail -n1 | sed 's!.*/!!')
+                    local_arch_checksum=$(ls "${working_dir}"/sha1sums.txt | tail -n1 | sed 's!.*/!!')
                     sleep 1
                     ;;
                 esac
             else
-                local_arch_checksum=$(ls "${working_dir}"/sha*sum* | tail -n1 | sed 's!.*/!!')
+                local_arch_checksum=$(ls "${working_dir}"/sha1sums.txt | tail -n1 | sed 's!.*/!!')
                 update=true
             fi
         fi
@@ -265,9 +259,9 @@ update_arch_iso() { # prev: update_iso
             echo -e "Downloading Arch Linux image and checksum ..." | log
             echo -e "(Don't resize the window or it will mess up the progress bar)"
             wget -c -q --show-progress "${arch_checksum_link}"
-            local_arch_checksum=$(ls "${working_dir}"/sha*sum* | tail -n1 | sed 's!.*/!!')
+            local_arch_checksum=$(ls "${working_dir}"/sha1sums.txt | tail -n1 | sed 's!.*/!!')
             wget -c -q --show-progress "${arch_iso_link}"
-            local_arch_iso=$(ls "${working_dir}"/archlinux-*-"${system_architecture}".iso | tail -n1 | sed 's!.*/!!')
+            local_arch_iso=$(ls "${working_dir}"/archlinux-*-x86_64.iso | tail -n1 | sed 's!.*/!!')
         fi
     fi
     echo -e "Done checking for Arch Linux image"
@@ -277,21 +271,13 @@ update_arch_iso() { # prev: update_iso
 check_arch_iso() {
     echo -e "Comparing Arch Linux checksums ..." | log
     checksum=false
-    local_arch_checksum=$(ls "${working_dir}"/sha*sum* | tail -n1 | sed 's!.*/!!')
+    local_arch_checksum=$(ls "${working_dir}"/sha1sums.txt | tail -n1 | sed 's!.*/!!')
 
     # Check if checksum exists
     if [[ -e "${local_arch_checksum}" ]]; then
-        # Check checksum depending on architecture
-        if [[ "${system_architecture}" == "x86_64" ]]; then
-            if [[ $(sha1sum --check --ignore-missing "${local_arch_checksum}") ]]; then
-                echo -e "${local_arch_iso}: OK" | log
-                checksum=true
-            fi
-        else
-            if [[ $(sha256sum --check --ignore-missing "${local_arch_checksum}") ]]; then
-                echo -e "${local_arch_iso}: OK" | log
-                checksum=true
-            fi
+        if [[ $(sha1sum --check --ignore-missing "${local_arch_checksum}") ]]; then
+            echo -e "${local_arch_iso}: OK" | log
+            checksum=true
         fi
     else
         echo -e "No checksum found!" | log
@@ -307,34 +293,20 @@ check_arch_iso() {
                 *)
                 echo -e "Chose to download checksum" | log
                 wget -c -q --show-progress "${arch_checksum_link}"
-                local_arch_checksum=$(ls "${working_dir}"/sha*sum* | tail -n1 | sed 's!.*/!!')
-                if [[ "${system_architecture}" == "x86_64" ]]; then
-                    if [[ $(sha1sum --check --ignore-missing "${local_arch_checksum}") ]]; then
-                        echo -e "${local_arch_iso}: OK" | log
-                        checksum=true
-                    fi
-                else
-                    if [[ $(sha256sum --check --ignore-missing "${local_arch_checksum}") ]]; then
-                        echo -e "${local_arch_iso}: OK" | log
-                        checksum=true
-                    fi
+                local_arch_checksum=$(ls "${working_dir}"/sha1sums.txt | tail -n1 | sed 's!.*/!!')
+                if [[ $(sha1sum --check --ignore-missing "${local_arch_checksum}") ]]; then
+                    echo -e "${local_arch_iso}: OK" | log
+                    checksum=true
                 fi
                 ;;
             esac
         else
             # Automatically download and compare checksum
             wget -c -q --show-progress "${arch_checksum_link}"
-            local_arch_checksum=$(ls "${working_dir}"/sha*sum* | tail -n1 | sed 's!.*/!!')
-            if [[ "${system_architecture}" == "x86_64" ]]; then
-                if [[ $(sha1sum --check --ignore-missing "${local_arch_checksum}") ]]; then
-                    echo -e "${local_arch_iso}: OK" | log
-                    checksum=true
-                fi
-            else
-                if [[ $(sha256sum --check --ignore-missing "${local_arch_checksum}") ]]; then
-                    echo -e "${local_arch_iso}: OK" | log
-                    checksum=true
-                fi
+            local_arch_checksum=$(ls "${working_dir}"/sha1sums.txt | tail -n1 | sed 's!.*/!!')
+            if [[ $(sha1sum --check --ignore-missing "${local_arch_checksum}") ]]; then
+                echo -e "${local_arch_iso}: OK" | log
+                checksum=true
             fi
         fi
     fi
@@ -406,8 +378,8 @@ extract_arch_iso() { # prev: extract_iso
 copy_config_files() { # prev: build_conf
     # Change directory into the iso, where the filesystem is stored.
     # Unsquash root filesystem 'airootfs.sfs', this creates a directory 'squashfs-root' containing the entire system
-    echo -e "Unsquashing ${system_architecture} image ..." | log
-    cd "${custom_iso}"/arch/"${system_architecture}" || exit
+    echo -e "Unsquashing Arch image ..." | log
+    cd "${custom_iso}"/arch/x86_64 || exit
     sudo unsquashfs airootfs.sfs
     echo -e "Done unsquashing airootfs.sfs"
     echo -e ""
@@ -420,6 +392,7 @@ copy_config_files() { # prev: build_conf
     # Copy over main Anarchy config and installer script, make them executable
     echo -e "Adding anarchy config and installer scripts to iso ..." | log
     sudo cp "${working_dir}"/etc/anarchy.conf "${squashfs}"/etc/
+    sudo cp "${working_dir}"/etc/pacman.conf "${squashfs}"/etc/
     sudo cp "${working_dir}"/anarchy-installer.sh "${squashfs}"/usr/bin/anarchy
     sudo cp "${working_dir}"/extra/sysinfo "${working_dir}"/extra/iptest "${squashfs}"/usr/bin/
     sudo chmod +x "${squashfs}"/usr/bin/anarchy "${squashfs}"/usr/bin/sysinfo "${squashfs}"/usr/bin/iptest
@@ -449,7 +422,7 @@ copy_config_files() { # prev: build_conf
 
     # Copy over built packages and create repository
     echo -e "Adding built AUR packages to iso ..." | log
-    sudo mkdir "${custom_iso}"/arch/"${system_architecture}"/squashfs-root/usr/share/anarchy/pkg
+    sudo mkdir "${custom_iso}"/arch/x86_64/squashfs-root/usr/share/anarchy/pkg
 
     for pkg in $(echo -e "${local_aur_packages[@]}"); do
         sudo cp /tmp/"${pkg}"/*.pkg.tar.xz "${squashfs}"/usr/share/anarchy/pkg/
@@ -457,17 +430,9 @@ copy_config_files() { # prev: build_conf
 
     cd "${squashfs}"/usr/share/anarchy/pkg || exit
     sudo repo-add anarchy-local.db.tar.gz *.pkg.tar.xz
-    echo -e "\n[anarchy-local]\nServer = file:///usr/share/anarchy/pkg\nSigLevel = Never" | sudo tee -a "${squashfs}"/etc/pacman.conf > /dev/null
+    #echo -e "\n[anarchy-local]\nServer = file:///usr/share/anarchy/pkg\nSigLevel = Never" | sudo tee -a "${squashfs}"/etc/pacman.conf > /dev/null
     cd "${working_dir}" || exit
 
-    if [[ "${system_architecture}" == "i686" ]]; then
-        sudo rm -r "${squashfs}"/root/.gnupg
-        sudo rm -r "${squashfs}"/etc/pacman.d/gnupg
-        sudo linux32 arch-chroot "${squashfs}" dirmngr < /dev/null
-        sudo linux32 arch-chroot "${squashfs}" pacman-key --init
-        sudo linux32 arch-chroot "${squashfs}" pacman-key --populate archlinux32
-        sudo linux32 arch-chroot "${squashfs}" pacman-key --refresh-keys
-    fi
     echo -e "Done adding files to iso"
     echo -e ""
 }
@@ -475,24 +440,24 @@ copy_config_files() { # prev: build_conf
 build_system() { # prev: build_sys
     echo -e "Installing packages to new system ..." | log
     # Install fonts, fbterm, fetchmirrors etc.
-    sudo pacman --root "${squashfs}" --cachedir "${squashfs}"/var/cache/pacman/pkg  --config "${pacman_config}" --noconfirm -Sy terminus-font acpi zsh-syntax-highlighting pacman-contrib
-    sudo pacman --root "${squashfs}" --cachedir "${squashfs}"/var/cache/pacman/pkg  --config "${pacman_config}" --noconfirm -U /tmp/fetchmirrors/*.pkg.tar.xz
-    sudo pacman --root "${squashfs}" --cachedir "${squashfs}"/var/cache/pacman/pkg  --config "${pacman_config}" -Sl | awk '/\[installed\]$/ {print $1 "/" $2 "-" $3}' > "${custom_iso}"/arch/pkglist."${system_architecture}".txt
-    sudo pacman --root "${squashfs}" --cachedir "${squashfs}"/var/cache/pacman/pkg  --config "${pacman_config}" --noconfirm -Scc
+    sudo pacman --root "${squashfs}" --cachedir "${squashfs}"/var/cache/pacman/pkg  --config etc/pacman.conf --noconfirm -Sy terminus-font acpi zsh-syntax-highlighting pacman-contrib
+    sudo pacman --root "${squashfs}" --cachedir "${squashfs}"/var/cache/pacman/pkg  --config etc/pacman.conf --noconfirm -U /tmp/fetchmirrors/*.pkg.tar.xz
+    sudo pacman --root "${squashfs}" --cachedir "${squashfs}"/var/cache/pacman/pkg  --config etc/pacman.conf -Sl | awk '/\[installed\]$/ {print $1 "/" $2 "-" $3}' > "${custom_iso}"/arch/pkglist.x86_64.txt
+    sudo pacman --root "${squashfs}" --cachedir "${squashfs}"/var/cache/pacman/pkg  --config etc/pacman.conf --noconfirm -Scc
     sudo rm -f "${squashfs}"/var/cache/pacman/pkg/*
     echo -e "Done installing packages to new system"
     echo -e ""
 
     # cd back into root system directory, remove old system
-    cd "${custom_iso}"/arch/"${system_architecture}" || exit
+    cd "${custom_iso}"/arch/x86_64 || exit
     rm airootfs.sfs
 
     # Recreate the iso using compression, remove unsquashed system, generate checksums
-    echo -e "Recreating ${system_architecture} image ..." | log
+    echo -e "Recreating Anarchy image ..." | log
     sudo mksquashfs squashfs-root airootfs.sfs -b 1024k -comp xz
     sudo rm -r squashfs-root
     md5sum airootfs.sfs > airootfs.md5
-    echo -e "Done recreating ${system_architecture} image"
+    echo -e "Done recreating Anarchy image"
     echo -e ""
 }
 
@@ -617,22 +582,10 @@ cleanup() {
 usage() {
     clear
     echo -e "${color_white}Usage: iso-generator.sh [options]${color_blank}"
-    echo -e "${color_white}     --i686)             create i686 (32-bit) installer${color_blank}"
-    echo -e "${color_white}     --x86_64)           create x86_64 (64-bit) installer (default)${color_blank}"
     echo -e "${color_white}     -c | --no-color)    Disable color output${color_blank}"
     echo -e "${color_white}     -i | --no-input)    Don't ask user for input${color_blank}"
     echo -e ""
 }
-
-if (<<<"$@" grep "\-\-i686" > /dev/null); then
-    system_architecture=i686 # prev: sys
-    pacman_config=etc/i686-pacman.conf # prev: paconf
-    sudo wget "https://raw.githubusercontent.com/archlinux32/packages/master/core/pacman-mirrorlist/mirrorlist" -O /etc/pacman.d/mirrorlist32
-    sudo sed -i 's/#//' /etc/pacman.d/mirrorlist32
-else
-    system_architecture=x86_64
-    pacman_config=/etc/pacman.conf
-fi
 
 # Enable traps
 trap command_log DEBUG
@@ -644,9 +597,6 @@ user_input=true
 
 while (true); do
     case "$1" in
-        --i686|--x86_64)
-            shift
-        ;;
         -h|--help)
             usage
             exit 0
