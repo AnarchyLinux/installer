@@ -257,6 +257,7 @@ auto_part() {
 
     (mount /dev/"$ROOT" "$ARCH"
     echo "$?" > /tmp/ex_status.var
+    btrfs_subvol
     mkdir $ARCH/boot
     mount /dev/"$BOOT" "$ARCH"/boot) &> /dev/null &
     pid=$! pri=0.1 msg="\n$mnt_load \n\n \Z1> \Z2mount /dev/$ROOT $ARCH\Zn" load
@@ -269,6 +270,29 @@ auto_part() {
 
     rm /tmp/ex_status.var
 
+}
+
+btrfs_subvol() {
+    btrfs subvolume create "$ARCH"/@
+    btrfs subvolume create "$ARCH"/@home
+    btrfs subvolume create "$ARCH"/@snapshots
+    btrfs subvolume create "$ARCH"/@homeshots
+
+    umount "$ARCH"
+
+    if [[ "$f2fs" -eq "0" ]]; then
+        o_btrfs="compress,ssd,discard"
+    else
+        o_btrfs="compress"
+    fi
+
+    mount -o subvol=@,$o_btrfs "$ROOT" "$ARCH"
+    mkdir /mnt/{home,.snapshots}
+
+    mount -o subvol=@home,$o_btrfs "$ROOT" "$ARCH"/home
+    mount -o subvol=@snapshots,$o_btrfs "$ROOT" "$ARCH"/.snapshots
+    mkdir "$ARCH"/home/.snapshots
+    mount -o subvol=@homeshots,$o_btrfs "$ROOT" "$ARCH"/home/.snapshots
 }
 
 auto_encrypt() {
