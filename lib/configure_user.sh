@@ -278,10 +278,10 @@ add_user() {
 
     if "$menu_enter" ; then
         if [ "$full_user" == "" ]; then
-            arch-chroot "$ARCH" useradd -m -G audio,network,power,storage,optical -s "$sh" "$user" &>/dev/null &
+            arch-chroot "$ARCH" useradd -m -g users -G audio,network,power,storage,optical -s "$sh" "$user" &>/dev/null &
                     pid=$! pri=0.1 msg="$wait_load \n\n \Z1> \Z2useradd $user\Zn" load
             else
-                    arch-chroot "$ARCH" useradd -m -G audio,network,power,storage,optical -c "$full_name" -s "$sh" "$user" &>/dev/null &
+                    arch-chroot "$ARCH" useradd -m -g users -G audio,network,power,storage,optical -c "$full_name" -s "$sh" "$user" &>/dev/null &
                     pid=$! pri=0.1 msg="$wait_load \n\n \Z1> \Z2useradd $user\Zn" load
             fi
 
@@ -299,10 +299,10 @@ add_user() {
     else
         while IFS= read -r i ; do
                      if [ "$(<<<"$i" cut -d: -f4)" == "" ]; then
-                             arch-chroot "$ARCH" useradd -m -G audio,network,power,storage,optical -s "$(<<<"$i" cut -d: -f2)" "$(<<<"$i" cut -d: -f1)" &>/dev/null &
+                             arch-chroot "$ARCH" useradd -m -g users -G audio,network,power,storage,optical -s "$(<<<"$i" cut -d: -f2)" "$(<<<"$i" cut -d: -f1)" &>/dev/null &
                              pid=$! pri=0.1 msg="$wait_load \n\n \Z1> \Z2useradd $(<<<"$i" cut -d: -f1)\Zn" load
                      else
-                             arch-chroot "$ARCH" useradd -m -G audio,network,power,storage,optical -c "$(<<<"$i" cut -d: -f4)" -s "$(<<<"$i" cut -d: -f2)" "$(<<<"$i" cut -d: -f1)" &>/dev/null &
+                             arch-chroot "$ARCH" useradd -m -g users -G audio,network,power,storage,optical -c "$(<<<"$i" cut -d: -f4)" -s "$(<<<"$i" cut -d: -f2)" "$(<<<"$i" cut -d: -f1)" &>/dev/null &
                              pid=$! pri=0.1 msg="$wait_load \n\n \Z1> \Z2useradd $(<<<"$i" cut -d: -f1)\Zn" load
                      fi
 
