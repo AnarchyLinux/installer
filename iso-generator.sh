@@ -33,6 +33,8 @@ set -o errtrace
 working_dir=$(pwd) # prev: aa
 log_dir="${working_dir}"/log
 out_dir="${working_dir}"/out # Directory for generated ISOs
+wallpapers_git_url="https://github.com/AnarchyLinux/brand.git"
+wallpapers_folder=brand/wallpapers/official
 
 # Define colors depending on script arguments
 set_up_colors() {
@@ -441,11 +443,15 @@ copy_config_files() { # prev: build_conf
     sudo cp "${working_dir}"/extra/.help "${working_dir}"/extra/.dialogrc "${squashfs}"/root/
     sudo cp "${working_dir}"/extra/shellrc/.zshrc "${squashfs}"/etc/zsh/zshrc
     sudo cp -r "${working_dir}"/extra/shellrc/. "${squashfs}"/usr/share/anarchy/extra/
-    sudo cp -r "${working_dir}"/extra/desktop "${working_dir}"/extra/wallpapers "${working_dir}"/extra/fonts "${working_dir}"/extra/anarchy-icon.png "${squashfs}"/usr/share/anarchy/extra/
+    sudo cp -r "${working_dir}"/extra/desktop "${working_dir}"/extra/fonts "${working_dir}"/extra/anarchy-icon.png "${squashfs}"/usr/share/anarchy/extra/
     cat "${working_dir}"/extra/.helprc | sudo tee -a "${squashfs}"/root/.zshrc >/dev/null
     sudo cp "${working_dir}"/etc/hostname "${working_dir}"/etc/issue_cli "${squashfs}"/etc/
     sudo cp -r "${working_dir}"/boot/splash.png "${working_dir}"/boot/loader/ "${squashfs}"/usr/share/anarchy/boot/
     sudo cp "${working_dir}"/etc/nvidia340.xx "${squashfs}"/usr/share/anarchy/etc/
+
+    # Download and copy over wallpapers
+    git clone "${wallpapers_git_url}" /tmp/brand
+    sudo cp /tmp/"${wallpapers_folder}"/* "${squashfs}"/usr/share/anarchy/extra/
 
     # Copy over built packages and create repository
     echo -e "Adding built AUR packages to iso ..." | log
