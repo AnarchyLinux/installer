@@ -4,5 +4,4 @@ alias 1="anarchy"
 alias 2="anarchy -u"
 alias 3="iptest"
 alias 4="sysinfo"
-alias 5="fetchmirrors"
 cat /etc/issue_cli
