@@ -54,7 +54,7 @@ update_mirrors() {
     while (true)
       do
         edit_mirrors=$(dialog --ok-button "$ok" --menu "\n$mirror_msg0\n" 12 60 3 \
-            "$fetchmirrors" "->" \
+            "$update_mirrors_msg" "->" \
             "$manual_mirrors" "->" \
             "$cancel_mirrors" "->" 3>&1 1>&2 2>&3)
         if [ "$?" -gt "0" ] || [ "$edit_mirrors" == "$cancel_mirrors" ]; then
@@ -64,7 +64,7 @@ update_mirrors() {
         fi
 
         case "$edit_mirrors" in
-            "$fetchmirrors")
+            "$update_mirrors_msg")
                 code=$(dialog --ok-button "$ok" --menu "$mirror_msg1" 17 60 10 \
                     "$default" "->" \
                     $countries 3>&1 1>&2 2>&3)

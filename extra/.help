@@ -4,7 +4,6 @@
 
 [0;33m  To begin the automated installer simply type and press enter:[0;32m anarchy
 [0;33m  You can check the status of your connection with the command:[0;32m iptest
-[0;33m  If you wish to update your mirrorlist you may do so with:[0;32m fetchmirrors
 [0;33m  View a detailed list of system info with the command:[0;32m sysinfo
 
 [0;33m  Any questions, comments, suggestions, or bug reports may be sent to the developer:
