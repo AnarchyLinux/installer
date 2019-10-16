@@ -286,13 +286,13 @@ btrfs_subvol() {
         o_btrfs="compress"
     fi
 
-    mount -o subvol=@,$o_btrfs "$ROOT" "$ARCH"
+    mount -o subvol=@,$o_btrfs /dev/"$ROOT" "$ARCH"
     mkdir /mnt/{home,.snapshots}
 
-    mount -o subvol=@home,$o_btrfs "$ROOT" "$ARCH"/home
-    mount -o subvol=@snapshots,$o_btrfs "$ROOT" "$ARCH"/.snapshots
+    mount -o subvol=@home,$o_btrfs /dev/"$ROOT" "$ARCH"/home
+    mount -o subvol=@snapshots,$o_btrfs /dev/"$ROOT" "$ARCH"/.snapshots
     mkdir "$ARCH"/home/.snapshots
-    mount -o subvol=@homeshots,$o_btrfs "$ROOT" "$ARCH"/home/.snapshots
+    mount -o subvol=@homeshots,$o_btrfs /dev/"$ROOT" "$ARCH"/home/.snapshots
 }
 
 auto_encrypt() {
