@@ -88,7 +88,7 @@ set_version() {
 init() {
     # Location variables
     custom_iso="${working_dir}"/customiso # prev: customiso
-    squashfs="${custom_iso}"/arch/x84_64/squashfs-root # prev: sq
+    squashfs="${custom_iso}"/arch/x86_64/squashfs-root # prev: sq
 
     # Check for existing Arch iso
     if (ls "${working_dir}"/archlinux-*-x86_64.iso &>/dev/null); then
