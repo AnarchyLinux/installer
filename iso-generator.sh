@@ -611,12 +611,12 @@ while (true); do
         ;;
         -o|--output-dir)
             shift
-            out_dir=$1
+            out_dir="$(readlink -f $1)"
             shift
         ;;
         -l|--log-dir)
             shift
-            log_dir=$1
+            log_dir="$(readlink -f $1)"
             shift
         ;;
         #-a|--arch-iso)
