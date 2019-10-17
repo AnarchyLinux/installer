@@ -245,6 +245,7 @@ graphics() {
             GPU=$(dialog --ok-button "$ok" --cancel-button "$cancel" --menu "$graphics_msg" 18 60 6 \
                 "$default"			 "$gr0" \
                 "xf86-video-ati"     "$gr4" \
+                "xf86-video-amdgpu"  "${gr10}" \
                 "xf86-video-intel"   "$gr5" \
                 "xf86-video-nouveau" "$gr8" \
                 "xf86-video-vesa"	 "$gr1" \
@@ -254,6 +255,7 @@ graphics() {
             GPU=$(dialog --ok-button "$ok" --cancel-button "$cancel" --menu "$graphics_msg" 17 60 5 \
                 "$default"	     "$gr0" \
                 "xf86-video-ati"     "$gr4" \
+                "xf86-video-amdgpu"  "${gr10}" \
                 "xf86-video-intel"   "$gr5" \
                 "xf86-video-nouveau" "$gr8" \
                 "xf86-video-vesa"    "$gr1" 3>&1 1>&2 2>&3)
