@@ -109,7 +109,6 @@ init() {
 
     # Packages to add to local repo
     local_aur_packages=( # prev: builds
-        'fetchmirrors'
         'numix-icon-theme-git'
         'numix-circle-icon-theme-git'
         'oh-my-zsh-git'
@@ -441,7 +440,6 @@ build_system() { # prev: build_sys
     echo -e "Installing packages to new system ..." | log
     # Install fonts, fbterm, fetchmirrors etc.
     sudo pacman --root "${squashfs}" --cachedir "${squashfs}"/var/cache/pacman/pkg  --config etc/pacman.conf --noconfirm -Sy terminus-font acpi zsh-syntax-highlighting pacman-contrib
-    sudo pacman --root "${squashfs}" --cachedir "${squashfs}"/var/cache/pacman/pkg  --config etc/pacman.conf --noconfirm -U /tmp/fetchmirrors/*.pkg.tar.xz
     sudo pacman --root "${squashfs}" --cachedir "${squashfs}"/var/cache/pacman/pkg  --config etc/pacman.conf -Sl | awk '/\[installed\]$/ {print $1 "/" $2 "-" $3}' > "${custom_iso}"/arch/pkglist.x86_64.txt
     sudo pacman --root "${squashfs}" --cachedir "${squashfs}"/var/cache/pacman/pkg  --config etc/pacman.conf --noconfirm -Scc
     sudo rm -f "${squashfs}"/var/cache/pacman/pkg/*
