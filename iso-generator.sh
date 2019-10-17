@@ -385,7 +385,7 @@ copy_config_files() { # prev: build_conf
 
     echo -e "Adding console and locale config files to iso ..." | log
     # Copy over vconsole.conf (sets font at boot), locale.gen (enables locale(s) for font) & uvesafb.conf
-    sudo cp "${working_dir}"/etc/vconsole.conf "${working_dir}"/etc/locale.gen "${working_dir}"/etc/pacman.conf "${squashfs}"/etc/
+    sudo cp "${working_dir}"/etc/vconsole.conf "${working_dir}"/etc/locale.gen "${squashfs}"/etc/
     sudo arch-chroot "${squashfs}" /bin/bash locale-gen
 
     # Copy over main Anarchy config and installer script, make them executable
