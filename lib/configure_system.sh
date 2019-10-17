@@ -205,7 +205,7 @@ configure_system() {
     fi
 
     if "$aa_repo" ; then
-        sed -i -e '$a\\n[anarchy]\nServer = https://anarchylinux.org/repo/$arch\nSigLevel = Never' "$ARCH"/etc/pacman.conf
+        sed -i -e '$a\\n[anarchy]\nServer = https://anarchylinux.org/repo/x86_64\nSigLevel = Never' "$ARCH"/etc/pacman.conf
     fi
 
     if "$dhcp" ; then
