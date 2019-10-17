@@ -390,8 +390,7 @@ copy_config_files() { # prev: build_conf
 
     # Copy over main Anarchy config and installer script, make them executable
     echo -e "Adding anarchy config and installer scripts to iso ..." | log
-    sudo cp "${working_dir}"/etc/anarchy.conf "${squashfs}"/etc/
-    sudo cp "${working_dir}"/etc/pacman.conf "${squashfs}"/etc/
+    sudo cp "${working_dir}"/etc/anarchy.conf "${working_dir}"/etc/pacman.conf "${squashfs}"/etc/
     sudo cp "${working_dir}"/anarchy-installer.sh "${squashfs}"/usr/bin/anarchy
     sudo cp "${working_dir}"/extra/sysinfo "${working_dir}"/extra/iptest "${squashfs}"/usr/bin/
     sudo chmod +x "${squashfs}"/usr/bin/anarchy "${squashfs}"/usr/bin/sysinfo "${squashfs}"/usr/bin/iptest
@@ -429,7 +428,6 @@ copy_config_files() { # prev: build_conf
 
     cd "${squashfs}"/usr/share/anarchy/pkg || exit
     sudo repo-add anarchy-local.db.tar.gz *.pkg.tar.xz
-    #echo -e "\n[anarchy-local]\nServer = file:///usr/share/anarchy/pkg\nSigLevel = Never" | sudo tee -a "${squashfs}"/etc/pacman.conf > /dev/null
     cd "${working_dir}" || exit
 
     echo -e "Done adding files to iso"
