@@ -582,6 +582,8 @@ usage() {
     echo -e "${color_white}Usage: iso-generator.sh [options]${color_blank}"
     echo -e "${color_white}     -c | --no-color)    Disable color output${color_blank}"
     echo -e "${color_white}     -i | --no-input)    Don't ask user for input${color_blank}"
+    echo -e "${color_white}     -o | --output-dir)  Specify directory for generated ISOs/checksums${color_blank}"
+    echo -e "${color_white}     -l | --log-dir)     Specify directory for logs${color_blank}"
     echo -e ""
 }
 
