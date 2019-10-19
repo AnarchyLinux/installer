@@ -34,7 +34,8 @@ working_dir=$(pwd) # prev: aa
 log_dir="${working_dir}"/log
 out_dir="${working_dir}"/out # Directory for generated ISOs
 wallpapers_git_url="https://github.com/AnarchyLinux/brand.git"
-wallpapers_folder=brand/wallpapers/official
+brand_dir="/tmp/anarchy-brand"
+wallpapers_dir="${brand_dir}/wallpapers/official"
 
 # Define colors depending on script arguments
 set_up_colors() {
@@ -421,9 +422,8 @@ copy_config_files() { # prev: build_conf
     sudo cp "${working_dir}"/etc/nvidia340.xx "${squashfs}"/usr/share/anarchy/etc/
 
     # Download and copy over wallpapers
-    git clone "${wallpapers_git_url}" /tmp/brand
-    sudo cp /tmp/"${wallpapers_folder}"/* "${squashfs}"/usr/share/anarchy/extra/
-    rm -rf /tmp/brand
+    git clone "${wallpapers_git_url}" "${brand_dir}"
+    sudo cp "${wallpapers_dir}"/* "${squashfs}"/usr/share/anarchy/extra/wallpapers/
 
     # Copy over built packages and create repository
     echo -e "Adding built AUR packages to iso ..." | log
@@ -436,6 +436,9 @@ copy_config_files() { # prev: build_conf
     cd "${squashfs}"/usr/share/anarchy/pkg || exit
     sudo repo-add anarchy-local.db.tar.gz *.pkg.tar.xz
     cd "${working_dir}" || exit
+
+    # Remove brand folder
+    rm -rf "${brand_dir}"
 
     echo -e "Done adding files to iso"
     echo -e ""
@@ -575,9 +578,9 @@ cleanup() {
         sudo rm -rf "${custom_iso}"
     fi
 
-    if [[ -d "/tmp/brand" ]]; then
+    if [[ -d "${brand_dir}" ]]; then
         echo -e "Removing downloaded branding directory ..." | log
-        rm -rf /tmp/brand
+        rm -rf "${brand_dir}"
     fi
 
     if [[ "${last_command}" != "init" ]]; then
