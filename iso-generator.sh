@@ -422,6 +422,7 @@ copy_config_files() { # prev: build_conf
     sudo cp "${working_dir}"/etc/nvidia340.xx "${squashfs}"/usr/share/anarchy/etc/
 
     # Download and copy over wallpapers
+    sudo mkdir "${squashfs}"/usr/share/anarchy/extra/wallpapers
     git clone "${wallpapers_git_url}" "${brand_dir}"
     sudo cp "${wallpapers_dir}"/* "${squashfs}"/usr/share/anarchy/extra/wallpapers/
 
