@@ -423,6 +423,7 @@ copy_config_files() { # prev: build_conf
     # Download and copy over wallpapers
     git clone "${wallpapers_git_url}" /tmp/brand
     sudo cp /tmp/"${wallpapers_folder}"/* "${squashfs}"/usr/share/anarchy/extra/
+    rm -rf /tmp/brand
 
     # Copy over built packages and create repository
     echo -e "Adding built AUR packages to iso ..." | log
@@ -572,6 +573,11 @@ cleanup() {
         echo -e "Removing customiso directory ..." | log
         # We have to use sudo in case root owns files inside customiso
         sudo rm -rf "${custom_iso}"
+    fi
+
+    if [[ -d "/tmp/brand" ]]; then
+        echo -e "Removing downloaded branding directory ..." | log
+        rm -rf /tmp/brand
     fi
 
     if [[ "${last_command}" != "init" ]]; then
