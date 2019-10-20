@@ -606,6 +606,7 @@ add_software() {
                 ;;
                 "$util")
                     software=$(dialog --ok-button "$ok" --cancel-button "$cancel" --checklist "$software_msg1" 20 65 10 \
+                        "arch-wiki-cli"	"$sys7" OFF \
                         "bc"			"$sys25" OFF \
                         "bleachbit"		"$sys22" OFF \
                         "conky"			"$sys2" OFF \
