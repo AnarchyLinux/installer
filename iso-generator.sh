@@ -120,6 +120,7 @@ init() {
         'obmenu-generator'
         'yay-bin'
         'openbox-themes'
+        'arch-wiki-cli'
     )
 
     check_dependencies
