@@ -299,59 +299,12 @@ add_software() {
                     fi
                 elif [ "$ex" -eq "3" ]; then
                     software_menu="$done_msg"
-                #elif [ "$software_menu" == "$aar" ] && ! "$aa_repo" ; then
-                    #if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$aar_add_msg" 10 60) then
-                        #if ! (grep "\[anarchy\]" </etc/pacman.conf &>/dev/null); then
-                            #sed -i -e '$a\\n[anarchy]\nServer = https://anarchylinux.org/repo/x86_64F\nSigLevel = Never' /etc/pacman.conf
-                        #fi
-                        #aa_repo=true
-                    #else
-                        #continue
-                    #fi
                 fi
             else
                 skip=false
             fi
 
             case "$software_menu" in
-                #"$aar")
-                    #software=$(dialog --ok-button "$ok" --cancel-button "$cancel" --checklist "$software_msg1" 20 63 10 \
-                        #"amarok"			"$aar2" OFF \
-                        #"android-sdk"			"$aar23" OFF \
-                        #"android-sdk-platform-tools"	"$aar24" OFF \
-                        #"arch-wiki-cli"			"$aar0" ON \
-                        #"brackets"			"$aar31" OFF \
-                        #"discord"			"$aar29" OFF \
-                        #"downgrade"			"$aar6" OFF \
-                        #"dolphin-libre"			"$aar7" OFF \
-                        #"dropbox"			"$aar25" OFF \
-                        #"fetchmirrors"			"$aar1" ON \
-                        #"fetchpkg"			"$aar8" ON \
-                        #"google-chrome"			"$aar9" OFF \
-                        #"google-earth"			"$aar10" OFF \
-                        #"inxi"				"$aar18" OFF \
-                        #"numix-circle-icon-theme-git"	"$aar11" OFF \
-                        #"numix-icon-theme-git"		"$aar12" OFF \
-                        #"octopi"			"$aar4" OFF \
-                        #"pamac-aur"			"$aar5" OFF \
-                        #"plex-media-server"		"$aar13" OFF \
-                        #"plymouth"			"$aar14" OFF \
-                        #"powerline-fonts-git"		"$aar15" OFF \
-                        #"scite"				"$aar28" OFF \
-                        #"skypeforlinux-stable-bin"	"$aar30" OFF \
-                        #"spotify"			"$aar16" OFF \
-                        #"sublime-text-dev"		"$aar17" OFF \
-                        #"tor-browser-en"		"$aar19" OFF \
-                        #"teamviewer"			"$aar27" OFF \
-                        #"virtualbox-ext-oracle"		"$aar20" OFF \
-                        #"vivaldi"			"$aar21" OFF \
-                        #"xmacro"			"$aar22" OFF \
-                        #"yay"				"$aar26" OFF \
-                        #"trizen"			"$aar3" OFF 3>&1 1>&2 2>&3)
-                    #if [ "$?" -gt "0" ]; then
-                        #add_soft=false
-                    #fi
-                #;;
                 "$audio")
                     software=$(dialog --ok-button "$ok" --cancel-button "$cancel" --checklist "$software_msg1" 20 63 10 \
                         "audacity"		"$audio0" OFF \
@@ -382,9 +335,6 @@ add_software() {
                         "postgresql"		"$sys31" OFF \
                         "redis"			"$db4" OFF \
                         "sqlite"		"$db6" OFF 3>&1 1>&2 2>&3)
-                        # MongoDB has been removed from the official repositories due to its re-licensing issues
-                        # "mongodb"		"$db1" OFF
-                        # "rethinkdb"		"$db5" OFF
                     if [ "$?" -gt "0" ]; then
                         add_soft=false
                     fi
@@ -550,20 +500,6 @@ add_software() {
                     if [ "$?" -gt "0" ]; then
                         add_soft=false
                     fi
-
-                    #if (<<<"$software" grep "openjdk-7" &>/dev/null); then
-                        #software=$(<<<"$software" sed 's/java-openjdk-7/jre7-openjdk-headless jre7-openjdk jdk7-openjdk openjdk7-doc openjdk7-src/')
-                    #fi
-
-                    #if (<<<"$software" grep "openjdk-8" &>/dev/null); then
-                        #software=$(<<<"$software" sed 's/java-openjdk-8/jre8-openjdk-headless jre8-openjdk jdk8-openjdk openjdk8-doc openjdk8-src/')
-                    #fi
-
-                    #if (<<<"$software" grep "openjfx-8" &>/dev/null); then
-                        #software=$(<<<"$software" sed 's/java-openjfx-8/java-openjfx java-openjfx-doc java-openjfx-src/')
-                    #fi
-
-
                 ;;
                 "$terminal")
                     software=$(dialog --ok-button "$ok" --cancel-button "$cancel" --checklist "$software_msg1" 20 63 10 \
