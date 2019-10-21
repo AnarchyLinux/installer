@@ -69,28 +69,28 @@ prepare_base() {
 
     case "$install_menu" in
         "Arch-Linux-Base")
-            base_install="base linux linux-headers sudo $base_defaults " kernel="linux"
+            base_install="base linux linux-headers linux-firmware sudo $base_defaults " kernel="linux"
         ;;
         "Arch-Linux-Base-Devel")
-            base_install="base-devel linux linux-headers $base_defaults " kernel="linux"
+            base_install="base-devel linux linux-headers linux-firmware $base_defaults " kernel="linux"
         ;;
         "Arch-Linux-Hardened")
-            base_install="base linux-hardened linux-hardened-headers sudo $base_defaults " kernel="linux-hardened"
+            base_install="base linux-hardened linux-hardened-headers linux-firmware sudo $base_defaults " kernel="linux-hardened"
         ;;
         "Arch-Linux-Hardened-Devel")
-            base_install="base-devel linux-hardened linux-hardened-headers $base_defaults " kernel="linux-hardened"
+            base_install="base-devel linux-hardened linux-hardened-headers linux-firmware $base_defaults " kernel="linux-hardened"
         ;;
         "Arch-Linux-LTS-Base")
-            base_install="base linux-lts linux-lts-headers sudo $base_defaults " kernel="linux-lts"
+            base_install="base linux-lts linux-lts-headers linux-firmware sudo $base_defaults " kernel="linux-lts"
         ;;
         "Arch-Linux-LTS-Base-Devel")
-            base_install="base-devel linux-lts linux-lts-headers $base_defaults " kernel="linux-lts"
+            base_install="base-devel linux-lts linux-lts-headers linux-firmware $base_defaults " kernel="linux-lts"
         ;;
         "Arch-Linux-Zen")
-            base_install="base linux-zen linux-zen-headers sudo $base_defaults " kernel="linux-zen"
+            base_install="base linux-zen linux-zen-headers linux-firmware sudo $base_defaults " kernel="linux-zen"
         ;;
         "Arch-Linux-Zen-Devel")
-            base_install="base-devel linux-zen linux-zen-headers $base_defaults " kernel="linux-zen"
+            base_install="base-devel linux-zen linux-zen-headers linux-firmware $base_defaults " kernel="linux-zen"
         ;;
     esac
 
