@@ -660,7 +660,7 @@ add_software() {
                     fi
                     
                     if (<<<"$software" grep "bspwm") then
-                        software+=" shxkd"
+                        software+=" sxhkd"
                     fi                  
 
                 ;;
