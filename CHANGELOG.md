@@ -1,5 +1,15 @@
 # Changelog
 
+## Release v1.0.8
+
+* Update French and Romanian translations
+* Remove Fetchmirrors from the main menu (mirrors can still be updated normally during the installation)
+* New users aren't automatically added to 'users' group, but their respective username-based groups
+* Completely remove i686 code (can be re-added if someone is willing to support it)
+* Add AMDGPU driver (`xf86-video-amdgpu`)
+* Retrieve downloads from anarchylinux/brand repository (no change for users, just in the installation process)
+* Fix GRUB errors if `base` package was selected
+
 ## Release v1.0.7
 
 **Please always update the live Anarchy installer before using it,

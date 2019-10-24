@@ -69,25 +69,25 @@ prepare_base() {
 
     case "$install_menu" in
         "Arch-Linux-Base")
-            base_install="linux linux-headers sudo $base_defaults " kernel="linux"
+            base_install="base linux linux-headers $base_defaults " kernel="linux"
         ;;
         "Arch-Linux-Base-Devel")
             base_install="base-devel linux linux-headers $base_defaults " kernel="linux"
         ;;
         "Arch-Linux-Hardened")
-            base_install="linux-hardened linux-hardened-headers sudo $base_defaults " kernel="linux-hardened"
+            base_install="base linux-hardened linux-hardened-headers $base_defaults " kernel="linux-hardened"
         ;;
         "Arch-Linux-Hardened-Devel")
-            base_install="base-devel linux-hardened linux-hardened-headers $base_defaults " kernel="linux-hardened"
+            base_install="base-devel linux-hardened linux-hardened-headers linux-firmware $base_defaults " kernel="linux-hardened"
         ;;
         "Arch-Linux-LTS-Base")
-            base_install="linux-lts linux-lts-headers sudo $base_defaults " kernel="linux-lts"
+            base_install="base linux-lts linux-lts-headers $base_defaults " kernel="linux-lts"
         ;;
         "Arch-Linux-LTS-Base-Devel")
             base_install="base-devel linux-lts linux-lts-headers $base_defaults " kernel="linux-lts"
         ;;
         "Arch-Linux-Zen")
-            base_install="linux-zen linux-zen-headers sudo $base_defaults " kernel="linux-zen"
+            base_install="base linux-zen linux-zen-headers $base_defaults " kernel="linux-zen"
         ;;
         "Arch-Linux-Zen-Devel")
             base_install="base-devel linux-zen linux-zen-headers $base_defaults " kernel="linux-zen"
@@ -219,17 +219,15 @@ prepare_base() {
         fi
     done
 
-    if [ "$arch" == "x86_64" ]; then
-        if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n\n$multilib_msg" 11 60) then
-            multilib=true
-            echo "$(date -u "+%F %H:%M") : Include multilib" >> "$log"
-        fi
+    if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n\n$multilib_msg" 11 60) then
+        multilib=true
+        echo "$(date -u "+%F %H:%M") : Include multilib" >> "$log"
     fi
 
-        if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n\n$dhcp_msg" 11 60) then
-            dhcp=true
-            echo "$(date -u "+%F %H:%M") : Enable dhcp" >> "$log"
-        fi
+    if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n\n$dhcp_msg" 11 60) then
+        dhcp=true
+        echo "$(date -u "+%F %H:%M") : Enable dhcp" >> "$log"
+    fi
 
     if "$wifi" ; then
         base_install+="wireless_tools wpa_supplicant "
@@ -301,59 +299,12 @@ add_software() {
                     fi
                 elif [ "$ex" -eq "3" ]; then
                     software_menu="$done_msg"
-                #elif [ "$software_menu" == "$aar" ] && ! "$aa_repo" ; then
-                    #if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$aar_add_msg" 10 60) then
-                        #if ! (grep "\[anarchy\]" </etc/pacman.conf &>/dev/null); then
-                            #sed -i -e '$a\\n[anarchy]\nServer = https://anarchylinux.org/repo/$arch\nSigLevel = Never' /etc/pacman.conf
-                        #fi
-                        #aa_repo=true
-                    #else
-                        #continue
-                    #fi
                 fi
             else
                 skip=false
             fi
 
             case "$software_menu" in
-                #"$aar")
-                    #software=$(dialog --ok-button "$ok" --cancel-button "$cancel" --checklist "$software_msg1" 20 63 10 \
-                        #"amarok"			"$aar2" OFF \
-                        #"android-sdk"			"$aar23" OFF \
-                        #"android-sdk-platform-tools"	"$aar24" OFF \
-                        #"arch-wiki-cli"			"$aar0" ON \
-                        #"brackets"			"$aar31" OFF \
-                        #"discord"			"$aar29" OFF \
-                        #"downgrade"			"$aar6" OFF \
-                        #"dolphin-libre"			"$aar7" OFF \
-                        #"dropbox"			"$aar25" OFF \
-                        #"fetchmirrors"			"$aar1" ON \
-                        #"fetchpkg"			"$aar8" ON \
-                        #"google-chrome"			"$aar9" OFF \
-                        #"google-earth"			"$aar10" OFF \
-                        #"inxi"				"$aar18" OFF \
-                        #"numix-circle-icon-theme-git"	"$aar11" OFF \
-                        #"numix-icon-theme-git"		"$aar12" OFF \
-                        #"octopi"			"$aar4" OFF \
-                        #"pamac-aur"			"$aar5" OFF \
-                        #"plex-media-server"		"$aar13" OFF \
-                        #"plymouth"			"$aar14" OFF \
-                        #"powerline-fonts-git"		"$aar15" OFF \
-                        #"scite"				"$aar28" OFF \
-                        #"skypeforlinux-stable-bin"	"$aar30" OFF \
-                        #"spotify"			"$aar16" OFF \
-                        #"sublime-text-dev"		"$aar17" OFF \
-                        #"tor-browser-en"		"$aar19" OFF \
-                        #"teamviewer"			"$aar27" OFF \
-                        #"virtualbox-ext-oracle"		"$aar20" OFF \
-                        #"vivaldi"			"$aar21" OFF \
-                        #"xmacro"			"$aar22" OFF \
-                        #"yay"				"$aar26" OFF \
-                        #"trizen"			"$aar3" OFF 3>&1 1>&2 2>&3)
-                    #if [ "$?" -gt "0" ]; then
-                        #add_soft=false
-                    #fi
-                #;;
                 "$audio")
                     software=$(dialog --ok-button "$ok" --cancel-button "$cancel" --checklist "$software_msg1" 20 63 10 \
                         "audacity"		"$audio0" OFF \
@@ -384,9 +335,6 @@ add_software() {
                         "postgresql"		"$sys31" OFF \
                         "redis"			"$db4" OFF \
                         "sqlite"		"$db6" OFF 3>&1 1>&2 2>&3)
-                        # MongoDB has been removed from the official repositories due to its re-licensing issues
-                        # "mongodb"		"$db1" OFF
-                        # "rethinkdb"		"$db5" OFF
                     if [ "$?" -gt "0" ]; then
                         add_soft=false
                     fi
@@ -552,20 +500,6 @@ add_software() {
                     if [ "$?" -gt "0" ]; then
                         add_soft=false
                     fi
-
-                    #if (<<<"$software" grep "openjdk-7" &>/dev/null); then
-                        #software=$(<<<"$software" sed 's/java-openjdk-7/jre7-openjdk-headless jre7-openjdk jdk7-openjdk openjdk7-doc openjdk7-src/')
-                    #fi
-
-                    #if (<<<"$software" grep "openjdk-8" &>/dev/null); then
-                        #software=$(<<<"$software" sed 's/java-openjdk-8/jre8-openjdk-headless jre8-openjdk jdk8-openjdk openjdk8-doc openjdk8-src/')
-                    #fi
-
-                    #if (<<<"$software" grep "openjfx-8" &>/dev/null); then
-                        #software=$(<<<"$software" sed 's/java-openjfx-8/java-openjfx java-openjfx-doc java-openjfx-src/')
-                    #fi
-
-
                 ;;
                 "$terminal")
                     software=$(dialog --ok-button "$ok" --cancel-button "$cancel" --checklist "$software_msg1" 20 63 10 \
@@ -672,6 +606,7 @@ add_software() {
                 ;;
                 "$util")
                     software=$(dialog --ok-button "$ok" --cancel-button "$cancel" --checklist "$software_msg1" 20 65 10 \
+                        "arch-wiki-cli"	"$sys7" OFF \
                         "bc"			"$sys25" OFF \
                         "bleachbit"		"$sys22" OFF \
                         "conky"			"$sys2" OFF \
@@ -725,7 +660,7 @@ add_software() {
                     fi
                     
                     if (<<<"$software" grep "bspwm") then
-                        software+=" shxkd"
+                        software+=" sxhkd"
                     fi                  
 
                 ;;
