@@ -508,6 +508,9 @@ auto_encrypt_btrfs()
         crypted=true
     fi
 
+    cat /tmp/ex_status.var >> /tmp/test.log
+    echo "$mounted" >> /tmp/test.log
+    echo "$crypted" >> /tmp/test.log
     rm /tmp/ex_status.var
 
 }
