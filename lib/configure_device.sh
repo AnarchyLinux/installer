@@ -471,7 +471,8 @@ auto_encrypt_btrfs()
     echo "$(date -u "+%F %H:%M") : Wipe boot partition" >> "$log"
     echo "$(date -u "+%F %H:%M") : Wipe root partition" >> "$log"
 
-    (printf "$input" | cryptsetup luksFormat -c aes-xts-plain64 -s 512 /dev/"$ROOT" -
+    (cryptsetup close /dev/"$ROOT"
+    printf "$input" | cryptsetup luksFormat -c aes-xts-plain64 -s 512 /dev/"$ROOT" -
     printf "$input" | cryptsetup open --type luks /dev/"$ROOT" root -) &> /dev/null &
     pid=$! pri=0.2 msg="\n$encrypt_load \n\n \Z1> \Z2cryptsetup luksFormat -c aes-xts-plain64 -s 512 /dev/$ROOT\Zn" load
     echo "$(date -u "+%F %H:%M") : Encrypt partition: /dev/$ROOT" >> "$log"
