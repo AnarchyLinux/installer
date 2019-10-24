@@ -295,6 +295,65 @@ btrfs_subvol() {
     mount -o subvol=@homeshots,$o_btrfs /dev/"$ROOT" "$ARCH"/home/.snapshots
 }
 
+auto_encrypt_btrfs()
+{
+
+    if "$GPT" ; then
+        if "$UEFI" ; then
+            echo -e "n\n\n\n512M\nef00\nn\n\n\n\n\nw\ny" | gdisk /dev/"$DRIVE" &> /dev/null &
+            pid=$! pri=0.1 msg="\n$load_var0 \n\n \Z1> \Z2gdisk /dev/$DRIVE\Zn" load
+            BOOT="${DRIVE}${PART_PREFIX}1"
+            ROOT="${DRIVE}${PART_PREFIX}2"
+        else
+            echo -e "o\ny\nn\n1\n\n+512M\n\nn\n2\n\n+1M\nEF02\nn\n3\n\n\n\nw\ny" | gdisk /dev/"$DRIVE" &> /dev/null &
+            pid=$! pri=0.1 msg="\n$load_var0 \n\n \Z1> \Z2gdisk /dev/$DRIVE\Zn" load
+            BOOT="${DRIVE}${PART_PREFIX}1"
+            ROOT="${DRIVE}${PART_PREFIX}3"
+        fi
+    else
+        echo -e "o\nn\np\n1\n\n+512M\nn\np\n2\n\n\nw" | fdisk /dev/"$DRIVE" &> /dev/null &
+        pid=$! pri=0.1 msg="\n$load_var0 \n\n \Z1> \Z2fdisk /dev/$DRIVE\Zn" load
+        BOOT="${DRIVE}${PART_PREFIX}1"
+        ROOT="${DRIVE}${PART_PREFIX}2"
+    fi
+
+    echo "$(date -u "+%F %H:%M") : Create boot partition: $BOOT" >> "$log"
+    echo "$(date -u "+%F %H:%M") : Create root partition: $ROOT" >> "$log"
+    (sgdisk --zap-all /dev/"$ROOT"
+    sgdisk --zap-all /dev/"$BOOT"
+    wipefs -a /dev/"$ROOT"
+    wipefs -a /dev/"$BOOT") &> /dev/null &
+    pid=$! pri=0.1 msg="\n$frmt_load \n\n \Z1> \Z2wipefs -a /dev/$ROOT\Zn" load
+    echo "$(date -u "+%F %H:%M") : Wipe boot partition" >> "$log"
+    echo "$(date -u "+%F %H:%M") : Wipe root partition" >> "$log"
+
+    (printf "$input" | cryptsetup luksFormat -c aes-xts-plain64 -s 512 /dev/lvm/lvroot -
+    printf "$input" | cryptsetup open --type luks /dev/lvm/lvroot root -) &> /dev/null &
+    pid=$! pri=0.2 msg="\n$encrypt_load \n\n \Z1> \Z2cryptsetup luksFormat -c aes-xts-plain64 -s 512 /dev/lvm/lvroot\Zn" load
+    echo "$(date -u "+%F %H:%M") : Encrypt logical volume: lvroot" >> "$log"
+    unset input input_chk ; input_chk=default
+    wipefs -a /dev/mapper/root &> /dev/null
+
+    mkfs.btrfs /dev/mapper/root &> /dev/null
+    mount /dev/mapper/root /"$ARCH"
+
+    btrfs_subvol
+
+
+    if "$UEFI" ; then
+        mkfs.vfat -F32 /dev/"$BOOT" &> /dev/null &
+        pid=$! pri=0.2 msg="\n$efi_load1 \n\n \Z1> \Z2mkfs.vfat -F32 /dev/$BOOT\Zn" load
+        esp_part="/dev/$BOOT"
+        esp_mnt=/boot
+        echo "$(date -u "+%F %H:%M") : Create boot filesystem: vfat" >> "$log"
+    else
+        mkfs.ext4 -O \^64bit /dev/"$BOOT" &> /dev/null &
+        pid=$! pri=0.2 msg="\n$boot_load \n\n \Z1> \Z2mkfs.ext4 /dev/$BOOT\Zn" load
+        echo "$(date -u "+%F %H:%M") : Create boot filesystem: ext4" >> "$log"
+    fi
+
+}
+
 auto_encrypt() {
 
     op_title="$partload_op_msg"
@@ -311,10 +370,17 @@ auto_encrypt() {
                 dialog --ok-button "$ok" --msgbox "\n$passwd_msg1" 10 60
             fi
          done
+        if (dialog --defaultno --yes-button "$yes" --no-button "$no" --yesno "\n$encrypt_var3" 10 60) then
+            auto_encrypt_btrfs
+        else
+            auto_encrypt_lvm
     else
         return
     fi
+}
 
+auto_encrypt_lvm()
+{
     if "$GPT" ; then
         if "$UEFI" ; then
             echo -e "n\n\n\n512M\nef00\nn\n\n\n\n\nw\ny" | gdisk /dev/"$DRIVE" &> /dev/null &
