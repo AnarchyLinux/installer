@@ -374,6 +374,7 @@ auto_encrypt() {
             auto_encrypt_btrfs
         else
             auto_encrypt_lvm
+        fi
     else
         return
     fi
