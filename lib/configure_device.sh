@@ -477,13 +477,9 @@ auto_encrypt_btrfs()
     echo "$(date -u "+%F %H:%M") : Encrypt partition: /dev/$ROOT" >> "$log"
     unset input input_chk ; input_chk=default
     wipefs -a /dev/mapper/root &> /dev/null
-
     mkfs.btrfs /dev/mapper/root &> /dev/null
-    mount /dev/mapper/root "$ARCH"
 
     btrfs_crypt=true
-    btrfs_subvol
-
 
     if "$UEFI" ; then
         mkfs.vfat -F32 /dev/"$BOOT" &> /dev/null &
@@ -496,6 +492,23 @@ auto_encrypt_btrfs()
         pid=$! pri=0.2 msg="\n$boot_load \n\n \Z1> \Z2mkfs.ext4 /dev/$BOOT\Zn" load
         echo "$(date -u "+%F %H:%M") : Create boot filesystem: ext4" >> "$log"
     fi
+
+
+    (mount /dev/mapper/root "$ARCH"
+    echo "$?" > /tmp/ex_status.var
+    btrfs_subvol
+    mkdir $ARCH/boot
+    mount /dev/"$BOOT" "$ARCH"/boot) &> /dev/null &
+    pid=$! pri=0.1 msg="\n$mnt_load \n\n \Z1> \Z2mount /dev/mapper/root $ARCH\Zn" load
+    echo "$(date -u "+%F %H:%M") : Mount root filesystem: $ARCH" >> "$log"
+    echo "$(date -u "+%F %H:%M") : Mount boot filesystem: $ARCH/boot" >> "$log"
+
+    if [ $(</tmp/ex_status.var) -eq "0" ]; then
+        mounted=true
+        crypted=true
+    fi
+
+    rm /tmp/ex_status.var
 
 }
 
