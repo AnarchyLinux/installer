@@ -337,7 +337,7 @@ auto_encrypt_btrfs()
     wipefs -a /dev/mapper/root &> /dev/null
 
     mkfs.btrfs /dev/mapper/root &> /dev/null
-    mount /dev/mapper/root /"$ARCH"
+    mount /dev/mapper/root "$ARCH"
 
     btrfs_subvol
 
