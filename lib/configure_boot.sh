@@ -18,7 +18,11 @@
 grub_config() {
 
     if "$crypted" ; then
-        sed -i 's!quiet!cryptdevice=/dev/lvm/lvroot:root root=/dev/mapper/root!' "$ARCH"/etc/default/grub
+        if "$btrfs_crypt"; then
+            sed -i 's!quiet!cryptdevice=/dev/sda2:root!' "$ARCH"/etc/default/grub
+        else
+            sed -i 's!quiet!cryptdevice=/dev/lvm/lvroot:root root=/dev/mapper/root!' "$ARCH"/etc/default/grub
+        fi
     else
         sed -i 's/quiet//' "$ARCH"/etc/default/grub
     fi
