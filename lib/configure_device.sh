@@ -424,6 +424,24 @@ auto_encrypt() {
 auto_encrypt_btrfs()
 {
 
+    op_title="$partload_op_msg"
+    if (dialog --defaultno --yes-button "$yes" --no-button "$no" --yesno "\n$encrypt_var0" 10 60) then
+        while [ "$input" != "$input_chk" ]
+          do
+            input=$(dialog --nocancel --clear --insecure --passwordbox "$encrypt_var1" 12 55 --stdout)
+            input_chk=$(dialog --nocancel --clear --insecure --passwordbox "$encrypt_var2" 12 55 --stdout)
+
+            if [ -z "$input" ]; then
+                dialog --ok-button "$ok" --msgbox "\n$passwd_msg0" 10 60
+                input_chk=default
+            elif [ "$input" != "$input_chk" ]; then
+                dialog --ok-button "$ok" --msgbox "\n$passwd_msg1" 10 60
+            fi
+         done
+    else
+        return
+    fi
+
     if "$GPT" ; then
         if "$UEFI" ; then
             echo -e "n\n\n\n512M\nef00\nn\n\n\n\n\nw\ny" | gdisk /dev/"$DRIVE" &> /dev/null &
