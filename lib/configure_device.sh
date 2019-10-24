@@ -257,7 +257,9 @@ auto_part() {
 
     (mount /dev/"$ROOT" "$ARCH"
     echo "$?" > /tmp/ex_status.var
-    btrfs_subvol
+    if [[ "$FS" -eq "btrfs" ]]; then
+        btrfs_subvol
+    fi
     mkdir $ARCH/boot
     mount /dev/"$BOOT" "$ARCH"/boot) &> /dev/null &
     pid=$! pri=0.1 msg="\n$mnt_load \n\n \Z1> \Z2mount /dev/$ROOT $ARCH\Zn" load
