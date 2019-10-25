@@ -115,7 +115,7 @@ configure_system() {
             echo "$(date -u "+%F %H:%M") : Configure system with the default mkinitcpio hooks" >> "$log"
         fi
     else
-        sed -i 's/HOOKS=.*/HOOKS="base udev autodetect keyboard keymap consolefont modconf block encrypt btrfs filesystems fsck"/' "$ARCH"/etc/mkinitcpio.conf
+        (sed -i 's/HOOKS=.*/HOOKS="base udev autodetect keyboard keymap consolefont modconf block encrypt btrfs filesystems fsck"/' "$ARCH"/etc/mkinitcpio.conf
         arch-chroot "$ARCH" mkinitcpio -p "$kernel") &> /dev/null &
         pid=$! pri=1 msg="\n$kernel_config_load \n\n \Z1> \Z2mkinitcpio -p $kernel\Zn" load
         echo "$(date -u "+%F %H:%M") : Configure system with the encrypted btrfs mkinitcpio hooks" >> "$log"

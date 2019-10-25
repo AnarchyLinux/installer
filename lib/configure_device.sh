@@ -509,9 +509,12 @@ auto_encrypt_btrfs()
         crypted=true
     fi
 
+#debug
     cat /tmp/ex_status.var >> /tmp/test.log
     echo "$mounted" >> /tmp/test.log
     echo "$crypted" >> /tmp/test.log
+    echo "$btrfs_crypt" >> /tmp/test.log
+    
     rm /tmp/ex_status.var
 
 }
