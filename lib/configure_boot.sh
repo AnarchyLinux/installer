@@ -19,7 +19,10 @@ grub_config() {
 
     if "$crypted" ; then
         if "$btrfs_crypt"; then
-            sed -i 's!quiet!cryptdevice=/dev/sda2:root!' "$ARCH"/etc/default/grub
+            UUID=$(cryptsetup status /dev/mapper/root | grep device)
+            UUID=$(echo ${UUID:9})
+            UUID=$(cryptsetup luksUUID "$UUID")
+            sed -i "s!quiet!cryptdevice=UUID=$UUID:root!" "$ARCH"/etc/default/grub
         else
             sed -i 's!quiet!cryptdevice=/dev/lvm/lvroot:root root=/dev/mapper/root!' "$ARCH"/etc/default/grub
         fi
