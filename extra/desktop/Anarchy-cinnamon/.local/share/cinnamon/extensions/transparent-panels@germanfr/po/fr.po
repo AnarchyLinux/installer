@@ -1,0 +1,102 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 2.0.6\n"
+"Last-Translator: Philippe Loctaux <https://philippeloctaux.com>\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"Language: fr\n"
+
+#: extension.js:166
+#, javascript-format
+msgid "%s enabled"
+msgstr "%s activé"
+
+#: extension.js:167
+msgid "Open the extension settings and customize your panels"
+msgstr "Ouvrir les paramètres de l'extension et personnaliser vos tableaux de bords"
+
+#: extension.js:170
+msgid "Open settings"
+msgstr "Ouvrir les paramètres"
+
+#. transparent-panels@germanfr->settings-schema.json->panel-left->description
+msgid "Left panel"
+msgstr "Tableau de bord à gauche"
+
+#. transparent-panels@germanfr->settings-schema.json->panel-
+#. bottom->description
+msgid "Bottom panel"
+msgstr "Tableau de bord en bas"
+
+#. transparent-panels@germanfr->settings-schema.json->section2->description
+msgid "Filter panels"
+msgstr "Filtrer les tableaux de bord"
+
+#. transparent-panels@germanfr->settings-schema.json->panel-right->description
+msgid "Right panel"
+msgstr "Tableau de bord à droite"
+
+#. transparent-panels@germanfr->settings-schema.json->panel-top->description
+msgid "Top panel"
+msgstr "Tableau de bord en haut"
+
+#. transparent-panels@germanfr->settings-schema.json->opacify->description
+msgid "Remove theme transparency (experimental)"
+msgstr "Retirer la transparence du thème (expérimental)"
+
+#. transparent-panels@germanfr->settings-schema.json->opacify->tooltip
+msgid "Remove panel transparency when it's not transparent."
+msgstr "Retirer la transparence du tableau de bord lorsqu'il n'est pas transparent."
+
+#. transparent-panels@germanfr->settings-schema.json->transparency-
+#. type->description
+msgid "Type of transparency"
+msgstr "Type de transparence"
+
+#. transparent-panels@germanfr->settings-schema.json->transparency-
+#. type->tooltip
+msgid "Choose the type of transparency you want."
+msgstr "Choisissez le type de transparence désiré."
+
+#. transparent-panels@germanfr->settings-schema.json->transparency-
+#. type->options
+msgid "Defined by theme"
+msgstr "Défini par le thème"
+
+#. transparent-panels@germanfr->settings-schema.json->transparency-
+#. type->options
+msgid "Fully transparent"
+msgstr "Entièrement transparent"
+
+#. transparent-panels@germanfr->settings-schema.json->transparency-
+#. type->options
+msgid "Semi-transparent"
+msgstr "Semi-transparent"
+
+#. transparent-panels@germanfr->settings-schema.json->transparency-
+#. type->options
+msgid "With shadow"
+msgstr "Avec de l'ombre"
+
+#. transparent-panels@germanfr->settings-schema.json->label2->description
+msgid "Select the panels that will be affected by this extension."
+msgstr "Choisissez les tableaux de bords qui seront affectés par cette extension."
+
+#. transparent-panels@germanfr->settings-schema.json->section1->description
+msgid "General"
+msgstr "Général"
+
+#. transparent-panels@germanfr->metadata.json->description
+msgid "Transparentize your panels when there are no any maximized windows"
+msgstr "Rendre transparents vos tableaux de bords lorsqu'il n'y a pas de fenêtres agrandies."
+
+#. transparent-panels@germanfr->metadata.json->name
+msgid "Transparent panels"
+msgstr "Tableaux de bords transparents"

@@ -1,0 +1,25 @@
+{
+    "section1": {
+        "type": "section",
+        "description": "Behavior"
+    },
+    "ignoreTransientNotifications": {
+        "type": "switch",
+        "default": true,
+        "description": "Ignore transient notifications",
+        "tooltip": "Check this to ignore transient notifications.",
+        "value": true
+    },
+    "section2": {
+        "type": "section",
+        "description": "Display"
+    },
+    "showEmptyTray": {
+        "type": "switch",
+        "default": false,
+        "description": "Show empty tray",
+        "tooltip": "Check this to show the tray even when there are no new notifications.",
+        "value": false
+    },
+    "__md5__": "8a831b3dbfc063a2dd90da2ab062989b"
+}

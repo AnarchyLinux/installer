@@ -1,0 +1,31 @@
+{
+    "section1": {
+        "type": "section",
+        "description": "Behavior"
+    },
+    "launcherList": {
+        "type": "generic",
+        "default": [
+            "firefox.desktop",
+            "org.gnome.Terminal.desktop",
+            "nemo.desktop"
+        ],
+        "value": [
+            "firefox.desktop",
+            "nemo.desktop",
+            "org.gnome.Packages.desktop",
+            "terminator.desktop",
+            "chromium.desktop",
+            "vlc.desktop",
+            "org.pantheon.noise.desktop",
+            "libreoffice-writer.desktop"
+        ]
+    },
+    "allow-dragging": {
+        "type": "switch",
+        "default": true,
+        "description": "Allow dragging of launchers",
+        "value": true
+    },
+    "__md5__": "366f8e129abf9622014c95f26ce5aa0f"
+}

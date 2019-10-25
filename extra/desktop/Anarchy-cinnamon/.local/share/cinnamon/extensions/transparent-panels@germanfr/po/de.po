@@ -1,0 +1,73 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: \n"
+"Last-Translator: NikoKrause\n"
+"Language-Team: \n"
+"Language: de\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 1.8.11\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: extension.js:245
+#, c-format
+msgid "%s enabled"
+msgstr ""
+
+#: extension.js:246
+msgid "Open the extension settings and customize your panels"
+msgstr ""
+
+#: extension.js:249
+msgid "Open settings"
+msgstr ""
+
+#. transparent-panels@germanfr->settings-schema.json->transparency-
+#. type->description
+msgid "Type of transparency"
+msgstr "Art der Transparenz"
+
+#. transparent-panels@germanfr->settings-schema.json->transparency-
+#. type->tooltip
+msgid "Choose the type of transparency you want."
+msgstr "Wählen Sie die gewünschte Transparenzart."
+
+#. transparent-panels@germanfr->settings-schema.json->transparency-
+#. type->options
+msgid "Defined by theme"
+msgstr "Definiert nach Thema"
+
+#. transparent-panels@germanfr->settings-schema.json->transparency-
+#. type->options
+msgid "Fully transparent"
+msgstr "Durchsichtig"
+
+#. transparent-panels@germanfr->settings-schema.json->transparency-
+#. type->options
+msgid "Semi-transparent"
+msgstr "Halbdurchsichtig"
+
+#. transparent-panels@germanfr->settings-schema.json->transparency-
+#. type->options
+msgid "With shadow"
+msgstr "Mit Schatten"
+
+#. transparent-panels@germanfr->settings-schema.json->opacify->description
+msgid "Remove theme transparency (experimental)"
+msgstr ""
+
+#. transparent-panels@germanfr->settings-schema.json->opacify->tooltip
+msgid "Remove panel transparency when it's not transparent."
+msgstr ""
+
+#. transparent-panels@germanfr->metadata.json->name
+msgid "Transparent panels"
+msgstr "Transparente Leisten"
+
+#. transparent-panels@germanfr->metadata.json->description
+msgid "Transparentize your panels when there are no any maximized windows"
+msgstr "Macht Leisten durchsichtig, wenn Fenster nicht maximiert sind"
