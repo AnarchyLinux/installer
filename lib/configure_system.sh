@@ -89,29 +89,33 @@ configure_system() {
         echo "$(date -u "+%F %H:%M") : Configure system for nvme" >> "$log"
     fi
 
-    if "$crypted" && "$UEFI" ; then
-        echo "/dev/$BOOT              $esp_mnt        vfat         rw,relatime,fmask=0022,dmask=0022,codepage=437,iocharset=iso8859-1,shortname=mixed,errors=remount-ro        0       2" > "$ARCH"/etc/fstab
-    elif "$crypted" ; then
-        echo "/dev/$BOOT              /boot           ext4        defaults        0       2" > "$ARCH"/etc/fstab
-    fi
-
-    if "$crypted" ; then
-        (echo "/dev/mapper/root        /               $FS         defaults        0       1" >> "$ARCH"/etc/fstab
-        echo "/dev/mapper/tmp         /tmp            tmpfs        defaults        0       0" >> "$ARCH"/etc/fstab
-        echo "tmp	       /dev/lvm/tmp	       /dev/urandom	tmp,cipher=aes-xts-plain64,size=256" >> "$ARCH"/etc/crypttab
-        if "$SWAP" ; then
-            echo "/dev/mapper/swap     none            swap          sw                    0       0" >> "$ARCH"/etc/fstab
-            echo "swap	/dev/lvm/swap	/dev/urandom	swap,cipher=aes-xts-plain64,size=256" >> "$ARCH"/etc/crypttab
+    if ! "$btrfs_crypt" ; then
+        if "$crypted" && "$UEFI" ; then
+            echo "/dev/$BOOT              $esp_mnt        vfat         rw,relatime,fmask=0022,dmask=0022,codepage=437,iocharset=iso8859-1,shortname=mixed,errors=remount-ro        0       2" > "$ARCH"/etc/fstab
+        elif "$crypted" ; then
+            echo "/dev/$BOOT              /boot           ext4        defaults        0       2" > "$ARCH"/etc/fstab
         fi
-        sed -i 's/HOOKS=.*/HOOKS="base udev autodetect keyboard keymap consolefont modconf block encrypt lvm2 filesystems fsck"/' "$ARCH"/etc/mkinitcpio.conf
-        arch-chroot "$ARCH" mkinitcpio -p "$kernel") &> /dev/null &
-        pid=$! pri=1 msg="\n$encrypt_load1 \n\n \Z1> \Z2mkinitcpio -p $kernel\Zn" load
-        echo "$(date -u "+%F %H:%M") : Configure system for encryption" >> "$log"
+
+        if "$crypted" ; then
+            (echo "/dev/mapper/root        /               $FS         defaults        0       1" >> "$ARCH"/etc/fstab
+            echo "/dev/mapper/tmp         /tmp            tmpfs        defaults        0       0" >> "$ARCH"/etc/fstab
+            echo "tmp	       /dev/lvm/tmp	       /dev/urandom	tmp,cipher=aes-xts-plain64,size=256" >> "$ARCH"/etc/crypttab
+            if "$SWAP" ; then
+                echo "/dev/mapper/swap     none            swap          sw                    0       0" >> "$ARCH"/etc/fstab
+                echo "swap	/dev/lvm/swap	/dev/urandom	swap,cipher=aes-xts-plain64,size=256" >> "$ARCH"/etc/crypttab
+            fi
+            sed -i 's/HOOKS=.*/HOOKS="base udev autodetect keyboard keymap consolefont modconf block encrypt lvm2 filesystems fsck"/' "$ARCH"/etc/mkinitcpio.conf
+            arch-chroot "$ARCH" mkinitcpio -p "$kernel") &> /dev/null &
+            pid=$! pri=1 msg="\n$encrypt_load1 \n\n \Z1> \Z2mkinitcpio -p $kernel\Zn" load
+            echo "$(date -u "+%F %H:%M") : Configure system for encryption" >> "$log"
+        else
+            (sed -i 's/HOOKS=.*/HOOKS="base udev autodetect keyboard keymap consolefont modconf block lvm2 filesystems fsck"/' "$ARCH"/etc/mkinitcpio.conf
+            arch-chroot "$ARCH" mkinitcpio -p "$kernel") &> /dev/null &
+            pid=$! pri=1 msg="\n$kernel_config_load \n\n \Z1> \Z2mkinitcpio -p $kernel\Zn" load
+            echo "$(date -u "+%F %H:%M") : Configure system with the default mkinitcpio hooks" >> "$log"
+        fi
     else
-                (sed -i 's/HOOKS=.*/HOOKS="base udev autodetect keyboard keymap consolefont modconf block lvm2 filesystems fsck"/' "$ARCH"/etc/mkinitcpio.conf
-                arch-chroot "$ARCH" mkinitcpio -p "$kernel") &> /dev/null &
-                pid=$! pri=1 msg="\n$kernel_config_load \n\n \Z1> \Z2mkinitcpio -p $kernel\Zn" load
-                echo "$(date -u "+%F %H:%M") : Configure system with the default mkinitcpio hooks" >> "$log"
+        sed -i 's/HOOKS=.*/HOOKS="base udev autodetect keyboard keymap consolefont modconf block encrypt btrfs filesystems fsck"/' "$ARCH"/etc/mkinitcpio.conf
     fi
 
     (sed -i -e "s/#$LOCALE/$LOCALE/" "$ARCH"/etc/locale.gen
