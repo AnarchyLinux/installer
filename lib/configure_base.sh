@@ -401,7 +401,7 @@ add_software() {
                                 fi
                             else
                                 software+=" steam-native-runtime ttf-liberation"
-                                tac /etc/pacman.conf | sed -e '0,/#\[multilib\]/ s/#\[multilib\]/\[multilib\]/;0,/#Include/ s/#Include/Include/' | tac > /etc/pacman.conf.bak
+                                cat /etc/pacman.conf | sed -e "/\[multilib\]/,/Include/"'s/^#//' | cat > /etc/pacman.conf.bak
                                 cp /etc/pacman.conf.bak /etc/pacman.conf
 
                                 if (<<<"$GPU" grep "nvidia" &>/dev/null); then
