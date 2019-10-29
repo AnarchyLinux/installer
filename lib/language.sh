@@ -18,26 +18,29 @@
 language() {
 
     echo "$(date -u "+%F %H:%M") : Start anarchy installer" > "${log}"
-    op_title=" -| Language Select |- "
-    ILANG=$(dialog --nocancel --menu "\nAnarchy Installer\n\n \Z2*\Zn Select your install language:" 20 60 10 \
-        "English" "-" \
-        "Bulgarian" "Български" \
-        "Dutch" "Nederlands" \
-        "French" "Français" \
-        "German" "Deutsch" \
-        "Greek" "Greek" \
-        "Hungarian" "Magyar" \
-        "Indonesian" "bahasa Indonesia" \
-        "Italian" "Italiano" \
-        "Latvian" "Latviešu" \
-        "Lithuanian" "Lietuvių" \
-        "Polish" "Polski" \
-        "Portuguese" "Português" \
-        "Portuguese-Brazilian" "Português do Brasil" \
-        "Romanian" "Română" \
-        "Russian" "Russian" \
-        "Spanish" "Español" \
-        "Swedish" "Svenska" 3>&1 1>&2 2>&3)
+
+    if [ -z $ILANG ]; then
+        op_title=" -| Language Select |- "
+        ILANG=$(dialog --nocancel --menu "\nAnarchy Installer\n\n \Z2*\Zn Select your install language:" 20 60 10 \
+            "English" "-" \
+            "Bulgarian" "Български" \
+            "Dutch" "Nederlands" \
+            "French" "Français" \
+            "German" "Deutsch" \
+            "Greek" "Greek" \
+            "Hungarian" "Magyar" \
+            "Indonesian" "bahasa Indonesia" \
+            "Italian" "Italiano" \
+            "Latvian" "Latviešu" \
+            "Lithuanian" "Lietuvių" \
+            "Polish" "Polski" \
+            "Portuguese" "Português" \
+            "Portuguese-Brazilian" "Português do Brasil" \
+            "Romanian" "Română" \
+            "Russian" "Russian" \
+            "Spanish" "Español" \
+            "Swedish" "Svenska" 3>&1 1>&2 2>&3)
+    fi
 
     case "$ILANG" in
         "English") export lang_file="${anarchy_directory}"/lang/anarchy-english.conf ;;
