@@ -56,6 +56,15 @@ variables() {
     echo "sh=$sh" >> /tmp/vars.log
     echo "shrc=$shrc" >> /tmp/vars.log
     echo "start_term=$start_term" >> /tmp/vars.log
+    echo "vfat=$vfat" >> /tmp/vars.log
+    echo "install_opt=$install_opt" >> /tmp/vars.log
+    echo "install_menu=$install_menu" >> /tmp/vars.log
+    echo "shell=$shell" >> /tmp/vars.log
+    echo "net_util=$net_util" >> /tmp/vars.log
+    echo "wifi=$wifi" >> /tmp/vars.log
+    echo "rp-pppoe=$rp-pppoe" >> /tmp/vars.log
+    echo "os-prober=$os-prober" >> /tmp/vars.log
+    echo "kernel=$kernel" >> /tmp/vars.log
 }
 
 
