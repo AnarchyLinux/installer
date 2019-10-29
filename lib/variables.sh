@@ -14,7 +14,7 @@ variables() {
     echo "LAPTOP=$LAPTOP" >> /tmp/vars.log
     echo "LOCALE=$LOCALE" >> /tmp/vars.log
     echo "NVIDIA=$NVIDIA" >> /tmp/vars.log
-    echo "PART=$PART" >> /tmp/vars.log
+    echo "PART=\"$PART\"" >> /tmp/vars.log
     echo "ROOT=$ROOT" >> /tmp/vars.log
     echo "SUBZONE=$SUBZONE" >> /tmp/vars.log
     echo "SWAP=$SWAP" >> /tmp/vars.log
