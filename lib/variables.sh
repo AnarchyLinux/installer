@@ -12,6 +12,7 @@ variables() {
     echo "ILAN=$ILAN" >> /tmp/vars.log
     echo "LANG=$LANG" >> /tmp/vars.log
     echo "LAPTOP=$LAPTOP" >> /tmp/vars.log
+    echo "LOCALE=$LOCALE" >> /tmp/vars.log
     echo "NVIDIA=$NVIDIA" >> /tmp/vars.log
     echo "PART=$PART" >> /tmp/vars.log
     echo "ROOT=$ROOT" >> /tmp/vars.log
