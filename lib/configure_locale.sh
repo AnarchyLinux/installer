@@ -17,34 +17,36 @@
 
 set_keys() {
 
-    op_title="$key_op_msg"
-    while (true)
-      do
-        keyboard=$(dialog --nocancel --ok-button "$ok" --menu "$keys_msg" 18 60 10 \
-        "us" "United States" \
-        "de" "German" \
-        "el" "Greek" \
-        "hu" "Hungarian" \
-        "es" "Spanish" \
-        "fr" "French" \
-        "it" "Italian" \
-        "pt-latin9" "Portugal" \
-        "ro" "Romanian" \
-        "ru" "Russian" \
-        "sv" "Swedish" \
-        "uk" "United Kingdom" \
-        "$other"       "$other-keymaps"		 3>&1 1>&2 2>&3)
-        source "$lang_file"
+    if [ -z $keyboard ]; then
+        op_title="$key_op_msg"
+        while (true)
+        do
+            keyboard=$(dialog --nocancel --ok-button "$ok" --menu "$keys_msg" 18 60 10 \
+            "us" "United States" \
+            "de" "German" \
+            "el" "Greek" \
+            "hu" "Hungarian" \
+            "es" "Spanish" \
+            "fr" "French" \
+            "it" "Italian" \
+            "pt-latin9" "Portugal" \
+            "ro" "Romanian" \
+            "ru" "Russian" \
+            "sv" "Swedish" \
+            "uk" "United Kingdom" \
+            "$other"       "$other-keymaps"		 3>&1 1>&2 2>&3)
+            source "$lang_file"
 
-        if [ "$keyboard" = "$other" ]; then
-            keyboard=$(dialog --ok-button "$ok" --cancel-button "$cancel" --menu "$keys_msg" 19 60 10  $key_maps 3>&1 1>&2 2>&3)
-            if [ "$?" -eq "0" ]; then
+            if [ "$keyboard" = "$other" ]; then
+                keyboard=$(dialog --ok-button "$ok" --cancel-button "$cancel" --menu "$keys_msg" 19 60 10  $key_maps 3>&1 1>&2 2>&3)
+                if [ "$?" -eq "0" ]; then
+                    break
+                fi
+            else
                 break
             fi
-        else
-            break
-        fi
-    done
+        done
+    fi
 
     localectl set-keymap "$keyboard"
     echo "$(date -u "+%F %H:%M") : Set keymap to: $keyboard" >> "$log"
