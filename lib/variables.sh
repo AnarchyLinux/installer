@@ -11,7 +11,7 @@ variables() {
     echo "GPT=$GPT" >> /tmp/vars.log
     echo "GPU=$GPU" >> /tmp/vars.log
     echo "HOSTNAME=$HOSTNAME" >> /tmp/vars.log
-    echo "ILAN=$ILAN" >> /tmp/vars.log
+    echo "ILANG=$ILANG" >> /tmp/vars.log
     echo "LANG=$LANG" >> /tmp/vars.log
     echo "LAPTOP=$LAPTOP" >> /tmp/vars.log
     echo "LOCALE=$LOCALE" >> /tmp/vars.log
