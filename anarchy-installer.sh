@@ -77,6 +77,7 @@ main() {
     configure_system
     add_user
     set -o posix; set >> /tmp/var-post.conf ; set +o posix
+    variables
     reboot_system
 }
 
