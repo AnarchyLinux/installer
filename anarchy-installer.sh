@@ -55,6 +55,8 @@ init() {
 
     # shellcheck source=/etc/anarchy.conf
     source "${anarchy_config}"
+    source /tmp/vars.log
+        
     language
     # shellcheck source=/usr/share/anarchy/lang
     source "${lang_file}" # /lib/language.sh:43-60

@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 
 variables() {
+    echo "#!/usr/bin/env bash" > /tmp/vars.log
+    
     echo "BOOT=$BOOT" >> /tmp/vars.log
     echo "DE=$DE" >> /tmp/vars.log
     echo "DM=$DM" >> /tmp/vars.log
