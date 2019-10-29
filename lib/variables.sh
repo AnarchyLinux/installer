@@ -2,7 +2,7 @@
 
 variables() {
     echo "#!/usr/bin/env bash" > /tmp/vars.log
-    
+
     echo "BOOT=$BOOT" >> /tmp/vars.log
     echo "DE=$DE" >> /tmp/vars.log
     echo "DM=$DM" >> /tmp/vars.log
@@ -26,7 +26,7 @@ variables() {
     echo "VM=$VM" >> /tmp/vars.log
     echo "ZONE=$ZONE" >> /tmp/vars.log
     echo "base_defaults=$base_defaults" >> /tmp/vars.log
-    echo "base_install=$base_install" >> /tmp/vars.log
+    echo "base_install=\'$base_install\'" >> /tmp/vars.log
     echo "bluetooth=$bluetooth" >> /tmp/vars.log
     echo "bootloader=$bootloader" >> /tmp/vars.log
     echo "btrfs=$btrfs" >> /tmp/vars.log
