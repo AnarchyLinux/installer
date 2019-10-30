@@ -49,13 +49,13 @@ install_base() {
             echo "$(date -u "+%F %H:%M") : Begin base install" >> "$log"
 
             if [ "$kernel" == "linux" ]; then
-                base_install=(base linux $base_install)
+                base_install+=(base linux)
                 # remove later
                 echo "base_install=(${base_install[*]})" >> /tmp/debug.conf
                 declare -p base_install >> /tmp/debug.conf
                 #
             else
-                base_install="$(pacman -Sqg base linux | sed 's/^linux$//') $base_install"
+                base_install+=(base)
             fi
 
             (pacstrap "$ARCH" --overwrite $(echo "$base_install") ; echo "$?" > /tmp/ex_status) &>> "$log" &
