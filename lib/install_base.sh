@@ -20,12 +20,12 @@ install_base() {
     op_title="$install_op_msg"
     # remove later
     echo "base_install=(${base_install[*]})" >> /tmp/debug.conf
-    declare -p base_install
+    declare -p base_install >> /tmp/debug.conf
     #
     base_install=$(<<<"$base_install" tr " " "\n" | sort | uniq | tr "\n" " ")
     # remove later
     echo "base_install=(${base_install[*]})" >> /tmp/debug.conf
-    declare -p base_install
+    declare -p base_install >> /tmp/debug.conf
     #
     pacman -Sy --print-format='%s' $(echo "$base_install") | awk '{s+=$1} END {print s/1024/1024}' >/tmp/size &
     pid=$! pri=0.6 msg="\n$pacman_load \n\n \Z1> \Z2pacman -Sy\Zn" load
@@ -52,7 +52,7 @@ install_base() {
                 base_install="$(pacman -Sqg base linux) $base_install"
                 # remove later
                 echo "base_install=(${base_install[*]})" >> /tmp/debug.conf
-                declare -p base_install
+                declare -p base_install >> /tmp/debug.conf
                 #
             else
                 base_install="$(pacman -Sqg base linux | sed 's/^linux$//') $base_install"
