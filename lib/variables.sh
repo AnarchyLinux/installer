@@ -25,8 +25,8 @@ variables() {
     echo "USER=$USER" >> /tmp/vars.log
     echo "VM=$VM" >> /tmp/vars.log
     echo "ZONE=$ZONE" >> /tmp/vars.log
-    echo "base_defaults=\"$base_defaults\"" >> /tmp/vars.log
-    echo "base_install=\"$base_install\"" >> /tmp/vars.log
+    echo "base_defaults=${base_defaults[*]}" >> /tmp/vars.log
+    echo "base_install=${base_install[*]}" >> /tmp/vars.log
     echo "bluetooth=$bluetooth" >> /tmp/vars.log
     echo "bootloader=$bootloader" >> /tmp/vars.log
     echo "btrfs=$btrfs" >> /tmp/vars.log
@@ -48,7 +48,7 @@ variables() {
     echo "enable_ssh=$enable_ssh" >> /tmp/vars.log
     echo "frmt=$frmt" >> /tmp/vars.log
     echo "full_user=$full_user" >> /tmp/vars.log
-    echo "gtk3_var=\"$gtk3_var\"" >> /tmp/vars.log
+    echo "gtk3_var=${gtk3_var[*]}" >> /tmp/vars.log
     echo "hostname=$hostname" >> /tmp/vars.log
     echo "interface=$interface" >> /tmp/vars.log
     echo "kernel=$kernel" >> /tmp/vars.log
