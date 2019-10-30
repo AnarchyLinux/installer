@@ -22,7 +22,7 @@ install_base() {
     echo "base_install=(${base_install[*]})" >> /tmp/debug.conf
     declare -p base_install >> /tmp/debug.conf
     #
-    base_install=$(<<<"$base_install" tr " " "\n" | sort | uniq | tr "\n" " ")
+    base_install=($(<<<"$base_install" tr " " "\n" | sort -u | tr "\n" " "))
     # remove later
     echo "base_install=(${base_install[*]})" >> /tmp/debug.conf
     declare -p base_install >> /tmp/debug.conf
@@ -49,7 +49,7 @@ install_base() {
             echo "$(date -u "+%F %H:%M") : Begin base install" >> "$log"
 
             if [ "$kernel" == "linux" ]; then
-                base_install="$(pacman -Sqg base linux) $base_install"
+                base_install=(base linux $base_install)
                 # remove later
                 echo "base_install=(${base_install[*]})" >> /tmp/debug.conf
                 declare -p base_install >> /tmp/debug.conf
