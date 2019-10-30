@@ -19,12 +19,12 @@ install_base() {
 
     op_title="$install_op_msg"
     # remove later
-    echo "base_install=(${base_install[*]})" >> /tmp/debug.conf
+    echo "base_install=(${base_install[@]})" >> /tmp/debug.conf
     declare -p base_install >> /tmp/debug.conf
     #
-    base_install=($(<<<"$base_install" tr " " "\n" | sort -u | tr "\n" " "))
+    base_install=($(echo "${base_install[@]}" tr " " "\n" | sort -u | tr "\n" " "))
     # remove later
-    echo "base_install=(${base_install[*]})" >> /tmp/debug.conf
+    echo "base_install=(${base_install[@]})" >> /tmp/debug.conf
     declare -p base_install >> /tmp/debug.conf
     #
     pacman -Sy --print-format='%s' $(echo "$base_install") | awk '{s+=$1} END {print s/1024/1024}' >/tmp/size &
@@ -51,7 +51,7 @@ install_base() {
             if [ "$kernel" == "linux" ]; then
                 base_install+=(base linux)
                 # remove later
-                echo "base_install=(${base_install[*]})" >> /tmp/debug.conf
+                echo "base_install=(${base_install[@]})" >> /tmp/debug.conf
                 declare -p base_install >> /tmp/debug.conf
                 #
             else
