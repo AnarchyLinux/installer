@@ -4,12 +4,12 @@ variables() {
     echo "#!/usr/bin/env bash" > /tmp/variables.conf
 
     echo "BOOT=$BOOT" >> /tmp/variables.conf
-    echo "DE=(${DE[*]})" >> /tmp/variables.conf
+    echo "DE=(${DE[@]})" >> /tmp/variables.conf
     echo "DM=$DM" >> /tmp/variables.conf
     echo "DRIVE=$DRIVE" >> /tmp/variables.conf
     echo "FS=$FS" >> /tmp/variables.conf
     echo "GPT=$GPT" >> /tmp/variables.conf
-    echo "GPU=(${GPU[*]})" >> /tmp/variables.conf
+    echo "GPU=(${GPU[@]})" >> /tmp/variables.conf
     echo "HOSTNAME=$HOSTNAME" >> /tmp/variables.conf
     echo "ILANG=$ILANG" >> /tmp/variables.conf
     echo "LANG=$LANG" >> /tmp/variables.conf
@@ -25,8 +25,8 @@ variables() {
     echo "USER=$USER" >> /tmp/variables.conf
     echo "VM=$VM" >> /tmp/variables.conf
     echo "ZONE=$ZONE" >> /tmp/variables.conf
-    echo "base_defaults=(${base_defaults[*]})" >> /tmp/variables.conf
-    echo "base_install=(${base_install[*]})" >> /tmp/variables.conf
+    echo "base_defaults=(${base_defaults[@]})" >> /tmp/variables.conf
+    echo "base_install=(${base_install[@]})" >> /tmp/variables.conf
     echo "bluetooth=$bluetooth" >> /tmp/variables.conf
     echo "bootloader=$bootloader" >> /tmp/variables.conf
     echo "btrfs=$btrfs" >> /tmp/variables.conf
@@ -60,7 +60,7 @@ variables() {
     echo "vfat=$vfat" >> /tmp/variables.conf
     echo "install_opt=$install_opt" >> /tmp/variables.conf
     echo "install_menu=$install_menu" >> /tmp/variables.conf
-    echo "shell=(${shell[*]})" >> /tmp/variables.conf
+    echo "shell=(${shell[@]})" >> /tmp/variables.conf
     echo "net_util=$net_util" >> /tmp/variables.conf
     echo "wifi=$wifi" >> /tmp/variables.conf
     # echo "rp-pppoe=${rp-pppoe}" >> /tmp/variables.conf
