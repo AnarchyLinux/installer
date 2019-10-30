@@ -22,7 +22,7 @@ install_base() {
     echo "base_install=(${base_install[@]})" >> /tmp/debug.conf
     declare -p base_install >> /tmp/debug.conf
     #
-    base_install=($(echo "${base_install[@]}" tr " " "\n" | sort -u | tr "\n" " "))
+    base_install=($(echo "${base_install[@]}" | tr " " "\n" | sort -u | tr "\n" " "))
     # remove later
     echo "base_install=(${base_install[@]})" >> /tmp/debug.conf
     declare -p base_install >> /tmp/debug.conf
