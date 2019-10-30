@@ -26,7 +26,7 @@ variables() {
     echo "VM=$VM" >> /tmp/variables.conf
     echo "ZONE=$ZONE" >> /tmp/variables.conf
     echo "base_defaults=\"$base_defaults\"" >> /tmp/variables.conf
-    echo "base_install=\"$base_install\"" >> /tmp/variables.conf
+    echo "base_install=\"${base_install[@]}\"" >> /tmp/variables.conf
     echo "bluetooth=$bluetooth" >> /tmp/variables.conf
     echo "bootloader=$bootloader" >> /tmp/variables.conf
     echo "btrfs=$btrfs" >> /tmp/variables.conf
