@@ -64,7 +64,6 @@ init() {
 }
 
 main() {
-    set -o posix; set > /tmp/var-pre.conf ; set +o posix
     set_keys
     update_mirrors
     check_connection
@@ -78,7 +77,6 @@ main() {
     install_base
     configure_system
     add_user
-    set -o posix; set > /tmp/var-post.conf ; set +o posix
     variables
     reboot_system
 }
