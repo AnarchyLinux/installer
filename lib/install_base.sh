@@ -27,17 +27,17 @@ install_base() {
     echo "base_install=(${base_install[@]})" >> /tmp/debug.conf
     declare -p base_install >> /tmp/debug.conf
     #
-    pacman -Sy --print-format='%s' $(echo "$base_install") | awk '{s+=$1} END {print s/1024/1024}' >/tmp/size &
+    pacman -Sy --print-format='%s' $(echo "${base_install[@]}") | awk '{s+=$1} END {print s/1024/1024}' >/tmp/size &
     pid=$! pri=0.6 msg="\n$pacman_load \n\n \Z1> \Z2pacman -Sy\Zn" load
     download_size=$(</tmp/size) ; rm /tmp/size
     export software_size=$(<<<"$download_size" sed 's/\(\..\)\(.*\)/\1 MiB/')
     cal_rate
 
-    if [ $(wc -w <<<"$base_install") -gt "30" ]; then
+    if [ $(wc -w <<<"${base_install[@]}") -gt "30" ]; then
         height="24"
-    elif [ $(wc -w <<<"$base_install") -gt "25" ]; then
+    elif [ $(wc -w <<<"${base_install[@]}") -gt "25" ]; then
         height="20"
-    elif [ $(wc -w <<<"$base_install") -gt "20" ]; then
+    elif [ $(wc -w <<<"${base_install[@]}") -gt "20" ]; then
         height="18"
     else
         height="16"
