@@ -51,14 +51,7 @@ Terminal output
 <!-- Please check off as many of these as possible prior to submitting a bug report (if you actually did them).
 Put an 'x' between the square brackets to tick the field. -->
 
-* [ ] I've checked for any existing issues similar to mine and tried the solutions provided there
-* [ ] I've checked online for any existing fixes to my issue (especially hardware-specific issues)
-and have not found a solution to the problem
-* [ ] I've tried taking as much info as possible (logs, screenshots, ...) and have added them above
-* [ ] I've removed unnecessary/unneeded sections of the bug submission template
-* [ ] I've updated Anarchy (`anarchy -u`) before starting the installer
-* [ ] I've re-downloaded the latest release of Anarchy and tried recreating the problem
-* [ ] I've checked the Arch Forums for fixes to my problem
-
-*If you don't do all of the above (or at least the stuff applicable for the specific issue),
-your bug report will not be considered a priority and will possibly be closed.**
+* [ ] I've read the [Reporting Issues Wiki Page](https://github.com/AnarchyLinux/installer/wiki/Reporting-issues)
+* [ ] I've removed unnecessary sections of the bug submission template
+* [ ] I understand that if I don't do everything listed in the checkmarks above my issue won't be considered
+a priority and may get closed at any time without warning, because I didn't take the time to properly submit my bug report
