@@ -53,5 +53,4 @@ Put an 'x' between the square brackets to tick the field. -->
 
 * [ ] I've read the [Reporting Issues Wiki Page](https://github.com/AnarchyLinux/installer/wiki/Reporting-issues)
 * [ ] I've removed unnecessary sections of the bug submission template
-* [ ] I understand that if I don't do everything listed in the checkmarks above my issue won't be considered
-a priority and may get closed at any time without warning, because I didn't take the time to properly submit my bug report
+* [ ] I understand that if I don't do everything listed in the checkmarks above my issue won't be considered a priority and may get closed at any time without warning, because I didn't take the time to properly submit my bug report
