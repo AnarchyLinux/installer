@@ -53,7 +53,7 @@ language() {
         "Lithuanian") export lang_file="${anarchy_directory}"/lang/anarchy-lithuanian.conf lib=lt bro=lt ;;
         "Polish") export lang_file="${anarchy_directory}"/lang/anarchy-polish.conf lib=pl bro=pl ;;
         "Portuguese") export lang_file="${anarchy_directory}"/lang/anarchy-portuguese.conf lib=pt bro=pt-pt ;;
-        "Portuguese-Brazilian") export lang_file="${anarchy_directory}"/lang/anarchy-portuguese-br.conf lib=pt-BR bro=pt-br ;;
+        "Portuguese-Brazilian") export lang_file="${anarchy_directory}"/lang/anarchy-portuguese-br.conf lib=pt-br bro=pt-br ;;
         "Romanian") export lang_file="${anarchy_directory}"/lang/anarchy-romanian.conf lib=ro bro=ro ;;
         "Russian") export lang_file="${anarchy_directory}"/lang/anarchy-russian.conf lib=ru bro=ru ;;
         "Spanish") export lang_file="${anarchy_directory}"/lang/anarchy-spanish.conf lib=es bro=es-es ;;
