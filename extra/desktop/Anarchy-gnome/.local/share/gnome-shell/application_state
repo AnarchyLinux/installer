@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<application-state>
+  <context id="">
+    <application id="gnome-control-center.desktop" open-window-count="0" score="11" last-seen="1515005592"/>
+    <application id="pamac-manager.desktop" open-window-count="0" score="1" last-seen="1515020405"/>
+    <application id="audacious.desktop" open-window-count="0" score="2" last-seen="1515020064"/>
+    <application id="terminator.desktop" open-window-count="0" score="79" last-seen="1515020425"/>
+    <application id="org.gnome.Music.desktop" open-window-count="0" score="0" last-seen="1515019668"/>
+    <application id="vlc.desktop" open-window-count="0" score="2" last-seen="1515020375"/>
+    <application id="org.gnome.Lollypop.desktop" open-window-count="0" score="2" last-seen="1515019727"/>
+    <application id="pamac-updater.desktop" open-window-count="0" score="0" last-seen="1515018815"/>
+    <application id="org.pantheon.noise.desktop" open-window-count="0" score="17" last-seen="1515020291"/>
+    <application id="org.gnome.Totem.desktop" open-window-count="0" score="0" last-seen="1515005604"/>
+    <application id="lxmusic.desktop" open-window-count="0" score="17" last-seen="1515020189"/>
+    <application id="deadbeef.desktop" open-window-count="0" score="2" last-seen="1515020183"/>
+  </context>
+</application-state>

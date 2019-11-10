@@ -1,0 +1,17 @@
+UpdateInterval=0
+TimeScale=0
+Size=64
+Mode=0
+Frame=0
+Border=0
+Bars=1
+TrackedCore=0
+Command=xfce4-taskmanager
+InTerminal=0
+StartupNotification=1
+ColorMode=0
+Foreground1=#097b9541097b
+Foreground2=#ffff00000000
+Foreground3=#00000000ffff
+Background=#1c1c23232b2b
+

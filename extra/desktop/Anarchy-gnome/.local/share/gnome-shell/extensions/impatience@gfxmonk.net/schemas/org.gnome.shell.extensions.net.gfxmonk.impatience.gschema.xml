@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemalist>
+	<schema id="org.gnome.shell.extensions.net.gfxmonk.impatience" path="/org/gnome/shell/extensions/net/gfxmonk/impatience/">
+		<key type="d" name="speed-factor">
+			<default>0.75</default>
+			<summary>speed factor</summary>
+			<description/>
+		</key>
+	</schema>
+</schemalist>

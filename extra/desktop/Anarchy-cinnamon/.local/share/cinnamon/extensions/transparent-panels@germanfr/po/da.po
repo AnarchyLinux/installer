@@ -1,0 +1,110 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2018-04-28 20:37+0200\n"
+"PO-Revision-Date: \n"
+"Last-Translator: Alan Mortensen <alanmortensen.am@gmail.com>\n"
+"Language-Team: \n"
+"Language: da\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 2.0.6\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: extension.js:166
+#, javascript-format
+msgid "%s enabled"
+msgstr "%s aktiveret"
+
+#: extension.js:167
+msgid "Open the extension settings and customize your panels"
+msgstr "Åbn udvidelsens indstillinger og tilpas dine paneler"
+
+#: extension.js:170
+msgid "Open settings"
+msgstr "Åbn indstillinger"
+
+#. settings-schema.json->section-general->description
+msgid "General"
+msgstr "Generel"
+
+#. settings-schema.json->transparency-type->description
+msgid "Type of transparency"
+msgstr "Gennemsigtighedens art"
+
+#. settings-schema.json->transparency-type->options
+msgid "With shadow"
+msgstr "Med skygge"
+
+#. settings-schema.json->transparency-type->options
+msgid "Fully transparent"
+msgstr "Helt gennemsigtig"
+
+#. settings-schema.json->transparency-type->options
+msgid "Semi-transparent"
+msgstr "Halvgennemsigtig"
+
+#. settings-schema.json->transparency-type->tooltip
+msgid "Choose the type of transparency you want."
+msgstr "Vælg den type gennemsigtighed, du ønsker."
+
+#. settings-schema.json->theme-defined->description
+msgid "Use current theme styles"
+msgstr "Brug det nuværende temas stil"
+
+#. settings-schema.json->theme-defined->tooltip
+msgid ""
+"Only for supported themes. Let the theme style the panels instead of using "
+"the extension presets. Use this in case the panels transparency is "
+"icorrectly set."
+msgstr ""
+"Kun til understøttede temaer. Lad temaet bestemme panelernes stil i stedet "
+"for at bruge udvidelsens forudindstillinger. Brug denne, hvis panelernes "
+"gennemsigtighed er sat forkert."
+
+#. settings-schema.json->opacify->description
+msgid "Remove theme transparency (experimental)"
+msgstr "Fjern temaets gennemsigtighed (eksperimentel)"
+
+#. settings-schema.json->opacify->tooltip
+msgid "Remove panel transparency when it's not transparent."
+msgstr "Fjern panelets gennemsigtighed, når det ikke er gennemsigtigt."
+
+#. settings-schema.json->section-filters->description
+msgid "Filter panels"
+msgstr "Filtrér paneler"
+
+#. settings-schema.json->filters-description->description
+msgid "Select the panels that will be affected by this extension."
+msgstr "Vælg de paneler, som vil blive påvirket af denne udvidelse."
+
+#. settings-schema.json->panel-top->description
+msgid "Top panel"
+msgstr "Øverste panel"
+
+#. settings-schema.json->panel-right->description
+msgid "Right panel"
+msgstr "Højre panel"
+
+#. settings-schema.json->panel-bottom->description
+msgid "Bottom panel"
+msgstr "Nedre panel"
+
+#. settings-schema.json->panel-left->description
+msgid "Left panel"
+msgstr "Venstre panel"
+
+#. metadata.json->name
+msgid "Transparent panels"
+msgstr "Gennemsigtige paneler"
+
+#. metadata.json->description
+msgid "Transparentize your panels when there are no any maximized windows"
+msgstr ""
+"Gør dine paneler gennemsigtige, når der ikke er nogen maksimerede vinduer"
+
+#~ msgid "Defined by theme"
+#~ msgstr "Defineret af tema"

@@ -1,0 +1,71 @@
+{
+	"section-general" : {
+		"type" : "section",
+		"description" : "General"
+	},
+
+	"transparency-type" : {
+		"type" : "combobox",
+		"default" : "panel-transparent-with-shadow",
+		"description" : "Type of transparency",
+		"options" : {
+			"With shadow" : "panel-transparent-with-shadow",
+			"Fully transparent" : "panel-transparent",
+			"Semi-transparent" : "panel-semi-transparent"
+		},
+		"tooltip" : "Choose the type of transparency you want."
+	},
+
+	"theme-defined" : {
+		"type" : "switch",
+		"default" : false,
+		"description" : "Use current theme styles",
+		"tooltip" : "Only for supported themes. Let the theme style the panels instead of using the extension presets. Use this in case the panels transparency is icorrectly set."
+	},
+
+	"opacify" : {
+		"type" : "switch",
+		"default" : false,
+		"description" : "Remove theme transparency (experimental)",
+		"tooltip" : "Remove panel transparency when it's not transparent."
+	},
+
+	"section-filters" : {
+		"type" : "section",
+		"description" : "Filter panels"
+	},
+
+	"filters-description" : {
+		"type" : "label",
+		"description" : "Select the panels that will be affected by this extension."
+	},
+
+	"panel-top" : {
+		"type" : "switch",
+		"default" : true,
+		"description" : "Top panel"
+	},
+
+	"panel-right" : {
+		"type" : "switch",
+		"default" : true,
+		"description" : "Right panel"
+	},
+
+	"panel-bottom" : {
+		"type" : "switch",
+		"default" : true,
+		"description" : "Bottom panel"
+	},
+
+	"panel-left" : {
+		"type" : "switch",
+		"default" : true,
+		"description" : "Left panel"
+	},
+
+	"first-launch" : {
+		"type" : "generic",
+		"default" : true
+	}
+}

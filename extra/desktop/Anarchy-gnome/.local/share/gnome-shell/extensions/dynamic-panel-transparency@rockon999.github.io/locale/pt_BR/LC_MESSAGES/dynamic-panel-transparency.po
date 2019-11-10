@@ -1,0 +1,247 @@
+# Dynamic Panel Transparency Translation File
+# Copyright (c) 2017
+# This file is distributed under the same license as the dynamic-panel-transparency package.
+#
+# Evan Welsh <contact@evanwelsh.com>, 2017.
+# Fábio Nogueira <fnogueira@gnome.org>, 2016.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2017-09-29 15:41-0400\n"
+"PO-Revision-Date: 2016-09-29 15:09-0300\n"
+"Last-Translator: Fábio Nogueira <fnogueira@gnome.org>\n"
+"Language-Team: Evan Welsh <contact@evanwelsh.com>\n"
+"Language: pt_BR\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 1.8.9\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+#: prefs.js/preferences/main.js:111
+msgid "default"
+msgstr "padrão"
+
+#: prefs.js/preferences/main.js:499 prefs.js/ui/prefs.ui:1328
+msgid "App Tweaks"
+msgstr "Aplicativo de ajustes"
+
+#: prefs.js/preferences/main.js:734
+msgid "Add a Custom WM_CLASS"
+msgstr "Adicionar uma WM_CLASS customizada"
+
+#: prefs.js/ui/prefs.ui:11
+msgid "Classy transparency for your panel."
+msgstr "Transparência elegante para o seu painel."
+
+#: prefs.js/ui/prefs.ui:13
+msgid "Website"
+msgstr "Site"
+
+#: prefs.js/ui/prefs.ui:107
+msgid "Shell Restart Required."
+msgstr "É necessário reiniciar o shell."
+
+#. Meant to ask the user if they would like to restart right now or later in a yes/no format.
+#: prefs.js/ui/prefs.ui:108
+msgid ""
+"A shell restart is required to view some of your changes. Do you want to "
+"restart now?"
+msgstr ""
+"É necessário reiniciar o shell para visualizar algumas de suas alterações. "
+"Gostaria de reiniciar agora?"
+
+#. How long the transition will take.
+#: prefs.js/ui/prefs.ui:188
+msgid "Transition Speed"
+msgstr "Velocidade de transição"
+
+#: prefs.js/ui/prefs.ui:218 prefs.js/ui/prefs.ui:246
+msgid "Overrides 'gtk-enable-animations'."
+msgstr "Substitui o 'gtk-enable-animations'."
+
+#. Whether the panel transitions should happen with the overview transitions or after.
+#: prefs.js/ui/prefs.ui:231
+msgid "Transition with the overview"
+msgstr ""
+
+#. Whether the panel should transition when a window touches it or only when a window is actually maximized.
+#: prefs.js/ui/prefs.ui:259
+msgid "Transition when windows touch the panel"
+msgstr ""
+
+#: prefs.js/ui/prefs.ui:276
+msgid "Transitions"
+msgstr "Transição"
+
+#. Allows the user to set their own text color.
+#: prefs.js/ui/prefs.ui:333
+msgid "Enable custom text coloring"
+msgstr "Ativar coloração customizada do texto"
+
+#. The main color to be used.
+#: prefs.js/ui/prefs.ui:360 prefs.js/ui/prefs.ui:375
+msgid "Primary Color"
+msgstr "Cor primária"
+
+#. Another color for special functions.
+#: prefs.js/ui/prefs.ui:389 prefs.js/ui/prefs.ui:403
+msgid "Secondary Color"
+msgstr "Cor secundária"
+
+#: prefs.js/ui/prefs.ui:423
+msgid "Use when a window is maximized"
+msgstr "Utilizar quando um janela for maximizada"
+
+#: prefs.js/ui/prefs.ui:446
+msgid "Use when the overview is visible"
+msgstr "Utilizar quando a visão geral estiver visível"
+
+#: prefs.js/ui/prefs.ui:514
+msgid "Enable text shadowing"
+msgstr "Habilitar sombras ao texto"
+
+#: prefs.js/ui/prefs.ui:554 prefs.js/ui/prefs.ui:615 prefs.js/ui/prefs.ui:753
+#: prefs.js/ui/prefs.ui:814
+msgid "Shadow Color"
+msgstr "Cor da sombra"
+
+#: prefs.js/ui/prefs.ui:628 prefs.js/ui/prefs.ui:827
+msgid "Radius"
+msgstr "Raio"
+
+#: prefs.js/ui/prefs.ui:641 prefs.js/ui/prefs.ui:840
+msgid "Horizontal Offset"
+msgstr "Deslocamento horizontal"
+
+#: prefs.js/ui/prefs.ui:654 prefs.js/ui/prefs.ui:853
+msgid "Vertical Offset"
+msgstr "Deslocamento vertical"
+
+#: prefs.js/ui/prefs.ui:713
+msgid "Enable icon shadowing"
+msgstr "Habilitar sombreamento do ícone"
+
+#: prefs.js/ui/prefs.ui:899
+msgid "Foreground"
+msgstr "Primeiro plano"
+
+#. Opacity of the panel when no window is maximized.
+#: prefs.js/ui/prefs.ui:961
+msgid "Unmaximized Opacity"
+msgstr "Opacidade desmaximizada"
+
+#. Opacity of the panel when a window is maximized.
+#: prefs.js/ui/prefs.ui:1008 prefs.js/ui/app-prefs.ui:117
+msgid "Maximized Opacity"
+msgstr "Opacidade máxima"
+
+#. Allows the user to set their own opacity.
+#: prefs.js/ui/prefs.ui:1030
+msgid "Enable custom opacity"
+msgstr "Habilitar opacidade customizada"
+
+#. The panel's background color.
+#: prefs.js/ui/prefs.ui:1097 prefs.js/ui/prefs.ui:1112
+#: prefs.js/ui/app-prefs.ui:91
+msgid "Panel Color"
+msgstr "Esquema de cores"
+
+#. Allows the user to set their own background color for the panel.
+#: prefs.js/ui/prefs.ui:1133
+msgid "Enable custom panel color"
+msgstr "Habilitar painel customizado de cores"
+
+#. Removes any extra styling certain themes may have. Fixes theme issues.
+#: prefs.js/ui/prefs.ui:1197
+msgid "Remove excess panel styling"
+msgstr "Retirar o excesso de estilo do painel"
+
+#: prefs.js/ui/prefs.ui:1210
+msgid "(Fixes theme incompatibilities.)"
+msgstr "(Consertar temas incompatíveis.)"
+
+#. Hides the panel corners.
+#: prefs.js/ui/prefs.ui:1238
+msgid "Hide corners"
+msgstr "Ocultar os cantos"
+
+#: prefs.js/ui/prefs.ui:1266
+msgid "Background"
+msgstr "Segundo plano"
+
+#: prefs.js/ui/prefs.ui:1368
+msgid "About"
+msgstr "Sobre"
+
+#. Adds a 'custom' app tweak. Only visible on the App Tweaks page.
+#: prefs.js/ui/prefs.ui:1396
+msgid "Advanced..."
+msgstr "Avançado..."
+
+#: prefs.js/ui/prefs.ui:1432
+msgid ""
+"A WM_CLASS is a code that identifies a window. Use this setting if the "
+"window you want custom settings for is not part of an application. You can "
+"find a window's WM_CLASS with the command 'xprop WM_CLASS'. Enter the second "
+"result from 'xprop WM_CLASS' below without quotation marks."
+msgstr ""
+"Uma WM_CLASS é um código que identiifica uma janela. Utilize esta "
+"configuração se a janela que deseja configurar de forma personalizada não "
+"for parte de uma aplicação. Você pode encontrar uma WM_CLASS da janela com o "
+"comando 'xprop WM_CLASS'. Digite o segundo resultado de 'xprop WM_CLASS' "
+"abaixo sem as aspas."
+
+#: prefs.js/ui/prefs.ui:1481
+msgid "WM_CLASS cannot be blank."
+msgstr "WM_CLASS não pode ser em branco."
+
+#: prefs.js/ui/app-prefs.ui:51
+msgid "Enable background app tweaks"
+msgstr "Habilitar o aplicativo de ajustes em segundo plano"
+
+#: prefs.js/ui/app-prefs.ui:130
+msgid "Theme Source"
+msgstr "Origem do tema"
+
+#: prefs.js/ui/app-prefs.ui:190
+msgid "Always trigger the panel."
+msgstr "Sempre acionar o painel."
+
+#~ msgid "Force animation"
+#~ msgstr "Forçar animação"
+
+#~ msgid "Transition Style"
+#~ msgstr "Estilo de transição"
+
+#~ msgid "Linear (default)"
+#~ msgstr "Linear (padrão)"
+
+#~ msgid "Sine"
+#~ msgstr "Seno"
+
+#~ msgid "Quadratic"
+#~ msgstr "Ao quadrado"
+
+#~ msgid "Cubic"
+#~ msgstr "Ao cubo"
+
+#~ msgid "Quartic"
+#~ msgstr "Quarta potência"
+
+#~ msgid "Quintic"
+#~ msgstr "Quinta potência"
+
+#~ msgid "Exponential"
+#~ msgstr "Exponencial"
+
+#~ msgid "Circle"
+#~ msgstr "Círculo"
+
+#~ msgid "Elastic"
+#~ msgstr "Elástico"
+
+#~ msgid "Bounce"
+#~ msgstr "Pulo"

@@ -1,0 +1,15 @@
+{
+    "labelinfo": {
+        "type": "combobox",
+        "description": "Display",
+        "default": "nothing",
+        "options": {
+            "Show percentage": "percentage",
+            "Show time remaining": "time",
+            "Show percentage and time remaining": "percentage_time",
+            "Hide label": "nothing"
+        },
+        "value": "nothing"
+    },
+    "__md5__": "474bbdcab8afb7e0a0aae6e895fe087d"
+}

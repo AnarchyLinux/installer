@@ -1,0 +1,13 @@
+[Desktop Entry]
+Name=Packages
+Comment=Add or remove software installed on the system
+Icon=system-software-install
+Exec=gpk-application
+Terminal=false
+Type=Application
+Categories=GNOME;GTK;System;PackageManager;
+Keywords=Sources;Repositories;Preferences;Install;Store;
+NotShowIn=KDE;
+StartupNotify=true
+X-GNOME-UsesNotifications=true
+X-XFCE-Source=file:///usr/share/applications/org.gnome.Packages.desktop

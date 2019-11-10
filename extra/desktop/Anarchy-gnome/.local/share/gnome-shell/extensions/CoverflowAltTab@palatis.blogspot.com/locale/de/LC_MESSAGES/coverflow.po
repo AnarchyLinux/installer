@@ -1,0 +1,107 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: CoverflowAltTab Gnome-Shell extension\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2013-11-08 17:40+0100\n"
+"PO-Revision-Date: 2016-05-14 17:43+0200\n"
+"Last-Translator: Jonatan Zeidler <jonatan_zeidler@hotmail.de>\n"
+"Language-Team: German <jonatan_zeidler@gmx.de>\n"
+"Language: de\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 1.8.7.1\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+
+#: prefs.js:28 prefs.js:48
+msgid "Coverflow"
+msgstr "Bildfluss"
+
+#: prefs.js:29 prefs.js:48
+msgid "Timeline"
+msgstr "Zeitleiste"
+
+#: prefs.js:30 prefs.js:51
+msgid "Bottom"
+msgstr "Unten"
+
+#: prefs.js:31 prefs.js:51
+msgid "Top"
+msgstr "Oben"
+
+#: prefs.js:32 prefs.js:52
+msgid "Classic"
+msgstr "Klassisch"
+
+#: prefs.js:33 prefs.js:52
+msgid "Overlay"
+msgstr "Überlagern"
+
+#: prefs.js:42
+msgid ""
+"<b>Please restart Gnome-Shell to apply changes! (Hit Alt+F2, type 'r' and "
+"press Enter)\n"
+"</b>"
+msgstr ""
+"<b>Die Gnome-Shell muss neugestartet werden, um die Änderungen anzuwenden! "
+"(Alt+F2 drücken, 'r' eingeben und Enter drücken)\n"
+"</b>"
+
+#: prefs.js:46
+msgid "Hide panel during Coverflow"
+msgstr "Panel während des Umschaltens ausblenden"
+
+#: prefs.js:47
+msgid "Always show the switcher on the primary monitor"
+msgstr "Den Umschalter auf dem primären Monitor immer anzeigen"
+
+#: prefs.js:48
+msgid "Switcher style"
+msgstr "Umschaltstil"
+
+#: prefs.js:49
+msgid "Animation speed (smaller means faster)"
+msgstr "Animationsgeschwindigkeit (kleiner bedeutet schneller)"
+
+#: prefs.js:50
+msgid "Background dim-factor (smaller means darker)"
+msgstr "Hintergrundabblendfaktor (kleiner bedeutet dunkler)"
+
+#: prefs.js:51
+msgid "Window title box position"
+msgstr "Anzeigeposition des Fenstertitels"
+
+#: prefs.js:52
+msgid "Application icon style"
+msgstr "Stil des Anwendungssymbols"
+
+#: prefs.js:53
+msgid "Elastic animations"
+msgstr "Elastische Animationen"
+
+#: prefs.js:54
+msgid "Vertical offset (positive value moves everything up, negative down)"
+msgstr ""
+"Vertikaler Offset (positive Werte bewegen alles nach oben, negative nach "
+"unten)"
+
+#: prefs.js:58
+msgid "Current workspace only"
+msgstr ""
+
+#: prefs.js:60
+msgid "All workspaces"
+msgstr ""
+
+#: prefs.js:62
+msgid "All workspaces, current first"
+msgstr ""
+
+#: prefs.js:64
+msgid "Show windows from current or all workspaces"
+msgstr "Nur Fenster des aktuellen Workspace anzeigen"

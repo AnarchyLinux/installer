@@ -1,0 +1,11 @@
+[Desktop Entry]
+Version=0.2-1
+Name=FetchPKG
+Type=Application
+Comment=Manage Software
+Terminal=true
+Exec=fetchpkg
+Icon=fetchpkg
+Categories=ConsoleOnly;System;
+GenericName=FetchPKG
+X-XFCE-Source=file:///usr/share/applications/fetchpkg.desktop

@@ -1,0 +1,15 @@
+[Desktop Entry]
+Type=Application
+Name=Music
+GenericName=Music Player
+Comment=Listen to music
+Exec=io.elementary.music %U
+Icon=multimedia-audio-player
+Terminal=false
+Categories=Audio;Music;Player;AudioVideo;GNOME;GTK;
+MimeType=x-content/audio-player;x-content/audio-cdda;application/ogg;application/x-extension-m4a;application/x-extension-mp4;application/x-flac;application/x-ogg;audio/3gpp;audio/aac;audio/ac3;audio/AMR;audio/AMR-WB;audio/basic;audio/flac;audio/midi;audio/mp2;audio/mp4;audio/mpeg;audio/ogg;audio/vnd.rn-realaudio;audio/x-aiff;audio/x-ape;audio/x-flac;audio/x-gsm;audio/x-it;audio/x-m4a;audio/x-matroska;audio/x-mod;audio/x-mp3;audio/x-mpeg;audio/x-mpegurl;audio/x-ms-asf;audio/x-ms-asx;audio/x-ms-wax;audio/x-ms-wma;audio/x-musepack;audio/x-opus+ogg;audio/x-pn-aiff;audio/x-pn-au;audio/x-pn-realaudio;audio/x-pn-realaudio-plugin;audio/x-pn-wav;audio/x-pn-windows-acm;audio/x-realaudio;audio/x-real-audio;audio/x-sbc;audio/x-scpls;audio/x-speex;audio/x-tta;audio/x-vorbis;audio/x-vorbis+ogg;audio/x-wav;audio/x-wavpack;audio/x-xm;
+StartupNotify=true
+Keywords=Noise;Audio;Player;MP3;iPod;Play;Playlist;Media;CD;Phone;Songs;
+X-GNOME-UsesNotifications=true
+X-PulseAudio-Properties=media.role=music
+X-XFCE-Source=file:///usr/share/applications/io.elementary.music.desktop

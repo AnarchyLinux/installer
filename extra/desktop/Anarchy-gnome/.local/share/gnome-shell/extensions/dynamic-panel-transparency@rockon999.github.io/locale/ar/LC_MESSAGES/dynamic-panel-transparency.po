@@ -1,0 +1,242 @@
+# Dynamic Panel Transparency Translation File
+# Copyright (c) 2017
+# This file is distributed under the same license as the dynamic-panel-transparency package.
+#
+# Evan Welsh <contact@evanwelsh.com>, 2017.
+# Mosaab Alzoubi <moceap@hotmail.com>, 2016.
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2017-09-29 15:41-0400\n"
+"PO-Revision-Date: 2016-12-21 12:48+0300\n"
+"Last-Translator: Mosaab Alzoubi <moceap@hotmail.com>\n"
+"Language-Team: Evan Welsh <contact@evanwelsh.com>\n"
+"Language: ar_SY\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Lokalize 2.0\n"
+
+#: prefs.js/preferences/main.js:111
+msgid "default"
+msgstr "الافتراضي"
+
+#: prefs.js/preferences/main.js:499 prefs.js/ui/prefs.ui:1328
+msgid "App Tweaks"
+msgstr "تطويعات التطبيق"
+
+#: prefs.js/preferences/main.js:734
+msgid "Add a Custom WM_CLASS"
+msgstr "أضف WM_CLASS مخصصة"
+
+#: prefs.js/ui/prefs.ui:11
+msgid "Classy transparency for your panel."
+msgstr "شفافية أنيقة لشريطك."
+
+#: prefs.js/ui/prefs.ui:13
+msgid "Website"
+msgstr "الموقع"
+
+#: prefs.js/ui/prefs.ui:107
+msgid "Shell Restart Required."
+msgstr "إعادة تشغيل غنوم ضرورية."
+
+#. Meant to ask the user if they would like to restart right now or later in a yes/no format.
+#: prefs.js/ui/prefs.ui:108
+msgid ""
+"A shell restart is required to view some of your changes. Do you want to "
+"restart now?"
+msgstr "يجب إعادة تشغيل غنوم لتأخذ التغييرات مجراها. هل ترغب بذلك الآن؟"
+
+#. How long the transition will take.
+#: prefs.js/ui/prefs.ui:188
+msgid "Transition Speed"
+msgstr "سرعة التلاشي"
+
+#: prefs.js/ui/prefs.ui:218 prefs.js/ui/prefs.ui:246
+msgid "Overrides 'gtk-enable-animations'."
+msgstr "أبطل 'gtk-enable-animations'."
+
+#. Whether the panel transitions should happen with the overview transitions or after.
+#: prefs.js/ui/prefs.ui:231
+msgid "Transition with the overview"
+msgstr ""
+
+#. Whether the panel should transition when a window touches it or only when a window is actually maximized.
+#: prefs.js/ui/prefs.ui:259
+msgid "Transition when windows touch the panel"
+msgstr ""
+
+#: prefs.js/ui/prefs.ui:276
+msgid "Transitions"
+msgstr "التلاشيات"
+
+#. Allows the user to set their own text color.
+#: prefs.js/ui/prefs.ui:333
+msgid "Enable custom text coloring"
+msgstr "تفعيل اللون المخصص للنصوص"
+
+#. The main color to be used.
+#: prefs.js/ui/prefs.ui:360 prefs.js/ui/prefs.ui:375
+msgid "Primary Color"
+msgstr "اللون الأساسي"
+
+#. Another color for special functions.
+#: prefs.js/ui/prefs.ui:389 prefs.js/ui/prefs.ui:403
+msgid "Secondary Color"
+msgstr "اللون الثانوي"
+
+#: prefs.js/ui/prefs.ui:423
+msgid "Use when a window is maximized"
+msgstr "الاستعمال عند تكبير النافذة"
+
+#: prefs.js/ui/prefs.ui:446
+msgid "Use when the overview is visible"
+msgstr "الاستعمال في نمط الاستعراض"
+
+#: prefs.js/ui/prefs.ui:514
+msgid "Enable text shadowing"
+msgstr "تفعيل ظل النص"
+
+#: prefs.js/ui/prefs.ui:554 prefs.js/ui/prefs.ui:615 prefs.js/ui/prefs.ui:753
+#: prefs.js/ui/prefs.ui:814
+msgid "Shadow Color"
+msgstr "لون الظل"
+
+#: prefs.js/ui/prefs.ui:628 prefs.js/ui/prefs.ui:827
+msgid "Radius"
+msgstr "نصف قطري"
+
+#: prefs.js/ui/prefs.ui:641 prefs.js/ui/prefs.ui:840
+msgid "Horizontal Offset"
+msgstr "التوازن الأفقي"
+
+#: prefs.js/ui/prefs.ui:654 prefs.js/ui/prefs.ui:853
+msgid "Vertical Offset"
+msgstr "التوازن العمودي"
+
+#: prefs.js/ui/prefs.ui:713
+msgid "Enable icon shadowing"
+msgstr "تفعيل ظل الرمز"
+
+#: prefs.js/ui/prefs.ui:899
+msgid "Foreground"
+msgstr "المقدمة"
+
+#. Opacity of the panel when no window is maximized.
+#: prefs.js/ui/prefs.ui:961
+msgid "Unmaximized Opacity"
+msgstr "إلغاء الشفافية في حالة عدم التكبير"
+
+#. Opacity of the panel when a window is maximized.
+#: prefs.js/ui/prefs.ui:1008 prefs.js/ui/app-prefs.ui:117
+msgid "Maximized Opacity"
+msgstr "إلغاء الشفافية في حالة التكبير"
+
+#. Allows the user to set their own opacity.
+#: prefs.js/ui/prefs.ui:1030
+msgid "Enable custom opacity"
+msgstr "تفعيل إلغاء شفافية مخصص"
+
+#. The panel's background color.
+#: prefs.js/ui/prefs.ui:1097 prefs.js/ui/prefs.ui:1112
+#: prefs.js/ui/app-prefs.ui:91
+msgid "Panel Color"
+msgstr "لون الشريط"
+
+#. Allows the user to set their own background color for the panel.
+#: prefs.js/ui/prefs.ui:1133
+msgid "Enable custom panel color"
+msgstr "تفعيل لون خاص للشريط"
+
+#. Removes any extra styling certain themes may have. Fixes theme issues.
+#: prefs.js/ui/prefs.ui:1197
+msgid "Remove excess panel styling"
+msgstr "أزل زوائد نمط الشريط"
+
+#: prefs.js/ui/prefs.ui:1210
+msgid "(Fixes theme incompatibilities.)"
+msgstr "(أصلح التكاملات مع السمة.)"
+
+#. Hides the panel corners.
+#: prefs.js/ui/prefs.ui:1238
+msgid "Hide corners"
+msgstr "أخف الزوايا"
+
+#: prefs.js/ui/prefs.ui:1266
+msgid "Background"
+msgstr "الخلفية"
+
+#: prefs.js/ui/prefs.ui:1368
+msgid "About"
+msgstr "حول"
+
+#. Adds a 'custom' app tweak. Only visible on the App Tweaks page.
+#: prefs.js/ui/prefs.ui:1396
+msgid "Advanced..."
+msgstr "متقدم..."
+
+#: prefs.js/ui/prefs.ui:1432
+msgid ""
+"A WM_CLASS is a code that identifies a window. Use this setting if the "
+"window you want custom settings for is not part of an application. You can "
+"find a window's WM_CLASS with the command 'xprop WM_CLASS'. Enter the second "
+"result from 'xprop WM_CLASS' below without quotation marks."
+msgstr ""
+"إن WM_CLASS هو شيفرة تعرّف النافذة. استعمل هذه الوحدات إذا أردت تنفيذ إعدادات "
+"مخصصة ليست جزءًا من التطبيق. بإمكانك العثور عليها من خلال تنفيذ الأمر xprop "
+"WM_CLASS وأدخل هنا النتيجة الثانية للأمر بدون علامات التنصيص."
+
+#: prefs.js/ui/prefs.ui:1481
+msgid "WM_CLASS cannot be blank."
+msgstr "لا يمكن أن يكون WM_CLASS فارغًا."
+
+#: prefs.js/ui/app-prefs.ui:51
+msgid "Enable background app tweaks"
+msgstr "فعّل تطويعات الخلفية"
+
+#: prefs.js/ui/app-prefs.ui:130
+msgid "Theme Source"
+msgstr "مصدر السمة"
+
+#: prefs.js/ui/app-prefs.ui:190
+msgid "Always trigger the panel."
+msgstr "دومًا علّم الشريط."
+
+#~ msgid "Force animation"
+#~ msgstr "إجبار التحريك"
+
+#~ msgid "Transition Style"
+#~ msgstr "نمط التلاشي"
+
+#~ msgid "Linear (default)"
+#~ msgstr "خطي (الافتراضي)"
+
+#~ msgid "Sine"
+#~ msgstr "جيبي"
+
+#~ msgid "Quadratic"
+#~ msgstr "تربيعي"
+
+#~ msgid "Cubic"
+#~ msgstr "تكعيبي"
+
+#~ msgid "Quartic"
+#~ msgstr "رباعي"
+
+#~ msgid "Quintic"
+#~ msgstr "خماسي"
+
+#~ msgid "Exponential"
+#~ msgstr "أسي"
+
+#~ msgid "Circle"
+#~ msgstr "دائري"
+
+#~ msgid "Elastic"
+#~ msgstr "متمدد"
+
+#~ msgid "Bounce"
+#~ msgstr "ارتدادي"

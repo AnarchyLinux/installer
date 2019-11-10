@@ -402,8 +402,9 @@ config_env() {
     cp -r "${anarchy_directory}"/extra/wallpapers/* "$ARCH"/usr/share/backgrounds/anarchy/
 
     if [ -n "$config_env" ]; then
-        tar -xf "${anarchy_directory}/extra/desktop/$config_env/config.tar.gz" -C "$ARCH"/root
-        tar -xf "${anarchy_directory}/extra/desktop/$config_env/config.tar.gz" -C "$ARCH"/etc/skel
+        cp -R "${anarchy_directory}/extra/desktop/$config_env/*" -t "$ARCH"/root
+        cp -R "${anarchy_directory}/extra/desktop/$config_env/.config" -t "$ARCH"/etc/skel
+
     fi
 
     case "$config_env" in

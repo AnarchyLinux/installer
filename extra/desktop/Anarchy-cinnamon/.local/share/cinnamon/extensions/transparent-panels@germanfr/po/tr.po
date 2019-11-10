@@ -1,0 +1,73 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: \n"
+"Language-Team: Linux Mint Türkiye\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 1.8.7.1\n"
+"Last-Translator: Gökhan Gökkaya <gokhanlnx@gmail.com>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Language: tr\n"
+
+#: extension.js:245
+#, c-format
+msgid "%s enabled"
+msgstr "%s etkin"
+
+#: extension.js:246
+msgid "Open the extension settings and customize your panels"
+msgstr "Eklenti ayarlarını açın ve panellerinizi özelleştirin"
+
+#: extension.js:249
+msgid "Open settings"
+msgstr "Ayarları aç"
+
+#. transparent-panels@germanfr->settings-schema.json->transparency-
+#. type->description
+msgid "Type of transparency"
+msgstr "Saydamlık türü"
+
+#. transparent-panels@germanfr->settings-schema.json->transparency-
+#. type->tooltip
+msgid "Choose the type of transparency you want."
+msgstr "İstediğiniz saydamlık türünü seçiniz."
+
+#. transparent-panels@germanfr->settings-schema.json->transparency-
+#. type->options
+msgid "Defined by theme"
+msgstr "Tema tanımlı"
+
+#. transparent-panels@germanfr->settings-schema.json->transparency-
+#. type->options
+msgid "Fully transparent"
+msgstr "Tam saydam"
+
+#. transparent-panels@germanfr->settings-schema.json->transparency-
+#. type->options
+msgid "Semi-transparent"
+msgstr "Yarı saydam"
+
+#. transparent-panels@germanfr->settings-schema.json->transparency-
+#. type->options
+msgid "With shadow"
+msgstr "Gölgeli"
+
+#. transparent-panels@germanfr->settings-schema.json->opacify->description
+msgid "Remove theme transparency (experimental)"
+msgstr "Tema şeffaflığını kaldır (deneysel)"
+
+#. transparent-panels@germanfr->settings-schema.json->opacify->tooltip
+msgid "Remove panel transparency when it's not transparent."
+msgstr "Saydam olmadığında, panel saydamlığını siler."
+
+#. transparent-panels@germanfr->metadata.json->name
+msgid "Transparent panels"
+msgstr "Saydam paneller"
+
+#. transparent-panels@germanfr->metadata.json->description
+msgid "Transparentize your panels when there are no any maximized windows"
+msgstr "Pencereler ekranı kaplamadığında panellerinizi şeffaf hale getirir"
