@@ -167,7 +167,7 @@ DON'T COPY AND PASTE THE TEXT BELOW AS ANY DISK YOU SELECT WILL BE COMPLETELY WI
 Replace `x` with your USB device's letter (use `lsblk` to check which letter it was assigned, usually it's "b"):
 
 ```
-sudo dd if=./<anarchy-image.iso> of=/dev/sdx bs=4M status=progress && sync
+sudo dd if=./<anarchy-image.iso> of=/dev/sdx bs=4M status=progress oflag=sync
 ```
 
 You can also use GUI based software such as [Etcher](https://www.balena.io/etcher/).
