@@ -126,7 +126,7 @@ update_mirrors() {
 
 }
 
-check_connection() {
+test_connection() {
 
     op_title="$connection_op_msg"
     (test_mirror=$(</etc/pacman.d/mirrorlist grep "^Server" | awk 'NR==1{print $3}' | sed 's/$.*//')
