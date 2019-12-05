@@ -34,6 +34,8 @@
 ### Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 ################################################################
 
+# shellcheck disable=SC1090
+
 init() {
     if [[ $(basename "$0") = "anarchy" ]]; then
         anarchy_directory="/usr/share/anarchy" # prev: aa_dir
@@ -64,7 +66,14 @@ init() {
 main() {
     set_keys
     update_mirrors
-    check_connection
+    test_connection
+
+    source "${anarchy_scripts}"/check_connection.sh
+
+    if [[ ! $? ]]; then
+        source "${anarchy_scripts}"/install_yay.sh
+    fi
+
     set_locale
     set_zone
     prepare_drives

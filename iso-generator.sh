@@ -118,7 +118,6 @@ init() {
         'opensnap'
         'perl-linux-desktopfiles'
         'obmenu-generator'
-        'yay-bin'
         'openbox-themes'
         'arch-wiki-cli'
     )
