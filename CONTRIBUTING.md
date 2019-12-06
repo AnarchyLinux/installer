@@ -42,14 +42,42 @@ That's ok, we appreciate other kinds of help too.
 If you've found a typo in our readme or want to help create [a wiki](https://github.com/AnarchyLinux/installer/wiki),
 please do.
 
-## Translate the project
+## Translating
 
 Anarchy Linux, although a relatively simple project,
 still has a bunch of languages included, all of which need contributors.
-So if you see a language, which isn't 100% translated,
-or even think a different translation would be better,
-go right ahead, translate and submit a pull request,
-some Anarchy user will be very thankful for your work.
+
+### Updating existing translations
+
+* Find the file you want to translate and update the strings you want
+* If the translations haven't been updated in a while you
+can add other maintainers to the Original Maintainer(s) list
+* Check below
+
+### Translating for a new language
+
+* Ask yourself if you're committed enough to translate the whole file
+(check english.conf for comparison)
+* Copy the `english.conf` file and rename it to your language's
+english name (e.g. portuguese or spanish)
+* Change the LANG variable to your language's UTF-8 locale
+* Change the top comment to your file name (e.g. from # english.conf -> # portuguese.conf)
+* Check below
+
+### General rules/recommendations
+
+* Make sure to use UTF-8 encoding
+* Don't change the variable names (e.g. intro_msg=)
+* Don't remove any occurrence of (e.g. \n or \n\n - new lines)
+* Don't remove any special characters (e.g. $a, or quotes)
+* Don't edit variables within the text (e.g. /dev/${DRIVE} or ${user})
+(besides the translations they should look the same)
+* Add yourself to the Maintainers list
+(and your email for possible further communication)
+* Compare the finished file with english.conf
+
+_Comparing language files to one another makes Anarchy more consistent
+and easier to update in the future._
 
 ## Test and report bugs
 
