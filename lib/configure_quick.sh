@@ -2,105 +2,112 @@
 
 quick_install() {
     case "${install_opt}" in
-        Anarchy-Desktop)    kernel="linux"
-                            sh="/usr/bin/zsh"
-                            shrc="${default}"
-                            bootloader="grub"
-                            net_util="networkmanager"
-                            enable_nm=true
-                            multilib=true
-                            dhcp=true
-                            desktop=true
-                            base_install="base-devel linux linux-headers zsh zsh-syntax-highlighting grub dialog networkmanager wireless_tools wpa_supplicant os-prober ${base_defaults} "
+        1)
+            kernel="linux"
+            sh="/usr/bin/zsh"
+            shrc="${default}"
+            bootloader="grub"
+            net_util="networkmanager"
+            enable_nm=true
+            multilib=true
+            dhcp=true
+            desktop=true
+            base_install="base-devel linux linux-headers zsh zsh-syntax-highlighting grub dialog networkmanager wireless_tools wpa_supplicant os-prober ${base_defaults} "
 
-                            if "${bluetooth}" ; then
-                                base_install+="bluez bluez-utils pulseaudio-bluetooth "
-                                enable_bt=true
-                            fi
+            if "${bluetooth}" ; then
+                base_install+="bluez bluez-utils pulseaudio-bluetooth "
+                enable_bt=true
+            fi
 
-                            if "${enable_f2fs}" ; then
-                                base_install+="f2fs-tools "
-                            fi
+            if "${enable_f2fs}" ; then
+                base_install+="f2fs-tools "
+            fi
 
-                            if "${UEFI}" ; then
-                                base_install+="efibootmgr "
-                            fi
+            if "${UEFI}" ; then
+                base_install+="efibootmgr "
+            fi
 
-                            quick_desktop
-                            base_install+="${DE} "
+            quick_desktop
+            base_install+="${DE} "
         ;;
-        Anarchy-Desktop-LTS)    kernel="linux-lts"
-                                sh="/usr/bin/zsh"
-                                shrc="${default}"
-                                bootloader="grub"
-                                net_util="networkmanager"
-                                enable_nm=true
-                                multilib=true
-                                dhcp=true
-                                desktop=true
-                                base_install="base-devel linux-lts linux-lts-headers zsh zsh-syntax-highlighting grub dialog networkmanager wireless_tools wpa_supplicant os-prober ${base_defaults} "
 
-                                if "${bluetooth}" ; then
-                                    base_install+="bluez bluez-utils pulseaudio-bluetooth "
-                                    enable_bt=true
-                                fi
+        2)
+            kernel="linux-lts"
+            sh="/usr/bin/zsh"
+            shrc="${default}"
+            bootloader="grub"
+            net_util="networkmanager"
+            enable_nm=true
+            multilib=true
+            dhcp=true
+            desktop=true
+            base_install="base-devel linux-lts linux-lts-headers zsh zsh-syntax-highlighting grub dialog networkmanager wireless_tools wpa_supplicant os-prober ${base_defaults} "
 
-                                if "${enable_f2fs}" ; then
-                                     base_install+="f2fs-tools "
-                                fi
+            if "${bluetooth}" ; then
+                base_install+="bluez bluez-utils pulseaudio-bluetooth "
+                enable_bt=true
+            fi
 
-                                if "${UEFI}" ; then
-                                    base_install+="efibootmgr "
-                                fi
+            if "${enable_f2fs}" ; then
+                 base_install+="f2fs-tools "
+            fi
 
-                                quick_desktop
-                                base_install+="${DE} "
+            if "${UEFI}" ; then
+                base_install+="efibootmgr "
+            fi
+
+            quick_desktop
+            base_install+="${DE} "
         ;;
-        Anarchy-Server)     kernel="linux"
-                            sh="/usr/bin/zsh"
-                            shrc="${default}"
-                            bootloader="grub"
-                            net_util="networkmanager"
-                            enable_nm=true
-                            multilib=true
-                            dhcp=true
-                            base_install="base-devel linux openssh linux-headers zsh zsh-syntax-highlighting grub dialog wireless_tools wpa_supplicant os-prober ${base_defaults} "
 
-                            if "${bluetooth}" ; then
-                                base_install+="bluez bluez-utils pulseaudio-bluetooth "
-                                enable_bt=true
-                            fi
+        3)
+            kernel="linux"
+            sh="/usr/bin/zsh"
+            shrc="${default}"
+            bootloader="grub"
+            net_util="networkmanager"
+            enable_nm=true
+            multilib=true
+            dhcp=true
+            base_install="base-devel linux openssh linux-headers zsh zsh-syntax-highlighting grub dialog wireless_tools wpa_supplicant os-prober ${base_defaults} "
 
-                            if "${enable_f2fs}" ; then
-                                base_install+="f2fs-tools "
-                            fi
+            if "${bluetooth}" ; then
+                base_install+="bluez bluez-utils pulseaudio-bluetooth "
+                enable_bt=true
+            fi
 
-                            if "${UEFI}" ; then
-                                base_install+="efibootmgr "
-                            fi
+            if "${enable_f2fs}" ; then
+                base_install+="f2fs-tools "
+            fi
+
+            if "${UEFI}" ; then
+                base_install+="efibootmgr "
+            fi
         ;;
-        Anarchy-Server-LTS)     kernel="linux-lts"
-                                sh="/usr/bin/zsh"
-                                shrc="${default}"
-                                bootloader="grub"
-                                net_util="networkmanager"
-                                enable_nm=true
-                                multilib=true
-                                dhcp=true
-                                base_install="base-devel openssh linux-lts linux-lts-headers zsh zsh-syntax-highlighting grub dialog wireless_tools wpa_supplicant os-prober ${base_defaults} "
 
-                                if "${bluetooth}" ; then
-                                    base_install+="bluez bluez-utils pulseaudio-bluetooth "
-                                    enable_bt=true
-                                fi
+        4)
+            kernel="linux-lts"
+            sh="/usr/bin/zsh"
+            shrc="${default}"
+            bootloader="grub"
+            net_util="networkmanager"
+            enable_nm=true
+            multilib=true
+            dhcp=true
+            base_install="base-devel openssh linux-lts linux-lts-headers zsh zsh-syntax-highlighting grub dialog wireless_tools wpa_supplicant os-prober ${base_defaults} "
 
-                                if "${enable_f2fs}" ; then
-                                     base_install+="f2fs-tools "
-                                fi
+            if "${bluetooth}" ; then
+                base_install+="bluez bluez-utils pulseaudio-bluetooth "
+                enable_bt=true
+            fi
 
-                                if "${UEFI}" ; then
-                                    base_install+="efibootmgr "
-                                fi
+            if "${enable_f2fs}" ; then
+                 base_install+="f2fs-tools "
+            fi
+
+            if "${UEFI}" ; then
+                base_install+="efibootmgr "
+            fi
         ;;
     esac
 
