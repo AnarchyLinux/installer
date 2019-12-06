@@ -40,7 +40,7 @@ language() {
         "Swedish" "Svenska" 3>&1 1>&2 2>&3)
 
     case "$ILANG" in
-        "English") export lang_file="${anarchy_directory}"/lang/anarchy-english.conf ;;
+        "English") export lang_file="${anarchy_directory}"/lang/english.conf ;;
         "Bulgarian") export lang_file="${anarchy_directory}"/lang/anarchy-bulgarian.conf lib=bg bro=bg ;;
         "Dutch") export lang_file="${anarchy_directory}"/lang/anarchy-dutch.conf lib=nl bro=nl ;;
         "French") export lang_file="${anarchy_directory}"/lang/anarchy-french.conf lib=fr bro=fr ;;
