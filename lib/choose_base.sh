@@ -203,3 +203,5 @@ done
 for aur_package in "${aur_packages[@]}"; do
     echo -e "${aur_package}" >> aur_packages_file
 done
+
+# vim: ai:ts=4:sw=4:et
