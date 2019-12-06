@@ -135,6 +135,66 @@ while (true); do
     fi
 done
 
+while (true); do
+    net_util=$(dialog --ok-button "${ok}" --cancel-button "${cancel}" --menu "${wifi_util_msg}" 13 64 3 \
+        "networkmanager" 	"${net_util_msg1}" \
+        "netctl"			"${net_util_msg0}" \
+        "${none}"           "-" 3>&1 1>&2 2>&3)
+
+    if [[ $? -ne 0 ]]; then
+        if (dialog --defaultno --yes-button "${yes}" --no-button "${no}" --yesno "\n${exit_msg}" 10 60); then
+            main_menu
+        fi
+    else
+        if [[ "${net_util}" == "netctl" ]] || [[ "${net_util}" == "networkmanager" ]]; then
+            base_install+=("${net_util}" 'dialog')
+            enable_nm=true
+        fi
+        break
+    fi
+done
+
+if (dialog --yes-button "${yes}" --no-button "${no}" --yesno "\n\n${multilib_msg}" 11 60); then
+    multilib=true
+    echo "$(date -u "+%F %H:%M") : Include multilib" >> "${log}"
+fi
+
+if (dialog --yes-button "${yes}" --no-button "${no}" --yesno "\n\n${dhcp_msg}" 11 60); then
+    dhcp=true
+    echo "$(date -u "+%F %H:%M") : Enable dhcp" >> "${log}"
+fi
+
+if "${wifi}" ; then
+    base_install+=('wireless_tools' 'wpa_supplicant')
+else
+    if (dialog --defaultno --yes-button "${yes}" --no-button "${no}" --yesno "\n${wifi_option_msg}" 10 60); then
+        base_install+=('wireless_tools' 'wpa_supplicant')
+    fi
+fi
+
+if "${bluetooth}" ; then
+    if (dialog --defaultno --yes-button "${yes}" --no-button "${no}" --yesno "\n${bluetooth_msg}" 10 60); then
+        base_install+=('bluez' 'bluez-utils' 'pulseaudio-bluetooth')
+        enable_bt=true
+    fi
+fi
+
+if (dialog --defaultno --yes-button "${yes}" --no-button "${no}" --yesno "\n${pppoe_msg}" 10 60); then
+    base_install+=('rp-pppoe')
+fi
+
+if (dialog --defaultno --yes-button "${yes}" --no-button "${no}" --yesno "\n${os_prober_msg}" 10 60); then
+    base_install+=('os-prober')
+fi
+
+if "${enable_f2fs}" ; then
+    base_install+=('f2fs-tools')
+fi
+
+if "${UEFI}" ; then
+    base_install+=('efibootmgr')
+fi
+
 # Append the selected packages to the packages file
 for package in "${base_install[@]}"; do
     echo -e "${package}" >> packages_file
