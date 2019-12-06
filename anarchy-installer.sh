@@ -1,48 +1,17 @@
 #!/usr/bin/env bash
-# Main script for the installation,
-# which calls all other scripts
+# Copyright (C) 2017 Dylan Schacht
 
-# Disable warning about variables not being assigned (since they are in other files)
-# shellcheck disable=SC2154
-
-###############################################################
-### Anarchy Linux Install Script
-###
-### Copyright (C) 2017 Dylan Schacht
-###
-### By: Dylan Schacht (deadhead)
-### Email: deadhead3492@gmail.com
-### Webpage: https://anarchylinux.org
-###
-### Any questions, comments, or bug reports may be sent to above
-### email address. Enjoy, and keep on using Arch.
-###
-### License: GPL v2.0
-###
-### This program is free software; you can redistribute it and/or
-### modify it under the terms of the GNU General Public License
-### as published by the Free Software Foundation; either version 2
-### of the License, or (at your option) any later version.
-###
-### This program is distributed in the hope that it will be useful,
-### but WITHOUT ANY WARRANTY; without even the implied warranty of
-### MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-### GNU General Public License for more details.
-###
-### You should have received a copy of the GNU General Public License
-### along with this program; if not, write to the Free Software
-### Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-################################################################
-
-# shellcheck disable=SC1090
+# shellcheck disable=1090
+# shellcheck disable=2154
 
 init() {
     if [[ $(basename "$0") = "anarchy" ]]; then
-        anarchy_directory="/usr/share/anarchy" # prev: aa_dir
-        anarchy_config="/etc/anarchy.conf" # prev: aa_conf
-        anarchy_scripts="/usr/lib/anarchy" # prev: aa_lib
+        anarchy_directory="/usr/share/anarchy"
+        anarchy_config="/etc/anarchy.conf"
+        anarchy_scripts="/usr/lib/anarchy"
     else
-        anarchy_directory=$(dirname "$(readlink -f "$0")") # Anarchy git repository
+        # Anarchy git repository
+        anarchy_directory=$(dirname "$(readlink -f "$0")")
         anarchy_config="${anarchy_directory}"/etc/anarchy.conf
         anarchy_scripts="${anarchy_directory}"/lib
     fi
@@ -51,25 +20,23 @@ init() {
 
     for script in "${anarchy_scripts}"/*.sh ; do
         [[ -e "${script}" ]] || break
-        # shellcheck source=/usr/lib/anarchy/*.sh
         source "${script}"
     done
 
-    # shellcheck source=/etc/anarchy.conf
     source "${anarchy_config}"
     language
-    # shellcheck source=/usr/share/anarchy/lang
-    source "${lang_file}" # /lib/language.sh:43-60
+    source "${lang_file}"
     export reload=true
 }
 
 main() {
-    set_keys
-    update_mirrors
+    set_keys # configure_locale.sh
+    update_mirrors # configure_connection.sh
     test_connection
 
     source "${anarchy_scripts}"/check_connection.sh
 
+    # If we have an internet connection (exit code 0), then install yay
     if [[ ! $? ]]; then
         source "${anarchy_scripts}"/install_yay.sh
     fi
