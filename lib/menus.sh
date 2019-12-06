@@ -120,7 +120,7 @@ main_menu() {
             ;;
             "$menu5")	## Begin base install
                     if "$mounted" ; then
-                        install_options
+                        source "${anarchy_scripts}"/choose_install_options.sh
                         set_hostname
                         set_user
                         add_software
