@@ -14,7 +14,12 @@ init() {
 
     trap '' 2
 
-    updated_scripts=('check_connection.sh' 'choose_base.sh' 'install_yay.sh' 'language.sh')
+    updated_scripts=(
+        'check_connection.sh'
+        'choose_base.sh'
+        'install_yay.sh'
+        'language.sh'
+    )
 
     # Until all the scripts are updated, we have to only source the ones that aren't
     for script in "${anarchy_scripts}"/*.sh; do
@@ -48,7 +53,7 @@ main() {
     set_locale # configure_locale.sh
     set_zone # configure_locale.sh
     prepare_drives
-    install_options
+    run choose_install_options.sh
     set_hostname
     set_user
     add_software
