@@ -4,9 +4,9 @@
 _yay_dir="$(mktemp -d)"
 
 # Install git as a dependency
-pacman -Sy git
+pacman --noconfirm -Sy git
 
 # Clone and install yay
 git clone https://aur.archlinux.org/yay.git "${_yay_dir}"
 cd "${_yay_dir}" || exit
-makepkg -si
+makepkg --noconfirm -si
