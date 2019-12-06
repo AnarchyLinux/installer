@@ -17,8 +17,12 @@ init() {
     updated_scripts=(
         'check_connection.sh'
         'choose_base.sh'
+        'choose_install_options.sh'
+        'install_packages.sh'
         'install_yay.sh'
         'language.sh'
+        'quick_install.sh'
+        'select_desktop.sh'
     )
 
     # Until all the scripts are updated, we have to only source the ones that aren't
