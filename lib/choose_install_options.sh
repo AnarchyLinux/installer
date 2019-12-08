@@ -24,5 +24,5 @@ case "${install_opt}" in
         source "${anarchy_scripts}"/choose_base.sh
         graphics
         ;;
-    *) quick_install ;;
+    *)  source "${anarchy_scripts}"/quick_install.sh ;;
 esac
