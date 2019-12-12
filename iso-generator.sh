@@ -107,25 +107,9 @@ init() {
         rm "${out_dir}"/"${anarchy_iso_name}"
     fi
 
-    # Link to AUR snapshots
-    aur_snapshot_link="https://aur.archlinux.org/cgit/aur.git/snapshot/" # prev: aur
-
-    # Packages to add to local repo
-    local_aur_packages=( # prev: builds
-        'numix-icon-theme-git'
-        'numix-circle-icon-theme-git'
-        'oh-my-zsh-git'
-        'opensnap'
-        'perl-linux-desktopfiles'
-        'obmenu-generator'
-        'openbox-themes'
-        'arch-wiki-cli'
-    )
-
     check_dependencies
     update_arch_iso
     check_arch_iso
-    local_repo_builds
 }
 
 check_dependencies() { # prev: check_depends
@@ -337,30 +321,6 @@ check_arch_iso() {
     fi
 }
 
-local_repo_builds() { # prev: aur_builds
-    echo -e "Updating pacman databases ..." | log
-    sudo pacman -Sy --noconfirm
-    echo -e "Done updating pacman databases"
-
-    echo -e "Building AUR packages for local repo ..." | log
-
-    # Begin build loop checking /tmp for existing builds, then build packages & install if required
-    for pkg in "${local_aur_packages[@]}"; do
-        echo -e "Making ${pkg} ..." | log
-        wget -qO- "${aur_snapshot_link}/${pkg}.tar.gz" | tar xz -C /tmp
-        cd /tmp/"${pkg}" || exit
-        if [[ "${show_color}" == true ]]; then
-            makepkg -sif --noconfirm --nocheck
-        else
-            makepkg -sif --noconfirm --nocheck --nocolor
-        fi
-        echo -e "${pkg} made successfully" | log
-    done
-
-    echo -e "Done making packages"
-    echo -e ""
-}
-
 extract_arch_iso() { # prev: extract_iso
     cd "${working_dir}" || exit
 
@@ -425,19 +385,7 @@ copy_config_files() { # prev: build_conf
     sudo mkdir "${squashfs}"/usr/share/anarchy/extra/wallpapers
     git clone "${wallpapers_git_url}" "${brand_dir}"
     sudo cp "${wallpapers_dir}"/* "${squashfs}"/usr/share/anarchy/extra/wallpapers/
-
-    # Copy over built packages and create repository
-    echo -e "Adding built AUR packages to iso ..." | log
-    sudo mkdir "${custom_iso}"/arch/x86_64/squashfs-root/usr/share/anarchy/pkg
-
-    for pkg in $(echo -e "${local_aur_packages[@]}"); do
-        sudo cp /tmp/"${pkg}"/*.pkg.tar.xz "${squashfs}"/usr/share/anarchy/pkg/
-    done
-
-    cd "${squashfs}"/usr/share/anarchy/pkg || exit
-    sudo repo-add anarchy-local.db.tar.gz *.pkg.tar.xz
-    cd "${working_dir}" || exit
-
+ 
     # Remove brand folder
     rm -rf "${brand_dir}"
 
