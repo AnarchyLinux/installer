@@ -14,6 +14,13 @@ set -o errtrace
 # Enable tracing of what gets executed
 #set -o xtrace
 
+# Check if started as root
+if [[ ${UID} -ne 0 ]]; then
+    echo "Error: compile.sh requires root privileges"
+    echo "       Use: sudo ./compile.sh"
+    exit 1
+fi
+
 # Declare important variables
 working_dir=$(pwd) # prev: aa
 log_dir="${working_dir}"/logs
@@ -570,11 +577,6 @@ while (true); do
             log_dir="$(readlink -f $1)"
             shift
         ;;
-        #-a|--arch-iso)
-        #    shift
-        #    local_arch_iso=$1
-        #    shift
-        #;;
         *)
             prettify
             logging
