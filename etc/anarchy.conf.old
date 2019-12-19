@@ -1,0 +1,271 @@
+###############################################################
+### Anarchy Linux Install Script
+### anarchy.conf
+###
+### Copyright (C) 2017 Dylan Schacht
+###
+### By: Dylan Schacht (deadhead)
+### Email: deadhead3492@gmail.com
+### Webpage: https://anarchylinux.org
+###
+### Any questions, comments, or bug reports may be sent to above
+### email address. Enjoy, and keep on using Arch.
+###
+### License: GPL v2.0
+###############################################################
+
+# Error codes:
+# * Exit 1: Failed to update pacman keys (line 116)
+# * Exit 2: Can't download update with wget - no internet connection (line 128)
+
+packages_file="/usr/lib/anarchy/extra/packages"
+aur_packages_file="/usr/lib/anarchy/extra/aur-packages"
+
+config() {
+    # Set default variables
+    ARCH=/mnt
+    wifi=false
+    SWAP=false
+    crypted=false
+    GPT=false
+    UEFI=false
+    mounted=false
+    INSTALLED=false
+    bootloader=false
+    frmt=false
+    input=default
+    btrfs=true
+    vfat=false
+    add_repo=false
+    enable_bt=false
+    enable_f2fs=false
+    enable_btrfs=false
+    enable_nm=false
+    enable_dm=false
+    err=false
+    skip=false
+    multilib=false
+    dhcp=false
+    manual_part=default
+    desktop=false
+    export reload=false
+    menu_enter=false
+    colors=true
+    screen_h=true
+    VM=false
+    USB=none
+    bluetooth=false
+    drm=false
+    NVIDIA=false
+    GTK3=false
+    enable_ssh=false
+    enable_http=false
+    enable_ftp=false
+    enable_cups=false
+    OnLine=false
+    LAPTOP=false
+
+    # Anarchy tmp directory
+    if ! [[ -d /tmp/anarchy ]]; then
+        mkdir /tmp/anarchy
+    fi
+
+    # Log and tmp files
+    log=/tmp/anarchy.log
+    tmp_menu=/tmp/anarchy/part.sh
+    tmp_menu=/tmp/anarchy/part.sh
+    tmp_list=/tmp/anarchy/part.list
+    tmp_passwd=/tmp/anarchy/passwd
+
+    # Check for passwd file
+    if [ -f "${tmp_passwd}" ]; then
+        rm "${tmp_passwd}"
+    fi
+
+    touch "${tmp_passwd}"
+
+    # Set default shell
+    sh=/bin/bash
+
+    # Generate SSL key
+    ssl_key=$(openssl rand -base64 32)
+
+    if "${colors}" ; then
+        # Set default color scheme for installer
+        tput civis
+        echo -en "\e]P0073642" ; clear #black
+        echo -en "\e]P8002B36" ; clear #darkgrey
+        echo -en "\e]P1DC322F" ; clear #darkred
+        echo -en "\e]P9CB4B16" ; clear #red
+        echo -en "\e]P2859900" ; clear #darkgreen
+        echo -en "\e]PA586E75" ; clear #green
+        echo -en "\e]P3B58900" ; clear #brown
+        echo -en "\e]PB657B83" ; clear #yellow
+        echo -en "\e]P4268BD2" ; clear #darkblue
+        echo -en "\e]PC839496" ; clear #blue
+        echo -en "\e]P5D33682" ; clear #darkmagenta
+        echo -en "\e]PD6C71C4" ; clear #magenta
+        echo -en "\e]P62AA198" ; clear #darkcyan
+        echo -en "\e]PE93A1A1" ; clear #cyan
+        echo -en "\e]P7EEE8D5" ; clear #lightgrey
+        echo -en "\e]PFFDF6E3" ; clear #white
+        setterm -background black
+        setterm -foreground white
+        tput cnorm
+    else
+        mv /root/.dialogrc /root/.dialogrc-disabled
+    fi
+
+    # Default packages (obsolete since autoincluded in extra/packages
+    #base_defaults="bash bzip2 coreutils file filesystem findutils gawk gcc-libs gettext glibc grep gzip iproute2 iputils licenses pacman pciutils procps-ng psmisc sed shadow systemd systemd-sysvcompat tar util-linux xz wget screenfetch vim cpupower linux-firmware man-db man-pages texinfo sudo btrfs-progs dosfstools e2fsprogs ntfs-3g lvm2"
+
+    # Desktop packages
+    de_defaults="xdg-user-dirs xorg-server xorg-apps xorg-xinit xterm ttf-dejavu gvfs gvfs-smb gvfs-mtp pulseaudio pavucontrol pulseaudio-alsa alsa-utils unzip yay"
+    extras="gvfs arc-gtk-theme elementary-icon-theme numix-icon-theme-git numix-circle-icon-theme-git htop lynx chromium libreoffice-fresh vlc gnome-packagekit pantheon-music yay"
+
+    # Check terminal line height
+    if [ "$(tput lines)" -lt "25" ]; then
+        screen_h=false
+    fi
+
+    # Check if install media is USB
+    if (lsblk | grep "run" | grep -o "sd." &> /dev/null); then
+        USB=$(lsblk | grep "run" | grep -o "sd.")
+    fi
+
+    # Check for bluetooth device
+    if (dmesg | grep -i "blue" &> /dev/null); then
+        bluetooth=true
+    fi
+
+    # List of timezones
+    zonelist=$(find /usr/share/zoneinfo -maxdepth 1 | sed -n -e 's!^.*/!!p' | grep -v "posix\|right\|zoneinfo\|zone.tab\|zone1970.tab\|W-SU\|WET\|posixrules\|MST7MDT\|iso3166.tab\|CST6CDT" | sort | sed 's/$/ -/g')
+
+    # Full list of locales
+    localelist=$(grep -E "^#?[a-z].*UTF-8" /etc/locale.gen | sed 's/#//' | awk '{print $1" -"}')
+
+    # List of countries for mirrorlist update
+    countries=$(echo -e "AS All-Https\n AT Austria\n AU  Australia\n BD Bangladesh\n BE Belgium\n BG Bulgaria\n BR Brazil\n BY Belarus\n CA Canada\n CL Chile \n CN China\n CO Colombia\n CZ Czech-Republic\n DE Germany\n DK Denmark\n EE Estonia\n ES Spain\n FI Finland\n FR France\n GB United-Kingdom\n HU Hungary\n IE Ireland\n IL Isreal\n IN India\n IT Italy\n JP Japan\n KR Korea\n KZ Kazakhstan\n LK Sri-Lanka\n LU Luxembourg\n LV Latvia\n MK Macedonia\n NC New-Caledonia\n NL Netherlands\n NO Norway\n NZ New-Zealand\n PL Poland\n PT Portugal\n RO Romania\n RS Serbia\n RU Russia\n SE Sweden\n CH Switzerland\n SG Singapore\n SK Slovakia\n SI Slovenia\n TR Turkey\n TW Taiwan\n UA Ukraine\n US United-States\n UZ Uzbekistan\n VN Viet-Nam\n ZA South-Africa")
+
+    # Full list of keymaps
+    key_maps=$(find /usr/share/kbd/keymaps -type f | sed -n -e 's!^.*/!!p' | grep ".map.gz" | sed 's/.map.gz//g' | sed 's/$/ -/g' | sort)
+
+    # List of default mountpoints for manual partitioning
+    points_orig=$(echo -e "/boot   boot-mountpoint>\n/home   home-mountpoint>\n/opt   opt-mountpoint>\n/srv   srv-mountpoint>\n/usr    usr-mountpoint>\n/var    var-mountpoint>")
+
+    # Check for laptop
+    if (acpi | egrep "*" &>/dev/null); then
+        LAPTOP=true
+    fi
+
+    # Check for wifi network
+    wifi_network=$(ip addr | grep "wlp\|wlo" | awk '{print $2}' | sed 's/://' | head -n 1)
+
+    if [ -n "${wifi_network}" ]; then
+        wifi=true
+    fi
+
+    # Check for VM
+    case $(systemd-detect-virt) in
+        oracle)
+            virt="vbox"
+            VM=true
+        ;;
+        vmware)
+            virt="vmware"
+            VM=true
+        ;;
+        qemu)
+            virt="qemu"
+            VM=true
+        ;;
+        kvm)
+            virt="kvm"
+            VM=true
+        ;;
+        microsoft)
+            virt="hyper-v"
+            VM=true
+        ;;
+        xen)
+            virt="xen"
+            VM=true
+        ;;
+    esac
+
+    # Check VGA
+    if ! "${VM}" ; then
+        if (lspci | grep VGA | grep "Intel" &>/dev/null); then
+            default_GPU="xf86-video-intel"
+            chipset="Intel"
+        elif (lspci | grep VGA | grep "ATI\|AMD" &>/dev/null); then
+            default_GPU="xf86-video-ati"
+            chipset="AMD/ATI"
+        elif (lspci | grep VGA | grep "NVIDIA\|nVidia" &>/dev/null); then
+            NVIDIA=true default_GPU="xf86-video-nouveau"
+            chipset="Nvidia"
+        else
+            default_GPU="xf86-video-vesa"
+            chipset="Unknown"
+        fi
+    fi
+
+    # Pacman Hooks
+
+    # linux hook
+    linux_hook="[Trigger]
+    Operation = Install
+    Operation = Upgrade
+    Type = Package
+    Target = linux
+
+    [Action]
+    When = PostTransaction"
+
+    # LTS linux hook
+    lts_hook="[Trigger]
+    Operation = Install
+    Operation = Upgrade
+    Type = Package
+    Target = linux-lts
+
+    [Action]
+    When = PostTransaction"
+
+    # Hardened linux hook
+    hardened_hook="[Trigger]
+    Operation = Install
+    Operation = Upgrade
+    Type = Package
+    Target = linux-hardened
+
+    [Action]
+    When = PostTransaction"
+
+    # Zen linux hook
+    zen_hook="[Trigger]
+    Operation = Install
+    Operation = Upgrade
+    Type = Package
+    Target = linux-zen
+
+    [Action]
+    When = PostTransaction"
+
+    # NVIDIA hook
+    nvidia_hook="[Trigger]
+    Operation = Install
+    Operation = Upgrade
+    Operation = Remove
+    Type = Package
+    Target = nvidia
+
+    [Action]
+    Depends = mkinitcpio
+    When = PostTransaction"
+}
+
+# Check all variables
+config
+
+# vim: ai:ts=4:sw=4:et
