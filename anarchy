@@ -2,7 +2,8 @@
 # Main Anarchy Linux installer script
 
 # Read initial variables
-source /etc/anarchy.d/anarchy.conf
+export ANARCHY_CONFIG_FILE=/etc/anarchy.d/anarchy.conf
+source "${ANARCHY_CONFIG_FILE}"
 source "${translation_file}"
 
 # Source libraries
@@ -11,23 +12,32 @@ for library in "${ANARCHY_LIBRARIES_DIRECTORY}"/*.sh; do
 done
 
 main() {
+    log "Started installation"
+
     # Run all the scripts
     run set-keyboard-layout
     run check-connection
-    #run update-mirrors
+
+    # Show wifi connection menu if user is not already connected to the internet
+    if [[ $? -gt 0 ]]; then
+        run connect-to-wifi
+    fi
+
     #run test-connection
+    run update-mirrorlist
     run install-yay
-    #run set-locale
-    #run set-timezone
-    #run prepare-drives
-    run choose-installation-options
+    run set-locale
+    run set-timezone
+    run prepare-disks
+    #run choose-installation-options
     #run set-hostname
+    #run set-password
     #run set-user
     #run add-software
     #run install-base
-    #run configure-system
+    #run configure-system -> configure-desktop-additions
     #run add-user
-    #run reboot-system
+    #run reboot-menu
 }
 
 # Check for root privileges
@@ -42,7 +52,6 @@ usage() {
     echo -e "Usage: ${color_green} anarchy [options]${color_none}"
     echo -e "${color_green}   -h | --help         ${color_yellow}Display this help message${color_none}"
     echo -e "${color_green}   -k | --keys         ${color_yellow}Update pacman keys${color_none}"
-    echo -e "${color_green}   -n | --no-style     ${color_yellow}Disable colors${color_none}"
     echo -e "${color_green}   -u | --update       ${color_yellow}Update anarchy scripts${color_none}"
     echo -e ""
 }
@@ -53,16 +62,13 @@ case "$1" in
         usage
         exit 0
     ;;
-    -n|--no-style)
-        export colors=false
-    ;;
     -k|--keys)
         update_keys
-        exit "$?"
+        exit $?
     ;;
     -u|--update)
         update_anarchy
-        exit "$?"
+        exit $?
     ;;
 esac
 
