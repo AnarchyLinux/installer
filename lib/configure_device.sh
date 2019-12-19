@@ -17,7 +17,7 @@
 
 prepare_drives() {
 
-    op_title="$part_op_msg"
+    menu_title="$part_op_msg"
     if (df | grep "$ARCH" &> /dev/null); then
         umount -R "$ARCH" &> /dev/null &
         pid=$! pri=0.1 msg="$wait_load \n\n \Z1> \Z2umount -R $ARCH\Zn" load
@@ -73,19 +73,19 @@ prepare_drives() {
                         SWAPSPACE=$(dialog --ok-button "$ok" --cancel-button "$cancel" --inputbox "\n$swap_msg1" 11 55 "512M" 3>&1 1>&2 2>&3)
 
                         if [ "$?" -gt "0" ]; then
-                            SWAP=false ; break
+                            swap=false ; break
                         else
                             if [ "$(grep -o ".$" <<< "$SWAPSPACE")" == "M" ]; then
                                 SWAPSPACE=$(<<<$SWAPSPACE sed 's/M//;s/\..*//')
                                 if [ "$SWAPSPACE" -lt "$(echo "$drive_mib-5120" | bc)" ]; then
-                                    SWAP=true ; break
+                                    swap=true ; break
                                 else
                                     dialog --ok-button "$ok" --msgbox "\n$swap_err_msg0" 10 60
                                 fi
                             elif [ "$(grep -o ".$" <<< "$SWAPSPACE")" == "G" ]; then
                                 SWAPSPACE=$(echo "$(<<<$SWAPSPACE sed 's/G//')*1024" | bc | sed 's/\..*//')
                                 if [ "$SWAPSPACE" -lt "$(echo "$drive_mib-5120" | bc)" ]; then
-                                    SWAP=true ; break
+                                    swap=true ; break
                                 else
                                     dialog --ok-button "$ok" --msgbox "\n$swap_err_msg0" 10 60
                                 fi
@@ -100,15 +100,15 @@ prepare_drives() {
 
                 if (efivar -l &> /dev/null); then
                     if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$efi_msg0" 10 60) then
-                        GPT=true
-                        UEFI=true
-                        echo "$(date -u "+%F %H:%M") : UEFI boot activated" >> "$log"
+                        gpt=true
+                        uefi=true
+                        echo "$(date -u "+%F %H:%M") : uefi boot activated" >> "$log"
                     fi
                 fi
 
-                if ! "$UEFI" ; then
+                if ! "$uefi" ; then
                     if (dialog --defaultno --yes-button "$yes" --no-button "$no" --yesno "\n$gpt_msg" 10 60) then
-                        GPT=true
+                        gpt=true
                         echo "$(date -u "+%F %H:%M") : GPT partition scheme activated" >> "$log"
                     fi
                 fi
@@ -118,11 +118,11 @@ prepare_drives() {
                 if "$SWAP" ; then
                     drive_var="$drive_var1"
                     height=13
-                    if "$UEFI" ; then
+                    if "$uefi" ; then
                         drive_var="$drive_var2"
                         height=14
                     fi
-                elif "$UEFI" ; then
+                elif "$uefi" ; then
                     drive_var="$drive_var3"
                     height=13
                 else
@@ -166,13 +166,13 @@ prepare_drives() {
 
 auto_part() {
 
-    op_title="$partload_op_msg"
+    menu_title="$partload_op_msg"
     if "$GPT" ; then
-        if "$UEFI" ; then
+        if "$uefi" ; then
             if "$SWAP" ; then
                 echo -e "n\n\n\n512M\nef00\nn\n3\n\n+${SWAPSPACE}M\n8200\nn\n\n\n\n\nw\ny" | gdisk /dev/"$DRIVE" &> /dev/null &
                 pid=$! pri=0.1 msg="\n$load_var0 \n\n \Z1> \Z2gdisk /dev/$DRIVE\Zn" load
-                SWAP="${DRIVE}${PART_PREFIX}3"
+                swap="${DRIVE}${PART_PREFIX}3"
                 (wipefs -a /dev/"$SWAP"
                 mkswap /dev/"$SWAP"
                 swapon /dev/"$SWAP") &> /dev/null &
@@ -188,7 +188,7 @@ auto_part() {
             if "$SWAP" ; then
                 echo -e "o\ny\nn\n1\n\n+212M\n\nn\n2\n\n+1M\nEF02\nn\n4\n\n+${SWAPSPACE}M\n8200\nn\n3\n\n\n\nw\ny" | gdisk /dev/"$DRIVE" &> /dev/null &
                 pid=$! pri=0.1 msg="\n$load_var0 \n\n \Z1> \Z2gdisk /dev/$DRIVE\Zn" load
-                SWAP="${DRIVE}${PART_PREFIX}4"
+                swap="${DRIVE}${PART_PREFIX}4"
                 (wipefs -a /dev/"$SWAP"
                 mkswap /dev/"$SWAP"
                 swapon /dev/"$SWAP") &> /dev/null &
@@ -205,7 +205,7 @@ auto_part() {
         if "$SWAP" ; then
             echo -e "o\nn\np\n1\n\n+212M\nn\np\n3\n\n+${SWAPSPACE}M\nt\n\n82\nn\np\n2\n\n\nw" | fdisk /dev/"$DRIVE" &> /dev/null &
             pid=$! pri=0.1 msg="\n$load_var0 \n\n \Z1> \Z2fdisk /dev/$DRIVE\Zn" load
-            SWAP="${DRIVE}${PART_PREFIX}3"
+            swap="${DRIVE}${PART_PREFIX}3"
             (wipefs -a /dev/"$SWAP"
             mkswap /dev/"$SWAP"
             swapon /dev/"$SWAP") &> /dev/null &
@@ -223,7 +223,7 @@ auto_part() {
     echo "$(date -u "+%F %H:%M") : Create boot partition: $BOOT" >> "$log"
     echo "$(date -u "+%F %H:%M") : Create root partition: $ROOT" >> "$log"
 
-    if "$UEFI" ; then
+    if "$uefi" ; then
         (sgdisk --zap-all /dev/"$BOOT"
         wipefs -a /dev/"$BOOT"
         mkfs.vfat -F32 /dev/"$BOOT") &> /dev/null &
@@ -273,7 +273,7 @@ auto_part() {
 
 auto_encrypt() {
 
-    op_title="$partload_op_msg"
+    menu_title="$partload_op_msg"
     if (dialog --defaultno --yes-button "$yes" --no-button "$no" --yesno "\n$encrypt_var0" 10 60) then
         while [ "$input" != "$input_chk" ]
           do
@@ -292,7 +292,7 @@ auto_encrypt() {
     fi
 
     if "$GPT" ; then
-        if "$UEFI" ; then
+        if "$uefi" ; then
             echo -e "n\n\n\n512M\nef00\nn\n\n\n\n\nw\ny" | gdisk /dev/"$DRIVE" &> /dev/null &
             pid=$! pri=0.1 msg="\n$load_var0 \n\n \Z1> \Z2gdisk /dev/$DRIVE\Zn" load
             BOOT="${DRIVE}${PART_PREFIX}1"
@@ -355,7 +355,7 @@ auto_encrypt() {
     pid=$! pri=1 msg="\n$load_var1 \n\n \Z1> \Z2mkfs.$FS /dev/mapper/root\Zn" load
     echo "$(date -u "+%F %H:%M") : Create root filesystem: $FS" >> "$log"
 
-    if "$UEFI" ; then
+    if "$uefi" ; then
         mkfs.vfat -F32 /dev/"$BOOT" &> /dev/null &
         pid=$! pri=0.2 msg="\n$efi_load1 \n\n \Z1> \Z2mkfs.vfat -F32 /dev/$BOOT\Zn" load
         esp_part="/dev/$BOOT"
@@ -386,7 +386,7 @@ auto_encrypt() {
 
 part_menu() {
 
-    op_title="$manual_op_msg"
+    menu_title="$manual_op_msg"
     unset part
     dev_menu="|  Device:  |  Size:  |  Used:  |  FS:  |  Mount:  |  Type:  |"
     device_list=$(lsblk -no NAME,SIZE,TYPE,FSTYPE | egrep -v "$USB|loop[0-9]+|sr[0-9]+|fd[0-9]+" | sed 's/[^[:alnum:]_., -]//g' | column -t | sort -k 1,1 | uniq)
@@ -445,7 +445,7 @@ part_menu() {
 
 part_class() {
 
-    op_title="$edit_op_msg"
+    menu_title="$edit_op_msg"
     if [ -z "$part" ]; then
         unset DRIVE ROOT
         return
@@ -506,7 +506,7 @@ part_class() {
                 BOOT="$ROOT"
             fi
 
-            final_part=$((df -h | grep "$ARCH" | awk '{print $1,$2,$6 "\\n"}' | sed 's/mnt\/\?//' ; swapon | awk 'NR==2 {print $1,$3,"SWAP"}') | column -t)
+            final_part=$((df -h | grep "$ARCH" | awk '{print $1,$2,$6 "\\n"}' | sed 's/mnt\/\?//' ; swapon | awk 'NR==2 {print $1,$3,"swap"}') | column -t)
             final_count=$(<<<"$final_part" wc -l)
 
             if [ "$final_count" -lt "7" ]; then
@@ -567,12 +567,12 @@ part_class() {
                                         mkfs.vfat -F32 "$esp_part"
                                         mount "$esp_part" "$esp_mnt") &> /dev/null &
                                         pid=$! pri=0.2 msg="\n$efi_load1 \n\n \Z1> \Z2mkfs.vfat -F32 $esp_part\Zn" load
-                                        UEFI=true
+                                        uefi=true
                                 else
                                     part_menu
                                 fi
                             else
-                                UEFI=true
+                                uefi=true
                                 export esp_part esp_mnt
                             fi
                         fi
@@ -669,7 +669,7 @@ part_class() {
                         pid=$! pri=0.1 msg="$wait_load \n\n \Z1> \Z2umount -R $ARCH\Zn" load
                     fi
                 else
-                    if [ "$part_mount" == "[SWAP]" ]; then
+                    if [ "$part_mount" == "[swap]" ]; then
                         if (dialog --yes-button "$yes" --no-button "$no" --defaultno --yesno "\n$manual_swap_var" 10 60) then
                             swapoff /dev/"$part" &> /dev/null &
                             pid=$! pri=0.1 msg="$wait_load \n\n \Z1> \Z2swapoff /dev/$part\Zn" load
@@ -699,7 +699,7 @@ part_class() {
             fi
 
             if ($part_swap); then
-                mnt="SWAP"
+                mnt="swap"
             else
                 mnt=$(dialog --ok-button "$ok" --cancel-button "$cancel" --menu "$mnt_var0" 15 60 6 $points 3>&1 1>&2 2>&3)
                 if [ "$?" -gt "0" ]; then
@@ -724,7 +724,7 @@ part_class() {
                 done
             fi
 
-            if [ "$mnt" != "SWAP" ]; then
+            if [ "$mnt" != "swap" ]; then
                 if (dialog --yes-button "$yes" --no-button "$no" --defaultno --yesno "\n$part_frmt_msg" 11 50) then
                     f2fs=$(lsblk -dnro ROTA /dev/$part)
 
@@ -751,12 +751,12 @@ part_class() {
                     BOOT="$part"
                 fi
             else
-                FS="SWAP"
+                FS="swap"
             fi
 
             source "$lang_file"
 
-            if [ "$mnt" == "SWAP" ]; then
+            if [ "$mnt" == "swap" ]; then
                 if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$swap_frmt_msg" 11 50) then
                     (wipefs -a -q /dev/"$part"
                     mkswap /dev/"$part"
