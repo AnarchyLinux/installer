@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Main Anarchy Linux installer script
 
-# Read intitial variables
+# Read initial variables
 source /etc/anarchy.d/anarchy.conf
 source "${translation_file}"
 
