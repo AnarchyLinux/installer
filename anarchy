@@ -30,8 +30,9 @@ main() {
     #run reboot-system
 }
 
+# Check for root privileges
 if [[ ${UID} -ne 0 ]]; then
-    echo "Error: anarchy requires root privilege"
+    echo "Error: anarchy requires root privileges"
     echo "       Use: sudo anarchy"
     exit 1
 fi
