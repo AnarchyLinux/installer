@@ -8,24 +8,24 @@ function update_anarchy() {
     tmp_dir="$(mktemp -d)"
     wallpaper_dir="$(mktemp -d)"
 
-    echo -ne "\n${Yellow}*> Anarchy: Downloading files and scripts..."
+    echo -ne "\n${color_yellow}*> Anarchy: Downloading files and scripts..."
     wget -q -4 --no-check-certificate -O ${tmp_dir}/master.tar.gz https://github.com/AnarchyLinux/installer/archive/master.tar.gz
 
     if [[ $? -gt 0 ]]; then
-        echo -e "${Red}*> Error: ${Yellow}Active network connection not detected - Please connect to the internet and try again. Exiting..."
+        echo -e "${color_red}*> Error: ${color_yellow}Active network connection not detected - Please connect to the internet and try again. Exiting..."
         return 2
     fi
 
     wget -q -4 --no-check-certificate -O ${wallpaper_dir}/master.tar.gz https://github.com/AnarchyLinux/brand/archive/master.tar.gz
 
     if [[ $? -gt 0 ]]; then
-        echo -e "${Red}*> Error: ${Yellow}Active network connection not detected - Please connect to the internet and try again. Exiting..."
+        echo -e "${color_red}*> Error: ${color_yellow}Active network connection not detected - Please connect to the internet and try again. Exiting..."
         return 2
     fi
 
-    echo -e "${Green}Done"
+    echo -e "${color_green}Done"
 
-    echo -ne "\n${Yellow}*> Anarchy: Extracting and moving files..."
+    echo -ne "\n${color_yellow}*> Anarchy: Extracting and moving files..."
     tar zxf ${tmp_dir}/master.tar.gz -C ${tmp_dir} &> /dev/null
     tar zxf ${wallpaper_dir}/master.tar.gz -C ${wallpaper_dir} &> /dev/null
     # TODO: Move update to a library
@@ -37,24 +37,24 @@ function update_anarchy() {
     cp "${wallpaper_dir}"/brand-master/wallpapers/official/* "${ANARCHY_WALLPAPERS_DIRECTORY}"/
     cp -f ${tmp_dir}/installer-master/extra/sysinfo /installer-master/extra/iptest /usr/bin/
     cp -r ${tmp_dir}/installer-master/extra/* "${ANARCHY_EXTRA_DIRECTORY}"/
-    echo -e "${Green}Done"
+    echo -e "${color_green}Done"
 
-    echo -e "\n${Green}*> ${Yellow}Anarchy updated successfully, you may now run anarchy${ColorOff}"
+    echo -e "\n${color_green}*> ${color_yellow}Anarchy updated successfully, you may now run anarchy${color_none}"
     return 0
 }
 
 function update_keys() {
-    echo -e "${Yellow}*> Anarchy: Updating pacman keys..."
+    echo -e "${color_yellow}*> Anarchy: Updating pacman keys..."
     pacman-db-upgrade
     pacman-key --init
     pacman-key --populate archlinux
     pacman-key --refresh-keys
 
     if [[ $? -gt 0 ]]; then
-        echo -e "${Red}*> Error: ${Yellow}Failed to update pacman keys, exiting..."
+        echo -e "${color_red}*> Error: ${color_yellow}Failed to update pacman keys, exiting..."
         return 1
     else
-        echo -e "${Green}*> Updated: ${Yellow}Updated pacman keys successfully."
+        echo -e "${color_green}*> Updated: ${color_yellow}Updated pacman keys successfully."
         return 0
     fi
 }

@@ -38,11 +38,11 @@ fi
 
 usage() {
     clear
-    echo -e "Usage: ${Green} anarchy [options]${ColorOff}"
-    echo -e "${Green}   -h | --help         ${Yellow}Display this help message${ColorOff}"
-    echo -e "${Green}   -k | --keys         ${Yellow}Update pacman keys${ColorOff}"
-    echo -e "${Green}   -n | --no-style     ${Yellow}Disable colors${ColorOff}"
-    echo -e "${Green}   -u | --update       ${Yellow}Update anarchy scripts${ColorOff}"
+    echo -e "Usage: ${color_green} anarchy [options]${color_none}"
+    echo -e "${color_green}   -h | --help         ${color_yellow}Display this help message${color_none}"
+    echo -e "${color_green}   -k | --keys         ${color_yellow}Update pacman keys${color_none}"
+    echo -e "${color_green}   -n | --no-style     ${color_yellow}Disable colors${color_none}"
+    echo -e "${color_green}   -u | --update       ${color_yellow}Update anarchy scripts${color_none}"
     echo -e ""
 }
 
