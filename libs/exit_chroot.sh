@@ -8,6 +8,6 @@ ctrl_c() {
     unset input
     rm /tmp/chroot_dir.var &> /dev/null
     clear
-    # TODO: Fix reference to menus.sh
-    reboot_system
+    # TODO: Fix possible errors with run not being sourced yet
+    run reboot-menu
 }
