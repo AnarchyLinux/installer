@@ -1,20 +1,5 @@
 #!/usr/bin/env bash
-
-###############################################################
-### Anarchy Linux Install Script
-### iso-generator.sh
-###
-### Copyright (C) 2018 Dylan Schacht
-###
-### By: Dylan Schacht (deadhead)
-### Email: deadhead3492@gmail.com
-### Webpage: https://anarchylinux.org
-###
-### Any questions, comments, or bug reports may be sent to above
-### email address. Enjoy, and keep on using Anarchy.
-###
-### License: GPL v2.0
-###############################################################
+# Copyright (C) 2018 Dylan Schacht
 
 # Error codes:
 # * Exit 1: Missing dependencies (check_dependencies)
@@ -31,14 +16,14 @@ set -o errtrace
 
 # Declare important variables
 working_dir=$(pwd) # prev: aa
-log_dir="${working_dir}"/log
+log_dir="${working_dir}"/logs
 out_dir="${working_dir}"/out # Directory for generated ISOs
 wallpapers_git_url="https://github.com/AnarchyLinux/brand.git"
-brand_dir="/tmp/anarchy-brand"
+brand_dir="$(mktemp -d)"
 wallpapers_dir="${brand_dir}/wallpapers/official"
 
 # Define colors depending on script arguments
-set_up_colors() {
+colors() {
     if [[ "${show_color}" == true ]]; then
         color_blank='\e[0m'
         color_green='\e[1;32m'
@@ -53,7 +38,7 @@ set_up_colors() {
     fi
 }
 
-set_up_logging() {
+logging() {
     if [[ ! -d "${log_dir}" ]]; then
         mkdir "${log_dir}"
     fi
@@ -76,6 +61,9 @@ log() {
 
 # Clears the screen and adds a banner
 prettify() {
+    # Source colors
+    colors
+
     clear
     echo -e "${color_white}-- Anarchy Linux --${color_blank}"
     echo -e ""
@@ -83,8 +71,8 @@ prettify() {
 
 set_version() {
     # Label must be 11 characters long
-    anarchy_iso_label="ANARCHYV108" # prev: iso_label
-    anarchy_iso_release="1.0.8" # prev: iso_rel
+    anarchy_iso_label="ANARCHYV110" # prev: iso_label
+    anarchy_iso_release="1.1.0" # prev: iso_rel
     anarchy_iso_name="anarchy-${anarchy_iso_release}-x86_64.iso" # prev: version
 }
 
@@ -152,9 +140,9 @@ check_dependencies() { # prev: check_depends
                     for pkg in "${missing_deps[@]}"; do
                         echo -e "Installing ${pkg} ..." | log
                         if [[ "${show_color}" == true ]]; then
-                            sudo pacman --noconfirm -Sy "${pkg}"
+                            pacman --noconfirm -Sy "${pkg}"
                         else
-                            sudo pacman --noconfirm --color never -Sy "${pkg}"
+                            pacman --noconfirm --color never -Sy "${pkg}"
                         fi
                         echo -e "${pkg} installed" | log
                     done
@@ -169,9 +157,9 @@ check_dependencies() { # prev: check_depends
             for pkg in "${missing_deps[@]}"; do
                 echo -e "Installing ${pkg} ..." | log
                 if [[ "${show_color}" == true ]]; then
-                    sudo pacman --noconfirm -Sy "${pkg}"
+                    pacman --noconfirm -Sy "${pkg}"
                 else
-                    sudo pacman --noconfirm --color never -Sy "${pkg}"
+                    pacman --noconfirm --color never -Sy "${pkg}"
                 fi
                 echo -e "${pkg} installed" | log
             done
@@ -325,7 +313,7 @@ extract_arch_iso() { # prev: extract_iso
     cd "${working_dir}" || exit
 
     if [[ -d "${custom_iso}" ]]; then
-        sudo rm -rf "${custom_iso}"
+        rm -rf "${custom_iso}"
     fi
 
     echo -e "Extracting Arch Linux image ..." | log
@@ -342,49 +330,50 @@ copy_config_files() { # prev: build_conf
     # Unsquash root filesystem 'airootfs.sfs', this creates a directory 'squashfs-root' containing the entire system
     echo -e "Unsquashing Arch image ..." | log
     cd "${custom_iso}"/arch/x86_64 || exit
-    sudo unsquashfs airootfs.sfs
+    unsquashfs airootfs.sfs
     echo -e "Done unsquashing airootfs.sfs"
     echo -e ""
 
     echo -e "Adding console and locale config files to iso ..." | log
     # Copy over vconsole.conf (sets font at boot), locale.gen (enables locale(s) for font) & uvesafb.conf
-    sudo cp "${working_dir}"/etc/vconsole.conf "${working_dir}"/etc/locale.gen "${squashfs}"/etc/
-    sudo arch-chroot "${squashfs}" /bin/bash locale-gen
+    cp "${working_dir}"/etc/vconsole.conf "${working_dir}"/etc/locale.gen "${squashfs}"/etc/
+    arch-chroot "${squashfs}" /bin/bash locale-gen
 
     # Copy over main Anarchy config and installer script, make them executable
     echo -e "Adding anarchy config and installer scripts to iso ..." | log
-    sudo cp "${working_dir}"/etc/anarchy.conf "${working_dir}"/etc/pacman.conf "${squashfs}"/etc/
-    sudo cp "${working_dir}"/anarchy-installer.sh "${squashfs}"/usr/bin/anarchy
-    sudo cp "${working_dir}"/extra/sysinfo "${working_dir}"/extra/iptest "${squashfs}"/usr/bin/
-    sudo chmod +x "${squashfs}"/usr/bin/anarchy "${squashfs}"/usr/bin/sysinfo "${squashfs}"/usr/bin/iptest
+    cp "${working_dir}"/etc/anarchy.conf "${working_dir}"/etc/pacman.conf "${squashfs}"/etc/
+    cp "${working_dir}"/anarchy "${squashfs}"/usr/bin/anarchy
+    cp "${working_dir}"/extra/sysinfo "${working_dir}"/extra/iptest "${squashfs}"/usr/bin/
+    chmod +x "${squashfs}"/usr/bin/anarchy "${squashfs}"/usr/bin/sysinfo "${squashfs}"/usr/bin/iptest
 
     # Create Anarchy and lang directories, copy over all lang files
     echo -e "Adding language files to iso ..." | log
-    sudo mkdir -p "${squashfs}"/usr/share/anarchy/lang "${squashfs}"/usr/share/anarchy/extra "${squashfs}"/usr/share/anarchy/boot "${squashfs}"/usr/share/anarchy/etc
-    sudo cp "${working_dir}"/lang/* "${squashfs}"/usr/share/anarchy/lang/
+    mkdir -p "${squashfs}"/etc/anarchy.d/lang "${squashfs}"/etc/anarchy.d/extra "${squashfs}"/etc/anarchy.d/boot "${squashfs}"/etc/anarchy.d/etc
+    cp "${working_dir}"/lang/* "${squashfs}"/etc/anarchy.d/lang/
 
     # Create shell function library, copy /lib to squashfs-root
     echo -e "Adding anarchy scripts to iso ..." | log
-    sudo mkdir "${squashfs}"/usr/lib/anarchy
-    sudo cp "${working_dir}"/lib/* "${squashfs}"/usr/lib/anarchy/
+    mkdir -p "${squashfs}"/etc/anarchy.d/scripts "${squashfs}"/etc/anarchy.d/libs
+    cp "${working_dir}"/libs/* "${squashfs}"/etc/anarchy.d/libs/
+    cp "${working_dir}"/scripts/* "${squashfs}"/etc/anarchy.d/scripts/
 
     # Copy over extra files (dot files, desktop configurations, help file, issue file, hostname file)
     echo -e "Adding dot files and desktop configurations to iso ..." | log
-    sudo rm "${squashfs}"/root/install.txt
-    sudo cp "${working_dir}"/extra/shellrc/.zshrc "${squashfs}"/root/
-    sudo cp "${working_dir}"/extra/.help "${working_dir}"/extra/.dialogrc "${squashfs}"/root/
-    sudo cp "${working_dir}"/extra/shellrc/.zshrc "${squashfs}"/etc/zsh/zshrc
-    sudo cp -r "${working_dir}"/extra/shellrc/. "${squashfs}"/usr/share/anarchy/extra/
-    sudo cp -r "${working_dir}"/extra/desktop "${working_dir}"/extra/fonts "${working_dir}"/extra/anarchy-icon.png "${squashfs}"/usr/share/anarchy/extra/
-    cat "${working_dir}"/extra/.helprc | sudo tee -a "${squashfs}"/root/.zshrc >/dev/null
-    sudo cp "${working_dir}"/etc/hostname "${working_dir}"/etc/issue_cli "${squashfs}"/etc/
-    sudo cp -r "${working_dir}"/boot/splash.png "${working_dir}"/boot/loader/ "${squashfs}"/usr/share/anarchy/boot/
-    sudo cp "${working_dir}"/etc/nvidia340.xx "${squashfs}"/usr/share/anarchy/etc/
+    rm "${squashfs}"/root/install.txt
+    cp "${working_dir}"/extra/shellrc/.zshrc "${squashfs}"/root/
+    cp "${working_dir}"/extra/.help "${working_dir}"/extra/.dialogrc "${squashfs}"/root/
+    cp "${working_dir}"/extra/shellrc/.zshrc "${squashfs}"/etc/zsh/zshrc
+    cp -r "${working_dir}"/extra/shellrc/. "${squashfs}"/etc/anarchy.d/extra/
+    cp -r "${working_dir}"/extra/desktop "${working_dir}"/extra/fonts "${working_dir}"/extra/anarchy-icon.png "${squashfs}"/etc/anarchy.d/extra/
+    cat "${working_dir}"/extra/.helprc | tee -a "${squashfs}"/root/.zshrc >/dev/null
+    cp "${working_dir}"/etc/hostname "${working_dir}"/etc/issue_cli "${squashfs}"/etc/
+    cp -r "${working_dir}"/boot/splash.png "${working_dir}"/boot/loader/ "${squashfs}"/etc/anarchy.d/boot/
+    cp "${working_dir}"/etc/nvidia340.xx "${squashfs}"/etc/anarchy.d/etc/
 
     # Download and copy over wallpapers
-    sudo mkdir "${squashfs}"/usr/share/anarchy/extra/wallpapers
+    mkdir "${squashfs}"/etc/anarchy.d/extra/wallpapers
     git clone "${wallpapers_git_url}" "${brand_dir}"
-    sudo cp "${wallpapers_dir}"/* "${squashfs}"/usr/share/anarchy/extra/wallpapers/
+    cp "${wallpapers_dir}"/* "${squashfs}"/etc/anarchy.d/extra/wallpapers/
  
     # Remove brand folder
     rm -rf "${brand_dir}"
@@ -396,10 +385,10 @@ copy_config_files() { # prev: build_conf
 build_system() { # prev: build_sys
     echo -e "Installing packages to new system ..." | log
     # Install fonts, fbterm, fetchmirrors etc.
-    sudo pacman --root "${squashfs}" --cachedir "${squashfs}"/var/cache/pacman/pkg --noconfirm -Sy terminus-font acpi zsh-syntax-highlighting pacman-contrib
-    sudo pacman --root "${squashfs}" --cachedir "${squashfs}"/var/cache/pacman/pkg -Sl | awk '/\[installed\]$/ {print $1 "/" $2 "-" $3}' > "${custom_iso}"/arch/pkglist.x86_64.txt
-    sudo pacman --root "${squashfs}" --cachedir "${squashfs}"/var/cache/pacman/pkg --noconfirm -Scc
-    sudo rm -f "${squashfs}"/var/cache/pacman/pkg/*
+    pacman --root "${squashfs}" --cachedir "${squashfs}"/var/cache/pacman/pkg --noconfirm -Sy terminus-font acpi zsh-syntax-highlighting pacman-contrib
+    pacman --root "${squashfs}" --cachedir "${squashfs}"/var/cache/pacman/pkg -Sl | awk '/\[installed\]$/ {print $1 "/" $2 "-" $3}' > "${custom_iso}"/arch/pkglist.x86_64.txt
+    pacman --root "${squashfs}" --cachedir "${squashfs}"/var/cache/pacman/pkg --noconfirm -Scc
+    rm -f "${squashfs}"/var/cache/pacman/pkg/*
     echo -e "Done installing packages to new system"
     echo -e ""
 
@@ -409,8 +398,8 @@ build_system() { # prev: build_sys
 
     # Recreate the iso using compression, remove unsquashed system, generate checksums
     echo -e "Recreating Anarchy image ..." | log
-    sudo mksquashfs squashfs-root airootfs.sfs -b 1024k -comp xz
-    sudo rm -r squashfs-root
+    mksquashfs squashfs-root airootfs.sfs -b 1024k -comp xz
+    rm -r squashfs-root
     md5sum airootfs.sfs > airootfs.md5
     echo -e "Done recreating Anarchy image"
     echo -e ""
@@ -486,7 +475,7 @@ uninstall_dependencies() {
                     echo -e "Chose to remove dependencies" | log
                     for pkg in "${missing_deps[@]}"; do
                         echo -e "Removing ${pkg} ..." | log
-                        sudo pacman -Rs ${pkg}
+                        pacman -Rs ${pkg}
                         echo -e "${pkg} removed" | log
                     done
                     echo -e "Removed all dependencies" | log
@@ -517,14 +506,14 @@ cleanup() {
     # Check if customiso is mounted
     if mount | grep "${custom_iso}" > /dev/null; then
         echo -e "Unmounting customiso directory ..." | log
-        sudo umount "${custom_iso}"
+        umount "${custom_iso}"
     fi
 
     # Check and clean the customiso directory
     if [[ -d "${custom_iso}" ]]; then
         echo -e "Removing customiso directory ..." | log
-        # We have to use sudo in case root owns files inside customiso
-        sudo rm -rf "${custom_iso}"
+        # We have to use in case root owns files inside customiso
+        rm -rf "${custom_iso}"
     fi
 
     if [[ -d "${brand_dir}" ]]; then
@@ -534,7 +523,7 @@ cleanup() {
 
     if [[ "${last_command}" != "init" ]]; then
         echo -e "${color_white}Please report this issue to our Github issue tracker: https://git.io/JeOxK${color_blank}"
-        echo -e "${color_white}Make sure to include the relevant log: ${log_file}${color_blank}"
+        echo -e "${color_white}Make sure to include the relevant log.sh: ${log_file}${color_blank}"
         echo -e "${color_white}You can also ask about the issue in our Telegram: https://t.me/anarchy_linux${color_blank}"
     fi
 }
@@ -545,7 +534,7 @@ usage() {
     echo -e "${color_white}     -c | --no-color)    Disable color output${color_blank}"
     echo -e "${color_white}     -i | --no-input)    Don't ask user for input${color_blank}"
     echo -e "${color_white}     -o | --output-dir)  Specify directory for generated ISOs/checksums${color_blank}"
-    echo -e "${color_white}     -l | --log-dir)     Specify directory for logs${color_blank}"
+    echo -e "${color_white}     -l | --log.sh-dir)     Specify directory for logs${color_blank}"
     echo -e ""
 }
 
@@ -588,7 +577,7 @@ while (true); do
         #;;
         *)
             prettify
-            set_up_logging
+            logging
             set_version
             init
             extract_arch_iso
