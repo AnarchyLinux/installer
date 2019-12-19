@@ -1,0 +1,142 @@
+#!/usr/bin/env bash
+
+# Source config file and libraries
+source "${ANARCHY_CONFIG_FILE}"
+for library in "${ANARCHY_LIBRARIES_DIRECTORY}"/*.sh; do
+    source "${library}"
+done
+
+log "Started language selection"
+
+menu_title="${language_selection_message}"
+
+INSTALLER_LANGUAGE=$(dialog --nocancel --menu "\nAnarchy Installer\n\n \Z2*\Zn Select your install language:" 20 60 10 \
+    "English"               "-" \
+    "Bulgarian"             "Български" \
+    "Dutch"                 "Nederlands" \
+    "French"                "Français" \
+    "German"                "Deutsch" \
+    "Greek"                 "Greek" \
+    "Hungarian"             "Magyar" \
+    "Indonesian"            "bahasa Indonesia" \
+    "Italian"               "Italiano" \
+    "Latvian"               "Latviešu" \
+    "Lithuanian"            "Lietuvių" \
+    "Polish"                "Polski" \
+    "Portuguese"            "Português" \
+    "Portuguese-Brazilian"  "Português do Brasil" \
+    "Romanian"              "Română" \
+    "Russian"               "Russian" \
+    "Spanish"               "Español" \
+    "Swedish"               "Svenska" 3>&1 1>&2 2>&3)
+
+case "${INSTALLER_LANGUAGE}" in
+    "English")
+        export translation_file="${ANARCHY_TRANSLATIONS_DIRECTORY}"/english.conf
+    ;;
+
+    "Bulgarian")
+        export translation_file="${ANARCHY_TRANSLATIONS_DIRECTORY}"/bulgarian.conf
+        lib=bg
+        bro=bg
+    ;;
+
+    "Dutch")
+        export translation_file="${ANARCHY_TRANSLATIONS_DIRECTORY}"/dutch.conf
+        lib=nl
+        bro=nl
+    ;;
+
+    "French")
+        export translation_file="${ANARCHY_TRANSLATIONS_DIRECTORY}"/french.conf
+        lib=fr
+        bro=fr
+    ;;
+
+    "German")
+        export translation_file="${ANARCHY_TRANSLATIONS_DIRECTORY}"/german.conf
+        lib=de
+        bro=de
+    ;;
+
+    "Greek")
+        export translation_file="${ANARCHY_TRANSLATIONS_DIRECTORY}"/greek.conf
+        lib=el
+        bro=el
+    ;;
+
+    "Hungarian")
+        export translation_file="${ANARCHY_TRANSLATIONS_DIRECTORY}"/hungarian.conf
+        lib=hu
+        bro=hu
+    ;;
+
+    "Indonesian")
+        export translation_file="${ANARCHY_TRANSLATIONS_DIRECTORY}"/indonesian.conf
+        lib=id
+        bro=id
+    ;;
+
+    "Italian")
+        export translation_file="${ANARCHY_TRANSLATIONS_DIRECTORY}"/italian.conf
+        lib=it
+        bro=it
+    ;;
+
+    "Latvian")
+        export translation_file="${ANARCHY_TRANSLATIONS_DIRECTORY}"/latvian.conf
+        lib=lv
+        bro=lv
+    ;;
+
+    "Lithuanian")
+        export translation_file="${ANARCHY_TRANSLATIONS_DIRECTORY}"/lithuanian.conf
+        lib=lt
+        bro=lt
+    ;;
+
+    "Polish")
+        export translation_file="${ANARCHY_TRANSLATIONS_DIRECTORY}"/polish.conf
+        lib=pl
+        bro=pl
+    ;;
+
+    "Portuguese")
+        export translation_file="${ANARCHY_TRANSLATIONS_DIRECTORY}"/portuguese.conf
+        lib=pt
+        bro=pt-pt
+    ;;
+
+    "Portuguese-Brazilian")
+        export translation_file="${ANARCHY_TRANSLATIONS_DIRECTORY}"/portuguese-br.conf
+        lib=pt-br
+        bro=pt-br
+    ;;
+
+    "Romanian")
+        export translation_file="${ANARCHY_TRANSLATIONS_DIRECTORY}"/romanian.conf
+        lib=ro
+        bro=ro
+    ;;
+
+    "Russian")
+        export translation_file="${ANARCHY_TRANSLATIONS_DIRECTORY}"/russian.conf
+        lib=ru
+        bro=ru
+    ;;
+
+    "Spanish")
+        export translation_file="${ANARCHY_TRANSLATIONS_DIRECTORY}"/spanish.conf
+        lib=es
+        bro=es-es
+    ;;
+
+    "Swedish")
+        export translation_file="${ANARCHY_TRANSLATIONS_DIRECTORY}"/swedish.conf
+        lib=sv
+        bro=sv-se
+    ;;
+esac
+
+log "Selected ${INSTALLER_LANGUAGE}"
+return 0

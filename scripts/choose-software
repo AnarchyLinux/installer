@@ -2,7 +2,7 @@
 
 # TODO: check if items are in array (since we don't use strings anymore)
 
-op_title="${software_op_msg}"
+menu_title="${software_op_msg}"
 
 if (dialog --yes-button "${yes}" --no-button "${no}" --yesno "\n${software_msg0}" 10 60); then
     while (true); do
@@ -549,8 +549,8 @@ if (dialog --yes-button "${yes}" --no-button "${no}" --yesno "\n${software_msg0}
 
                         if (dialog --yes-button "${install}" --no-button "${cancel}" --yesno "\n${software_confirm_var1}" "${height}" 65); then
                             # Installs the packages in an arch-chroot
-                            arch-chroot "${ARCH}" pacman --noconfirm -Sy archlinux-keyring &>>"${log}" &
-                            arch-chroot "${ARCH}" pacman --noconfirm -Sy $(echo "${download}") &>>"${log}" &
+                            arch-chroot "${CHROOT_MOUNT_POINT}" pacman --noconfirm -Sy archlinux-keyring &>>"${log}" &
+                            arch-chroot "${CHROOT_MOUNT_POINT}" pacman --noconfirm -Sy $(echo "${download}") &>>"${log}" &
                             pid=$! pri=$(<<<"${down}" sed 's/\..*$//') msg="\n${software_load_var}" load_log
                             echo "$(date -u "+%F %H:%M") : Finished installing software" >> "${log}"
                             unset final_software

@@ -1,5 +1,13 @@
 #!/usr/bin/env bash
 
+# Source config file and libraries
+source "${ANARCHY_CONFIG_FILE}"
+for library in "${ANARCHY_LIBRARIES_DIRECTORY}"/*.sh; do
+    source "${library}"
+done
+
+log "Choosing base package"
+
 menu_title="${install_op_msg}"
 
 # Kernel and base selection menu
@@ -16,6 +24,7 @@ while (true); do
 
     if [[ $? -ne 0 ]]; then
         if (dialog --defaultno --yes-button "${yes}" --no-button "${no}" --yesno "\n${exit_msg}" 10 60); then
+            # TODO: Fix reference
             main_menu
         fi
     else
@@ -34,6 +43,8 @@ case "${install_menu}" in
     8) base_install=('base-devel' 'linux-zen' 'linux-zen-headers') ;;
 esac
 
+log "Selected kernel/base package no. ${install_menu}"
+
 # Shell selection menu
 while (true); do
     shell=$(dialog --ok-button "${ok}" --cancel-button "${cancel}" --menu "${shell_msg}" 16 64 6 \
@@ -46,6 +57,7 @@ while (true); do
 
     if [[ $? -ne 0 ]]; then
         if (dialog --defaultno --yes-button "${yes}" --no-button "${no}" --yesno "\n${exit_msg}" 10 60); then
+            # TODO: Fix reference
             main_menu
         fi
     else
@@ -77,9 +89,11 @@ while (true); do
     fi
 done
 
+log "Selected ${shell} shell"
+
 # Boot loader selection menu
 while (true); do
-    if "${UEFI}" ; then
+    if "${uefi}" ; then
         bootloader=$(dialog --ok-button "${ok}" --cancel-button "${cancel}" --menu "${loader_type_msg}" 13 64 4 \
             "grub"			"${loader_msg}" \
             "syslinux"		"${loader_msg1}" \
@@ -104,7 +118,7 @@ while (true); do
     elif [[ "${bootloader}" == "efistub" ]]; then
         break
     elif [[ "${bootloader}" == "syslinux" ]]; then
-        if ! "${UEFI}" ; then
+        if ! "${uefi}" ; then
             if (tune2fs -l /dev/"${BOOT}" | grep "64bit" &> /dev/null); then
                 if (dialog --yes-button "${yes}" --no-button "${no}" --yesno "\n${syslinux_warn_msg}" 11 60); then
                     mnt=$(df | grep -w "${BOOT}" | awk '{print $6}')
@@ -135,6 +149,8 @@ while (true); do
     fi
 done
 
+log "Selected ${bootloader} bootloader"
+
 while (true); do
     net_util=$(dialog --ok-button "${ok}" --cancel-button "${cancel}" --menu "${wifi_util_msg}" 13 64 3 \
         "networkmanager" 	"${net_util_msg1}" \
@@ -148,20 +164,22 @@ while (true); do
     else
         if [[ "${net_util}" == "netctl" ]] || [[ "${net_util}" == "networkmanager" ]]; then
             base_install+=("${net_util}" 'dialog')
-            enable_nm=true
+            enable_network_manager=true
         fi
         break
     fi
 done
 
+log "Selected ${net_util} for network management"
+
 if (dialog --yes-button "${yes}" --no-button "${no}" --yesno "\n\n${multilib_msg}" 11 60); then
-    multilib=true
-    echo "$(date -u "+%F %H:%M") : Include multilib" >> "${log}"
+    install_multilib_repo=true
+    log "Installed multilib repo"
 fi
 
 if (dialog --yes-button "${yes}" --no-button "${no}" --yesno "\n\n${dhcp_msg}" 11 60); then
-    dhcp=true
-    echo "$(date -u "+%F %H:%M") : Enable dhcp" >> "${log}"
+    enable_dhcp=true
+    log "Enabled DHCP"
 fi
 
 if "${wifi}" ; then
@@ -169,31 +187,39 @@ if "${wifi}" ; then
 else
     if (dialog --defaultno --yes-button "${yes}" --no-button "${no}" --yesno "\n${wifi_option_msg}" 10 60); then
         base_install+=('wireless_tools' 'wpa_supplicant')
+        log "Added wireless tools"
     fi
 fi
 
-if "${bluetooth}" ; then
+if "${install_bluetooth}" ; then
     if (dialog --defaultno --yes-button "${yes}" --no-button "${no}" --yesno "\n${bluetooth_msg}" 10 60); then
         base_install+=('bluez' 'bluez-utils' 'pulseaudio-bluetooth')
         enable_bt=true
+        log "Enabled bluetooth"
     fi
 fi
 
 if (dialog --defaultno --yes-button "${yes}" --no-button "${no}" --yesno "\n${pppoe_msg}" 10 60); then
     base_install+=('rp-pppoe')
+    log "Added support for PPPoE DSL connections"
 fi
 
 if (dialog --defaultno --yes-button "${yes}" --no-button "${no}" --yesno "\n${os_prober_msg}" 10 60); then
     base_install+=('os-prober')
+    log "Added OS prober"
 fi
 
 if "${enable_f2fs}" ; then
     base_install+=('f2fs-tools')
+    log "Enabled F2FS"
 fi
 
-if "${UEFI}" ; then
+if "${uefi}" ; then
     base_install+=('efibootmgr')
+    log "Added UEFI support"
 fi
+
+log "Adding selected packages to package list"
 
 # Append the selected packages to the packages file
 for package in "${base_install[@]}"; do
@@ -204,4 +230,5 @@ for aur_package in "${aur_packages[@]}"; do
     echo -e "${aur_package}" >> aur_packages_file
 done
 
-# vim: ai:ts=4:sw=4:et
+log "Added selected packages to package list"
+return 0

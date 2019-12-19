@@ -1,0 +1,44 @@
+#!/usr/bin/env bash
+
+# Source config file and libraries
+source "${ANARCHY_CONFIG_FILE}"
+for library in "${ANARCHY_LIBRARIES_DIRECTORY}"/*.sh; do
+    source "${library}"
+done
+
+log "Started keyboard layout selection"
+
+menu_title="${key_op_msg}"
+
+KEYMAPS="$(find /usr/share/kbd/keymaps -type f | sed -n -e 's!^.*/!!p' | grep ".map.gz" | sed 's/.map.gz//g' | sed 's/$/ -/g' | sort)"
+
+while (true); do
+    keyboard=$(dialog --nocancel --ok-button "${ok}" --menu "${keys_msg}" 18 60 10 \
+    "us"        "United States" \
+    "de"        "German" \
+    "el"        "Greek" \
+    "hu"        "Hungarian" \
+    "es"        "Spanish" \
+    "fr"        "French" \
+    "it"        "Italian" \
+    "pt-latin9" "Portugal" \
+    "ro"        "Romanian" \
+    "ru"        "Russian" \
+    "sl"        "Slovenian" \
+    "sv"        "Swedish" \
+    "uk"        "United Kingdom" \
+    "${other}"  "${other-keymaps}" 3>&1 1>&2 2>&3)
+
+    if [[ "${keyboard}" = "${other}" ]]; then
+        keyboard=$(dialog --ok-button "${ok}" --cancel-button "${cancel}" --menu "${keys_msg}" 19 60 10 "${KEYMAPS}" 3>&1 1>&2 2>&3)
+        if [[ $? -eq 0 ]]; then
+            break
+        fi
+    else
+        break
+    fi
+done
+
+log "Chose ${keyboard} keyboard layout"
+localectl set-keymap "${keyboard}"
+return 0

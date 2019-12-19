@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # Installs all the requested packages
 
+# TODO: Update variable names
 packages="/usr/lib/anarchy/extra/packages"
 aur_packages="/usr/lib/anarchy/extra/aur-packages"
 
@@ -8,6 +9,7 @@ aur_packages="/usr/lib/anarchy/extra/aur-packages"
 pacman --noconfirm -Sy
 yay --noconfirm -Sy
 
+# TODO: Check if arch-chroot is needed
 for package in $(cat ${packages}); do
     pacman --noconfirm -S "${package}" || continue
 done

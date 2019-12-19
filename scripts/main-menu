@@ -1,0 +1,67 @@
+#!/usr/bin/env bash
+
+menu_title="$menu_op_msg"
+
+while (true)
+  do
+    menu_item=$(dialog --nocancel --ok-button "$ok" --menu "$menu" 19 60 8 \
+        "$menu13" "-" \
+        "$menu0"  "-" \
+        "$menu1"  "-" \
+        "$menu2"  "-" \
+        "$menu3"  "-" \
+        "$menu5"  "-" \
+        "$menu11" "-" \
+        "$menu12" "-" 3>&1 1>&2 2>&3)
+
+    case "$menu_item" in
+        "$menu0")	## Set system locale
+                set_locale
+        ;;
+        "$menu1")	## Set system timezone
+                set_zone
+        ;;
+        "$menu2")	## Set system keymap
+                set_keys
+        ;;
+        "$menu3")	## Prepare drives check if mounted
+                if "$mounted" ; then
+                    if (dialog --yes-button "$yes" --no-button "$no" --defaultno --yesno "\n$menu_err_msg3" 10 60); then
+                        mounted=false ; prepare_drives
+                    fi
+                else
+                    prepare_drives
+                fi
+        ;;
+        "$menu5")	## Begin base install
+                if "$mounted" ; then
+                    source "${anarchy_scripts}"/choose_install_options.sh
+                    set_hostname
+                    set_user
+                    add_software
+                    install_base
+                    configure_system
+                    add_user
+                    reboot_system
+                elif (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$install_err_msg1" 10 60) then
+                    prepare_drives
+                fi
+        ;;
+        "$menu11") 	## Reboot system function
+                reboot_system
+        ;;
+        "$menu12") 	## Exit installer
+                if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$menu_exit_msg" 10 60) then
+                    reset ; exit
+                fi
+        ;;
+        "$menu13")	## Start command line session
+                echo -e "alias anarchy=exit ; echo -e '$return_msg'" > /tmp/.zshrc
+                clear
+                ZDOTDIR=/tmp/ zsh
+                rm /tmp/.zshrc
+                clear
+        ;;
+    esac
+## End main menu loop
+done

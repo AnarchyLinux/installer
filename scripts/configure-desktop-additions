@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+# prev: config_env
+
+cp -r "${anarchy_directory}"/extra/fonts/ttf-zekton-rg "$ARCH"/usr/share/fonts
+chmod -R 755 "$ARCH"/usr/share/fonts/ttf-zekton-rg
+arch-chroot "$ARCH" fc-cache -f
+cp "${anarchy_directory}"/extra/fonts/unifont/unifont-11.0.02.ttf "$ARCH"/usr/share/fonts/TTF
+cp "${anarchy_directory}"/extra/anarchy-icon.png "$ARCH"/root/.face
+cp "${anarchy_directory}"/extra/anarchy-icon.png "$ARCH"/etc/skel/.face
+cp "${anarchy_directory}"/extra/anarchy-icon.png "$ARCH"/usr/share/pixmaps
+mkdir "$ARCH"/usr/share/backgrounds/anarchy
+cp -r "${anarchy_directory}"/extra/wallpapers/* "$ARCH"/usr/share/backgrounds/anarchy/
+
+if [ -n "$config_env" ]; then
+    cp -R "${anarchy_directory}/extra/desktop/$config_env/*" -t "$ARCH"/root
+    cp -R "${anarchy_directory}/extra/desktop/$config_env/.config" -t "$ARCH"/etc/skel
+
+fi
+
+case "$config_env" in
+    "Anarchy-gnome"|"Anarchy-budgie")	cp -r "${anarchy_directory}/extra/desktop/Anarchy-gnome/gnome-backgrounds.xml" "$ARCH"/usr/share/gnome-background-properties
+    ;;
+    "Anarchy-openbox")	if [ "$virt" == "vbox" ]; then
+                    echo "VBoxClient-all &" >> "$ARCH"/etc/skel/.config/openbox/autostart
+                    echo "VBoxClient-all &" >> "$ARCH"/root/.config/openbox/autostart
+                fi
+
+                if [ "$net_util" == "networkmanager" ]; then
+                    echo "nm-applet &" >> "$ARCH"/etc/skel/.config/openbox/autostart
+                    echo "nm-applet &" >> "$ARCH"/root/.config/openbox/autostart
+                fi
+    ;;
+esac
+
+echo "$(date -u "+%F %H:%M") : Configured: $config_env" >> "$log"

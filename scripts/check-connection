@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+
+# Source config file and libraries
+source "${ANARCHY_CONFIG_FILE}"
+for library in "${ANARCHY_LIBRARIES_DIRECTORY}"/*.sh; do
+    source "${library}"
+done
+
+log "Checking for a network connection"
+
+# Use netcat (nc) to check if we can connect to 1.1.1.1 on port 443
+if nc -zw1 1.0.0.1 443; then
+    log "Connected to the internet"
+    return 0
+else
+    log "Not connected to the internet"
+    return 1
+fi

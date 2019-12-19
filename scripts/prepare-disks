@@ -1,0 +1,167 @@
+#!/usr/bin/env bash
+
+# Source config file and libraries
+source "${ANARCHY_CONFIG_FILE}"
+for library in "${ANARCHY_LIBRARIES_DIRECTORY}"/*.sh; do
+    source "${library}"
+done
+
+log "Preparing disks for installation"
+
+menu_title="${part_op_msg}"
+
+if (df | grep "${CHROOT_MOUNT_POINT}" &> /dev/null); then
+    umount -R "${CHROOT_MOUNT_POINT}" &> /dev/null &
+    pid=$! pri=0.1 msg="${wait_load} \n\n \Z1> \Z2umount -R ${CHROOT_MOUNT_POINT}\Zn" load
+    swapoff -a &> /dev/null &
+fi
+
+# TODO: Fix having to make a new script
+TMP_DIR="$(mktemp -d)"
+TMP_PARTITIONING_SCRIPT="${TMP_DIR}"/tmp_partitioning.sh
+
+until "${mounted}"; do
+    PARTITIONING_METHOD=$(dialog --ok-button "${ok}" --cancel-button "${cancel}" --menu "${part_msg}" 16 64 4 \
+    "${method0}" "-" \
+    "${method1}" "-" \
+    "${method2}"  "-" \
+    "${menu_msg}" "-" 3>&1 1>&2 2>&3)
+
+    if [[ $? -gt 0 ]] || [[ "${PARTITIONING_METHOD}" == "${menu_msg}" ]]; then
+        # TODO: Fix reference to menus.sh
+        main_menu
+    elif [[ "${PARTITIONING_METHOD}" != "${method2}" ]]; then
+        dev_menu="           Device: | Size: | Type:  |"
+        if [[ "${ok_screen_size}" ]]; then
+            # TODO: Update the code to not use cat
+            cat <<-EOF > "${TMP_PARTITIONING_SCRIPT}"
+                dialog --colors --backtitle "${backtitle}" --title "${anarchy_title}" --ok-button "${ok}" --cancel-button "${cancel}" --menu "${drive_msg} \n\n ${dev_menu}" 16 60 5 \\
+            EOF
+        else
+            cat <<-EOF > "${TMP_PARTITIONING_SCRIPT}"
+                dialog --colors --title "${anarchy_title}" --ok-button "${ok}" --cancel-button "${cancel}" --menu "${drive_msg} \n\n ${dev_menu}" 16 60 5 \\
+            EOF
+        fi
+
+        cat <<-EOF >> "${TMP_PARTITIONING_SCRIPT}"
+            $(lsblk -nio NAME,SIZE,TYPE | egrep "disk|raid[0-9]+$" | sed 's/[^[:alnum:]_., ]//g' | column -t | sort -k 1,1 | uniq | awk '{print "\""$1"\"""  ""\"| "$2" | "$3" |==>\""" \\"}' | column -t)
+            3>&1 1>&2 2>&3
+        EOF
+
+        DRIVE="$(bash "${TMP_PARTITIONING_SCRIPT}")"
+        rm "${TMP_PARTITIONING_SCRIPT}"
+
+        if [[ -n "${DRIVE}" ]]; then
+            if (<<<"${DRIVE}" egrep "nvme.*|mmc.*|md.*" &> /dev/null); then
+                PART_PREFIX="p"
+            fi
+
+            drive_byte="$(lsblk -nibo NAME,SIZE | grep -w "${DRIVE}" | awk '{print $2}')"
+            drive_mib="$((drive_byte/1024/1024))"
+            drive_gigs="$((drive_mib/1024))"
+            f2fs="$(lsblk -dnro ROTA /dev/${DRIVE})"
+            log "Drive size in MiB: ${drive_mib}"
+            log "F2FS state: ${f2fs}"
+            # TODO: Fix reference
+            fs_select
+
+            if (dialog --yes-button "${yes}" --no-button "${no}" --yesno "\n${swap_msg0}" 10 60); then
+                while (true); do
+                    SWAP_SIZE="$(dialog --ok-button "${ok}" --cancel-button "${cancel}" --inputbox "\n${swap_msg1}" 11 55 "512M" 3>&1 1>&2 2>&3)"
+
+                    if [[ $? -gt 0 ]]; then
+                        swap=false
+                        break
+                    else
+                        if [[ "$(grep -o ".$" <<< "${SWAP_SIZE}")" == "M" ]]; then
+                            SWAP_SIZE=$(<<<${SWAP_SIZE} sed 's/M//;s/\..*//')
+
+                            if [[ "${SWAP_SIZE}" -lt "$(echo "${drive_mib}-5120" | bc)" ]]; then
+                                swap=true
+                                break
+                            else
+                                dialog --ok-button "${ok}" --msgbox "\n${swap_err_msg0}" 10 60
+                            fi
+                        elif [[ "$(grep -o ".$" <<< "${SWAP_SIZE}")" == "G" ]]; then
+                            SWAP_SIZE=$(echo "$(<<<${SWAP_SIZE} sed 's/G//')*1024" | bc | sed 's/\..*//')
+                            if [[ "${SWAP_SIZE}" -lt "$(echo "${drive_mib}-5120" | bc)" ]]; then
+                                swap=true
+                                break
+                            else
+                                dialog --ok-button "${ok}" --msgbox "\n${swap_err_msg0}" 10 60
+                            fi
+                        else
+                            dialog --ok-button "${ok}" --msgbox "\n${swap_err_msg1}" 10 60
+                        fi
+                    fi
+                done
+
+                log "Set swap size to ${SWAP_SIZE}"
+            fi
+
+            if (efivar -l &> /dev/null); then
+                if (dialog --yes-button "${yes}" --no-button "${no}" --yesno "\n${efi_msg0}" 10 60); then
+                    gpt=true
+                    uefi=true
+                    log "Activated UEFI boot"
+                fi
+            fi
+
+            if ! "${uefi}" ; then
+                if (dialog --defaultno --yes-button "${yes}" --no-button "${no}" --yesno "\n${gpt_msg}" 10 60); then
+                    gpt=true
+                    log "Activated GPT partition scheme"
+                fi
+            fi
+
+            if "${swap}" ; then
+                drive_var="${drive_var1}"
+                height=13
+                if "${uefi}" ; then
+                    drive_var="${drive_var2}"
+                    height=14
+                fi
+            elif "${uefi}" ; then
+                drive_var="${drive_var3}"
+                height=13
+            else
+                height=11
+            fi
+
+            if (dialog --defaultno --yes-button "${write}" --no-button "${cancel}" --yesno "\n${drive_var}" "${height}" 60) then
+                (sgdisk --zap-all /dev/"${DRIVE}"
+                wipefs -a /dev/"${DRIVE}") &> /dev/null &
+                pid=$! pri=0.1 msg="\n${frmt_load} \n\n \Z1> \Z2sgdisk --zap-all /dev/${DRIVE}\Zn" load
+                log "Formatted /dev/${DRIVE}"
+            else
+                unset PARTITIONING_METHOD
+            fi
+        else
+            continue
+        fi
+    fi
+
+    case "${PARTITIONING_METHOD}" in
+        "${method0}")
+            # TODO: Fix reference
+            auto_part
+            if ! "${mounted}" ; then
+                dialog --ok-button "${ok}" --msgbox "\n${part_err_msg}" 10 60
+            fi
+        ;;
+        "${method1}")
+            # TODO: Fix reference
+            auto_encrypt
+            if ! "${mounted}" ; then
+                dialog --ok-button "${ok}" --msgbox "\n${part_err_msg}" 10 60
+            fi
+        ;;
+        "${method2}")
+            points="$(echo -e "${points_orig}\n${custom} ${custom}-mountpoint")"
+            # TODO: Fix reference
+            part_menu
+        ;;
+    esac
+done
+
+log "Finished preparing disks"

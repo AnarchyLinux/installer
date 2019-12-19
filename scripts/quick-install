@@ -1,6 +1,14 @@
 #!/usr/bin/env bash
 
-case "${install_opt}" in
+# Source config file and libraries
+source "${ANARCHY_CONFIG_FILE}"
+for library in "${ANARCHY_LIBRARIES_DIRECTORY}"/*.sh; do
+    source "${library}"
+done
+
+log "Starting quick installation"
+
+case "$1" in
     1)
         kernel="linux"
         sh="/usr/bin/zsh"
@@ -25,7 +33,7 @@ case "${install_opt}" in
             'os-prober'
         )
 
-        if "${bluetooth}" ; then
+        if "${install_bluetooth}" ; then
             base_install+=(
                 'bluez'
                 'bluez-utils'
@@ -38,11 +46,12 @@ case "${install_opt}" in
             base_install+=('f2fs-tools')
         fi
 
-        if "${UEFI}" ; then
+        if "${uefi}" ; then
             base_install+=('efibootmgr')
         fi
 
-        source "${anarchy_scripts}"/select_desktop.sh
+        # TODO: Fix reference
+        run select_desktop.sh
         base_install+=("${DE}")
     ;;
 
@@ -70,7 +79,7 @@ case "${install_opt}" in
             'os-prober'
         )
 
-        if "${bluetooth}" ; then
+        if "${install_bluetooth}" ; then
             base_install+=(
                 'bluez'
                 'bluez-utils'
@@ -83,11 +92,12 @@ case "${install_opt}" in
              base_install+=('f2fs-tools')
         fi
 
-        if "${UEFI}" ; then
+        if "${uefi}" ; then
             base_install+=('efibootmgr')
         fi
 
-        source "${anarchy_scripts}"/select_desktop.sh
+        # TODO: Fix reference
+        run select_desktop.sh
         base_install+=("${DE}")
     ;;
 
@@ -114,7 +124,7 @@ case "${install_opt}" in
             'os-prober'
         )
 
-        if "${bluetooth}" ; then
+        if "${install_bluetooth}" ; then
             base_install+=(
                 'bluez'
                 'bluez-utils'
@@ -127,7 +137,7 @@ case "${install_opt}" in
             base_install+=('f2fs-tools')
         fi
 
-        if "${UEFI}" ; then
+        if "${uefi}" ; then
             base_install+=('efibootmgr')
         fi
     ;;
@@ -155,7 +165,7 @@ case "${install_opt}" in
             'os-prober'
         )
 
-        if "${bluetooth}" ; then
+        if "${install_bluetooth}" ; then
             base_install+=(
                 'bluez'
                 'bluez-utils'
@@ -168,13 +178,18 @@ case "${install_opt}" in
              base_install+=('f2fs-tools')
         fi
 
-        if "${UEFI}" ; then
+        if "${uefi}" ; then
             base_install+=('efibootmgr')
         fi
     ;;
 esac
 
+log "Adding quick install packages to package list"
+
 # Append the selected packages to the packages file
 for package in "${base_install[@]}"; do
-    echo -e "${package}" >> packages_file
+    echo -e "${package}" >> "${ANARCHY_PACKAGES_FILE}"
 done
+
+log "Added quick install packages to package list"
+return 0

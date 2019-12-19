@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+
+# Source config file and libraries
+source "${ANARCHY_CONFIG_FILE}"
+for library in "${ANARCHY_LIBRARIES_DIRECTORY}"/*.sh; do
+    source "${library}"
+done
+
+log "Setting hostname"
+
+menu_title="${host_op_msg}"
+
+while (true); do
+    CHOSEN_HOSTNAME="$(dialog --ok-button "${ok}" --nocancel --inputbox "\n${host_msg}" 12 55 "anarchy" 3>&1 1>&2 2>&3 | sed 's/ //g')"
+
+    if (<<<${CHOSEN_HOSTNAME} grep "^[0-9]\|[\[\$\!\'\"\`\\|%&#@()+=<>~;:/?.,^{}]\|]" &> /dev/null); then
+        dialog --ok-button "${ok}" --msgbox "\n${host_err_msg}" 10 60
+    else
+        break
+    fi
+done
+
+log "Set hostname to ${CHOSEN_HOSTNAME}"
+
+user=root
+# TODO: Fix variables (root_crypt passed to configure system)
+root_sh="${sh}"
+root_crypt="${pass_crypt}"
+return 0

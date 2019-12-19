@@ -1,25 +1,7 @@
 #!/usr/bin/env bash
-###############################################################
-### Anarchy Linux Install Script
-### configure_user.sh
-###
-### Copyright (C) 2017 Dylan Schacht
-###
-### By: Dylan Schacht (deadhead)
-### Email: deadhead3492@gmail.com
-### Webpage: https://anarchylinux.org
-###
-### Any questions, comments, or bug reports may be sent to above
-### email address. Enjoy, and keep on using Arch.
-###
-### License: GPL v2.0
-###############################################################
 
-set_user() {
-
-    while (true)	# Begin user menu while loop
-      do
-        op_title="$user_op_msg"
+while (true); do
+        menu_title="$user_op_msg"
         ## Create main user dialog menu from users in $tmp_passwd include root user
         user=$(dialog --extra-button --extra-label "$edit" --ok-button "$new_user" --cancel-button "$done_msg" --menu "$user_menu_msg" 13 55 4 \
             $(while IFS= read -r i ; do
@@ -81,7 +63,7 @@ set_user() {
             *)
                 while (true)
                   do
-                    op_title="$user_op_msg1"
+                    menu_title="$user_op_msg1"
                     user_sh=$(grep -w "$user" <"$tmp_passwd" | cut -d: -f2)
                     full_user=$(grep -w "$user" <"$tmp_passwd" | cut -d: -f4)
                     pass_crypt=$(grep -w "$user" <"$tmp_passwd" | cut -d: -f5)
@@ -117,7 +99,7 @@ set_user() {
 
                             if "$menu_enter" ; then
                                 input="$(echo "$pass_crypt" | openssl enc -aes-256-cbc -a -d -salt -pass pass:"$ssl_key")"
-                                        (printf "$input\n$input" | arch-chroot "$ARCH" passwd "$user") &> /dev/null &
+                                        (printf "$input\n$input" | arch-chroot "$CHROOT_MOUNT_POINT" passwd "$user") &> /dev/null &
                                         pid=$! pri=0.1 msg="$wait_load \n\n \Z1> \Z2passwd $user\Zn" load
                                 echo -e "${paswd}\n${user}:${user_sh}:${sudo_user}:${full_user}:${pass_crypt}" > "$tmp_passwd"
                             elif [ "$user" == "root" ]; then
@@ -151,7 +133,7 @@ set_user() {
                             fi
 
                             if "$menu_enter" ; then
-                                arch-chroot "$ARCH" chsh "$user" -s "$user_sh" &>/dev/null
+                                arch-chroot "$CHROOT_MOUNT_POINT" chsh "$user" -s "$user_sh" &>/dev/null
 
                                 if [ "$user" != "root" ]; then
                                     echo -e "${paswd}\n${user}:${user_sh}:${sudo_user}:${full_user}:${pass_crypt}" > "$tmp_passwd"
@@ -174,8 +156,8 @@ set_user() {
                             fi
 
                             if "$menu_enter" ; then
-                                (sed -i '/%wheel ALL=(ALL) ALL/s/^#//' $ARCH/etc/sudoers
-                                            arch-chroot "$ARCH" usermod -a -G wheel "$user") &> /dev/null &
+                                (sed -i '/%wheel ALL=(ALL) ALL/s/^#//' $CHROOT_MOUNT_POINT/etc/sudoers
+                                            arch-chroot "$CHROOT_MOUNT_POINT" usermod -a -G wheel "$user") &> /dev/null &
                                             pid=$! pri=0.1 msg="$wait_load \n\n \Z1> \Z2usermod -a -G wheel $user\Zn" load
                             fi
 
@@ -194,7 +176,7 @@ set_user() {
                                         if [ "$full_user" == "" ]; then
                                             full_user="$user"
                                         fi
-                                        arch-chroot "$ARCH" chfn -f "$full_user" "$user" &>/dev/null
+                                        arch-chroot "$CHROOT_MOUNT_POINT" chfn -f "$full_user" "$user" &>/dev/null
                                     fi
 
                                     echo -e "${paswd}\n${user}:${user_sh}:${sudo_user}:${full_user}:${pass_crypt}" > "$tmp_passwd"
@@ -205,7 +187,7 @@ set_user() {
                         "$del_user")
                             if (dialog --defaultno --yes-button "$yes" --no-button "$no" --yesno "\n$deluser_var" 10 60) then
                                 if "$menu_enter" ; then
-                                    arch-chroot "$ARCH" userdel --remove "$user" &>/dev/null
+                                    arch-chroot "$CHROOT_MOUNT_POINT" userdel --remove "$user" &>/dev/null
                                 fi
                                 echo -e "${paswd}" > "$tmp_passwd"
                                 break
@@ -224,102 +206,3 @@ set_user() {
             ;;
         esac
     done
-
-}
-
-set_hostname() {
-
-    op_title="$host_op_msg"
-
-        while (true)     ## Begin set hostname loop
-           do            ## Prompt user to enter hostname check for starting with numbers or containg special char
-                 hostname=$(dialog --ok-button "$ok" --nocancel --inputbox "\n$host_msg" 12 55 "anarchy" 3>&1 1>&2 2>&3 | sed 's/ //g')
-
-                 if (<<<$hostname grep "^[0-9]\|[\[\$\!\'\"\`\\|%&#@()+=<>~;:/?.,^{}]\|]" &> /dev/null); then
-                         dialog --ok-button "$ok" --msgbox "\n$host_err_msg" 10 60
-                 else
-                         break
-                 fi
-         done
-
-         user=root
-         set_password
-         root_sh="$sh"
-         root_crypt="$pass_crypt"
-
- }
-
-set_password() {
-
-    source "$lang_file"
-    op_title="$passwd_op_msg"
-    while [ "$input" != "$input_chk" ]
-      do
-        input=$(dialog --nocancel --clear --insecure --passwordbox "$user_var0" 11 55 --stdout)
-            input_chk=$(dialog --nocancel --clear --insecure --passwordbox "$user_var1" 11 55 --stdout)
-
-        if [ -z "$input" ]; then
-            dialog --ok-button "$ok" --msgbox "\n$passwd_msg0" 10 55
-            input_chk=default
-        elif [ "$input" != "$input_chk" ]; then
-            dialog --ok-button "$ok" --msgbox "\n$passwd_msg1" 10 55
-        fi
-    done
-
-    pass_crypt="$(echo "$input" | openssl enc -aes-256-cbc -a -salt -pass pass:"$ssl_key")"
-    sleep 1 &
-    pid=$! pri=0.1 msg="$wait_load \n\n \Z1> \Z2encrypt passwd\Zn" load
-    unset input input_chk ; input_chk=default
-    op_title="$user_op_msg"
-
-}
-
-add_user() {
-
-    if "$menu_enter" ; then
-        if [ "$full_user" == "" ]; then
-            arch-chroot "$ARCH" useradd -m -G audio,network,power,storage,optical -s "$sh" "$user" &>/dev/null &
-                    pid=$! pri=0.1 msg="$wait_load \n\n \Z1> \Z2useradd $user\Zn" load
-            else
-                    arch-chroot "$ARCH" useradd -m -G audio,network,power,storage,optical -c "$full_name" -s "$sh" "$user" &>/dev/null &
-                    pid=$! pri=0.1 msg="$wait_load \n\n \Z1> \Z2useradd $user\Zn" load
-            fi
-
-            input="$(echo "$pass_crypt" | openssl enc -aes-256-cbc -a -d -salt -pass pass:"$ssl_key")"
-            (printf "$input\n$input" | arch-chroot "$ARCH" passwd "$user") &> /dev/null &
-            pid=$! pri=0.1 msg="$wait_load \n\n \Z1> \Z2passwd $user\Zn" load
-            unset input
-            echo "$(date -u "+%F %H:%M") : Password set: $user" >> "$log"
-
-            if [ "$sudo_user" == "yes" ]; then
-            (sed -i '/%wheel ALL=(ALL) ALL/s/^#//' $ARCH/etc/sudoers
-                    arch-chroot "$ARCH" usermod -a -G wheel "$user") &> /dev/null &
-            pid=$! pri=0.1 msg="$wait_load \n\n \Z1> \Z2usermod -a -G wheel $user\Zn" load
-            fi
-    else
-        while IFS= read -r i ; do
-                     if [ "$(<<<"$i" cut -d: -f4)" == "" ]; then
-                             arch-chroot "$ARCH" useradd -m -G audio,network,power,storage,optical -s "$(<<<"$i" cut -d: -f2)" "$(<<<"$i" cut -d: -f1)" &>/dev/null &
-                             pid=$! pri=0.1 msg="$wait_load \n\n \Z1> \Z2useradd $(<<<"$i" cut -d: -f1)\Zn" load
-                     else
-                             arch-chroot "$ARCH" useradd -m -G audio,network,power,storage,optical -c "$(<<<"$i" cut -d: -f4)" -s "$(<<<"$i" cut -d: -f2)" "$(<<<"$i" cut -d: -f1)" &>/dev/null &
-                             pid=$! pri=0.1 msg="$wait_load \n\n \Z1> \Z2useradd $(<<<"$i" cut -d: -f1)\Zn" load
-                     fi
-
-                     input="$(<<<"$i" cut -d: -f5 | openssl enc -aes-256-cbc -a -d -salt -pass pass:"$ssl_key")"
-                     (printf "$input\n$input" | arch-chroot "$ARCH" passwd "$(<<<"$i" cut -d: -f1)") &> /dev/null &
-                     pid=$! pri=0.1 msg="$wait_load \n\n \Z1> \Z2passwd $(<<<"$i" cut -d: -f1)\Zn" load
-                     unset input
-                     echo "$(date -u "+%F %H:%M") : Password set: $(<<<"$i" cut -d: -f1)" >> "$log"
-
-                     if [ "$(<<<"$i" cut -d: -f3)" == "yes" ]; then
-                             (sed -i '/%wheel ALL=(ALL) ALL/s/^#//' $ARCH/etc/sudoers
-                             arch-chroot "$ARCH" usermod -a -G wheel "$(<<<"$i" cut -d: -f1)") &> /dev/null &
-                 pid=$! pri=0.1 msg="$wait_load \n\n \Z1> \Z2usermod -a -G wheel $(<<<"$i" cut -d: -f1)\Zn" load
-                     fi
-        done <<<$(sort "$tmp_passwd")
-    fi
-
- }
-
-# vim: ai:ts=4:sw=4:et
