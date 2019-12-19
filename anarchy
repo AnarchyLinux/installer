@@ -1,0 +1,68 @@
+#!/usr/bin/env bash
+# Main Anarchy Linux installer script
+
+# Read intitial variables
+source /etc/anarchy.d/anarchy.conf
+source "${translation_file}"
+
+# Source libraries
+for library in "${ANARCHY_LIBRARIES_DIRECTORY}"/*.sh; do
+    source "${library}"
+done
+
+main() {
+    # Run all the scripts
+    run set-keyboard-layout
+    run check-connection
+    #run update-mirrors
+    #run test-connection
+    run install-yay
+    #run set-locale
+    #run set-timezone
+    #run prepare-drives
+    run choose-installation-options
+    #run set-hostname
+    #run set-user
+    #run add-software
+    #run install-base
+    #run configure-system
+    #run add-user
+    #run reboot-system
+}
+
+if [[ ${UID} -ne 0 ]]; then
+    echo "Error: anarchy requires root privilege"
+    echo "       Use: sudo anarchy"
+    exit 1
+fi
+
+usage() {
+    clear
+    echo -e "Usage: ${Green} anarchy [options]${ColorOff}"
+    echo -e "${Green}   -h | --help         ${Yellow}Display this help message${ColorOff}"
+    echo -e "${Green}   -k | --keys         ${Yellow}Update pacman keys${ColorOff}"
+    echo -e "${Green}   -n | --no-style     ${Yellow}Disable colors${ColorOff}"
+    echo -e "${Green}   -u | --update       ${Yellow}Update anarchy scripts${ColorOff}"
+    echo -e ""
+}
+
+# Get options
+case "$1" in
+    -h|--help)
+        usage
+        exit 0
+    ;;
+    -n|--no-style)
+        export colors=false
+    ;;
+    -k|--keys)
+        update_keys
+        exit "$?"
+    ;;
+    -u|--update)
+        update_anarchy
+        exit "$?"
+    ;;
+esac
+
+main
