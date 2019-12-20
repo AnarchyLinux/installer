@@ -1,66 +1,101 @@
 #!/usr/bin/env bash
 
-menu_title="$complete_op_msg"
-## Check if system is installed
-if "$INSTALLED" ; then
-    ## Check if user has installed bootloader, if no promtp to exit to commandline
-    if [ "$bootloader" == "$none" ]; then
-        if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$complete_no_boot_msg" 10 60) then
-            reset ; exit
+# Source config file and libraries
+source "${ANARCHY_CONFIG_FILE}"
+for library in "${ANARCHY_LIBRARIES_DIRECTORY}"/*.sh; do
+    source "${library}"
+done
+
+log "Entered reboot menu"
+
+menu_title="${complete_op_msg}"
+
+# Check if system was properly installed
+if "${system_is_installed}"; then
+
+    # Check if user has installed bootloader (otherwise unable to boot)
+    if [[ "${bootloader}" == "false" ]]; then
+        log "No bootloader installed"
+
+        if (dialog --yes-button "${yes}" --no-button "${no}" --yesno "\n${complete_no_boot_msg}" 10 60); then
+            log "Chose to exit the installer"
+            reset
+            exit 0
         fi
     fi
 
-    ## Begin reboot menu loop
-    while (true)
-      do
-        ## Prompt for user input
-        reboot_menu=$(dialog --nocancel --ok-button "$ok" --menu "$complete_msg" 16 60 7 \
-            "$reboot0" "-" \
-            "$reboot6" "-" \
-            "$reboot2" "-" \
-            "$reboot1" "-" \
-            "$reboot4" "-" \
-            "$reboot3" "-" \
-            "$reboot5" "-" 3>&1 1>&2 2>&3)
+    while (true); do
+        menu_option="$(dialog --nocancel --ok-button "${ok}" --menu "${complete_msg}" 16 60 7 \
+            "${reboot0}" "-" \
+            "${reboot6}" "-" \
+            "${reboot2}" "-" \
+            "${reboot1}" "-" \
+            "${reboot4}" "-" \
+            "${reboot3}" "-" \
+            "${reboot5}" "-" 3>&1 1>&2 2>&3)"
 
-        ## Execute user input
-        case "$reboot_menu" in
-            "$reboot0")	## Reboot system
-                    umount -R "$CHROOT_MOUNT_POINT"
-                    reset ; reboot ; exit
+        case "${reboot_menu}" in
+
+            # Reboot system
+            "${reboot0}")
+                umount -R "${CHROOT_MOUNT_POINT}"
+                reset
+                reboot
+                exit 0
             ;;
-            "$reboot6")	## Poweroff system
-                    umount -R "$CHROOT_MOUNT_POINT"
-                    reset ; poweroff ; exit
+
+            # Shut down system
+            "${reboot6}")
+                umount -R "${CHROOT_MOUNT_POINT}"
+                reset
+                poweroff
+                exit 0
             ;;
-            "$reboot1")	## Unmount system and exit to command line
-                    umount -R "$CHROOT_MOUNT_POINT"
-                    reset ; exit
+
+            # Return to command prompt
+            "${reboot1}")
+                umount -R "${CHROOT_MOUNT_POINT}"
+                reset
+                exit 0
             ;;
-            "$reboot2")	## Anarchy Chroot function
-                    clear
-                    echo -e "$arch_chroot_msg"
-                    echo "/root" > /tmp/chroot_dir.var
-                    anarchy_chroot
-                    clear
+
+            # Enter chroot
+            "${reboot2}")
+                clear
+                echo -e "${arch_chroot_msg}"
+                echo "/root" > /tmp/chroot_dir.var
+                run anarchy-chroot
+                clear
             ;;
-            "$reboot3")	## Edit users
-                    menu_enter=true
-                    set_user
+
+            # Edit users
+            "${reboot3}")
+                menu_enter=true
+                export menu_enter
+                run set-user
             ;;
-            "$reboot5")	## Software menu
-                    menu_enter=true
-                    add_software
+
+            # Install additional software
+            "${reboot5}")
+                menu_enter=true
+                export menu_enter
+                run choose-software
             ;;
-            "$reboot4")	## Show install log
-                    clear ; less "$log" clear
+
+            # Show installation log (in less)
+            "${reboot4}")
+                clear
+                less "${LOG_FILE}"
+                clear
             ;;
         esac
     done
 else
-    ## Warn user install not complete, prompt for reboot
-    if (dialog --yes-button "$yes" --no-button "$no" --yesno "$not_complete_msg" 10 60) then
-        umount -R "$CHROOT_MOUNT_POINT"
-        reset ; reboot ; exit
+    # System was not installed properly
+    if (dialog --yes-button "${yes}" --no-button "${no}" --yesno "${not_complete_msg}" 10 60); then
+        umount -R "${CHROOT_MOUNT_POINT}"
+        reset
+        reboot
+        exit 0
     fi
 fi

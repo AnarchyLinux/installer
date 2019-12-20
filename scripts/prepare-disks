@@ -18,7 +18,7 @@ fi
 
 # TODO: Fix having to make a new script
 TMP_DIR="$(mktemp -d)"
-TMP_PARTITIONING_SCRIPT="${TMP_DIR}"/tmp_partitioning.sh
+TMP_MENU="${TMP_DIR}"/part.sh
 
 until "${mounted}"; do
     PARTITIONING_METHOD=$(dialog --ok-button "${ok}" --cancel-button "${cancel}" --menu "${part_msg}" 16 64 4 \
@@ -34,19 +34,19 @@ until "${mounted}"; do
         dev_menu="           Device: | Size: | Type:  |"
         if [[ "${ok_screen_size}" ]]; then
             # TODO: Update the code to not use cat
-            cat <<-EOF > "${TMP_PARTITIONING_SCRIPT}"
-                dialog --colors --backtitle "${backtitle}" --title "${anarchy_title}" --ok-button "${ok}" --cancel-button "${cancel}" --menu "${drive_msg} \n\n ${dev_menu}" 16 60 5 \\
-            EOF
-        else
-            cat <<-EOF > "${TMP_PARTITIONING_SCRIPT}"
-                dialog --colors --title "${anarchy_title}" --ok-button "${ok}" --cancel-button "${cancel}" --menu "${drive_msg} \n\n ${dev_menu}" 16 60 5 \\
-            EOF
-        fi
+            cat <<-EOF > "${TMP_MENU}"
+					dialog --colors --backtitle "${backtitle}" --title "${anarchy_title}" --ok-button "${ok}" --cancel-button "${cancel}" --menu "${drive_msg} \n\n ${dev_menu}" 16 60 5 \\
+				EOF
+            else
+				cat <<-EOF > "${TMP_MENU}"
+					dialog --colors --title "${anarchy_title}" --ok-button "${ok}" --cancel-button "${cancel}" --menu "${drive_msg} \n\n ${dev_menu}" 16 60 5 \\
+				EOF
+            fi
 
-        cat <<-EOF >> "${TMP_PARTITIONING_SCRIPT}"
-            $(lsblk -nio NAME,SIZE,TYPE | egrep "disk|raid[0-9]+$" | sed 's/[^[:alnum:]_., ]//g' | column -t | sort -k 1,1 | uniq | awk '{print "\""$1"\"""  ""\"| "$2" | "$3" |==>\""" \\"}' | column -t)
-            3>&1 1>&2 2>&3
-        EOF
+			cat <<-EOF >> "${TMP_MENU}"
+				$(lsblk -nio NAME,SIZE,TYPE | egrep "disk|raid[0-9]+$" | sed 's/[^[:alnum:]_., ]//g' | column -t | sort -k 1,1 | uniq | awk '{print "\""$1"\"""  ""\"| "$2" | "$3" |==>\""" \\"}' | column -t)
+				3>&1 1>&2 2>&3
+			EOF
 
         DRIVE="$(bash "${TMP_PARTITIONING_SCRIPT}")"
         rm "${TMP_PARTITIONING_SCRIPT}"
@@ -117,6 +117,7 @@ until "${mounted}"; do
             if "${swap}" ; then
                 drive_var="${drive_var1}"
                 height=13
+
                 if "${uefi}" ; then
                     drive_var="${drive_var2}"
                     height=14
@@ -128,7 +129,7 @@ until "${mounted}"; do
                 height=11
             fi
 
-            if (dialog --defaultno --yes-button "${write}" --no-button "${cancel}" --yesno "\n${drive_var}" "${height}" 60) then
+            if (dialog --defaultno --yes-button "${write}" --no-button "${cancel}" --yesno "\n${drive_var}" "${height}" 60); then
                 (sgdisk --zap-all /dev/"${DRIVE}"
                 wipefs -a /dev/"${DRIVE}") &> /dev/null &
                 pid=$! pri=0.1 msg="\n${frmt_load} \n\n \Z1> \Z2sgdisk --zap-all /dev/${DRIVE}\Zn" load

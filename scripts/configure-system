@@ -144,7 +144,7 @@ if "$desktop" ; then
     fi
 fi
 
-if "$enable_dm" ; then
+if "$enable_display_manager" ; then
     arch-chroot "$ARCH" systemctl enable "$DM".service &> /dev/null &
     pid=$! pri="0.1" msg="$wait_load \n\n \Z1> \Z2systemctl enable "$DM"\Zn" load
     echo "$(date -u "+%F %H:%M") : Enable $DM" >> "$log"
@@ -294,10 +294,10 @@ sed -i 's/^#CheckSpace$/CheckSpace/' "$ARCH"/etc/pacman.conf
 sed -i 's/^#VerbosePkgLists$/VerbosePkgLists/' "$ARCH"/etc/pacman.conf
 sed -i '/^VerbosePkgLists$/ a ILoveCandy' "$ARCH"/etc/pacman.conf
 
-echo "$hostname" > "$ARCH"/etc/hostname
-    echo "$(date -u "+%F %H:%M") : Hostname set: $hostname" >> "$log"
+echo "$CHOSEN_HOSTNAME" > "$ARCH"/etc/hostname
+    echo "$(date -u "+%F %H:%M") : Hostname set: $CHOSEN_HOSTNAME" >> "$log"
 arch-chroot "$ARCH" chsh -s "$sh" &>/dev/null
-input="$(echo "$root_crypt" | openssl enc -aes-256-cbc -a -d -salt -pass pass:"$ssl_key")"
+input="$(echo "$root_crypt" | openssl enc -aes-256-cbc -a -d -salt -pass pass:"$SSL_KEY")"
     (sleep 1 ; printf "$input\n$input" | arch-chroot "$ARCH" passwd root) &> /dev/null &
     pid=$! pri=0.1 msg="$wait_load \n\n \Z1> \Z2passwd root\Zn" load
     unset input

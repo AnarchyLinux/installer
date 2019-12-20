@@ -9,7 +9,7 @@ working_dir=$(</tmp/chroot_dir.var)
 
 while (true)
   do
-    echo -n "${color_yellow}<${color_red}root${color_yellow}@${color_green}${hostname}-chroot${color_yellow}>: $working_dir>${color_red}# ${color_none}" ; while IFS= read -r -n 1 -s char
+    echo -n "${color_yellow}<${color_red}root${color_yellow}@${color_green}${CHOSEN_HOSTNAME}-chroot${color_yellow}>: $working_dir>${color_red}# ${color_none}" ; while IFS= read -r -n 1 -s char
       do
         if [ "${char}" == $'\x1b' ]; then
             while IFS= read -r -n 2 -s rest
@@ -25,20 +25,20 @@ while (true)
             pos=1
         elif [[ ${char} == $'\177' ]];  then
             input="${input%?}"
-            echo -ne "\r\033[K${color_yellow}<${color_red}root${color_yellow}@${color_green}${hostname}-chroot${color_yellow}>: ${working_dir}>${color_red}# ${color_none}${input}"
+            echo -ne "\r\033[K${color_yellow}<${color_red}root${color_yellow}@${color_green}${CHOSEN_HOSTNAME}-chroot${color_yellow}>: ${working_dir}>${color_red}# ${color_none}${input}"
         ## User input up
         elif [ "${char}" == $'\x1b[A' ]; then
             if [ ${histindex} -gt 0 ]; then
                 histindex+=-1
                 input=$(echo -ne "${history[$histindex]}")
-                echo -ne "\r\033[K${color_yellow}<${color_red}root${color_yellow}@${color_green}${hostname}-chroot${color_yellow}>: ${working_dir}>${color_red}# ${color_none}${history[$histindex]}"
+                echo -ne "\r\033[K${color_yellow}<${color_red}root${color_yellow}@${color_green}${CHOSEN_HOSTNAME}-chroot${color_yellow}>: ${working_dir}>${color_red}# ${color_none}${history[$histindex]}"
             fi
         ## User input down
             elif [ "${char}" == $'\x1b[B' ]; then
                     if [ ${histindex} -lt $((${#history[@]} - 1)) ]; then
                 histindex+=1
                 input=$(echo -ne "${history[$histindex]}")
-                echo -ne "\r\033[K${color_yellow}<${color_red}root${color_yellow}@${color_green}${hostname}-chroot${color_yellow}>: ${working_dir}>${color_red}# ${color_none}${history[$histindex]}"
+                echo -ne "\r\033[K${color_yellow}<${color_red}root${color_yellow}@${color_green}${CHOSEN_HOSTNAME}-chroot${color_yellow}>: ${working_dir}>${color_red}# ${color_none}${history[$histindex]}"
             fi
         ### Newline
             elif [ -z "${char}" ]; then

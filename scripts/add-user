@@ -9,7 +9,7 @@ if "$menu_enter" ; then
                 pid=$! pri=0.1 msg="$wait_load \n\n \Z1> \Z2useradd $user\Zn" load
         fi
 
-        input="$(echo "$pass_crypt" | openssl enc -aes-256-cbc -a -d -salt -pass pass:"$ssl_key")"
+        input="$(echo "$ENCRYPTED_PASSWORD" | openssl enc -aes-256-cbc -a -d -salt -pass pass:"$SSL_KEY")"
         (printf "$input\n$input" | arch-chroot "$CHROOT_MOUNT_POINT" passwd "$user") &> /dev/null &
         pid=$! pri=0.1 msg="$wait_load \n\n \Z1> \Z2passwd $user\Zn" load
         unset input
@@ -30,7 +30,7 @@ else
                          pid=$! pri=0.1 msg="$wait_load \n\n \Z1> \Z2useradd $(<<<"$i" cut -d: -f1)\Zn" load
                  fi
 
-                 input="$(<<<"$i" cut -d: -f5 | openssl enc -aes-256-cbc -a -d -salt -pass pass:"$ssl_key")"
+                 input="$(<<<"$i" cut -d: -f5 | openssl enc -aes-256-cbc -a -d -salt -pass pass:"$SSL_KEY")"
                  (printf "$input\n$input" | arch-chroot "$CHROOT_MOUNT_POINT" passwd "$(<<<"$i" cut -d: -f1)") &> /dev/null &
                  pid=$! pri=0.1 msg="$wait_load \n\n \Z1> \Z2passwd $(<<<"$i" cut -d: -f1)\Zn" load
                  unset input

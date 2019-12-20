@@ -48,7 +48,7 @@ while (true); do
                                     sudo_user=no
                                 fi
 
-                                echo "${user}:${sh}:${sudo_user}:${full_user}:${pass_crypt}" >> "$tmp_passwd"
+                                echo "${user}:${sh}:${sudo_user}:${full_user}:${ENCRYPTED_PASSWORD}" >> "$tmp_passwd"
 
                                 if "$menu_enter" ; then
                                     add_user
@@ -66,7 +66,7 @@ while (true); do
                     menu_title="$user_op_msg1"
                     user_sh=$(grep -w "$user" <"$tmp_passwd" | cut -d: -f2)
                     full_user=$(grep -w "$user" <"$tmp_passwd" | cut -d: -f4)
-                    pass_crypt=$(grep -w "$user" <"$tmp_passwd" | cut -d: -f5)
+                    ENCRYPTED_PASSWORD=$(grep -w "$user" <"$tmp_passwd" | cut -d: -f5)
                     sudo_user=$(grep -w "$user" <"$tmp_passwd" | cut -d: -f3)
                     if (grep -w "$user" <"$tmp_passwd" | cut -d: -f3 | grep "yes" &>/dev/null); then
                         sudo="$yes"
@@ -98,14 +98,14 @@ while (true); do
                             set_password
 
                             if "$menu_enter" ; then
-                                input="$(echo "$pass_crypt" | openssl enc -aes-256-cbc -a -d -salt -pass pass:"$ssl_key")"
+                                input="$(echo "$ENCRYPTED_PASSWORD" | openssl enc -aes-256-cbc -a -d -salt -pass pass:"$SSL_KEY")"
                                         (printf "$input\n$input" | arch-chroot "$CHROOT_MOUNT_POINT" passwd "$user") &> /dev/null &
                                         pid=$! pri=0.1 msg="$wait_load \n\n \Z1> \Z2passwd $user\Zn" load
-                                echo -e "${paswd}\n${user}:${user_sh}:${sudo_user}:${full_user}:${pass_crypt}" > "$tmp_passwd"
+                                echo -e "${paswd}\n${user}:${user_sh}:${sudo_user}:${full_user}:${ENCRYPTED_PASSWORD}" > "$tmp_passwd"
                             elif [ "$user" == "root" ]; then
-                                root_crypt="${pass_crypt}"
+                                root_crypt="${ENCRYPTED_PASSWORD}"
                             else
-                                echo -e "${paswd}\n${user}:${user_sh}:${sudo_user}:${full_user}:${pass_crypt}" > "$tmp_passwd"
+                                echo -e "${paswd}\n${user}:${user_sh}:${sudo_user}:${full_user}:${ENCRYPTED_PASSWORD}" > "$tmp_passwd"
                             fi
                         ;;
                         "$change_sh")
@@ -136,12 +136,12 @@ while (true); do
                                 arch-chroot "$CHROOT_MOUNT_POINT" chsh "$user" -s "$user_sh" &>/dev/null
 
                                 if [ "$user" != "root" ]; then
-                                    echo -e "${paswd}\n${user}:${user_sh}:${sudo_user}:${full_user}:${pass_crypt}" > "$tmp_passwd"
+                                    echo -e "${paswd}\n${user}:${user_sh}:${sudo_user}:${full_user}:${ENCRYPTED_PASSWORD}" > "$tmp_passwd"
                                 fi
                             elif [ "$user" == "root" ]; then
                                 root_sh="$user_sh"
                             else
-                                echo -e "${paswd}\n${user}:${user_sh}:${sudo_user}:${full_user}:${pass_crypt}" > "$tmp_passwd"
+                                echo -e "${paswd}\n${user}:${user_sh}:${sudo_user}:${full_user}:${ENCRYPTED_PASSWORD}" > "$tmp_passwd"
                             fi
                         ;;
                         "$change_su")
@@ -161,7 +161,7 @@ while (true); do
                                             pid=$! pri=0.1 msg="$wait_load \n\n \Z1> \Z2usermod -a -G wheel $user\Zn" load
                             fi
 
-                            echo -e "${paswd}\n${user}:${user_sh}:${sudo_user}:${full_user}:${pass_crypt}" > "$tmp_passwd"
+                            echo -e "${paswd}\n${user}:${user_sh}:${sudo_user}:${full_user}:${ENCRYPTED_PASSWORD}" > "$tmp_passwd"
                         ;;
                         "$change_fn")
                             while (true)
@@ -179,7 +179,7 @@ while (true); do
                                         arch-chroot "$CHROOT_MOUNT_POINT" chfn -f "$full_user" "$user" &>/dev/null
                                     fi
 
-                                    echo -e "${paswd}\n${user}:${user_sh}:${sudo_user}:${full_user}:${pass_crypt}" > "$tmp_passwd"
+                                    echo -e "${paswd}\n${user}:${user_sh}:${sudo_user}:${full_user}:${ENCRYPTED_PASSWORD}" > "$tmp_passwd"
                                     break
                                 fi
                             done
@@ -192,12 +192,12 @@ while (true); do
                                 echo -e "${paswd}" > "$tmp_passwd"
                                 break
                             else
-                                echo -e "${paswd}\n${user}:${user_sh}:${sudo_user}:${full_user}:${pass_crypt}" > "$tmp_passwd"
+                                echo -e "${paswd}\n${user}:${user_sh}:${sudo_user}:${full_user}:${ENCRYPTED_PASSWORD}" > "$tmp_passwd"
                                 break
                             fi
                         ;;
                         *)	if [ "$user" != "root" ]; then
-                                echo -e "${paswd}\n${user}:${user_sh}:${sudo_user}:${full_user}:${pass_crypt}" > "$tmp_passwd"
+                                echo -e "${paswd}\n${user}:${user_sh}:${sudo_user}:${full_user}:${ENCRYPTED_PASSWORD}" > "$tmp_passwd"
                             fi
                             break
                         ;;

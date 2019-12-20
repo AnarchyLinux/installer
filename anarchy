@@ -29,9 +29,9 @@ main() {
     run set-locale
     run set-timezone
     run prepare-disks
-    #run choose-installation-options
-    #run set-hostname
-    #run set-password
+    run choose-installation-options
+    run set-hostname
+    run set-password
     #run set-user
     #run add-software
     #run install-base
