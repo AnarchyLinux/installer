@@ -10,10 +10,12 @@ log "Started keyboard layout selection"
 
 menu_title="${key_op_msg}"
 
-KEYMAPS="$(find /usr/share/kbd/keymaps -type f | sed -n -e 's!^.*/!!p' | grep ".map.gz" | sed 's/.map.gz//g' | sed 's/$/ -/g' | sort)"
+KEYMAPS_LIST="$(find /usr/share/kbd/keymaps -type f | sed -n -e 's!^.*/!!p' \
+    | grep ".map.gz" | sed 's/.map.gz//g' | sed 's/$/ -/g' | sort)"
 
 while (true); do
-    keyboard=$(dialog --nocancel --ok-button "${ok}" --menu "${keys_msg}" 18 60 10 \
+    keyboard_layout="$(dialog --nocancel --ok-button "${ok}" \
+        --menu "${keys_msg}" 18 60 10 \
     "us"        "United States" \
     "de"        "German" \
     "el"        "Greek" \
@@ -27,10 +29,13 @@ while (true); do
     "sl"        "Slovenian" \
     "sv"        "Swedish" \
     "uk"        "United Kingdom" \
-    "${other}"  "${other-keymaps}" 3>&1 1>&2 2>&3)
+    "${other}"  "${other-keymaps}" 3>&1 1>&2 2>&3)"
 
-    if [[ "${keyboard}" = "${other}" ]]; then
-        keyboard=$(dialog --ok-button "${ok}" --cancel-button "${cancel}" --menu "${keys_msg}" 19 60 10 "${KEYMAPS}" 3>&1 1>&2 2>&3)
+    if [[ "${keyboard_layout}" = "${other}" ]]; then
+        keyboard_layout="$(dialog --ok-button "${ok}" \
+            --cancel-button "${cancel}" --menu "${keys_msg}" 19 60 10 \
+            "${KEYMAPS_LIST}" 3>&1 1>&2 2>&3)"
+
         if [[ $? -eq 0 ]]; then
             break
         fi
@@ -39,6 +44,6 @@ while (true); do
     fi
 done
 
-log "Chose ${keyboard} keyboard layout"
-localectl set-keymap "${keyboard}"
-return 0
+log "Selected keyboard layout: ${keyboard_layout}"
+localectl set-keymap "${keyboard_layout}" &> /dev/null
+return $?

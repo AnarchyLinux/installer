@@ -143,10 +143,10 @@ case "$1" in
     ;;
 
     "Anarchy LTS Server")
-        kernel="linux-lts"
-        sh="/usr/bin/zsh"
-        shrc="${default}"
-        bootloader="grub"
+        export kernel='linux-lts'
+        export sh='/usr/bin/zsh'
+        export shrc="${default}"
+        export bootloader="grub"
         net_util="networkmanager"
         enable_network_manager=true
         enable_multilib_repo=true
@@ -171,7 +171,9 @@ case "$1" in
                 'bluez-utils'
                 'pulseaudio-bluetooth'
             )
+
             enable_bluetooth=true
+            export enable_bluetooth
         fi
 
         if "${enable_f2fs}" ; then

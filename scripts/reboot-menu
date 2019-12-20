@@ -34,8 +34,9 @@ if "${system_is_installed}"; then
             "${reboot3}" "-" \
             "${reboot5}" "-" 3>&1 1>&2 2>&3)"
 
-        case "${reboot_menu}" in
+        log "Chose menu option: ${menu_option}"
 
+        case "${reboot_menu}" in
             # Reboot system
             "${reboot0}")
                 umount -R "${CHROOT_MOUNT_POINT}"

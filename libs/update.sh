@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# A library for updating Anarchy Linux
+# Collection of libraries for updating various parts of Anarchy
 
 function update_anarchy() {
     local tmp_dir
@@ -59,13 +59,16 @@ function update_keys() {
     fi
 }
 
-function update_variable() {
-    local variable
-    local state
+# Arguments:
+#   $1 - variable name
+#   $2 - variable value
+function update_var() {
+    local name
+    local value
 
-    variable="$1"
-    state="$2"
+    name="$1"
+    value="$2"
 
-    sed --in-place "s/${variable}=.*/${variable}=${state}/" "${ANARCHY_DIRECTORY}/anarchy.conf"
+    sed --in-place "s/${name}=.*/${name}=${value}/" "${ANARCHY_DIRECTORY}/anarchy.conf"
     return "$?"
 }
