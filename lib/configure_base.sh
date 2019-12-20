@@ -623,7 +623,6 @@ add_software() {
                         "ntfs-3g"		"$sys28" OFF \
                         "pcmanfm"		"$sys21" OFF \
                         "ranger"		"$sys20" OFF \
-                        "screenfetch"		"$sys12" OFF \
                         "scrot"			"$sys13" OFF \
                         "tuxcmd"		"$sys15" OFF \
                         "virtualbox"		"$sys16" OFF \
