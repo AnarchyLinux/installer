@@ -173,8 +173,8 @@ done
 log "Selected ${net_util} for network management"
 
 if (dialog --yes-button "${yes}" --no-button "${no}" --yesno "\n\n${multilib_msg}" 11 60); then
-    install_multilib_repo=true
-    log "Installed multilib repo"
+    enable_multilib_repo=true
+    log "Enabled multilib repo"
 fi
 
 if (dialog --yes-button "${yes}" --no-button "${no}" --yesno "\n\n${dhcp_msg}" 11 60); then
@@ -194,7 +194,7 @@ fi
 if "${install_bluetooth}" ; then
     if (dialog --defaultno --yes-button "${yes}" --no-button "${no}" --yesno "\n${bluetooth_msg}" 10 60); then
         base_install+=('bluez' 'bluez-utils' 'pulseaudio-bluetooth')
-        enable_bt=true
+        enable_bluetooth=true
         log "Enabled bluetooth"
     fi
 fi

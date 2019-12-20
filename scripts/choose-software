@@ -9,7 +9,7 @@ if (dialog --yes-button "${yes}" --no-button "${no}" --yesno "\n${software_msg0}
         unset software
         add_soft=true
 
-        if [[ ! "${skip}" ]]; then
+        if [[ ! "${skip_optional_software_installation}" ]]; then
             software_menu=$(dialog --extra-button --extra-label "${install}" --ok-button "${select}" --cancel-button "${cancel}" --menu "${software_type_msg}" 21 63 12 \
                 "${audio}"          "${audio_msg}" \
                 "${database}"       "${database_msg}" \
@@ -38,7 +38,7 @@ if (dialog --yes-button "${yes}" --no-button "${no}" --yesno "\n${software_msg0}
                 software_menu="${done_msg}"
             fi
         else
-            skip=false
+            skip_optional_software_installation=false
         fi
 
         case "${software_menu}" in
@@ -137,9 +137,9 @@ if (dialog --yes-button "${yes}" --no-button "${no}" --yesno "\n${software_msg0}
 
                 if (<<<"${software}" grep "steam" &>/dev/null); then
                     while (true); do
-                        if ! "${multilib}" ; then
+                        if ! "${enable_multilib_repo}" ; then
                             if (dialog --yes-button "${yes}" --no-button "${no}" --yesno "\n${steam_add_msg}" 10 60); then
-                                multilib=true
+                                enable_multilib_repo=true
                             else
                                 software=$(<<<"${software}" sed 's/steam//')
                                 break
@@ -571,7 +571,7 @@ if (dialog --yes-button "${yes}" --no-button "${no}" --yesno "\n${software_msg0}
         if "${add_soft}"; then
             if [[ -z "${software}" ]]; then
                 if ! (dialog --yes-button "${yes}" --no-button "${no}" --defaultno --yesno "\n${software_noconfirm_msg} ${software_menu}?" 10 60); then
-                    skip=true
+                    skip_optional_software_installation=true
                 fi
             else
 

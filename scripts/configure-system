@@ -127,7 +127,7 @@ case "$net_util" in
     ;;
 esac
 
-if "$enable_bt" ; then
+if "$enable_bluetooth" ; then
     arch-chroot "$ARCH" systemctl enable bluetooth &>/dev/null &
     pid=$! pri=0.1 msg="\n$btenable_msg \n\n \Z1> \Z2systemctl enable bluetooth.service\Zn" load
     echo "$(date -u "+%F %H:%M") : Enable bluetooth" >> "$log"
@@ -180,7 +180,7 @@ fi
     #echo -e "\n[anarchy]\nServer = $aa_repo\nSigLevel = Never" >> "$ARCH"/etc/pacman.conf
 #fi
 
-if "$multilib" ; then
+if "$enable_multilib_repo" ; then
     sed -i '/\[multilib]$/ {
     N
     /Include/s/#//g}' "$ARCH"/etc/pacman.conf

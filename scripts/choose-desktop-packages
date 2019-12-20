@@ -340,7 +340,7 @@ if (dialog --defaultno --yes-button "$yes" --no-button "$no" --yesno "\n$touchpa
     fi
 fi
 
-if "$enable_bt" ; then
+if "$enable_bluetooth" ; then
     if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$blueman_msg" 10 60) then
         DE+="blueman "
     fi

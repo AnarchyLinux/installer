@@ -154,7 +154,7 @@ if [[ "${net_util}" == "networkmanager" ]] ; then
     fi
 fi
 
-if "${enable_bt}" ; then
+if "${enable_bluetooth}" ; then
     DE+=('blueman')
 fi
 

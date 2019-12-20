@@ -15,9 +15,9 @@ case "$1" in
         shrc="${default}"
         bootloader="grub"
         net_util="networkmanager"
-        enable_nm=true
-        multilib=true
-        dhcp=true
+        enable_network_manager=true
+        enable_multilib_repo=true
+        enable_dhcp=true
         desktop=true
         base_install=(
             'base-devel'
@@ -39,7 +39,7 @@ case "$1" in
                 'bluez-utils'
                 'pulseaudio-bluetooth'
             )
-            enable_bt=true
+            enable_bluetooth=true
         fi
 
         if "${enable_f2fs}" ; then
@@ -61,9 +61,9 @@ case "$1" in
         shrc="${default}"
         bootloader="grub"
         net_util="networkmanager"
-        enable_nm=true
-        multilib=true
-        dhcp=true
+        enable_network_manager=true
+        enable_multilib_repo=true
+        enable_dhcp=true
         desktop=true
         base_install=(
             'base-devel'
@@ -85,7 +85,7 @@ case "$1" in
                 'bluez-utils'
                 'pulseaudio-bluetooth'
             )
-            enable_bt=true
+            enable_bluetooth=true
         fi
 
         if "${enable_f2fs}" ; then
@@ -107,9 +107,9 @@ case "$1" in
         shrc="${default}"
         bootloader="grub"
         net_util="networkmanager"
-        enable_nm=true
-        multilib=true
-        dhcp=true
+        enable_network_manager=true
+        enable_multilib_repo=true
+        enable_dhcp=true
         base_install=(
             'base-devel'
             'linux'
@@ -130,7 +130,7 @@ case "$1" in
                 'bluez-utils'
                 'pulseaudio-bluetooth'
             )
-            enable_bt=true
+            enable_bluetooth=true
         fi
 
         if "${enable_f2fs}" ; then
@@ -148,9 +148,9 @@ case "$1" in
         shrc="${default}"
         bootloader="grub"
         net_util="networkmanager"
-        enable_nm=true
-        multilib=true
-        dhcp=true
+        enable_network_manager=true
+        enable_multilib_repo=true
+        enable_dhcp=true
         base_install=(
             'base-devel'
             'openssh'
@@ -171,7 +171,7 @@ case "$1" in
                 'bluez-utils'
                 'pulseaudio-bluetooth'
             )
-            enable_bt=true
+            enable_bluetooth=true
         fi
 
         if "${enable_f2fs}" ; then
