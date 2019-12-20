@@ -4,6 +4,7 @@
 source "${ANARCHY_CONFIG_FILE}"
 
 LOG_FILE="${ANARCHY_LOG_DIRECTORY}"/"$(date "+%d-%m-%Y")".log
+export LOG_FILE
 
 function log() {
     local message="$1"

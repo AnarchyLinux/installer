@@ -4,7 +4,10 @@
 source "${ANARCHY_CONFIG_FILE}"
 
 function run() {
-    local script="$1"
-    source "${ANARCHY_SCRIPTS_DIRECTORY}"/"${script}"
-    return $?
+    local SCRIPT="$1"
+    local OUTPUT
+    OUTPUT=$("${ANARCHY_SCRIPTS_DIRECTORY}/${SCRIPT}")
+
+    # Return output of subprocess to parent process
+    echo "${OUTPUT}"
 }
