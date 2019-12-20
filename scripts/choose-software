@@ -385,13 +385,16 @@ if (dialog --yes-button "${yes}" --no-button "${no}" --yesno "\n${software_msg0}
                     "ntfs-3g"		    "${sys28}" OFF \
                     "pcmanfm"		    "${sys21}" OFF \
                     "ranger"		    "${sys20}" OFF \
-                    "screenfetch"		"${sys12}" OFF \
                     "scrot"			    "${sys13}" OFF \
                     "tuxcmd"		    "${sys15}" OFF \
                     "virtualbox"		"${sys16}" OFF \
                     "ufw"			    "${sys17}" OFF \
                     "wget"			    "${sys18}" OFF \
                     "xscreensaver"		"${sys34}" OFF 3>&1 1>&2 2>&3)
+
+                    # Screenfetch currently can't be installed due to missing dependencies
+                    #"screenfetch"		"${sys12}" OFF
+
 
                 if [[ $? -gt 0 ]]; then
                     add_soft=false
