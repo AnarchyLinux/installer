@@ -303,7 +303,7 @@ configure_system() {
     cp "${anarchy_directory}"/extra/.bashrc "$ARCH"/etc/skel/
     (cp /etc/lsb-release "$ARCH"/etc
     cp /etc/os-release "$ARCH"/etc
-    mv "$ARCH"/etc/arch-release "$ARCH"/etc/anarchy-release) &>/dev/null
+    cp "$ARCH"/etc/arch-release "$ARCH"/etc/anarchy-release) &>/dev/null
 
     sed -i 's/^#Color$/Color/' "$ARCH"/etc/pacman.conf
     sed -i 's/^#TotalDownload$/TotalDownload/' "$ARCH"/etc/pacman.conf
