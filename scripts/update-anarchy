@@ -1,0 +1,73 @@
+#!/usr/bin/env bash
+# A script for updating Anarchy
+
+# Error codes:
+#   1 - Failed to create temp directories
+#   2 - No active network connection
+#   3 - Failed to extract files
+#   4 - Failed to copy files
+
+# Source config file and libraries
+source "${ANARCHY_CONFIG_FILE}"
+for library in "${ANARCHY_LIBRARIES_DIRECTORY}"/*.sh; do
+    source "${library}"
+done
+
+# A function for reporting errors
+function report() {
+    if [[ $? -eq 3 ]]; then
+        log "Failed to extract files"
+        echo -e "${color_red}Failed to extract files${color_none}"
+    elif [[ $? -eq 4 ]]; then
+        log "Failed to copy files"
+        echo -e "${color_red}Failed to copy files${color_none}"
+    fi
+}
+
+# Runs the report function when the script exits
+trap report EXIT
+
+log "Updating Anarchy"
+
+log "Creating temporary directories"
+tmp_dir="$(mktemp -d)" || exit 1
+wallpaper_dir="$(mktemp -d)" || exit 1
+
+log "Downloading files from GitHub"
+echo -e "${color_yellow}Downloading files and scripts from GitHub...${color_none}"
+wget -q -4 --no-check-certificate -O "${tmp_dir}"/master.tar.gz \
+        https://github.com/AnarchyLinux/installer/archive/master.tar.gz
+
+if [[ $? -gt 0 ]]; then
+    log "No internet connection"
+    echo -e "${color_red}Error: No active internet connection!${color_none}"
+    exit 2
+fi
+
+log "Downloading wallpapers from GitHub"
+echo -e "${color_yellow}Downloading wallpapers from GitHub...${color_none}"
+wget -q -4 --no-check-certificate -O "${wallpaper_dir}"/master.tar.gz \
+        https://github.com/AnarchyLinux/brand/archive/master.tar.gz
+
+if [[ $? -gt 0 ]]; then
+    log "No internet connection"
+    echo -e "${color_red}Error: No active internet connection!${color_none}"
+    exit 2
+fi
+
+log "Extracting and moving files"
+echo -e "${color_yellow}Extracting and moving files..."
+tar zxf "${tmp_dir}"/master.tar.gz -C "${tmp_dir}" &> /dev/null || exit 3
+tar zxf "${wallpaper_dir}"/master.tar.gz -C "${wallpaper_dir}" &> /dev/null || exit 3
+cp "${tmp_dir}"/installer-master/anarchy /usr/bin/anarchy || exit 4
+cp "${tmp_dir}"/installer-master/etc/anarchy.d/anarchy.conf "${ANARCHY_DIRECTORY}"/ || exit 4
+cp "${tmp_dir}"/installer-master/libs/* "${ANARCHY_LIBRARIES_DIRECTORY}"/ || exit 4
+cp "${tmp_dir}"/installer-master/scripts/* "${ANARCHY_SCRIPTS_DIRECTORY}"/ || exit 4
+cp "${tmp_dir}"/installer-master/lang/* "${ANARCHY_TRANSLATIONS_DIRECTORY}"/ || exit 4
+cp "${wallpaper_dir}"/brand-master/wallpapers/official/* "${ANARCHY_WALLPAPERS_DIRECTORY}"/ || exit 4
+cp -f "${tmp_dir}"/installer-master/extra/sysinfo /installer-master/extra/iptest /usr/bin/ || exit 4
+cp -r "${tmp_dir}"/installer-master/extra/* "${ANARCHY_EXTRA_DIRECTORY}"/ || exit 4
+
+log "Successfully updated Anarchy"
+echo -e "${color_green}Anarchy updated successfully${color_none}"
+exit 0
