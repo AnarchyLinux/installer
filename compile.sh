@@ -30,7 +30,7 @@ brand_dir="$(mktemp -d)"
 wallpapers_dir="${brand_dir}/wallpapers/official"
 
 # Define colors depending on script arguments
-colors() {
+function colors {
     if [[ "${show_color}" == true ]]; then
         color_blank='\e[0m'
         color_green='\e[1;32m'
@@ -45,7 +45,7 @@ colors() {
     fi
 }
 
-logging() {
+function logging {
     if [[ ! -d "${log_dir}" ]]; then
         mkdir "${log_dir}"
     fi
@@ -60,14 +60,14 @@ logging() {
     touch "${log_file}"
 }
 
-log() {
+function log {
     local entry
     read entry
     echo -e "$(date -u "+%d/%m/%Y %H:%M") : ${entry}" | tee -a "${log_file}"
 }
 
 # Clears the screen and adds a banner
-prettify() {
+function prettify {
     # Source colors
     colors
 
@@ -76,14 +76,14 @@ prettify() {
     echo -e ""
 }
 
-set_version() {
+function set_version {
     # Label must be 11 characters long
     anarchy_iso_label="ANARCHYV110" # prev: iso_label
     anarchy_iso_release="1.1.0" # prev: iso_rel
     anarchy_iso_name="anarchy-${anarchy_iso_release}-x86_64.iso" # prev: version
 }
 
-init() {
+function init {
     # Location variables
     custom_iso="${working_dir}"/customiso # prev: customiso
     squashfs="${custom_iso}"/arch/x86_64/squashfs-root # prev: sq
@@ -107,7 +107,7 @@ init() {
     check_arch_iso
 }
 
-check_dependencies() { # prev: check_depends
+function check_dependencies { # prev: check_depends
     echo -e "Checking dependencies ..." | log
 
     # Dependencies with same name packages
@@ -176,7 +176,7 @@ check_dependencies() { # prev: check_depends
     echo -e ""
 }
 
-update_arch_iso() { # prev: update_iso
+function update_arch_iso { # prev: update_iso
     update=false
 
     # Check for latest Arch Linux iso
@@ -249,7 +249,7 @@ update_arch_iso() { # prev: update_iso
     echo -e ""
 }
 
-check_arch_iso() {
+function check_arch_iso {
     echo -e "Comparing Arch Linux checksums ..." | log
     checksum=false
     local_arch_checksum=$(ls "${working_dir}"/sha1sums.txt | tail -n1 | sed 's!.*/!!')
@@ -316,7 +316,7 @@ check_arch_iso() {
     fi
 }
 
-extract_arch_iso() { # prev: extract_iso
+function extract_arch_iso { # prev: extract_iso
     cd "${working_dir}" || exit
 
     if [[ -d "${custom_iso}" ]]; then
@@ -332,7 +332,7 @@ extract_arch_iso() { # prev: extract_iso
     echo -e ""
 }
 
-copy_config_files() { # prev: build_conf
+function copy_config_files { # prev: build_conf
     # Change directory into the iso, where the filesystem is stored.
     # Unsquash root filesystem 'airootfs.sfs', this creates a directory 'squashfs-root' containing the entire system
     echo -e "Unsquashing Arch image ..." | log
@@ -392,7 +392,7 @@ copy_config_files() { # prev: build_conf
     echo -e ""
 }
 
-build_system() { # prev: build_sys
+function build_system { # prev: build_sys
     echo -e "Installing packages to new system ..." | log
     # Install fonts, fbterm, fetchmirrors etc.
     pacman --root "${squashfs}" --cachedir "${squashfs}"/var/cache/pacman/pkg --noconfirm -Sy terminus-font acpi zsh-syntax-highlighting pacman-contrib
@@ -415,7 +415,7 @@ build_system() { # prev: build_sys
     echo -e ""
 }
 
-configure_boot() {
+function configure_boot {
     echo -e "Configuring boot ..." | log
     arch_iso_label=$(<"${custom_iso}"/loader/entries/archiso-x86_64.conf awk 'NR==6{print $NF}' | sed 's/.*=//')
     arch_iso_hex=$(<<<"${arch_iso_label}" xxd -p)
@@ -438,7 +438,7 @@ configure_boot() {
     echo -e ""
 }
 
-create_iso() {
+function create_iso {
     echo -e "Creating new Anarchy image ..." | log
     cd "${working_dir}" || exit
     xorriso -as mkisofs \
@@ -464,7 +464,7 @@ create_iso() {
     fi
 }
 
-generate_checksums() {
+function generate_checksums {
     echo -e "Generating image checksum ..." | log
     cd "${out_dir}"
     echo -e "$(sha256sum "${anarchy_iso_name}")" > "${anarchy_iso_name}".sha256sum
@@ -472,7 +472,7 @@ generate_checksums() {
     echo -e ""
 }
 
-uninstall_dependencies() {
+function uninstall_dependencies {
     if [[ "${#missing_deps[@]}" -ne 0 ]]; then
         echo -e "Installed dependencies: ${missing_deps[*]}" | log
         if [[ "${user_input}" == true ]]; then
@@ -499,13 +499,13 @@ uninstall_dependencies() {
 }
 
 # Logs last command to display it in cleanup
-command_log() {
+function command_log {
     current_command="${BASH_COMMAND}"
     last_command="${current_command}"
 }
 
 # Starts if the iso-generator is interrupted
-cleanup() {
+function cleanup {
     # Check if user exited or if there was an error
     if [[ "${last_command}" == "init" ]]; then
         echo -e "User force stopped the script" | log
@@ -538,7 +538,7 @@ cleanup() {
     fi
 }
 
-usage() {
+function usage {
     clear
     echo -e "${color_white}Usage: compile.sh [options]${color_blank}"
     echo -e "${color_white}     -c | --no-color)    Disable color output${color_blank}"
