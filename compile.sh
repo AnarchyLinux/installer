@@ -349,9 +349,10 @@ copy_config_files() { # prev: build_conf
     # Copy over main Anarchy config and installer script, make them executable
     echo -e "Adding anarchy config and installer scripts to iso ..." | log
     cp "${working_dir}"/etc/anarchy.conf "${working_dir}"/etc/pacman.conf "${squashfs}"/etc/
-    cp "${working_dir}"/anarchy "${squashfs}"/usr/bin/anarchy
+    #cp "${working_dir}"/anarchy "${squashfs}"/usr/bin/anarchy
     cp "${working_dir}"/extra/sysinfo "${working_dir}"/extra/iptest "${squashfs}"/usr/bin/
-    chmod +x "${squashfs}"/usr/bin/anarchy "${squashfs}"/usr/bin/sysinfo "${squashfs}"/usr/bin/iptest
+    #chmod +x "${squashfs}"/usr/bin/anarchy "${squashfs}"/usr/bin/sysinfo "${squashfs}"/usr/bin/iptest
+    chmod +x "${squashfs}"/usr/bin/sysinfo "${squashfs}"/usr/bin/iptest
 
     # Create Anarchy and lang directories, copy over all lang files
     echo -e "Adding language files to iso ..." | log
@@ -360,9 +361,11 @@ copy_config_files() { # prev: build_conf
 
     # Create shell function library, copy /lib to squashfs-root
     echo -e "Adding anarchy scripts to iso ..." | log
-    mkdir -p "${squashfs}"/etc/anarchy.d/scripts "${squashfs}"/etc/anarchy.d/libs
-    cp "${working_dir}"/libs/* "${squashfs}"/etc/anarchy.d/libs/
+    mkdir -p "${squashfs}"/etc/anarchy.d/scripts "${squashfs}"/etc/anarchy.d/libraries
+    cp "${working_dir}"/libraries/* "${squashfs}"/etc/anarchy.d/libraries/
     cp "${working_dir}"/scripts/* "${squashfs}"/etc/anarchy.d/scripts/
+    arch-chroot "${squashfs}" /bin/bash ln -s /etc/anarchy.d/scripts/anarchy /usr/bin/anarchy
+    chmod +x "${squashfs}"/usr/bin/anarchy
 
     # Copy over extra files (dot files, desktop configurations, help file, issue file, hostname file)
     echo -e "Adding dot files and desktop configurations to iso ..." | log
@@ -381,7 +384,7 @@ copy_config_files() { # prev: build_conf
     mkdir "${squashfs}"/etc/anarchy.d/extra/wallpapers
     git clone "${wallpapers_git_url}" "${brand_dir}"
     cp "${wallpapers_dir}"/* "${squashfs}"/etc/anarchy.d/extra/wallpapers/
- 
+
     # Remove brand folder
     rm -rf "${brand_dir}"
 
@@ -530,14 +533,14 @@ cleanup() {
 
     if [[ "${last_command}" != "init" ]]; then
         echo -e "${color_white}Please report this issue to our Github issue tracker: https://git.io/JeOxK${color_blank}"
-        echo -e "${color_white}Make sure to include the relevant log.sh: ${log_file}${color_blank}"
+        echo -e "${color_white}Make sure to include the relevant log file: ${log_file}${color_blank}"
         echo -e "${color_white}You can also ask about the issue in our Telegram: https://t.me/anarchy_linux${color_blank}"
     fi
 }
 
 usage() {
     clear
-    echo -e "${color_white}Usage: iso-generator.sh [options]${color_blank}"
+    echo -e "${color_white}Usage: compile.sh [options]${color_blank}"
     echo -e "${color_white}     -c | --no-color)    Disable color output${color_blank}"
     echo -e "${color_white}     -i | --no-input)    Don't ask user for input${color_blank}"
     echo -e "${color_white}     -o | --output-dir)  Specify directory for generated ISOs/checksums${color_blank}"
