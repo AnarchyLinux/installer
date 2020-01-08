@@ -47,6 +47,7 @@ if [[ ${UID} -ne 0 ]]; then
     exit 1
 fi
 
+# Prints the usage info if started wth -h
 usage() {
     clear
     echo -e "Usage: ${color_green} anarchy [options]${color_none}"
@@ -58,18 +59,19 @@ usage() {
 
 # Get options
 case "$1" in
-    -h|--help)
-        usage
-        exit 0
-    ;;
     -k|--keys)
-        update_keys
+        run update-pacman-keys
         exit $?
     ;;
     -u|--update)
-        update_anarchy
+        run update-anarchy
         exit $?
+    ;;
+    *)
+        usage
+        exit 0
     ;;
 esac
 
+# If no parameters were passed, run anarchy
 main
