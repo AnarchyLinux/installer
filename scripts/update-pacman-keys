@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+# A script for updating pacman keys
+
+# Source config file and libraries
+source "${ANARCHY_CONFIG_FILE}"
+for library in "${ANARCHY_LIBRARIES_DIRECTORY}"/*.sh; do
+    source "${library}"
+done
+
+echo -e "${color_yellow}*> Anarchy: Updating pacman keys..."
+pacman-db-upgrade
+pacman-key --init
+pacman-key --populate archlinux
+pacman-key --refresh-keys
+
+if [[ $? -gt 0 ]]; then
+    echo -e "${color_red}*> Error: ${color_yellow}Failed to update pacman keys, exiting..."
+    return 1
+else
+    echo -e "${color_green}*> Finished: ${color_yellow}Updated pacman keys successfully."
+    return 0
+fi
