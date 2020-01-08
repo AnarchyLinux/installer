@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # A library for cleaning up after exiting chroot
 
-ctrl_c() {
+function ctrl_c {
     echo
     echo "${color_red} Exiting chroot and cleaning up..."
     sleep 0.5
