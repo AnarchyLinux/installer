@@ -20,8 +20,7 @@ while (true); do
 
     if [[ $? -gt 0 ]]; then
         if (dialog --defaultno --yes-button "${yes}" --no-button "${no}" --yesno "\n${exit_msg}" 10 60); then
-            # TODO: Update reference to menus.sh
-            main_menu
+            run main-menu
         fi
     else
         break
@@ -36,8 +35,8 @@ case "${install_opt}" in
         run choose-desktop-packages
         ;;
 
-    *) run quick-install ${install_opt} ;;
+    *) run quick-install "${install_opt}" ;;
 esac
 
 log "Done choosing installation options"
-return 0
+exit 0
