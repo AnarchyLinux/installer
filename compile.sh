@@ -22,12 +22,9 @@ if [[ ${UID} -ne 0 ]]; then
 fi
 
 # Declare important variables
-working_dir=$(pwd) # prev: aa
+working_dir="$(pwd)" # prev: aa
 log_dir="${working_dir}"/logs
 out_dir="${working_dir}"/out # Directory for generated ISOs
-wallpapers_git_url="https://github.com/AnarchyLinux/brand.git"
-brand_dir="$(mktemp -d)"
-wallpapers_dir="${brand_dir}/wallpapers/official"
 
 # Define colors depending on script arguments
 function colors {
@@ -285,7 +282,7 @@ function check_arch_iso {
             # Automatically download and compare checksum
             wget -c -q --show-progress "${arch_checksum_link}"
             local_arch_checksum=$(ls "${working_dir}"/sha1sums.txt | tail -n1 | sed 's!.*/!!')
-            if [[ $(sha1sum --check --ignore-missing "${local_arch_checksum}") ]]; then
+            if [[ "$(sha1sum --check --ignore-missing "${local_arch_checksum}")" ]]; then
                 echo -e "${local_arch_iso}: OK" | log
                 checksum=true
             fi
@@ -341,52 +338,38 @@ function copy_config_files { # prev: build_conf
     echo -e "Done unsquashing airootfs.sfs"
     echo -e ""
 
+    # Remove default install.txt instructions
+    rm "${squashfs}"/root/install.txt
+
+    # Copy all directories into /root (home directory of the root user)
+    cp -r "${working_dir}"/* "${squashfs}"/root/
+
     echo -e "Adding console and locale config files to iso ..." | log
     # Copy over vconsole.conf (sets font at boot), locale.gen (enables locale(s) for font) & uvesafb.conf
-    cp "${working_dir}"/etc/vconsole.conf "${working_dir}"/etc/locale.gen "${squashfs}"/etc/
+    arch-chroot "${squashfs}" /bin/bash ln -s "${squashfs}"/root/etc/vconsole.conf /etc/
+    arch-chroot "${squashfs}" /bin/bash ln -s "${squashfs}"/root/etc/locale.gen /etc/
+    arch-chroot "${squashfs}" /bin/bash ln -s "${squashfs}"/root/scripts/anarchy /usr/bin/anarchy
     arch-chroot "${squashfs}" /bin/bash locale-gen
 
     # Copy over main Anarchy config and installer script, make them executable
     echo -e "Adding anarchy config and installer scripts to iso ..." | log
-    cp "${working_dir}"/etc/anarchy.conf "${working_dir}"/etc/pacman.conf "${squashfs}"/etc/
-    #cp "${working_dir}"/anarchy "${squashfs}"/usr/bin/anarchy
-    cp "${working_dir}"/extra/sysinfo "${working_dir}"/extra/iptest "${squashfs}"/usr/bin/
-    #chmod +x "${squashfs}"/usr/bin/anarchy "${squashfs}"/usr/bin/sysinfo "${squashfs}"/usr/bin/iptest
+    arch-chroot "${squashfs}" /bin/bash ln -s "${squashfs}"/root/etc/anarchy.conf /etc/
+    arch-chroot "${squashfs}" /bin/bash ln -s "${squashfs}"/root/etc/pacman.conf /etc/
+    arch-chroot "${squashfs}" /bin/bash ln -s "${squashfs}"/root/extra/sysinfo /usr/bin/
+    arch-chroot "${squashfs}" /bin/bash ln -s "${squashfs}"/root/extra/iptest /usr/bin/
     chmod +x "${squashfs}"/usr/bin/sysinfo "${squashfs}"/usr/bin/iptest
-
-    # Create Anarchy and lang directories, copy over all lang files
-    echo -e "Adding language files to iso ..." | log
-    mkdir -p "${squashfs}"/etc/anarchy.d/lang "${squashfs}"/etc/anarchy.d/extra "${squashfs}"/etc/anarchy.d/boot "${squashfs}"/etc/anarchy.d/etc
-    cp "${working_dir}"/lang/* "${squashfs}"/etc/anarchy.d/lang/
-
-    # Create shell function library, copy /lib to squashfs-root
-    echo -e "Adding anarchy scripts to iso ..." | log
-    mkdir -p "${squashfs}"/etc/anarchy.d/scripts "${squashfs}"/etc/anarchy.d/libraries
-    cp "${working_dir}"/libraries/* "${squashfs}"/etc/anarchy.d/libraries/
-    cp "${working_dir}"/scripts/* "${squashfs}"/etc/anarchy.d/scripts/
-    arch-chroot "${squashfs}" /bin/bash ln -s /etc/anarchy.d/scripts/anarchy /usr/bin/anarchy
-    chmod +x "${squashfs}"/usr/bin/anarchy
 
     # Copy over extra files (dot files, desktop configurations, help file, issue file, hostname file)
     echo -e "Adding dot files and desktop configurations to iso ..." | log
-    rm "${squashfs}"/root/install.txt
-    cp "${working_dir}"/extra/shellrc/.zshrc "${squashfs}"/root/
-    cp "${working_dir}"/extra/.help "${working_dir}"/extra/.dialogrc "${squashfs}"/root/
-    cp "${working_dir}"/extra/shellrc/.zshrc "${squashfs}"/etc/zsh/zshrc
-    cp -r "${working_dir}"/extra/shellrc/. "${squashfs}"/etc/anarchy.d/extra/
-    cp -r "${working_dir}"/extra/desktop "${working_dir}"/extra/fonts "${working_dir}"/extra/anarchy-icon.png "${squashfs}"/etc/anarchy.d/extra/
-    cat "${working_dir}"/extra/.helprc | tee -a "${squashfs}"/root/.zshrc >/dev/null
-    cp "${working_dir}"/etc/hostname "${working_dir}"/etc/issue_cli "${squashfs}"/etc/
-    cp -r "${working_dir}"/boot/splash.png "${working_dir}"/boot/loader/ "${squashfs}"/etc/anarchy.d/boot/
-    cp "${working_dir}"/etc/nvidia340.xx "${squashfs}"/etc/anarchy.d/etc/
-
-    # Download and copy over wallpapers
-    mkdir "${squashfs}"/etc/anarchy.d/extra/wallpapers
-    git clone "${wallpapers_git_url}" "${brand_dir}"
-    cp "${wallpapers_dir}"/* "${squashfs}"/etc/anarchy.d/extra/wallpapers/
-
-    # Remove brand folder
-    rm -rf "${brand_dir}"
+    arch-chroot "${squashfs}" /bin/bash ln -s "${squashfs}"/root/extra/shellrc/.zshrc /root/
+    arch-chroot "${squashfs}" /bin/bash ln -s "${squashfs}"/root/extra/.help /root/
+    arch-chroot "${squashfs}" /bin/bash ln -s "${squashfs}"/root/extra/.dialogrc /root/
+    arch-chroot "${squashfs}" /bin/bash ln -s "${squashfs}"/root/extra/shellrc/.zshrc /etc/zsh/zshrc
+    arch-chroot "${squashfs}" /bin/bash /root/extra/.helprc | tee -a "${squashfs}"/root/.zshrc
+    arch-chroot "${squashfs}" /bin/bash ln -s /root/etc/hostname /etc/
+    arch-chroot "${squashfs}" /bin/bash ln -s /root/etc/issue_cli /etc/
+    arch-chroot "${squashfs}" /bin/bash ln -s /root/boot/splash.png
+    cp -r "${working_dir}"/boot/splash.png "${working_dir}"/boot/loader/ "${squashfs}"/usr/share/anarchy/boot/
 
     echo -e "Done adding files to iso"
     echo -e ""
@@ -524,11 +507,6 @@ function cleanup {
         echo -e "Removing customiso directory ..." | log
         # We have to use in case root owns files inside customiso
         rm -rf "${custom_iso}"
-    fi
-
-    if [[ -d "${brand_dir}" ]]; then
-        echo -e "Removing downloaded branding directory ..." | log
-        rm -rf "${brand_dir}"
     fi
 
     if [[ "${last_command}" != "init" ]]; then
