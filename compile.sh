@@ -341,8 +341,9 @@ function copy_config_files { # prev: build_conf
     # Remove default install.txt instructions
     rm "${squashfs}"/root/install.txt
 
-    # Copy all directories into /root (home directory of the root user)
-    cp -r "${working_dir}"/* "${squashfs}"/root/
+    # Copy all needed directories into /root (home directory of the root user)
+    cp -r "${working_dir}"/boot "${working_dir}"/branding "${working_dir}"/etc "${working_dir}"/extra \
+        "${working_dir}"/lang "${working_dir}"/libraries "${working_dir}"/scripts "${squashfs}"/root/
 
     echo -e "Adding console and locale config files to iso ..." | log
     # Copy over vconsole.conf (sets font at boot), locale.gen (enables locale(s) for font) & uvesafb.conf
