@@ -347,29 +347,29 @@ function copy_config_files { # prev: build_conf
 
     echo -e "Adding console and locale config files to iso ..." | log
     # Copy over vconsole.conf (sets font at boot), locale.gen (enables locale(s) for font) & uvesafb.conf
-    arch-chroot "${squashfs}" /bin/bash ln -s "${squashfs}"/root/etc/vconsole.conf /etc/
-    arch-chroot "${squashfs}" /bin/bash ln -s "${squashfs}"/root/etc/locale.gen /etc/
-    arch-chroot "${squashfs}" /bin/bash ln -s "${squashfs}"/root/scripts/anarchy /usr/bin/anarchy
-    arch-chroot "${squashfs}" /bin/bash locale-gen
+    arch-chroot "${squashfs}" ln -s "${squashfs}"/root/etc/vconsole.conf /etc/
+    arch-chroot "${squashfs}" ln -sf "${squashfs}"/root/etc/locale.gen /etc/
+    arch-chroot "${squashfs}" ln -s "${squashfs}"/root/scripts/anarchy /usr/bin/anarchy
+    arch-chroot "${squashfs}" locale-gen
 
     # Copy over main Anarchy config and installer script, make them executable
     echo -e "Adding anarchy config and installer scripts to iso ..." | log
-    arch-chroot "${squashfs}" /bin/bash ln -s "${squashfs}"/root/etc/anarchy.conf /etc/
-    arch-chroot "${squashfs}" /bin/bash ln -s "${squashfs}"/root/etc/pacman.conf /etc/
-    arch-chroot "${squashfs}" /bin/bash ln -s "${squashfs}"/root/extra/sysinfo /usr/bin/
-    arch-chroot "${squashfs}" /bin/bash ln -s "${squashfs}"/root/extra/iptest /usr/bin/
+    arch-chroot "${squashfs}" ln -s "${squashfs}"/root/etc/anarchy.conf /etc/
+    arch-chroot "${squashfs}" ln -s "${squashfs}"/root/etc/pacman.conf /etc/
+    arch-chroot "${squashfs}" ln -s "${squashfs}"/root/extra/sysinfo /usr/bin/
+    arch-chroot "${squashfs}" ln -s "${squashfs}"/root/extra/iptest /usr/bin/
     chmod +x "${squashfs}"/usr/bin/sysinfo "${squashfs}"/usr/bin/iptest
 
     # Copy over extra files (dot files, desktop configurations, help file, issue file, hostname file)
     echo -e "Adding dot files and desktop configurations to iso ..." | log
-    arch-chroot "${squashfs}" /bin/bash ln -s "${squashfs}"/root/extra/shellrc/.zshrc /root/
-    arch-chroot "${squashfs}" /bin/bash ln -s "${squashfs}"/root/extra/.help /root/
-    arch-chroot "${squashfs}" /bin/bash ln -s "${squashfs}"/root/extra/.dialogrc /root/
-    arch-chroot "${squashfs}" /bin/bash ln -s "${squashfs}"/root/extra/shellrc/.zshrc /etc/zsh/zshrc
-    arch-chroot "${squashfs}" /bin/bash /root/extra/.helprc | tee -a "${squashfs}"/root/.zshrc
-    arch-chroot "${squashfs}" /bin/bash ln -s /root/etc/hostname /etc/
-    arch-chroot "${squashfs}" /bin/bash ln -s /root/etc/issue_cli /etc/
-    arch-chroot "${squashfs}" /bin/bash ln -s /root/boot/splash.png
+    arch-chroot "${squashfs}" ln -s "${squashfs}"/root/extra/shellrc/.zshrc /root/
+    arch-chroot "${squashfs}" ln -s "${squashfs}"/root/extra/.help /root/
+    arch-chroot "${squashfs}" ln -s "${squashfs}"/root/extra/.dialogrc /root/
+    arch-chroot "${squashfs}" ln -s "${squashfs}"/root/extra/shellrc/.zshrc /etc/zsh/zshrc
+    arch-chroot "${squashfs}" /root/extra/.helprc | tee -a "${squashfs}"/root/.zshrc
+    arch-chroot "${squashfs}" ln -s /root/etc/hostname /etc/
+    arch-chroot "${squashfs}" ln -s /root/etc/issue_cli /etc/
+    arch-chroot "${squashfs}" ln -s /root/boot/splash.png
     cp -r "${working_dir}"/boot/splash.png "${working_dir}"/boot/loader/ "${squashfs}"/usr/share/anarchy/boot/
 
     echo -e "Done adding files to iso"
