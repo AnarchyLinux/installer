@@ -355,7 +355,7 @@ function copy_config_files { # prev: build_conf
     # Copy over main Anarchy config and installer script, make them executable
     echo -e "Adding anarchy config and installer scripts to iso ..." | log
     arch-chroot "${squashfs}" ln -s "${squashfs}"/root/etc/anarchy.conf /etc/
-    arch-chroot "${squashfs}" ln -s "${squashfs}"/root/etc/pacman.conf /etc/
+    arch-chroot "${squashfs}" ln -sf "${squashfs}"/root/etc/pacman.conf /etc/
     arch-chroot "${squashfs}" ln -s "${squashfs}"/root/extra/sysinfo /usr/bin/
     arch-chroot "${squashfs}" ln -s "${squashfs}"/root/extra/iptest /usr/bin/
     chmod +x "${squashfs}"/usr/bin/sysinfo "${squashfs}"/usr/bin/iptest
