@@ -1,6 +1,6 @@
 # ArchLinux ISOs, checksums etc.
 archlinux-*-x86_64.iso
-archlinux-*-x86_64.iso.*
+sha1sums.txt
 
 # Anarchy ISOs, checksums etc.
 anarchy-*-x86_64.iso
