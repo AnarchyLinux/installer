@@ -35,7 +35,7 @@ log_dir="${working_dir}"/log
 out_dir="${working_dir}"/out # Directory for generated ISOs
 wallpapers_git_url="https://github.com/AnarchyLinux/brand.git"
 brand_dir="/tmp/anarchy-brand"
-wallpapers_dir="${brand_dir}/wallpapers/official"
+wallpapers_dir="${brand_dir}/wallpapers"
 
 # Define colors depending on script arguments
 set_up_colors() {
