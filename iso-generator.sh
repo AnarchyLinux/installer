@@ -83,8 +83,8 @@ prettify() {
 
 set_version() {
     # Label must be 11 characters long
-    anarchy_iso_label="ANARCHYV108" # prev: iso_label
-    anarchy_iso_release="1.0.8" # prev: iso_rel
+    anarchy_iso_label="ANARCHYV109" # prev: iso_label
+    anarchy_iso_release="1.0.9" # prev: iso_rel
     anarchy_iso_name="anarchy-${anarchy_iso_release}-x86_64.iso" # prev: version
 }
 
@@ -346,6 +346,8 @@ local_repo_builds() { # prev: aur_builds
     echo -e "Building AUR packages for local repo ..." | log
 
     # Begin build loop checking /tmp for existing builds, then build packages & install if required
+    if !(ls /tmp | grep "${local_aur_packages[9]}"); then
+        
     for pkg in "${local_aur_packages[@]}"; do
         echo -e "Making ${pkg} ..." | log
         wget -qO- "${aur_snapshot_link}/${pkg}.tar.gz" | tar xz -C /tmp
@@ -357,6 +359,8 @@ local_repo_builds() { # prev: aur_builds
         fi
         echo -e "${pkg} made successfully" | log
     done
+
+    fi
 
     echo -e "Done making packages"
     echo -e ""
