@@ -44,7 +44,7 @@ set_user() {
                         dialog --ok-button "$ok" --msgbox "\n$user_err_msg2" 10 60
                     elif (grep "^$user:" "$tmp_passwd" &>/dev/null); then
                         dialog --ok-button "$ok" --msgbox "\n$user_err_msg1" 10 60
-                    elif (<<<"$user" grep "^[0-9]\|[A-Z\[\$\!\'\"\`\\|%&#@()_-+=<>~;:/?.,^{}]\|]" &> /dev/null); then
+                    elif (<<<"$user" grep "^[0-9]\|[A-Z]\|[]:/?#@\!\$&'()*+,;=%[]" &> /dev/null); then
                         dialog --ok-button "$ok" --msgbox "\n$user_err_msg" 10 60
                     else
                         while (true)
