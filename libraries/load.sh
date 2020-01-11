@@ -1,4 +1,3 @@
-#!/usr/bin/env bash
 # Copyright (C) 2017 Dylan Schacht
 
 # Calculate download speed

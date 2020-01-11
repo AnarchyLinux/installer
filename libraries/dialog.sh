@@ -1,14 +1,3 @@
-#!/usr/bin/env bash
-# Anarchy's custom dialog library
-
-# Early access to 'variables.sh' is needed, so we need to source the file
-source ./variables.sh
-
-if [[ "$(tput lines)" -gt 25 ]]; then
-    # Run the function 'update_var' from 'variables.sh'
-    update_var 'sufficient_screen_size' 'true'
-fi
-
 # Defines a custom dialog based on system properties
 function dialog {
     local sufficient_screen_size
