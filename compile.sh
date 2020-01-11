@@ -17,7 +17,7 @@ set -o errtrace
 # Check if started as root
 if [[ ${UID} -ne 0 ]]; then
     echo "Error: compile.sh requires root privileges"
-    echo "       Use: sudo ./compile.sh"
+    echo "       Use: sudo -u $USER ./compile.sh"
     exit 1
 fi
 
@@ -342,6 +342,7 @@ function copy_config_files { # prev: build_conf
     rm "${squashfs}"/root/install.txt
 
     # Copy all needed directories into /root (home directory of the root user)
+    echo -e "Copying all anarchy files to iso" | log
     cp -r "${working_dir}"/boot "${working_dir}"/branding "${working_dir}"/etc "${working_dir}"/extra \
         "${working_dir}"/lang "${working_dir}"/libraries "${working_dir}"/scripts "${squashfs}"/root/
 
@@ -362,15 +363,14 @@ function copy_config_files { # prev: build_conf
 
     # Copy over extra files (dot files, desktop configurations, help file, issue file, hostname file)
     echo -e "Adding dot files and desktop configurations to iso ..." | log
-    arch-chroot "${squashfs}" ln -s "${squashfs}"/root/extra/shellrc/.zshrc /root/
+    arch-chroot "${squashfs}" ln -sf "${squashfs}"/root/extra/shellrc/.zshrc /root/
     arch-chroot "${squashfs}" ln -s "${squashfs}"/root/extra/.help /root/
     arch-chroot "${squashfs}" ln -s "${squashfs}"/root/extra/.dialogrc /root/
-    arch-chroot "${squashfs}" ln -s "${squashfs}"/root/extra/shellrc/.zshrc /etc/zsh/zshrc
-    arch-chroot "${squashfs}" /root/extra/.helprc | tee -a "${squashfs}"/root/.zshrc
-    arch-chroot "${squashfs}" ln -s /root/etc/hostname /etc/
+    arch-chroot "${squashfs}" ln -sf "${squashfs}"/root/extra/shellrc/.zshrc /etc/zsh/zshrc
+    arch-chroot "${squashfs}" cat /root/extra/.helprc | tee -a "${squashfs}"/root/.zshrc
+    arch-chroot "${squashfs}" ln -sf /root/etc/hostname /etc/
     arch-chroot "${squashfs}" ln -s /root/etc/issue_cli /etc/
     arch-chroot "${squashfs}" ln -s /root/boot/splash.png
-    cp -r "${working_dir}"/boot/splash.png "${working_dir}"/boot/loader/ "${squashfs}"/usr/share/anarchy/boot/
 
     echo -e "Done adding files to iso"
     echo -e ""
@@ -511,7 +511,7 @@ function cleanup {
     fi
 
     if [[ "${last_command}" != "init" ]]; then
-        echo -e "${color_white}Please report this issue to our Github issue tracker: https://git.io/JeOxK${color_blank}"
+        echo -e "${color_white}Please report this issue to our Github issue tracker: https://github.com/anarchylinux/installer/issues${color_blank}"
         echo -e "${color_white}Make sure to include the relevant log file: ${log_file}${color_blank}"
         echo -e "${color_white}You can also ask about the issue in our Telegram: https://t.me/anarchy_linux${color_blank}"
     fi
