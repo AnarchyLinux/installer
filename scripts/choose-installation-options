@@ -1,10 +1,4 @@
 #!/usr/bin/env bash
-# Shows installation options:
-# 1) Pre-customised desktop install
-# 2) Pre-customised desktop install (LTS)
-# 3) Pre-customised server install
-# 4) Pre-customised desktop install (LTS)
-# 5) Advanced install
 
 # Source config file and libraries
 source "${ANARCHY_CONFIG_FILE}"
@@ -17,34 +11,32 @@ log "Choosing installation options"
 menu_title="${install_op_msg}"
 
 while (true); do
-    install_opt=$(dialog --ok-button "${ok}" --cancel-button "${cancel}" --menu "${install_opt_msg}" 16 80 5 \
-        1 "${install_opt1}" \
-        2 "${install_opt2}" \
-        3 "${install_opt3}" \
-        4 "${install_opt4}" \
-        5 "${install_opt0}" 3>&1 1>&2 2>&3)
+    install_opt="$(dialog --ok-button "${ok}" --cancel-button "${cancel}" --menu "${install_opt_msg}" 16 80 5 \
+        "Anarchy Desktop"       "${install_opt1}" \
+        "Anarchy LTS Desktop"   "${install_opt2}" \
+        "Anarchy Server"        "${install_opt3}" \
+        "Anarchy LTS Server"    "${install_opt4}" \
+        "Other options"         "${install_opt0}" 3>&1 1>&2 2>&3)"
 
     if [[ $? -gt 0 ]]; then
         if (dialog --defaultno --yes-button "${yes}" --no-button "${no}" --yesno "\n${exit_msg}" 10 60); then
-            # TODO: Update reference to menus.sh
-            main_menu
+            run main-menu
         fi
     else
         break
     fi
 done
 
-log "Selected installation option ${install_opt}"
+log "Selected installation option: ${install_opt}"
 
 case "${install_opt}" in
-    5)
+    "Other options")
         run choose-base
-        # TODO: Update reference
         run choose-desktop-packages
         ;;
 
-    *) run quick-install ${install_opt} ;;
+    *) run quick-install "${install_opt}" ;;
 esac
 
 log "Done choosing installation options"
-return 0
+exit 0

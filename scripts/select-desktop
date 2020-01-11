@@ -21,19 +21,19 @@ case "${de}" in
     1) # XFCE4
         config_env="${de}"
         start_term="exec startxfce4"
-        DE+=('xfce4' 'xfce4-goodies' "${extras}")
+        desktop_packages+=('xfce4' 'xfce4-goodies' "${extras}")
     ;;
 
     2) # Gnome
         config_env="${de}"
         start_term="exec gnome-session"
-        DE+=('gnome' 'gnome-extra' 'terminator' "${extras}")
+        desktop_packages+=('gnome' 'gnome-extra' 'terminator' "${extras}")
     ;;
 
     3) # Cinnamon
         config_env="${de}"
         start_term="exec cinnamon-session"
-        DE+=(
+        desktop_packages+=(
             'cinnamon'
             'cinnamon-translations'
             'gnome-terminal'
@@ -49,7 +49,7 @@ case "${de}" in
     4) # Openbox
         config_env="${de}"
         start_term="exec openbox-session"
-        DE+=(
+        desktop_packages+=(
             'openbox'
             'thunar'
             'thunar-volman'
@@ -77,7 +77,7 @@ case "${de}" in
     5) # Budgie
         config_env="${de}"
         start_term="export XDG_CURRENT_DESKTOP=Budgie:GNOME ; exec budgie-desktop"
-        DE+=(
+        desktop_packages+=(
             'budgie-desktop'
             'mousepad'
             'terminator'
@@ -125,7 +125,7 @@ while (true); do
     fi
 done
 
-DE+=(
+desktop_packages+=(
     "${GPU}"
     'xdg-user-dirs'
     'xorg-server'
@@ -147,16 +147,16 @@ DE+=(
 )
 
 if [[ "${net_util}" == "networkmanager" ]] ; then
-    if (<<<"${DE}" grep "plasma" &> /dev/null); then
-        DE+=('plasma-nm')
+    if (<<<"${desktop_packages}" grep "plasma" &> /dev/null); then
+        desktop_packages+=('plasma-nm')
     else
-        DE+=('network-manager-applet')
+        desktop_packages+=('network-manager-applet')
     fi
 fi
 
 if "${enable_bluetooth}" ; then
-    DE+=('blueman')
+    desktop_packages+=('blueman')
 fi
 
 DM="lightdm"
-enable_dm=true
+enable_display_manager=true

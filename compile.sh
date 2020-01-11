@@ -17,20 +17,17 @@ set -o errtrace
 # Check if started as root
 if [[ ${UID} -ne 0 ]]; then
     echo "Error: compile.sh requires root privileges"
-    echo "       Use: sudo ./compile.sh"
+    echo "       Use: sudo -u $USER ./compile.sh"
     exit 1
 fi
 
 # Declare important variables
-working_dir=$(pwd) # prev: aa
+working_dir="$(pwd)" # prev: aa
 log_dir="${working_dir}"/logs
 out_dir="${working_dir}"/out # Directory for generated ISOs
-wallpapers_git_url="https://github.com/AnarchyLinux/brand.git"
-brand_dir="$(mktemp -d)"
-wallpapers_dir="${brand_dir}/wallpapers/official"
 
 # Define colors depending on script arguments
-colors() {
+function colors {
     if [[ "${show_color}" == true ]]; then
         color_blank='\e[0m'
         color_green='\e[1;32m'
@@ -45,7 +42,7 @@ colors() {
     fi
 }
 
-logging() {
+function logging {
     if [[ ! -d "${log_dir}" ]]; then
         mkdir "${log_dir}"
     fi
@@ -60,14 +57,14 @@ logging() {
     touch "${log_file}"
 }
 
-log() {
+function log {
     local entry
     read entry
     echo -e "$(date -u "+%d/%m/%Y %H:%M") : ${entry}" | tee -a "${log_file}"
 }
 
 # Clears the screen and adds a banner
-prettify() {
+function prettify {
     # Source colors
     colors
 
@@ -76,14 +73,14 @@ prettify() {
     echo -e ""
 }
 
-set_version() {
+function set_version {
     # Label must be 11 characters long
     anarchy_iso_label="ANARCHYV110" # prev: iso_label
     anarchy_iso_release="1.1.0" # prev: iso_rel
     anarchy_iso_name="anarchy-${anarchy_iso_release}-x86_64.iso" # prev: version
 }
 
-init() {
+function init {
     # Location variables
     custom_iso="${working_dir}"/customiso # prev: customiso
     squashfs="${custom_iso}"/arch/x86_64/squashfs-root # prev: sq
@@ -107,7 +104,7 @@ init() {
     check_arch_iso
 }
 
-check_dependencies() { # prev: check_depends
+function check_dependencies { # prev: check_depends
     echo -e "Checking dependencies ..." | log
 
     # Dependencies with same name packages
@@ -176,7 +173,7 @@ check_dependencies() { # prev: check_depends
     echo -e ""
 }
 
-update_arch_iso() { # prev: update_iso
+function update_arch_iso { # prev: update_iso
     update=false
 
     # Check for latest Arch Linux iso
@@ -249,7 +246,7 @@ update_arch_iso() { # prev: update_iso
     echo -e ""
 }
 
-check_arch_iso() {
+function check_arch_iso {
     echo -e "Comparing Arch Linux checksums ..." | log
     checksum=false
     local_arch_checksum=$(ls "${working_dir}"/sha1sums.txt | tail -n1 | sed 's!.*/!!')
@@ -285,7 +282,7 @@ check_arch_iso() {
             # Automatically download and compare checksum
             wget -c -q --show-progress "${arch_checksum_link}"
             local_arch_checksum=$(ls "${working_dir}"/sha1sums.txt | tail -n1 | sed 's!.*/!!')
-            if [[ $(sha1sum --check --ignore-missing "${local_arch_checksum}") ]]; then
+            if [[ "$(sha1sum --check --ignore-missing "${local_arch_checksum}")" ]]; then
                 echo -e "${local_arch_iso}: OK" | log
                 checksum=true
             fi
@@ -316,7 +313,7 @@ check_arch_iso() {
     fi
 }
 
-extract_arch_iso() { # prev: extract_iso
+function extract_arch_iso { # prev: extract_iso
     cd "${working_dir}" || exit
 
     if [[ -d "${custom_iso}" ]]; then
@@ -332,7 +329,7 @@ extract_arch_iso() { # prev: extract_iso
     echo -e ""
 }
 
-copy_config_files() { # prev: build_conf
+function copy_config_files { # prev: build_conf
     # Change directory into the iso, where the filesystem is stored.
     # Unsquash root filesystem 'airootfs.sfs', this creates a directory 'squashfs-root' containing the entire system
     echo -e "Unsquashing Arch image ..." | log
@@ -341,55 +338,45 @@ copy_config_files() { # prev: build_conf
     echo -e "Done unsquashing airootfs.sfs"
     echo -e ""
 
+    # Remove default install.txt instructions
+    rm "${squashfs}"/root/install.txt
+
+    # Copy all needed directories into /root (home directory of the root user)
+    echo -e "Copying all anarchy files to iso" | log
+    cp -r "${working_dir}"/boot "${working_dir}"/branding "${working_dir}"/etc "${working_dir}"/extra \
+        "${working_dir}"/translations "${working_dir}"/libraries "${working_dir}"/scripts "${squashfs}"/root/
+
     echo -e "Adding console and locale config files to iso ..." | log
     # Copy over vconsole.conf (sets font at boot), locale.gen (enables locale(s) for font) & uvesafb.conf
-    cp "${working_dir}"/etc/vconsole.conf "${working_dir}"/etc/locale.gen "${squashfs}"/etc/
-    arch-chroot "${squashfs}" /bin/bash locale-gen
+    arch-chroot "${squashfs}" ln -s "${squashfs}"/root/etc/vconsole.conf /etc/
+    arch-chroot "${squashfs}" ln -sf "${squashfs}"/root/etc/locale.gen /etc/
+    arch-chroot "${squashfs}" ln -s "${squashfs}"/root/scripts/anarchy /usr/bin/anarchy
+    arch-chroot "${squashfs}" locale-gen
 
     # Copy over main Anarchy config and installer script, make them executable
     echo -e "Adding anarchy config and installer scripts to iso ..." | log
-    cp "${working_dir}"/etc/anarchy.conf "${working_dir}"/etc/pacman.conf "${squashfs}"/etc/
-    cp "${working_dir}"/anarchy "${squashfs}"/usr/bin/anarchy
-    cp "${working_dir}"/extra/sysinfo "${working_dir}"/extra/iptest "${squashfs}"/usr/bin/
-    chmod +x "${squashfs}"/usr/bin/anarchy "${squashfs}"/usr/bin/sysinfo "${squashfs}"/usr/bin/iptest
-
-    # Create Anarchy and lang directories, copy over all lang files
-    echo -e "Adding language files to iso ..." | log
-    mkdir -p "${squashfs}"/etc/anarchy.d/lang "${squashfs}"/etc/anarchy.d/extra "${squashfs}"/etc/anarchy.d/boot "${squashfs}"/etc/anarchy.d/etc
-    cp "${working_dir}"/lang/* "${squashfs}"/etc/anarchy.d/lang/
-
-    # Create shell function library, copy /lib to squashfs-root
-    echo -e "Adding anarchy scripts to iso ..." | log
-    mkdir -p "${squashfs}"/etc/anarchy.d/scripts "${squashfs}"/etc/anarchy.d/libs
-    cp "${working_dir}"/libs/* "${squashfs}"/etc/anarchy.d/libs/
-    cp "${working_dir}"/scripts/* "${squashfs}"/etc/anarchy.d/scripts/
+    arch-chroot "${squashfs}" ln -s "${squashfs}"/root/etc/anarchy.conf /etc/
+    arch-chroot "${squashfs}" ln -sf "${squashfs}"/root/etc/pacman.conf /etc/
+    arch-chroot "${squashfs}" ln -s "${squashfs}"/root/extra/sysinfo /usr/bin/
+    arch-chroot "${squashfs}" ln -s "${squashfs}"/root/extra/iptest /usr/bin/
+    chmod +x "${squashfs}"/usr/bin/sysinfo "${squashfs}"/usr/bin/iptest
 
     # Copy over extra files (dot files, desktop configurations, help file, issue file, hostname file)
     echo -e "Adding dot files and desktop configurations to iso ..." | log
-    rm "${squashfs}"/root/install.txt
-    cp "${working_dir}"/extra/shellrc/.zshrc "${squashfs}"/root/
-    cp "${working_dir}"/extra/.help "${working_dir}"/extra/.dialogrc "${squashfs}"/root/
-    cp "${working_dir}"/extra/shellrc/.zshrc "${squashfs}"/etc/zsh/zshrc
-    cp -r "${working_dir}"/extra/shellrc/. "${squashfs}"/etc/anarchy.d/extra/
-    cp -r "${working_dir}"/extra/desktop "${working_dir}"/extra/fonts "${working_dir}"/extra/anarchy-icon.png "${squashfs}"/etc/anarchy.d/extra/
-    cat "${working_dir}"/extra/.helprc | tee -a "${squashfs}"/root/.zshrc >/dev/null
-    cp "${working_dir}"/etc/hostname "${working_dir}"/etc/issue_cli "${squashfs}"/etc/
-    cp -r "${working_dir}"/boot/splash.png "${working_dir}"/boot/loader/ "${squashfs}"/etc/anarchy.d/boot/
-    cp "${working_dir}"/etc/nvidia340.xx "${squashfs}"/etc/anarchy.d/etc/
-
-    # Download and copy over wallpapers
-    mkdir "${squashfs}"/etc/anarchy.d/extra/wallpapers
-    git clone "${wallpapers_git_url}" "${brand_dir}"
-    cp "${wallpapers_dir}"/* "${squashfs}"/etc/anarchy.d/extra/wallpapers/
- 
-    # Remove brand folder
-    rm -rf "${brand_dir}"
+    arch-chroot "${squashfs}" ln -sf "${squashfs}"/root/extra/shellrc/.zshrc /root/
+    arch-chroot "${squashfs}" ln -s "${squashfs}"/root/extra/.help /root/
+    arch-chroot "${squashfs}" ln -s "${squashfs}"/root/extra/.dialogrc /root/
+    arch-chroot "${squashfs}" ln -sf "${squashfs}"/root/extra/shellrc/.zshrc /etc/zsh/zshrc
+    arch-chroot "${squashfs}" cat /root/extra/.helprc | tee -a "${squashfs}"/root/.zshrc
+    arch-chroot "${squashfs}" ln -sf /root/etc/hostname /etc/
+    arch-chroot "${squashfs}" ln -s /root/etc/issue_cli /etc/
+    arch-chroot "${squashfs}" ln -s /root/boot/splash.png
 
     echo -e "Done adding files to iso"
     echo -e ""
 }
 
-build_system() { # prev: build_sys
+function build_system { # prev: build_sys
     echo -e "Installing packages to new system ..." | log
     # Install fonts, fbterm, fetchmirrors etc.
     pacman --root "${squashfs}" --cachedir "${squashfs}"/var/cache/pacman/pkg --noconfirm -Sy terminus-font acpi zsh-syntax-highlighting pacman-contrib
@@ -412,7 +399,7 @@ build_system() { # prev: build_sys
     echo -e ""
 }
 
-configure_boot() {
+function configure_boot {
     echo -e "Configuring boot ..." | log
     arch_iso_label=$(<"${custom_iso}"/loader/entries/archiso-x86_64.conf awk 'NR==6{print $NF}' | sed 's/.*=//')
     arch_iso_hex=$(<<<"${arch_iso_label}" xxd -p)
@@ -435,7 +422,7 @@ configure_boot() {
     echo -e ""
 }
 
-create_iso() {
+function create_iso {
     echo -e "Creating new Anarchy image ..." | log
     cd "${working_dir}" || exit
     xorriso -as mkisofs \
@@ -461,7 +448,7 @@ create_iso() {
     fi
 }
 
-generate_checksums() {
+function generate_checksums {
     echo -e "Generating image checksum ..." | log
     cd "${out_dir}"
     echo -e "$(sha256sum "${anarchy_iso_name}")" > "${anarchy_iso_name}".sha256sum
@@ -469,7 +456,7 @@ generate_checksums() {
     echo -e ""
 }
 
-uninstall_dependencies() {
+function uninstall_dependencies {
     if [[ "${#missing_deps[@]}" -ne 0 ]]; then
         echo -e "Installed dependencies: ${missing_deps[*]}" | log
         if [[ "${user_input}" == true ]]; then
@@ -496,13 +483,13 @@ uninstall_dependencies() {
 }
 
 # Logs last command to display it in cleanup
-command_log() {
+function command_log {
     current_command="${BASH_COMMAND}"
     last_command="${current_command}"
 }
 
 # Starts if the iso-generator is interrupted
-cleanup() {
+function cleanup {
     # Check if user exited or if there was an error
     if [[ "${last_command}" == "init" ]]; then
         echo -e "User force stopped the script" | log
@@ -523,21 +510,16 @@ cleanup() {
         rm -rf "${custom_iso}"
     fi
 
-    if [[ -d "${brand_dir}" ]]; then
-        echo -e "Removing downloaded branding directory ..." | log
-        rm -rf "${brand_dir}"
-    fi
-
     if [[ "${last_command}" != "init" ]]; then
-        echo -e "${color_white}Please report this issue to our Github issue tracker: https://git.io/JeOxK${color_blank}"
-        echo -e "${color_white}Make sure to include the relevant log.sh: ${log_file}${color_blank}"
+        echo -e "${color_white}Please report this issue to our Github issue tracker: https://github.com/anarchylinux/installer/issues${color_blank}"
+        echo -e "${color_white}Make sure to include the relevant log file: ${log_file}${color_blank}"
         echo -e "${color_white}You can also ask about the issue in our Telegram: https://t.me/anarchy_linux${color_blank}"
     fi
 }
 
-usage() {
+function usage {
     clear
-    echo -e "${color_white}Usage: iso-generator.sh [options]${color_blank}"
+    echo -e "${color_white}Usage: compile.sh [options]${color_blank}"
     echo -e "${color_white}     -c | --no-color)    Disable color output${color_blank}"
     echo -e "${color_white}     -i | --no-input)    Don't ask user for input${color_blank}"
     echo -e "${color_white}     -o | --output-dir)  Specify directory for generated ISOs/checksums${color_blank}"

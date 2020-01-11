@@ -9,7 +9,7 @@ done
 log "Starting quick installation"
 
 case "$1" in
-    1)
+    "Anarchy Desktop")
         kernel="linux"
         sh="/usr/bin/zsh"
         shrc="${default}"
@@ -52,10 +52,10 @@ case "$1" in
 
         # TODO: Fix reference
         run select_desktop.sh
-        base_install+=("${DE}")
+        base_install+=("${desktop_packages}")
     ;;
 
-    2)
+    "Anarchy LTS Desktop")
         kernel="linux-lts"
         sh="/usr/bin/zsh"
         shrc="${default}"
@@ -98,10 +98,10 @@ case "$1" in
 
         # TODO: Fix reference
         run select_desktop.sh
-        base_install+=("${DE}")
+        base_install+=("${desktop_packages}")
     ;;
 
-    3)
+    "Anarchy Server")
         kernel="linux"
         sh="/usr/bin/zsh"
         shrc="${default}"
@@ -142,11 +142,11 @@ case "$1" in
         fi
     ;;
 
-    4)
-        kernel="linux-lts"
-        sh="/usr/bin/zsh"
-        shrc="${default}"
-        bootloader="grub"
+    "Anarchy LTS Server")
+        export kernel='linux-lts'
+        export sh='/usr/bin/zsh'
+        export shrc="${default}"
+        export bootloader="grub"
         net_util="networkmanager"
         enable_network_manager=true
         enable_multilib_repo=true
@@ -171,7 +171,9 @@ case "$1" in
                 'bluez-utils'
                 'pulseaudio-bluetooth'
             )
+
             enable_bluetooth=true
+            export enable_bluetooth
         fi
 
         if "${enable_f2fs}" ; then

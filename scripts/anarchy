@@ -7,9 +7,18 @@ source "${ANARCHY_CONFIG_FILE}"
 source "${translation_file}"
 
 # Source libraries
-for library in "${ANARCHY_LIBRARIES_DIRECTORY}"/*.sh; do
+for library in "${ANARCHY_LIBRARIES_DIRECTORY}"/*; do
     source "${library}"
 done
+
+if [[ "$(tput lines)" -gt 25 ]]; then
+    # Run the function 'update_var' from 'variables.sh'
+    update_var 'sufficient_screen_size' 'true'
+fi
+
+# Define log file
+LOG_FILE="${ANARCHY_LOG_DIRECTORY}"/"$(date "+%d-%m-%Y")".log
+export LOG_FILE
 
 main() {
     log "Started installation"
@@ -29,9 +38,9 @@ main() {
     run set-locale
     run set-timezone
     run prepare-disks
-    #run choose-installation-options
-    #run set-hostname
-    #run set-password
+    run choose-installation-options
+    run set-hostname
+    run set-password
     #run set-user
     #run add-software
     #run install-base
@@ -47,6 +56,7 @@ if [[ ${UID} -ne 0 ]]; then
     exit 1
 fi
 
+# Prints the usage info if started wth -h
 usage() {
     clear
     echo -e "Usage: ${color_green} anarchy [options]${color_none}"
@@ -58,18 +68,19 @@ usage() {
 
 # Get options
 case "$1" in
-    -h|--help)
-        usage
-        exit 0
-    ;;
     -k|--keys)
-        update_keys
+        run update-pacman-keys
         exit $?
     ;;
     -u|--update)
-        update_anarchy
+        run update-anarchy
         exit $?
+    ;;
+    *)
+        usage
+        exit 0
     ;;
 esac
 
+# If no parameters were passed, run anarchy
 main

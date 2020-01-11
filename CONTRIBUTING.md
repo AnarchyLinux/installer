@@ -5,13 +5,23 @@ and then submitting a pull request with any changes you have added.
 
 ### Style guide
 
-* Follow bash best practices (Google them)
-* Use "${variable}" instead of $variable
-* Use double square brackets ("[[ condition ]]") for conditionals (e.g. in 'if' statements)
+* Follow bash best practices (mostly as described in
+[Google's shell style guide](https://google.github.io/styleguide/shell.xml))
+* Use `${variable}` instead of `$variable`
+* Constrants should be `UPPER_CASE`, other variables `lower_case`
+* Use double square brackets (`[[ condition ]]`) for conditionals
+(e.g. in 'if' statements)
 * Use 4 spaces for indentation instead of tabs
-* Use "#!/usr/bin/env bash" as a shebang
-* Write good comments where needed
-* Use different error codes when exiting (0 for proper exit, 1+ for error exits) and explain them at the top of the file
+* Use `#!/usr/bin/env bash` as a shebang
+* Write good comments where needed (e.g. in complicated loops/functions)
+* Use different error codes when exiting (0 for proper exit, 1+ for error exits)
+and explain them at the top of the file (same for returns)
+* Use the `log` function as much as possible (as long as it makes sense)
+* If possible always line wrap at 80 characters
+* Check existing code and try and be consistent
+* Scripts don't need a `.sh` suffix and should have a `-` between words
+* Libraries (`libs` directory) should always have a `.sh` suffix and an
+explanation of what they do
 
 If you need help remembering commands or want to check out some tips
 visit [devhints.io](https://devhints.io/bash) to do so.
@@ -21,32 +31,23 @@ visit [devhints.io](https://devhints.io/bash) to do so.
 Anarchy Linux, although a relatively simple project,
 still has a bunch of languages included, all of which need contributors.
 
-### Updating existing translations
-
-* Find the file you want to translate and update the strings you want
-* If the translations haven't been updated in a while you
-can add other maintainers to the Original Maintainer(s) list
-* Check below
-
 ### Translating for a new language
 
 * Ask yourself if you're committed enough to translate the whole file
-(check english.conf for comparison)
+(check english.conf for size comparison - ~500 translations)
 * Copy the `english.conf` file and rename it to your language's
-english name (e.g. portuguese or spanish)
-* Change the LANG variable to your language's UTF-8 locale
-* Change the top comment to your file name (e.g. from # english.conf -> # portuguese.conf)
-* Check below
+english name (e.g. portuguese.conf or spanish.conf)
+* Change the LANG variable to your language's UTF-8 locale (e.g. `sl_SI.UTF-8`)
+* Check general rules/recommendations below
 
 ### General rules/recommendations
 
-* Make sure to use UTF-8 encoding
+* Make sure to use the UTF-8 encoding
 * Don't change the variable names (e.g. intro_msg=)
 * Don't remove any occurrence of (e.g. \n or \n\n - new lines)
 * Don't remove any special characters (e.g. $a, or quotes)
 * Don't edit variables within the text (e.g. /dev/${DRIVE} or ${user})
-(besides the translations they should look the same)
-* Add yourself to the Maintainers list
+* Add yourself to the maintainers list
 (and your email for possible further communication)
 * Compare the finished file with english.conf
 
@@ -60,6 +61,8 @@ there are still some options for you.
 You can try the installer, either on your own computer
 or in a virtual machine and report back any bugs you may have found.
 We will try and fix them as soon as we can, but don't expect immediate responses.
+Please make sure to submit logs and all info you can, as described on our
+[wiki](https://github.com/AnarchyLinux/installer/wiki/Reporting-issues).
 
 This doesn't apply only to bugs though,
 we also accept feature requests, although depending on your wish,

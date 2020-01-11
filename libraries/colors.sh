@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Anarchy's color library
+# Anarchy's colors library
 
 # Define colors
 color_green=$'\e[0;32m';

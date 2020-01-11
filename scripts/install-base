@@ -18,7 +18,7 @@ else
     height="16"
 fi
 
-until "$INSTALLED"
+until "$system_is_installed"
   do
     if (dialog --yes-button "$install" --no-button "$cancel" --yesno "\n$install_var" "$height" 65); then
         echo "$(date -u "+%F %H:%M") : Begin base install" >> "$log"
@@ -35,7 +35,7 @@ until "$INSTALLED"
         genfstab -U -p "$CHROOT_MOUNT_POINT" >> "$CHROOT_MOUNT_POINT"/etc/fstab
 
         if [ $(</tmp/ex_status) -eq "0" ]; then
-            INSTALLED=true
+            system_is_installed=true
             echo "$(date -u "+%F %H:%M") : Install Complete" >> "$log"
             echo "$(date -u "+%F %H:%M") : Generate fstab:\n$(<$CHROOT_MOUNT_POINT/etc/fstab)" >> "$log"
         else
@@ -54,8 +54,8 @@ until "$INSTALLED"
         echo "$(date -u "+%F %H:%M") : Configured bootloader: $bootloader" >> "$log"
     else
         if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$exit_msg" 10 60) then
-            unset base_install DE
-            desktop=false
+            unset base_install desktop_packages
+            enable_desktop=false
             main_menu
         fi
     fi
