@@ -7,9 +7,18 @@ source "${ANARCHY_CONFIG_FILE}"
 source "${translation_file}"
 
 # Source libraries
-for library in "${ANARCHY_LIBRARIES_DIRECTORY}"/*.sh; do
+for library in "${ANARCHY_LIBRARIES_DIRECTORY}"/*; do
     source "${library}"
 done
+
+if [[ "$(tput lines)" -gt 25 ]]; then
+    # Run the function 'update_var' from 'variables.sh'
+    update_var 'sufficient_screen_size' 'true'
+fi
+
+# Define log file
+LOG_FILE="${ANARCHY_LOG_DIRECTORY}"/"$(date "+%d-%m-%Y")".log
+export LOG_FILE
 
 main() {
     log "Started installation"
