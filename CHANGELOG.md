@@ -1,5 +1,18 @@
 # Changelog
 
+## Release v1.0.10
+
+* Based on Arch Linux's 01/01/2020 release
+* Update French and Romanian translations
+* Fix iso creation bug
+* Fix uppercase username check
+
+## Release v1.0.9
+
+* Updated to December 1st Arch Linux base
+* Add options to pacman.conf
+* Remove obsolete os-release code
+
 ## Release v1.0.8
 
 * Update French and Romanian translations
