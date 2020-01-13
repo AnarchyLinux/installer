@@ -82,9 +82,9 @@ prettify() {
 }
 
 set_version() {
-    # Label must be 11 characters long
-    anarchy_iso_label="ANARCHYV109" # prev: iso_label
-    anarchy_iso_release="1.0.9" # prev: iso_rel
+    # Label must be up to 32 characters long (preferably up to 16)
+    anarchy_iso_label="ANARCHYV1010" # prev: iso_label
+    anarchy_iso_release="1.0.10" # prev: iso_rel
     anarchy_iso_name="anarchy-${anarchy_iso_release}-x86_64.iso" # prev: version
 }
 
