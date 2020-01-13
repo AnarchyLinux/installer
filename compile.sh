@@ -74,9 +74,10 @@ function prettify {
 }
 
 function set_version {
-    # Label must be 11 characters long
-    anarchy_iso_label="ANARCHYV110" # prev: iso_label
-    anarchy_iso_release="1.1.0" # prev: iso_rel
+    # Label must be up to 32 characters long (preferably up to 16)
+    # Bump the label by 1 in each new release (not based on release number)
+    anarchy_iso_volume_id="Anarchy_1" # prev: iso_label
+    anarchy_iso_release="2.0.0" # prev: iso_rel
     anarchy_iso_name="anarchy-${anarchy_iso_release}-x86_64.iso" # prev: version
 }
 
@@ -403,14 +404,14 @@ function configure_boot {
     echo -e "Configuring boot ..." | log
     arch_iso_label=$(<"${custom_iso}"/loader/entries/archiso-x86_64.conf awk 'NR==6{print $NF}' | sed 's/.*=//')
     arch_iso_hex=$(<<<"${arch_iso_label}" xxd -p)
-    anarchy_iso_hex=$(<<<"${anarchy_iso_label}" xxd -p)
+    anarchy_iso_hex=$(<<<"${anarchy_iso_volume_id}" xxd -p)
     cp "${working_dir}"/boot/splash.png "${custom_iso}"/arch/boot/syslinux/
     cp "${working_dir}"/boot/iso/archiso_head.cfg "${custom_iso}"/arch/boot/syslinux/
-    sed -i "s/${arch_iso_label}/${anarchy_iso_label}/;s/Arch Linux archiso/Anarchy Linux/" "${custom_iso}"/loader/entries/archiso-x86_64.conf
-    sed -i "s/${arch_iso_label}/${anarchy_iso_label}/;s/Arch Linux/Anarchy Linux/" "${custom_iso}"/arch/boot/syslinux/archiso_sys.cfg
-    sed -i "s/${arch_iso_label}/${anarchy_iso_label}/;s/Arch Linux/Anarchy Linux/" "${custom_iso}"/arch/boot/syslinux/archiso_pxe.cfg
+    sed -i "s/${arch_iso_label}/${anarchy_iso_volume_id}/;s/Arch Linux archiso/Anarchy Linux/" "${custom_iso}"/loader/entries/archiso-x86_64.conf
+    sed -i "s/${arch_iso_label}/${anarchy_iso_volume_id}/;s/Arch Linux/Anarchy Linux/" "${custom_iso}"/arch/boot/syslinux/archiso_sys.cfg
+    sed -i "s/${arch_iso_label}/${anarchy_iso_volume_id}/;s/Arch Linux/Anarchy Linux/" "${custom_iso}"/arch/boot/syslinux/archiso_pxe.cfg
     cd "${custom_iso}"/EFI/archiso/ || exit
-    echo -e "Replacing label hex in efiboot.img...\n${arch_iso_label} ${arch_iso_hex} > ${anarchy_iso_label} ${anarchy_iso_hex}" | log
+    echo -e "Replacing label hex in efiboot.img...\n${arch_iso_label} ${arch_iso_hex} > ${anarchy_iso_volume_id} ${anarchy_iso_hex}" | log
     xxd -c 256 -p efiboot.img | sed "s/${arch_iso_hex}/${anarchy_iso_hex}/" | xxd -r -p > efiboot1.img
     if ! (xxd -c 256 -p efiboot1.img | grep "${anarchy_iso_hex}" &>/dev/null); then
         echo -e "${color_red}\nError: failed to replace label hex in efiboot.img${color_blank}" | log
@@ -428,7 +429,7 @@ function create_iso {
     xorriso -as mkisofs \
     -iso-level 3 \
     -full-iso9660-filenames \
-    -volid "${anarchy_iso_label}" \
+    -volid "${anarchy_iso_volume_id}" \
     -eltorito-boot isolinux/isolinux.bin \
     -eltorito-catalog isolinux/boot.cat \
     -no-emul-boot -boot-load-size 4 -boot-info-table \
