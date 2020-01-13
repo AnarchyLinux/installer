@@ -346,19 +346,20 @@ local_repo_builds() { # prev: aur_builds
     echo -e "Building AUR packages for local repo ..." | log
 
     # Begin build loop checking /tmp for existing builds, then build packages & install if required
-    if !(ls /tmp | grep "${local_aur_packages[9]}"); then
-        
-    for pkg in "${local_aur_packages[@]}"; do
-        echo -e "Making ${pkg} ..." | log
-        wget -qO- "${aur_snapshot_link}/${pkg}.tar.gz" | tar xz -C /tmp
-        cd /tmp/"${pkg}" || exit
-        if [[ "${show_color}" == true ]]; then
-            makepkg -sif --noconfirm --nocheck
-        else
-            makepkg -sif --noconfirm --nocheck --nocolor
-        fi
-        echo -e "${pkg} made successfully" | log
-    done
+    if [[ ! "$(ls /tmp | grep "arch-wiki-cli")" ]]; then
+        for pkg in "${local_aur_packages[@]}"; do
+            echo -e "Making ${pkg} ..." | log
+            wget -qO- "${aur_snapshot_link}/${pkg}.tar.gz" | tar xz -C /tmp
+            cd /tmp/"${pkg}" || exit
+
+            if [[ "${show_color}" == true ]]; then
+                makepkg -sif --noconfirm --nocheck
+            else
+                makepkg -sif --noconfirm --nocheck --nocolor
+            fi
+
+            echo -e "${pkg} made successfully" | log
+        done
 
     fi
 
