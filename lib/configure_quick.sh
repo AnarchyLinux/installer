@@ -3,46 +3,106 @@
 quick_install() {
     case "${install_opt}" in
         Anarchy-Desktop)    kernel="linux"
+                            sh="/usr/bin/zsh"
+                            shrc="${default}"
+                            bootloader="grub"
+                            net_util="networkmanager"
+                            enable_nm=true
+                            multilib=true
+                            dhcp=true
                             desktop=true
-		            base_install="base-devel linux linux-headers ${base_defaults} ${base_defaults_ex} "
+                            base_install="base-devel linux linux-headers zsh zsh-syntax-highlighting grub dialog networkmanager wireless_tools wpa_supplicant os-prober ${base_defaults} "
+
+                            if "${bluetooth}" ; then
+                                base_install+="bluez bluez-utils pulseaudio-bluetooth "
+                                enable_bt=true
+                            fi
+
+                            if "${enable_f2fs}" ; then
+                                base_install+="f2fs-tools "
+                            fi
+
+                            if "${UEFI}" ; then
+                                base_install+="efibootmgr "
+                            fi
+
                             quick_desktop
                             base_install+="${DE} "
         ;;
         Anarchy-Desktop-LTS)    kernel="linux-lts"
+                                sh="/usr/bin/zsh"
+                                shrc="${default}"
+                                bootloader="grub"
+                                net_util="networkmanager"
+                                enable_nm=true
+                                multilib=true
+                                dhcp=true
                                 desktop=true
-                                base_install="base-devel linux-lts linux-lts-headers ${base_defaults} ${base_defaults_ex} "
+                                base_install="base-devel linux-lts linux-lts-headers zsh zsh-syntax-highlighting grub dialog networkmanager wireless_tools wpa_supplicant os-prober ${base_defaults} "
+
+                                if "${bluetooth}" ; then
+                                    base_install+="bluez bluez-utils pulseaudio-bluetooth "
+                                    enable_bt=true
+                                fi
+
+                                if "${enable_f2fs}" ; then
+                                     base_install+="f2fs-tools "
+                                fi
+
+                                if "${UEFI}" ; then
+                                    base_install+="efibootmgr "
+                                fi
+
                                 quick_desktop
                                 base_install+="${DE} "
         ;;
         Anarchy-Server)     kernel="linux"
-                            base_install="base-devel linux linux-headers ${base_defaults} ${base_defaults_ex} "
+                            sh="/usr/bin/zsh"
+                            shrc="${default}"
+                            bootloader="grub"
+                            net_util="networkmanager"
+                            enable_nm=true
+                            multilib=true
+                            dhcp=true
+                            base_install="base-devel linux openssh linux-headers zsh zsh-syntax-highlighting grub dialog wireless_tools wpa_supplicant os-prober ${base_defaults} "
+
+                            if "${bluetooth}" ; then
+                                base_install+="bluez bluez-utils pulseaudio-bluetooth "
+                                enable_bt=true
+                            fi
+
+                            if "${enable_f2fs}" ; then
+                                base_install+="f2fs-tools "
+                            fi
+
+                            if "${UEFI}" ; then
+                                base_install+="efibootmgr "
+                            fi
         ;;
         Anarchy-Server-LTS)     kernel="linux-lts"
-                                base_install="base-devel linux-lts linux-lts-headers ${base_defaults} ${base_defaults_ex} "
+                                sh="/usr/bin/zsh"
+                                shrc="${default}"
+                                bootloader="grub"
+                                net_util="networkmanager"
+                                enable_nm=true
+                                multilib=true
+                                dhcp=true
+                                base_install="base-devel openssh linux-lts linux-lts-headers zsh zsh-syntax-highlighting grub dialog wireless_tools wpa_supplicant os-prober ${base_defaults} "
 
+                                if "${bluetooth}" ; then
+                                    base_install+="bluez bluez-utils pulseaudio-bluetooth "
+                                    enable_bt=true
+                                fi
+
+                                if "${enable_f2fs}" ; then
+                                     base_install+="f2fs-tools "
+                                fi
+
+                                if "${UEFI}" ; then
+                                    base_install+="efibootmgr "
+                                fi
         ;;
     esac
-    
-    sh="/usr/bin/zsh"
-    shrc="${default}"
-    bootloader="grub"
-    net_util="networkmanager"
-    enable_nm=true
-    multilib=true
-    dhcp=true
-
-    if "${bluetooth}" ; then
-        base_install+="bluez bluez-utils pulseaudio-bluetooth "
-        enable_bt=true
-    fi
-
-    if "${enable_f2fs}" ; then
-        base_install+="f2fs-tools "
-    fi
-
-    if "${UEFI}" ; then
-        base_install+="efibootmgr "
-    fi
 
 }
 
@@ -61,14 +121,7 @@ quick_desktop() {
                 return
             fi
         else
-	    if (dialog --yes-button "${yes}" --no-button "${no}" --yesno "\n${desktop_suite_msg}" 10 60) then
-		suite=true
-	    fi
-	
-	    if (dialog --yes-button "${yes}" --no-button "${no}" --yesno "\n${aur_help_msg}" 10 60) then
-	        aur_helper=true
-	    fi
-	    break
+            break
         fi
     done
 
@@ -79,33 +132,25 @@ quick_desktop() {
     case "${de}" in
         "Anarchy-xfce4")    config_env="${de}"
                             start_term="exec startxfce4"
-                            DE+="xfce4 xfce4-goodies ${desktop_extras} "
+                            DE+="xfce4 xfce4-goodies ${extras} "
         ;;
         "Anarchy-budgie")       config_env="${de}"
                                 start_term="export XDG_CURRENT_DESKTOP=Budgie:GNOME ; exec budgie-desktop"
-                                DE+="budgie-desktop mousepad terminator nautilus gnome-backgrounds gnome-control-center ${desktop_extras} "
+                                DE+="budgie-desktop mousepad terminator nautilus gnome-backgrounds gnome-control-center ${extras} "
         ;;
         "Anarchy-cinnamon")     config_env="${de}"
-                                DE+="cinnamon cinnamon-translations gnome-terminal file-roller p7zip zip unrar terminator ${desktop_extras} "
+                                DE+="cinnamon cinnamon-translations gnome-terminal file-roller p7zip zip unrar terminator ${extras} "
                                 start_term="exec cinnamon-session"
         ;;
         "Anarchy-gnome")        config_env="${de}"
                                 start_term="exec gnome-session"
-                                DE+="gnome gnome-extra terminator ${desktop_extras} "
+                                DE+="gnome gnome-extra terminator ${extras} "
         ;;
         "Anarchy-openbox")      config_env="${de}"
                                 start_term="exec openbox-session"
-                                DE+="openbox thunar thunar-volman xfce4-terminal xfce4-panel xfce4-whiskermenu-plugin xcompmgr transset-df obconf lxappearance-obconf wmctrl gxmessage xfce4-pulseaudio-plugin xfdesktop xdotool opensnap ristretto oblogout obmenu-generator polkit-gnome ${desktop_extras} "
+                                DE+="openbox thunar thunar-volman xfce4-terminal xfce4-panel xfce4-whiskermenu-plugin xcompmgr transset-df obconf lxappearance-obconf wmctrl gxmessage xfce4-pulseaudio-plugin xfdesktop xdotool opensnap ristretto oblogout obmenu-generator polkit-gnome ${extras} "
         ;;
     esac
-
-    if "${suite}" ; then
-	DE+="${user_extras} "
-    fi
-
-    if "${aur_helper}"; then
-	DE+="yay "
-    fi
 
     while (true) ; do
         if "${VM}" ; then
