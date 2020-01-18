@@ -607,7 +607,7 @@ part_class() {
 
         if [ -z "$ROOT" ]; then
             case "$part_size" in
-                [4-9]G|[1-9][0-9]*G|[4-9].*G|[4-9],*G|T)
+                [1-9]T|[4-9]G|[1-9][0-9]*[GT]|[4-9].*[GT]|[4-9],*[GT])
                     if (dialog --yes-button "$yes" --no-button "$no" --defaultno --yesno "\n$root_var" 13 60) then
                         f2fs=$(lsblk -dnro ROTA /dev/$part)
                         fs_select
