@@ -8,7 +8,7 @@ and then submitting a pull request with any changes you have added.
 * Follow bash best practices (mostly as described in
 [Google's shell style guide](https://google.github.io/styleguide/shell.xml))
 * Use `${variable}` instead of `$variable`
-* Constrants should be `UPPER_CASE`, other variables `lower_case`
+* Constants should be `UPPER_CASE`, other variables `lower_case`
 * Use double square brackets (`[[ condition ]]`) for conditionals
 (e.g. in 'if' statements)
 * Use 4 spaces for indentation instead of tabs
