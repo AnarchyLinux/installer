@@ -4,7 +4,7 @@
 
 * [ ] **Copy dotfiles instead of symlinking them (compile.sh)**
 * [ ] Add comments to the config file explaining what each variable does
-* [ ] Update anarchy's startup script to mention where files are saved and to 
+* [ ] Update anarchy's startup script to mention where files are saved and to
 change them if needed
 * [ ] Add comments to script mentioning which libraries they use and which
 functions from those libraries + which arguments they require
@@ -40,6 +40,9 @@ the user if AUR packages will be installed
 
 ## Long-term features
 
+* [ ] Add a library function for adding packages to the packages list
+* [ ] Replace all arrays with direct changes to files (for POSIX compliance)
+* [ ] Make most/all scripts and libraries POSIX compliant
 * [ ] Add support for other Arch-based distros by accepting custom isos in
 `compile.sh` (e.g. `-i` flag)
 * [ ] Port translations to `gettext` and update the code to accomodate those
@@ -51,6 +54,8 @@ and system options (e.g. screen size) on the bottom)
 * [ ] Add advanced locale selection (e.g. changing LC_MESSAGES, LC_MONETARY ...)
 * [ ] Download and "install" custom dot files (e.g. those based on GNU Stow ?)
 * [ ] Enable a pure Arch installation (no Anarchy-related files at all)
+* [ ] Make variables more universal (remove ANARCHY in declarations)
+* [ ] Make scripts more modular (don't assume global variables exist)
 
 ## Documentation
 
