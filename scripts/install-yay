@@ -1,11 +1,5 @@
-#!/usr/bin/env bash
+#!/bin/sh
 # Downloads and installs yay-bin from https://aur.archlinux.org/yay-bin.git
-
-# Source config file and libraries
-source "${ANARCHY_CONFIG_FILE}"
-for library in "${ANARCHY_LIBRARIES_DIRECTORY}"/*.sh; do
-    source "${library}"
-done
 
 log "Installing yay-bin"
 
@@ -15,9 +9,8 @@ TMP_YAY_DIR="$(mktemp -d)"
 pacman --noconfirm --quiet -Sy git
 
 # Clone and install yay
-git clone --quiet https://aur.archlinux.org/yay.git "${TMP_YAY_DIR}"
-cd "${TMP_YAY_DIR}" || exit
-makepkg --install --noconfirm &> /dev/null
+git clone --quiet https://aur.archlinux.org/yay.git "${TMP_YAY_DIR}/"
+cd "${TMP_YAY_DIR}" || exit 1
+makepkg --install --noconfirm > /dev/null || exit 2
 
 log "Installed yay-bin"
-return 0

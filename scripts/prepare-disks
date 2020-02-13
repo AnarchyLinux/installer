@@ -1,11 +1,5 @@
 #!/usr/bin/env bash
 
-# Source config file and libraries
-source "${ANARCHY_CONFIG_FILE}"
-for library in "${ANARCHY_LIBRARIES_DIRECTORY}"/*.sh; do
-    source "${library}"
-done
-
 log "Preparing disks for installation"
 
 menu_title="${part_op_msg}"
@@ -13,7 +7,7 @@ menu_title="${part_op_msg}"
 if (df | grep "${CHROOT_MOUNT_POINT}" &> /dev/null); then
     umount -R "${CHROOT_MOUNT_POINT}" &> /dev/null &
     pid=$! pri=0.1 msg="${wait_load} \n\n \Z1> \Z2umount -R ${CHROOT_MOUNT_POINT}\Zn" load
-    swapoff -a &> /dev/null &
+    swapoff -a > /dev/null &
 fi
 
 # TODO: Fix having to make a new script

@@ -1,4 +1,3 @@
-#!/usr/bin/env bash
 # Anarchy's colors library
 
 # Define colors

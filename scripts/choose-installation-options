@@ -1,24 +1,18 @@
 #!/usr/bin/env bash
 
-# Source config file and libraries
-source "${ANARCHY_CONFIG_FILE}"
-for library in "${ANARCHY_LIBRARIES_DIRECTORY}"/*.sh; do
-    source "${library}"
-done
-
 log "Choosing installation options"
 
 menu_title="${install_op_msg}"
 
 while (true); do
-    install_opt="$(dialog --ok-button "${ok}" --cancel-button "${cancel}" --menu "${install_opt_msg}" 16 80 5 \
+    CHOSEN_DE="$(dialog --ok-button "${ok}" --cancel-button "${cancel}" --menu "${install_opt_msg}" 16 80 5 \
         "Anarchy Desktop"       "${install_opt1}" \
         "Anarchy LTS Desktop"   "${install_opt2}" \
         "Anarchy Server"        "${install_opt3}" \
         "Anarchy LTS Server"    "${install_opt4}" \
         "Other options"         "${install_opt0}" 3>&1 1>&2 2>&3)"
 
-    if [[ $? -gt 0 ]]; then
+    if [ $? -gt 0 ]; then
         if (dialog --defaultno --yes-button "${yes}" --no-button "${no}" --yesno "\n${exit_msg}" 10 60); then
             run main-menu
         fi
@@ -27,15 +21,15 @@ while (true); do
     fi
 done
 
-log "Selected installation option: ${install_opt}"
+log "Selected installation option: ${CHOSEN_DE}"
 
-case "${install_opt}" in
+case "${CHOSEN_DE}" in
     "Other options")
         run choose-base
         run choose-desktop-packages
         ;;
 
-    *) run quick-install "${install_opt}" ;;
+    *) run quick-install "${CHOSEN_DE}" ;;
 esac
 
 log "Done choosing installation options"

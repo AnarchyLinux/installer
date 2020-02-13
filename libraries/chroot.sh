@@ -1,5 +1,5 @@
 # A library for cleaning up after exiting chroot
-function ctrl_c {
+ctrl_c() {
     echo ""
     echo "${color_red} Exiting chroot and cleaning up..."
     sleep 0.5

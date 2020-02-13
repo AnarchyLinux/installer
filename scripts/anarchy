@@ -1,86 +1,83 @@
 #!/usr/bin/env bash
 # Main Anarchy Linux installer script
 
-# Read initial variables
-export ANARCHY_CONFIG_FILE=/etc/anarchy.d/anarchy.conf
-source "${ANARCHY_CONFIG_FILE}"
-source "${translation_file}"
+# Special error exits
+# 42 - couldn't write variable
+
+# Set the Anarchy config file location
+export ANARCHY_CONFIG_FILE="${HOME}"/etc/anarchy.conf
+
+# Source files and libraries
+. "${ANARCHY_CONFIG_FILE}"
+. "${TRANSLATION_FILE}"
+
+# Define log file
+LOG_FILE="${ANARCHY_LOG_DIRECTORY}/$(date '+%d-%m-%Y')".log
+export LOG_FILE
 
 # Source libraries
 for library in "${ANARCHY_LIBRARIES_DIRECTORY}"/*; do
-    source "${library}"
+    . "${library}"
 done
 
-if [[ "$(tput lines)" -gt 25 ]]; then
+if [ "$(tput lines)" -gt 25 ]; then
     # Run the function 'update_var' from 'variables.sh'
-    update_var 'sufficient_screen_size' 'true'
+    update_var 'sufficient_screen_size' 'true' || exit 42
 fi
-
-# Define log file
-LOG_FILE="${ANARCHY_LOG_DIRECTORY}"/"$(date "+%d-%m-%Y")".log
-export LOG_FILE
 
 main() {
-    log "Started installation"
-
-    # Run all the scripts
-    run set-keyboard-layout
-    run check-connection
-
-    # Show wifi connection menu if user is not already connected to the internet
-    if [[ $? -gt 0 ]]; then
-        run connect-to-wifi
+    # Check for root privileges
+    if [ "$(id -u)" -ne 0 ]; then
+        echo "Error: anarchy requires root privileges"
+        echo "       Use: sudo anarchy"
+        exit 1
     fi
 
-    #run test-connection
-    run update-mirrorlist
-    run install-yay
-    run set-locale
-    run set-timezone
-    run prepare-disks
-    run choose-installation-options
-    run set-hostname
-    run set-password
-    #run set-user
-    #run add-software
-    #run install-base
-    #run configure-system -> configure-desktop-additions
-    #run add-user
-    #run reboot-menu
-}
+    log "Started installation"
 
-# Check for root privileges
-if [[ ${UID} -ne 0 ]]; then
-    echo "Error: anarchy requires root privileges"
-    echo "       Use: sudo anarchy"
-    exit 1
-fi
+    . set-keyboard-layout
+
+    # Show wifi connection menu if user is not already connected to the internet
+    if ! . check-connection; then
+        . connect-to-wifi
+    fi
+
+    . update-mirrorlist
+    . test-connection
+    . install-yay
+    . set-locale
+    . set-timezone
+    . prepare-disks
+    . choose-installation-options
+    . set-hostname
+    . set-password
+    #. set-user
+    #. add-software
+    #. install-base
+    #. configure-system -> configure-desktop-additions
+    #. add-user
+    #. reboot-menu
+}
 
 # Prints the usage info if started wth -h
 usage() {
-    clear
     echo -e "Usage: ${color_green} anarchy [options]${color_none}"
-    echo -e "${color_green}   -h | --help         ${color_yellow}Display this help message${color_none}"
-    echo -e "${color_green}   -k | --keys         ${color_yellow}Update pacman keys${color_none}"
-    echo -e "${color_green}   -u | --update       ${color_yellow}Update anarchy scripts${color_none}"
+    echo -e "${color_green}    -h       ${color_yellow}Display this help message${color_none}"
+    echo -e "${color_green}    -k       ${color_yellow}Update pacman keys${color_none}"
+    echo -e "${color_green}    -u       ${color_yellow}Update anarchy scripts${color_none}"
     echo -e ""
 }
 
-# Get options
-case "$1" in
-    -k|--keys)
-        run update-pacman-keys
-        exit $?
-    ;;
-    -u|--update)
-        run update-anarchy
-        exit $?
-    ;;
-    *)
-        usage
-        exit 0
-    ;;
-esac
-
-# If no parameters were passed, run anarchy
-main
+if [ $# -lt 1 ]; then
+    # If no parameters were passed, start the installation
+    main
+else
+    while getopts ":kuh" opt; do
+        case "${opt}" in
+            k) . update-pacman-keys ;;
+            u) . update-anarchy ;;
+            h) usage ;;
+            *) usage; exit 1 ;;
+        esac
+    done
+fi

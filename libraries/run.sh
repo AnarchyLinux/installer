@@ -1,11 +1,11 @@
 # A library for running (sub)scripts
-
-function run() {
-    source "${ANARCHY_CONFIG_FILE}"
-    local SCRIPT="$1"
-    local OUTPUT
-    OUTPUT=$("${ANARCHY_SCRIPTS_DIRECTORY}/${SCRIPT}")
+run() {
+    local script="$1"
+    local return_value
+    log "Running script \'${script}\'"
+    return_value="$("${ANARCHY_SCRIPTS_DIRECTORY}/${script}")"
+    log "Finished running script \'${script}\'"
 
     # Return output of subprocess to parent process
-    echo "${OUTPUT}"
+    echo "${return_value}"
 }
