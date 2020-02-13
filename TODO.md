@@ -2,7 +2,8 @@
 
 ## Refactoring
 
-* [ ] **Copy dotfiles instead of symlinking them (compile.sh)**
+* [x] **Copy dotfiles instead of symlinking them (compile.sh)** - (Updated the
+  symlinking so it works now)
 * [ ] Add comments to the config file explaining what each variable does
 * [ ] Update anarchy's startup script to mention where files are saved and to
 change them if needed
@@ -24,7 +25,7 @@ and merging them
 anarchy (YES - default)
 * [ ] Automatically update keys if user updates anarchy
 * [ ] Automatically start the installer by asking if the user wants to start
-the installation (if no, do the same thing as `start`, if yes ask for wifi)
+the installation (if no, show the start menu, if yes ask for wifi)
 * [ ] Auto upload logs to [termbin](https://termbin.com) if an error occurs
 and show the link in the error report message
 * [ ] Only install official packages by default (not from AUR as well), warning
@@ -36,6 +37,9 @@ the user if AUR packages will be installed
 * [ ] Add laptop-specific software (e.g. `tlp`)
 * [ ] Check if packages marked for installation exist in the repositories
 (maybe fallback to the AUR if they're not in the official repo)
+* [ ] Merge anarchy repos (archive/remove the docker and website repos)
+* [ ] Update the wallpapers selection (possibly completely remove them and
+only keep the logo in the main repo)
 
 
 ## Long-term features
@@ -56,7 +60,10 @@ and system options (e.g. screen size) on the bottom)
 * [ ] Enable a pure Arch installation (no Anarchy-related files at all)
 * [ ] Make variables more universal (remove ANARCHY in declarations)
 * [ ] Make scripts more modular (don't assume global variables exist)
+* [ ] Use Archiso instead of compile.sh
 
 ## Documentation
 
 * [ ] Add instructions for cloning the repo (git submodules ...)
+* [ ] Update TODO.md
+* [ ] Replace TODO.md with a plain-text todo.txt-like file
