@@ -100,7 +100,6 @@ function init {
         rm "${out_dir}"/"${anarchy_iso_name}"
     fi
 
-
     check_dependencies
     update_arch_iso
     check_arch_iso
