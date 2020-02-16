@@ -100,6 +100,25 @@ function init {
         rm "${out_dir}"/"${anarchy_iso_name}"
     fi
 
+<<<<<<< Updated upstream:compile.sh
+=======
+    # Link to AUR snapshots
+    aur_snapshot_link="https://aur.archlinux.org/cgit/aur.git/snapshot/" # prev: aur
+
+    # Packages to add to local repo
+    local_aur_packages=( # prev: builds
+        'numix-icon-theme-git'
+        'numix-circle-icon-theme-git'
+        'oh-my-zsh-git'
+        'opensnap'
+        'perl-linux-desktopfiles'
+        'obmenu-generator'
+        'yay'
+        'openbox-themes'
+        'arch-wiki-cli'
+    )
+
+>>>>>>> Stashed changes:iso-generator.sh
     check_dependencies
     update_arch_iso
     check_arch_iso
