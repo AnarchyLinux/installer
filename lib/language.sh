@@ -37,7 +37,8 @@ language() {
         "Romanian" "Română" \
         "Russian" "Russian" \
         "Spanish" "Español" \
-        "Swedish" "Svenska" 3>&1 1>&2 2>&3)
+        "Swedish" "Svenska" \
+        "Turkish" "Türkçe"3>&1 1>&2 2>&3)
 
     case "$ILANG" in
         "English") export lang_file="${anarchy_directory}"/lang/anarchy-english.conf ;;
@@ -58,6 +59,7 @@ language() {
         "Russian") export lang_file="${anarchy_directory}"/lang/anarchy-russian.conf lib=ru bro=ru ;;
         "Spanish") export lang_file="${anarchy_directory}"/lang/anarchy-spanish.conf lib=es bro=es-es ;;
         "Swedish") export lang_file="${anarchy_directory}"/lang/anarchy-swedish.conf lib=sv bro=sv-se ;;
+        "Turkish") export lang_file="${anarchy_directory}"/lang/anarchy-turkish.conf lib=tr bro=tr ;;
     esac
 
 }
