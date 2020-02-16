@@ -28,7 +28,8 @@ INSTALLER_LANGUAGE=$(dialog --nocancel --menu "\nAnarchy Installer\n\n \Z2*\Zn S
     "Romanian"              "Română" \
     "Russian"               "Russian" \
     "Spanish"               "Español" \
-    "Swedish"               "Svenska" 3>&1 1>&2 2>&3)
+    "Swedish"               "Svenska" \
+    "Turkish" 		    "Türkçe" 3>&1 1>&2 2>&3)
 
 case "${INSTALLER_LANGUAGE}" in
     "English")
@@ -136,6 +137,12 @@ case "${INSTALLER_LANGUAGE}" in
         lib=sv
         bro=sv-se
     ;;
+    " Turkish")
+	 export translation_file="${ANARCHY_TRANSLATIONS_DIRECTORY}"/turkish.conf
+	 lib=tr
+	 bro=tr
+    ;;
+
 esac
 
 log "Selected ${INSTALLER_LANGUAGE}"
