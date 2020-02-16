@@ -38,7 +38,7 @@ language() {
         "Russian" "Russian" \
         "Spanish" "Español" \
         "Swedish" "Svenska" \
-        "Turkish" "Türkçe"3>&1 1>&2 2>&3)
+        "Turkish" "Türkçe" 3>&1 1>&2 2>&3)
 
     case "$ILANG" in
         "English") export lang_file="${anarchy_directory}"/lang/anarchy-english.conf ;;

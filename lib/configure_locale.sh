@@ -33,6 +33,7 @@ set_keys() {
         "ru" "Russian" \
         "sv" "Swedish" \
         "uk" "United Kingdom" \
+        "trq" "Turkish"\
         "$other"       "$other-keymaps"		 3>&1 1>&2 2>&3)
         source "$lang_file"
 
@@ -75,6 +76,7 @@ set_locale() {
         "ru_RU.UTF-8" "Russian" \
         "es_ES.UTF-8" "Spanish" \
         "sv_SE.UTF-8" "Swedish" \
+        "tr_TR.UTF-8" "Turkish" \
         "$other"       "$other-locale"		 3>&1 1>&2 2>&3)
 
         if [ "$LOCALE" = "$other" ]; then
