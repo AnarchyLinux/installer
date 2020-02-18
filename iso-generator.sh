@@ -16,11 +16,8 @@ set -o errtrace
 
 # Declare important variables
 working_dir=$(pwd) # prev: aa
-log_dir="${working_dir}"/log
+log_dir="${working_dir}"/logs
 out_dir="${working_dir}"/out # Directory for generated ISOs
-wallpapers_git_url="https://github.com/AnarchyLinux/brand.git"
-brand_dir="/tmp/anarchy-brand"
-wallpapers_dir="${brand_dir}/wallpapers"
 
 # Define colors depending on script arguments
 set_up_colors() {
@@ -412,10 +409,11 @@ copy_config_files() { # prev: build_conf
     sudo cp -r "${working_dir}"/boot/splash.png "${working_dir}"/boot/loader/ "${squashfs}"/usr/share/anarchy/boot/
     sudo cp "${working_dir}"/etc/nvidia340.xx "${squashfs}"/usr/share/anarchy/etc/
 
-    # Download and copy over wallpapers
-    sudo mkdir "${squashfs}"/usr/share/anarchy/extra/wallpapers
-    git clone "${wallpapers_git_url}" "${brand_dir}"
-    sudo cp "${wallpapers_dir}"/* "${squashfs}"/usr/share/anarchy/extra/wallpapers/
+    if [ -d branding ]; then
+        sudo cp "${working_dir}"/branding/wallpapers/* "${squashfs}"/usr/share/anarchy/extra/wallpapers/
+    else
+        echo "Missing branding directory, skipping ..."
+    fi
 
     # Copy over built packages and create repository
     echo -e "Adding built AUR packages to iso ..." | log
@@ -428,9 +426,6 @@ copy_config_files() { # prev: build_conf
     cd "${squashfs}"/usr/share/anarchy/pkg || exit
     sudo repo-add anarchy-local.db.tar.gz *.pkg.tar.xz
     cd "${working_dir}" || exit
-
-    # Remove brand folder
-    rm -rf "${brand_dir}"
 
     echo -e "Done adding files to iso"
     echo -e ""
