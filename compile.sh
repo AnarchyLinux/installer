@@ -15,7 +15,7 @@ set -o errtrace
 #set -o xtrace
 
 # Declare important variables
-working_dir=$(pwd) # prev: aa
+working_dir="$(pwd)"
 log_dir="${working_dir}"/logs
 out_dir="${working_dir}"/out # Directory for generated ISOs
 
@@ -36,14 +36,14 @@ colors() {
 }
 
 set_up_logging() {
-    if [[ ! -d "${log_dir}" ]]; then
+    if [ ! -d "${log_dir}" ]; then
         mkdir "${log_dir}"
     fi
 
     log_file="${log_dir}"/iso-generator-"$(date +%d%m%y)".log
 
     # Remove existing logs and create a new one
-    if [[ -e "${log_dir}"/"${log_file}" ]]; then
+    if [ -e "${log_dir}"/"${log_file}" ]; then
         rm "${log_dir}"/"${log_file}"
     fi
 
@@ -75,28 +75,28 @@ set_version() {
 
 init() {
     # Location variables
-    custom_iso="${working_dir}"/customiso # prev: customiso
-    squashfs="${custom_iso}"/arch/x86_64/squashfs-root # prev: sq
+    custom_iso="${working_dir}"/customiso
+    squashfs="${custom_iso}"/arch/x86_64/squashfs-root
 
     # Check for existing Arch iso
     if (ls "${working_dir}"/archlinux-*-x86_64.iso &>/dev/null); then
-        local_arch_iso=$(ls "${working_dir}"/archlinux-*-x86_64.iso | tail -n1 | sed 's!.*/!!') # Outputs Arch iso filename prev: iso
+        local_arch_iso="$(ls "${working_dir}"/archlinux-*-x86_64.iso | tail -n1 | sed 's!.*/!!')" # Outputs Arch iso filename prev: iso
     fi
 
-    if [[ ! -d "${out_dir}" ]]; then
+    if [ ! -d "${out_dir}" ]; then
         mkdir "${out_dir}"
     fi
 
     # Remove existing Anarchy iso with same name
-    if [[ -e "${out_dir}"/"${anarchy_iso_name}" ]]; then
+    if [ -e "${out_dir}"/"${anarchy_iso_name}" ]; then
         rm "${out_dir}"/"${anarchy_iso_name}"
     fi
 
     # Link to AUR snapshots
-    aur_snapshot_link="https://aur.archlinux.org/cgit/aur.git/snapshot/" # prev: aur
+    aur_snapshot_link="https://aur.archlinux.org/cgit/aur.git/snapshot/"
 
     # Packages to add to local repo
-    local_aur_packages=( # prev: builds
+    local_aur_packages=(
         'numix-icon-theme-git'
         'numix-circle-icon-theme-git'
         'oh-my-zsh-git'
@@ -114,7 +114,7 @@ init() {
     local_repo_builds
 }
 
-check_dependencies() { # prev: check_depends
+check_dependencies() {
     echo -e "Checking dependencies ..." | log
 
     # Dependencies with same name packages
@@ -141,9 +141,9 @@ check_dependencies() { # prev: check_depends
         fi
     done
 
-    if [[ "${#missing_deps[@]}" -ne 0 ]]; then
+    if [ "${#missing_deps[@]}" -ne 0 ]; then
         echo -e "Missing dependencies: ${missing_deps[*]}" | log
-        if [[ "${user_input}" == true ]]; then
+        if [ "${user_input}" = 1 ]; then
             echo -e "Install them now? [y/N]: "
             local input
             read -r input
@@ -153,7 +153,7 @@ check_dependencies() { # prev: check_depends
                     echo -e "Chose to install dependencies" | log
                     for pkg in "${missing_deps[@]}"; do
                         echo -e "Installing ${pkg} ..." | log
-                        if [[ "${show_color}" == true ]]; then
+                        if [ "${show_color}" = 1 ]; then
                             sudo pacman --noconfirm -Sy "${pkg}"
                         else
                             sudo pacman --noconfirm --color never -Sy "${pkg}"
@@ -170,7 +170,7 @@ check_dependencies() { # prev: check_depends
         else
             for pkg in "${missing_deps[@]}"; do
                 echo -e "Installing ${pkg} ..." | log
-                if [[ "${show_color}" == true ]]; then
+                if [ "${show_color}" = 1 ]; then
                     sudo pacman --noconfirm -Sy "${pkg}"
                 else
                     sudo pacman --noconfirm --color never -Sy "${pkg}"
@@ -183,20 +183,20 @@ check_dependencies() { # prev: check_depends
     echo -e ""
 }
 
-update_arch_iso() { # prev: update_iso
-    update=false
+update_arch_iso() {
+    update=0
 
     # Check for latest Arch Linux iso
-    arch_iso_latest=$(curl -s https://www.archlinux.org/download/ | grep "Current Release" | awk '{print $3}' | sed -e 's/<.*//') # prev: archiso_latest
-    arch_iso_link="https://mirrors.kernel.org/archlinux/iso/${arch_iso_latest}/archlinux-${arch_iso_latest}-x86_64.iso" # prev: archiso_link
+    arch_iso_latest="$(curl -s https://www.archlinux.org/download/ | grep "Current Release" | awk '{print $3}' | sed -e 's/<.*//')"
+    arch_iso_link="https://mirrors.kernel.org/archlinux/iso/${arch_iso_latest}/archlinux-${arch_iso_latest}-x86_64.iso"
     arch_checksum_link="https://mirrors.edge.kernel.org/archlinux/iso/${arch_iso_latest}/sha1sums.txt"
 
     echo -e "Checking for updated Arch Linux image ..." | log
-    iso_date=$(<<<"${arch_iso_link}" sed 's!.*/!!')
-    if [[ "${iso_date}" != "${local_arch_iso}" ]]; then
-        if [[ -z "${local_arch_iso}" ]]; then
+    iso_date="$(<<<"${arch_iso_link}" sed 's!.*/!!')"
+    if [ "${iso_date}" != "${local_arch_iso}" ]; then
+        if [ -z "${local_arch_iso}" ]; then
             echo -e "No Arch Linux image found under ${working_dir}" | log
-            if [[ "${user_input}" == true ]]; then
+            if [ "${user_input}" = 1 ]; then
                 echo -e "Download it? [y/N]: "
                 local input
                 read -r input
@@ -204,7 +204,7 @@ update_arch_iso() { # prev: update_iso
                 case "${input}" in
                     y|Y|yes|YES|Yes)
                         echo -e "Chose to download image" | log
-                        update=true
+                        update=1
                         ;;
                     *)
                     echo -e "Chose not to download image" | log
@@ -213,11 +213,11 @@ update_arch_iso() { # prev: update_iso
                     ;;
                 esac
             else
-                update=true
+                update=1
             fi
         else
             echo -e "Updated Arch Linux image available: ${arch_iso_latest}" | log
-            if [[ "${user_input}" == true ]]; then
+            if [ "${user_input}" = 1 ]; then
                 echo -e "Download it? [y/N]: "
                 local input
                 read -r input
@@ -225,19 +225,19 @@ update_arch_iso() { # prev: update_iso
                 case "${input}" in
                     y|Y|yes|YES|Yes)
                         echo -e "Chose to update image" | log
-                        local_arch_checksum=$(ls "${working_dir}"/sha1sums.txt | tail -n1 | sed 's!.*/!!')
-                        update=true
+                        local_arch_checksum="$(ls "${working_dir}"/sha1sums.txt | tail -n1 | sed 's!.*/!!')"
+                        update=1
                         ;;
                     *)
                     echo -e "Chose not to update image" | log
                     echo -e "Using old image: ${local_arch_iso}" | log
-                    local_arch_checksum=$(ls "${working_dir}"/sha1sums.txt | tail -n1 | sed 's!.*/!!')
+                    local_arch_checksum="$(ls "${working_dir}"/sha1sums.txt | tail -n1 | sed 's!.*/!!')"
                     sleep 1
                     ;;
                 esac
             else
-                local_arch_checksum=$(ls "${working_dir}"/sha1sums.txt | tail -n1 | sed 's!.*/!!')
-                update=true
+                local_arch_checksum="$(ls "${working_dir}"/sha1sums.txt | tail -n1 | sed 's!.*/!!')"
+                update=1
             fi
         fi
 
@@ -247,9 +247,9 @@ update_arch_iso() { # prev: update_iso
             echo -e "Downloading Arch Linux image and checksum ..." | log
             echo -e "(Don't resize the window or it will mess up the progress bar)"
             wget -c -q --show-progress "${arch_checksum_link}"
-            local_arch_checksum=$(ls "${working_dir}"/sha1sums.txt | tail -n1 | sed 's!.*/!!')
+            local_arch_checksum="$(ls "${working_dir}"/sha1sums.txt | tail -n1 | sed 's!.*/!!')"
             wget -c -q --show-progress "${arch_iso_link}"
-            local_arch_iso=$(ls "${working_dir}"/archlinux-*-x86_64.iso | tail -n1 | sed 's!.*/!!')
+            local_arch_iso="$(ls "${working_dir}"/archlinux-*-x86_64.iso | tail -n1 | sed 's!.*/!!')"
         fi
     fi
     echo -e "Done checking for Arch Linux image"
@@ -258,18 +258,18 @@ update_arch_iso() { # prev: update_iso
 
 check_arch_iso() {
     echo -e "Comparing Arch Linux checksums ..." | log
-    checksum=false
-    local_arch_checksum=$(ls "${working_dir}"/sha1sums.txt | tail -n1 | sed 's!.*/!!')
+    checksum=0
+    local_arch_checksum="$(ls "${working_dir}"/sha1sums.txt | tail -n1 | sed 's!.*/!!')"
 
     # Check if checksum exists
-    if [[ -e "${local_arch_checksum}" ]]; then
-        if [[ $(sha1sum --check --ignore-missing "${local_arch_checksum}") ]]; then
+    if [ -e "${local_arch_checksum}" ]; then
+        if [ "$(sha1sum --check --ignore-missing "${local_arch_checksum}")" ]; then
             echo -e "${local_arch_iso}: OK" | log
-            checksum=true
+            checksum=1
         fi
     else
         echo -e "No checksum found!" | log
-        if [[ "${user_input}" == true ]]; then
+        if [ "${user_input}" = 1 ]; then
             echo -e "Download it? [Y/n]: "
             local input
             read -r input
@@ -281,27 +281,27 @@ check_arch_iso() {
                 *)
                 echo -e "Chose to download checksum" | log
                 wget -c -q --show-progress "${arch_checksum_link}"
-                local_arch_checksum=$(ls "${working_dir}"/sha1sums.txt | tail -n1 | sed 's!.*/!!')
-                if [[ $(sha1sum --check --ignore-missing "${local_arch_checksum}") ]]; then
+                local_arch_checksum="$(ls "${working_dir}"/sha1sums.txt | tail -n1 | sed 's!.*/!!')"
+                if [ "$(sha1sum --check --ignore-missing "${local_arch_checksum}")" ]; then
                     echo -e "${local_arch_iso}: OK" | log
-                    checksum=true
+                    checksum=1
                 fi
                 ;;
             esac
         else
             # Automatically download and compare checksum
             wget -c -q --show-progress "${arch_checksum_link}"
-            local_arch_checksum=$(ls "${working_dir}"/sha1sums.txt | tail -n1 | sed 's!.*/!!')
-            if [[ $(sha1sum --check --ignore-missing "${local_arch_checksum}") ]]; then
+            local_arch_checksum="$(ls "${working_dir}"/sha1sums.txt | tail -n1 | sed 's!.*/!!')"
+            if [ "$(sha1sum --check --ignore-missing "${local_arch_checksum}")" ]; then
                 echo -e "${local_arch_iso}: OK" | log
-                checksum=true
+                checksum=1
             fi
         fi
     fi
 
-    if [[ "${checksum}" == false ]]; then
+    if [ "${checksum}" = 0 ]; then
         echo -e "Checksum did not match ISO file!" | log
-        if [[ "${user_input}" == true ]]; then
+        if [ "${user_input}" = 1 ]; then
             echo -e "Continue anyway? [y/N]: "
             local input
             read -r input
@@ -323,7 +323,7 @@ check_arch_iso() {
     fi
 }
 
-local_repo_builds() { # prev: aur_builds
+local_repo_builds() {
     echo -e "Updating pacman databases ..." | log
     sudo pacman -Sy --noconfirm
     echo -e "Done updating pacman databases"
@@ -331,13 +331,13 @@ local_repo_builds() { # prev: aur_builds
     echo -e "Building AUR packages for local repo ..." | log
 
     # Begin build loop checking /tmp for existing builds, then build packages & install if required
-    if [[ ! "$(ls /tmp | grep "${local_aur_packages[8]}")" ]]; then
+    if [ ! "$(ls /tmp | grep "${local_aur_packages[8]}")" ]; then
         for pkg in "${local_aur_packages[@]}"; do
             echo -e "Making ${pkg} ..." | log
             wget -qO- "${aur_snapshot_link}/${pkg}.tar.gz" | tar xz -C /tmp
             cd /tmp/"${pkg}" || exit
 
-            if [[ "${show_color}" == true ]]; then
+            if [ "${show_color}" = 1 ]; then
                 makepkg -sif --noconfirm --nocheck
             else
                 makepkg -sif --noconfirm --nocheck --nocolor
@@ -352,10 +352,10 @@ local_repo_builds() { # prev: aur_builds
     echo -e ""
 }
 
-extract_arch_iso() { # prev: extract_iso
+extract_arch_iso() {
     cd "${working_dir}" || exit
 
-    if [[ -d "${custom_iso}" ]]; then
+    if [ -d "${custom_iso}" ]; then
         sudo rm -rf "${custom_iso}"
     fi
 
@@ -368,7 +368,7 @@ extract_arch_iso() { # prev: extract_iso
     echo -e ""
 }
 
-copy_config_files() { # prev: build_conf
+copy_config_files() {
     # Change directory into the iso, where the filesystem is stored.
     # Unsquash root filesystem 'airootfs.sfs', this creates a directory 'squashfs-root' containing the entire system
     echo -e "Unsquashing Arch image ..." | log
@@ -422,7 +422,7 @@ copy_config_files() { # prev: build_conf
     echo -e "Adding built AUR packages to iso ..." | log
     sudo mkdir "${custom_iso}"/arch/x86_64/squashfs-root/usr/share/anarchy/pkg
 
-    for pkg in $(echo -e "${local_aur_packages[@]}"); do
+    for pkg in $(echo "${local_aur_packages[@]}"); do
         sudo cp /tmp/"${pkg}"/*.pkg.tar.xz "${squashfs}"/usr/share/anarchy/pkg/
     done
 
@@ -434,7 +434,7 @@ copy_config_files() { # prev: build_conf
     echo -e ""
 }
 
-build_system() { # prev: build_sys
+build_system() {
     echo -e "Installing packages to new system ..." | log
     # Install fonts, fbterm, fetchmirrors etc.
     sudo pacman --root "${squashfs}" --cachedir "${squashfs}"/var/cache/pacman/pkg --noconfirm -Sy terminus-font acpi zsh-syntax-highlighting pacman-contrib
@@ -459,9 +459,9 @@ build_system() { # prev: build_sys
 
 configure_boot() {
     echo -e "Configuring boot ..." | log
-    arch_iso_label=$(<"${custom_iso}"/loader/entries/archiso-x86_64.conf awk 'NR==6{print $NF}' | sed 's/.*=//')
-    arch_iso_hex=$(<<<"${arch_iso_label}" xxd -p)
-    anarchy_iso_hex=$(<<<"${anarchy_iso_label}" xxd -p)
+    arch_iso_label="$(<"${custom_iso}"/loader/entries/archiso-x86_64.conf awk 'NR=6{print $NF}' | sed 's/.*=//')"
+    arch_iso_hex="$(<<<"${arch_iso_label}" xxd -p)"
+    anarchy_iso_hex="$(<<<"${anarchy_iso_label}" xxd -p)"
     cp "${working_dir}"/boot/splash.png "${custom_iso}"/arch/boot/syslinux/
     cp "${working_dir}"/boot/iso/archiso_head.cfg "${custom_iso}"/arch/boot/syslinux/
     sed -i "s/${arch_iso_label}/${anarchy_iso_label}/;s/Arch Linux archiso/Anarchy Linux/" "${custom_iso}"/loader/entries/archiso-x86_64.conf
@@ -497,7 +497,7 @@ create_iso() {
     -output "${out_dir}"/"${anarchy_iso_name}" \
     "${custom_iso}"
 
-    if [[ "$?" -eq 0 ]]; then
+    if [ "$?" -eq 0 ]; then
         rm -rf "${custom_iso}"
         generate_checksums
     else
@@ -515,9 +515,9 @@ generate_checksums() {
 }
 
 uninstall_dependencies() {
-    if [[ "${#missing_deps[@]}" -ne 0 ]]; then
+    if [ "${#missing_deps[@]}" -ne 0 ]; then
         echo -e "Installed dependencies: ${missing_deps[*]}" | log
-        if [[ "${user_input}" == true ]]; then
+        if [ "${user_input}" = 1 ]; then
             echo -e "Uninstall these dependencies? [y/N]: "
             local input
             read -r input
@@ -549,7 +549,7 @@ command_log() {
 # Starts if the iso-generator is interrupted
 cleanup() {
     # Check if user exited or if there was an error
-    if [[ "${last_command}" == "init" ]]; then
+    if [ "${last_command}" = "init" ]; then
         echo -e "User force stopped the script" | log
     else
         echo -e "${color_red}An error occured: ${last_command} exited with error code $?${color_blank}" | log
@@ -562,13 +562,13 @@ cleanup() {
     fi
 
     # Check and clean the customiso directory
-    if [[ -d "${custom_iso}" ]]; then
+    if [ -d "${custom_iso}" ]; then
         echo -e "Removing customiso directory ..." | log
         # We have to use sudo in case root owns files inside customiso
         sudo rm -rf "${custom_iso}"
     fi
 
-    if [[ "${last_command}" != "init" ]]; then
+    if [ "${last_command}" != "init" ]; then
         echo -e "${color_white}Please report this issue to our Github issue tracker: https://git.io/JeOxK${color_blank}"
         echo -e "${color_white}Make sure to include the relevant log: ${log_file}${color_blank}"
         echo -e "${color_white}You can also ask about the issue in our Telegram: https://t.me/anarchy_linux${color_blank}"
@@ -577,7 +577,7 @@ cleanup() {
 
 usage() {
     clear
-    echo -e "${color_white}Usage: iso-generator.sh [options]${color_blank}"
+    echo -e "${color_white}Usage: compile.sh [options]${color_blank}"
     echo -e "${color_white}     -c | --no-color)    Disable color output${color_blank}"
     echo -e "${color_white}     -i | --no-input)    Don't ask user for input${color_blank}"
     echo -e "${color_white}     -o | --output-dir)  Specify directory for generated ISOs/checksums${color_blank}"
@@ -591,7 +591,7 @@ trap cleanup ERR
 
 # Enable color output and user input by default
 show_color=1
-user_input=true
+user_input=1
 
 while (true); do
     case "$1" in
@@ -604,7 +604,7 @@ while (true); do
             shift
         ;;
         -i|--no-input)
-            user_input=false
+            user_input=0
             shift
         ;;
         -o|--output-dir)
@@ -617,11 +617,6 @@ while (true); do
             log_dir="$(readlink -f $1)"
             shift
         ;;
-        #-a|--arch-iso)
-        #    shift
-        #    local_arch_iso=$1
-        #    shift
-        #;;
         *)
             prettify
             set_up_logging
