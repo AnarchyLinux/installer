@@ -1,11 +1,8 @@
 # A function for updating variables in the config file
-# Arguments:
-#   $1 - variable's name (key)
-#   $2 - variable's value
-update_var() {
+set_var() {
+    # Return value 42 means variable couldn't be set
     local key
     local value
-
     key="$1"
     value="$2"
 
@@ -16,19 +13,16 @@ update_var() {
     # (lines starting with a #)
     # The second part ( s/^${key}=\(.*\)/${key}=${value}/ ) replaces the first
     # usage of key=some_value to a specified value
-    sed -i -e "/^#/! s/^${key}=\(.*\)/${key}=${value}/" "${ANARCHY_CONFIG_FILE}"
-    return "$?"
+    sed -i -e "/^#/! s/^${key}=\(.*\)/${key}=${value}/" \
+        "${ANARCHY_CONFIG_FILE}" || return 42
 }
 
 # A function for reading values from the config file
-# Arguments:
-#   $1 - variable's name (key)
 # Error codes:
 #   1 - could not read variable's value from config file
-read_var() {
+get_var() {
     local key
     local value
-
     key="$1"
 
     log "Reading variable \'${key}\'"
@@ -41,7 +35,6 @@ read_var() {
     value="$(grep "^[^#;]" "${ANARCHY_CONFIG_FILE}" | grep "${key}" | \
             cut -d "=" -f 2)" || return 1
 
-    # Return the  requested value to the parent script
+    # Return the requested value to the parent script
     echo "${value}"
-    return 0
 }

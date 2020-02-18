@@ -1,4 +1,5 @@
 # Copyright (C) 2017 Dylan Schacht
+# TODO: Check and fix if needed
 
 # Calculate download speed
 cal_rate() {

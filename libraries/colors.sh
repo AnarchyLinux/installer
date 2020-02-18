@@ -1,4 +1,5 @@
 # Anarchy's colors library
+# TODO: Remove if not needed
 
 # Define colors
 color_green=$'\e[0;32m';
