@@ -1,20 +1,5 @@
 #!/usr/bin/env bash
-
-###############################################################
-### Anarchy Linux Install Script
-### iso-generator.sh
-###
-### Copyright (C) 2018 Dylan Schacht
-###
-### By: Dylan Schacht (deadhead)
-### Email: deadhead3492@gmail.com
-### Webpage: https://anarchylinux.org
-###
-### Any questions, comments, or bug reports may be sent to above
-### email address. Enjoy, and keep on using Anarchy.
-###
-### License: GPL v2.0
-###############################################################
+# Copyright (C) 2018 Dylan Schacht
 
 # Error codes:
 # * Exit 1: Missing dependencies (check_dependencies)
