@@ -1,28 +1,31 @@
-#!/usr/bin/env bash
+#!/bin/sh
 # Main Anarchy Linux installer script
 
-# Special error exits
-# 42 - couldn't write variable
+set -e
 
-# Set the Anarchy config file location
-export ANARCHY_CONFIG_FILE="${HOME}"/etc/anarchy.conf
+ANARCHY_INSTALL_PATH="$(pwd)"
+ANARCHY_CONFIG_FILE="${ANARCHY_INSTALL_PATH}"/configs/anarchy.conf
 
-# Source files and libraries
+# Source Anarchy's config file
+# shellcheck source=../configs/anarchy.conf
 . "${ANARCHY_CONFIG_FILE}"
-. "${TRANSLATION_FILE}"
+
+# Source the chosen (or default) translation
+# shellcheck source=../translations/
+. "${language_file}"
 
 # Define log file
-LOG_FILE="${ANARCHY_LOG_DIRECTORY}/$(date '+%d-%m-%Y')".log
-export LOG_FILE
+ANARCHY_LOG_FILE="${ANARCHY_LOG_PATH}/$(date '+%d-%m-%Y')".log
 
 # Source libraries
-for library in "${ANARCHY_LIBRARIES_DIRECTORY}"/*; do
+for library in "${ANARCHY_LIBRARIES_PATH}"/*; do
+    # shellcheck source=../libraries/
     . "${library}"
 done
 
+# Check if the terminal is big enough to add battery info
 if [ "$(tput lines)" -gt 25 ]; then
-    # Run the function 'update_var' from 'variables.sh'
-    update_var 'sufficient_screen_size' 'true' || exit 42
+    set_var 'sufficient_screen_size' 'true'
 fi
 
 main() {
@@ -43,14 +46,15 @@ main() {
     fi
 
     . update-mirrorlist
-    . test-connection
+    #. test-connection # TODO: Remove it, it's not needed anymore
     . install-yay
     . set-locale
     . set-timezone
-    . prepare-disks
-    . choose-installation-options
-    . set-hostname
-    . set-password
+    ### OSTOU PRI prepare-disks(7), seti ok_screen_size
+    #. prepare-disks
+    #. choose-installation-options
+    #. set-hostname
+    #. set-password
     #. set-user
     #. add-software
     #. install-base
@@ -59,13 +63,13 @@ main() {
     #. reboot-menu
 }
 
-# Prints the usage info if started wth -h
+# Prints the usage info
 usage() {
-    echo -e "Usage: ${color_green} anarchy [options]${color_none}"
-    echo -e "${color_green}    -h       ${color_yellow}Display this help message${color_none}"
-    echo -e "${color_green}    -k       ${color_yellow}Update pacman keys${color_none}"
-    echo -e "${color_green}    -u       ${color_yellow}Update anarchy scripts${color_none}"
-    echo -e ""
+    echo "Usage: anarchy [-h][-k][-u]"
+    echo "    -h    Display this message"
+    echo "    -k    Update pacman's keys"
+    echo "    -u    Update Anarchy's scripts"
+    echo ""
 }
 
 if [ $# -lt 1 ]; then

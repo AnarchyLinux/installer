@@ -2,12 +2,14 @@
 
 log "Choosing locale"
 
-LOCALE_LIST="$(grep -E "^#?[a-z].*UTF-8" /etc/locale.gen | sed 's/#//' | awk '{print $1" -"}')"
+LOCALE_LIST="$(grep -E "^#?[a-z].*UTF-8" /etc/locale.gen | sed 's/#//' \
+    | awk '{print $1" -"}')"
 
 menu_title="${locale_op_msg}"
 
 while (true); do
-    LOCALE="$(dialog --nocancel --ok-button "${ok}" --menu "${locale_msg}" 18 60 11 \
+    locale="$(dialog --nocancel --ok-button "${ok}" --menu "${locale_msg}" \
+    18 60 11 \
     "en_GB.UTF-8" "Great Britain" \
     "en_AU.UTF-8" "Australia" \
     "pt_BR.UTF-8" "Brazil" \
@@ -29,8 +31,9 @@ while (true); do
     "sv_SE.UTF-8" "Swedish" \
     "${other}"    "${other}-locale" 3>&1 1>&2 2>&3)"
 
-    if [ "${LOCALE}" = "${other}" ]; then
-        LOCALE="$(dialog --ok-button "${ok}" --cancel-button "${cancel}" --menu "${locale_msg}" 18 60 11 "${LOCALE_LIST}" 3>&1 1>&2 2>&3)"
+    if [ "${locale}" = "${other}" ]; then
+        locale="$(dialog --ok-button "${ok}" --cancel-button "${cancel}" \
+            --menu "${locale_msg}" 18 60 11 "${LOCALE_LIST}" 3>&1 1>&2 2>&3)"
 
         if [ $? -eq 0 ]; then
             break
@@ -40,5 +43,4 @@ while (true); do
     fi
 done
 
-# TODO: Check if locale was actually set (it doesn't look like it)
-log "Set locale to ${LOCALE}"
+set_var 'locale' "${locale}"

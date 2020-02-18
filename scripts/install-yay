@@ -5,8 +5,10 @@ log "Installing yay-bin"
 
 TMP_YAY_DIR="$(mktemp -d)"
 
-# Install git as a dependency
-pacman --noconfirm --quiet -Sy git
+# Install git as a dependency if needed
+if command -v git; then
+    pacman --noconfirm --quiet -Sy git > /dev/null
+fi
 
 # Clone and install yay
 git clone --quiet https://aur.archlinux.org/yay.git "${TMP_YAY_DIR}/"

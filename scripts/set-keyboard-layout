@@ -38,6 +38,6 @@ while (true); do
     fi
 done
 
+set_var 'keyboard_layout' "${keyboard_layout}"
+localectl set-keymap "${keyboard_layout}"
 log "Selected keyboard layout: \'${keyboard_layout}\'"
-localectl set-keymap "${keyboard_layout}" > /dev/null
-exit $?

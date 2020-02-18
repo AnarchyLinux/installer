@@ -2,28 +2,41 @@
 
 log "Setting timezone"
 
-ZONE_LIST="$(find /usr/share/zoneinfo -maxdepth 1 | sed -n -e 's!^.*/!!p' | grep -v "posix\|right\|zoneinfo\|zone.tab\|zone1970.tab\|W-SU\|WET\|posixrules\|MST7MDT\|iso3166.tab\|CST6CDT" | sort | sed 's/$/ -/g')"
+ZONE_LIST="$(find /usr/share/zoneinfo -maxdepth 1 | sed -n -e 's!^.*/!!p' \
+    | grep -v "posix\|right\|zoneinfo\|zone.tab\|zone1970.tab\|W-SU\|WET\|posixrules\|MST7MDT\|iso3166.tab\|CST6CDT" \
+    | sort | sed 's/$/ -/g')"
 
 menu_title="${zone_op_msg}"
 
 while (true); do
-    TIMEZONE="$(dialog --nocancel --ok-button "${ok}" --menu "${zone_msg0}" 18 60 11 "${ZONE_LIST}" 3>&1 1>&2 2>&3)"
+    timezone="$(dialog --nocancel --ok-button "${ok}" --menu "${zone_msg0}" \
+        18 60 11 "${ZONE_LIST}" 3>&1 1>&2 2>&3)"
 
-    if (find /usr/share/zoneinfo -maxdepth 1 -type d | sed -n -e 's!^.*/!!p' | grep "${TIMEZONE}" > /dev/null); then
-        SUBZONE_LIST="$(find /usr/share/zoneinfo/"${TIMEZONE}" -maxdepth 1 | sed -n -e 's!^.*/!!p' | sort | sed 's/$/ -/g' | grep -v "${TIMEZONE}")"
-        SUBZONE="$(dialog --ok-button "${ok}" --cancel-button "${back}" --menu "${zone_msg1}" 18 60 11 "${SUBZONE_LIST}" 3>&1 1>&2 2>&3)"
+    if (find /usr/share/zoneinfo -maxdepth 1 -type d | sed -n -e 's!^.*/!!p' \
+            | grep "${timezone}" > /dev/null); then
+        SUBZONE_LIST="$(find /usr/share/zoneinfo/"${timezone}" -maxdepth 1 \
+            | sed -n -e 's!^.*/!!p' | sort | sed 's/$/ -/g' \
+            | grep -v "${timezone}")"
+        SUBZONE="$(dialog --ok-button "${ok}" --cancel-button "${back}" \
+            --menu "${zone_msg1}" 18 60 11 "${SUBZONE_LIST}" 3>&1 1>&2 2>&3)"
 
         if [ $? -eq 0 ]; then
-            if (find /usr/share/zoneinfo/"${TIMEZONE}" -maxdepth 1 -type  d | sed -n -e 's!^.*/!!p' | grep "${SUBZONE}" > /dev/null); then
-                SUBLIST="$(find /usr/share/zoneinfo/"${TIMEZONE}"/"${SUBZONE}" -maxdepth 1 | sed -n -e 's!^.*/!!p' | sort | sed 's/$/ -/g' | grep -v "${SUBZONE}")"
-                SUB_SUBZONE="$(dialog --ok-button "${ok}" --cancel-button "${back}" --menu "${zone_msg1}" 15 60 7 "${SUBLIST}" 3>&1 1>&2 2>&3)"
+            if (find /usr/share/zoneinfo/"${timezone}" -maxdepth 1 -type d \
+                | sed -n -e 's!^.*/!!p' | grep "${SUBZONE}" > /dev/null); then
+
+                SUBLIST="$(find /usr/share/zoneinfo/"${timezone}"/"${SUBZONE}" \
+                    -maxdepth 1 | sed -n -e 's!^.*/!!p' | sort | sed 's/$/ -/g'\
+                    | grep -v "${SUBZONE}")"
+                SUB_SUBZONE="$(dialog --ok-button "${ok}" \
+                    --cancel-button "${back}" --menu "${zone_msg1}" 15 60 7 \
+                    "${SUBLIST}" 3>&1 1>&2 2>&3)"
 
                 if [ $? -eq 0 ]; then
-                    TIMEZONE="${TIMEZONE}/${SUBZONE}/${SUB_SUBZONE}"
+                    timezone="${timezone}/${SUBZONE}/${SUB_SUBZONE}"
                     break
                 fi
             else
-                TIMEZONE="${TIMEZONE}/${SUBZONE}"
+                timezone="${timezone}/${SUBZONE}"
                 break
             fi
         fi
@@ -32,5 +45,4 @@ while (true); do
     fi
 done
 
-# TODO: Check if TIME_ZONE is saved somewhere
-log "Set timezone to ${TIMEZONE}"
+set_var 'timezone' "${timezone}"

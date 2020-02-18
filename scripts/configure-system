@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+# TODO: Replace $ZONE with $TIMEZONE
+
 menu_title="$config_op_msg"
 
 if [ "$bootloader" == "syslinux" ] || [ "$bootloader" == "systemd-boot" ] && "$uefi" ; then
@@ -112,9 +114,9 @@ if [ "$keyboard" != "$default" ]; then
     echo "$(date -u "+%F %H:%M") : Set system keymap: $keyboard" >> "$log"
 fi
 
-(arch-chroot "$ARCH" ln -sf /usr/share/zoneinfo/"$ZONE" /etc/localtime ; sleep 0.5) &
+(arch-chroot "$ARCH" ln -sf /usr/share/zoneinfo/"${TIMEZONE}" /etc/localtime ; sleep 0.5) &
 pid=$! pri=0.1 msg="\n$zone_load_var \n\n \Z1> \Z2ln -sf $ZONE /etc/localtime\Zn" load
-echo "$(date -u "+%F %H:%M") : Set system timezone: $ZONE" >> "$log"
+echo "$(date -u "+%F %H:%M") : Set system timezone: ${TIMEZONE}" >> "$log"
 
 case "$net_util" in
     networkmanager)	arch-chroot "$ARCH" systemctl enable NetworkManager.service &>/dev/null
