@@ -20,8 +20,8 @@ log_dir="${working_dir}"/logs
 out_dir="${working_dir}"/out # Directory for generated ISOs
 
 # Define colors depending on script arguments
-set_up_colors() {
-    if [[ "${show_color}" == true ]]; then
+colors() {
+    if [ "${show_color}" = 1 ]; then
         color_blank='\e[0m'
         color_green='\e[1;32m'
         color_red='\e[1;31m'
@@ -58,6 +58,9 @@ log() {
 
 # Clears the screen and adds a banner
 prettify() {
+    # Source colors
+    colors
+
     clear
     echo -e "${color_white}-- Anarchy Linux --${color_blank}"
     echo -e ""
@@ -592,7 +595,7 @@ trap command_log DEBUG
 trap cleanup ERR
 
 # Enable color output and user input by default
-show_color=true
+show_color=1
 user_input=true
 
 while (true); do
@@ -602,7 +605,7 @@ while (true); do
             exit 0
         ;;
         -c|--no-color)
-            show_color=false
+            show_color=0
             shift
         ;;
         -i|--no-input)
