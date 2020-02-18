@@ -568,11 +568,6 @@ cleanup() {
         sudo rm -rf "${custom_iso}"
     fi
 
-    if [[ -d "${brand_dir}" ]]; then
-        echo -e "Removing downloaded branding directory ..." | log
-        rm -rf "${brand_dir}"
-    fi
-
     if [[ "${last_command}" != "init" ]]; then
         echo -e "${color_white}Please report this issue to our Github issue tracker: https://git.io/JeOxK${color_blank}"
         echo -e "${color_white}Make sure to include the relevant log: ${log_file}${color_blank}"
