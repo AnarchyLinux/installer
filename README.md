@@ -1,19 +1,4 @@
-<html lang="en">
-<p align="center">
-    <img src="https://user-images.githubusercontent.com/10241434/43771874-12ff77d8-9a73-11e8-99af-dc067a07dcd7.png" alt="Anarchy logo">
-</p>
-<h1 align="center">Anarchy Linux</h1>
-
-<p align="center">
-    A simple and intuitive Arch Linux installer, following the KISS principle.
-</p>
-
-<p align="center">
-    <a href="https://www.anarchylinux.org/">Website</a> | 
-    <a href="https://github.com/AnarchyLinux/installer/releases">Download</a> |
-    <a href="https://t.me/anarchy_linux">Telegram group</a>
-</p>
-</html>
+![Anarchy logo](https://github.com/PandaFoss/branding/blob/master/banner.svg)
 
 # About
 
@@ -30,51 +15,12 @@ That is the Anarchy philosophy.
 
 # Installation
 
-## Verifying the checksum
+Check out the [installation instructions](https://github.com/AnarchyLinux/installer/wiki/Installation-instructions).
 
-It's recommended that you verify the checksum before using Anarchy.
+# Reporting issues
 
-On Linux, this is a very simple thing to do.
-Run the following command in a terminal:
-
-`sha256sum -c anarchy-(version)-(architecture).iso.sha256sum`
-
-If the image (ISO file) was fully and correctly downloaded you should see
-something like this:
-
-`anarchy-1.0.10-x86_64.iso: OK`
-
-On Windows you have to get some external tools.
-An example is [sha256sum.exe](http://www.labtestproject.com/files/win/sha256sum/sha256sum.exe),
-which you can run in cmd like so:
-
-`sha256sum.exe anarchy-(version)-(architecture).iso`
-
-Note that unlike its Linux counterpart, it will only display the sha256 checksum
-of the image, not compare it with the generated checksums as well.
-So make sure to open the .sha256sum file in a text editor and compare the
-hashes yourself.
-
-## Flashing to a USB
-
-### Windows
-
-The best tool to flash Anarchy Linux to a USB is
-[Win32DiskImager](https://sourceforge.net/projects/win32diskimager/).
-Download it, choose the Anarchy image (ISO), select the wanted USB and
-press write.
-
-### **Linux**
-
-The fastest method, although not the easiest for most beginners, is to use `dd`.
-
-Replace `x` with your USB device's letter (use `lsblk` to check which letter
-it was assigned, usually it's 'b'):
-
-`sudo dd if=<anarchy-image.iso> of=/dev/sdx status=progress oflag=sync`
-
-You can also use GUI based software such as
-[Etcher](https://www.balena.io/etcher/).
+Please read the [bug reporting guide](https://github.com/AnarchyLinux/installer/wiki/Reporting-issues)
+before reporting issues and remember to provide as much info as possible.
 
 # Contributing
 
