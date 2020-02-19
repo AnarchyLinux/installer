@@ -1,49 +1,46 @@
-#!/usr/bin/env bash
-
-# Source config file and libraries
-source "${ANARCHY_CONFIG_FILE}"
-for library in "${ANARCHY_LIBRARIES_DIRECTORY}"/*.sh; do
-    source "${library}"
-done
+#!/bin/sh
 
 log "Choosing locale"
 
-LOCALE_LIST="$(grep -E "^#?[a-z].*UTF-8" /etc/locale.gen | sed 's/#//' | awk '{print $1" -"}')"
+LOCALE_LIST="$(grep -E "^#?[a-z].*UTF-8" /etc/locale.gen | sed 's/#//' \
+    | awk '{print $1" -"}')"
 
 menu_title="${locale_op_msg}"
-    while (true); do
-        LOCALE=$(dialog --nocancel --ok-button "${ok}" --menu "${locale_msg}" 18 60 11 \
-        "en_GB.UTF-8" "Great Britain" \
-        "en_AU.UTF-8" "Australia" \
-        "pt_BR.UTF-8" "Brazil" \
-        "en_CA.UTF-8" "Canada" \
-        "es_ES.UTF-8" "Spanish" \
-        "fr_FR.UTF-8" "French" \
-        "de_DE.UTF-8" "German" \
-        "el_GR.UTF-8" "Greek" \
-        "en_GB.UTF-8" "Great Britain" \
-        "hu_HU.UTF-8" "Hungary" \
-        "it_IT.UTF-8" "Italian" \
-        "lv_LV.UTF-8" "Latvian" \
-        "es_MX.UTF-8" "Mexico" \
-        "pt_PT.UTF-8" "Portugal" \
-        "ro_RO.UTF-8" "Romanian" \
-        "ru_RU.UTF-8" "Russian" \
-        "es_ES.UTF-8" "Spanish" \
-        "sl_SI.UTF-8" "Slovenian" \
-        "sv_SE.UTF-8" "Swedish" \
-        "${other}"    "${other}-locale" 3>&1 1>&2 2>&3)
 
-        if [[ "${LOCALE}" = "${other}" ]]; then
-            LOCALE=$(dialog --ok-button "${ok}" --cancel-button "${cancel}" --menu "${locale_msg}" 18 60 11 ${LOCALE_LIST} 3>&1 1>&2 2>&3)
-            if [[ $? -eq 0 ]]; then
-                break
-            fi
-        else
+while (true); do
+    locale="$(dialog --nocancel --ok-button "${ok}" --menu "${locale_msg}" \
+    18 60 11 \
+    "en_GB.UTF-8" "Great Britain" \
+    "en_AU.UTF-8" "Australia" \
+    "pt_BR.UTF-8" "Brazil" \
+    "en_CA.UTF-8" "Canada" \
+    "es_ES.UTF-8" "Spanish" \
+    "fr_FR.UTF-8" "French" \
+    "de_DE.UTF-8" "German" \
+    "el_GR.UTF-8" "Greek" \
+    "en_GB.UTF-8" "Great Britain" \
+    "hu_HU.UTF-8" "Hungary" \
+    "it_IT.UTF-8" "Italian" \
+    "lv_LV.UTF-8" "Latvian" \
+    "es_MX.UTF-8" "Mexico" \
+    "pt_PT.UTF-8" "Portugal" \
+    "ro_RO.UTF-8" "Romanian" \
+    "ru_RU.UTF-8" "Russian" \
+    "es_ES.UTF-8" "Spanish" \
+    "sl_SI.UTF-8" "Slovenian" \
+    "sv_SE.UTF-8" "Swedish" \
+    "${other}"    "${other}-locale" 3>&1 1>&2 2>&3)"
+
+    if [ "${locale}" = "${other}" ]; then
+        locale="$(dialog --ok-button "${ok}" --cancel-button "${cancel}" \
+            --menu "${locale_msg}" 18 60 11 "${LOCALE_LIST}" 3>&1 1>&2 2>&3)"
+
+        if [ $? -eq 0 ]; then
             break
         fi
-    done
+    else
+        break
+    fi
+done
 
-    # TODO: Check if locale was actually set (it doesn't look like it)
-    log "Set locale to ${LOCALE}"
-    return 0
+set_var 'locale' "${locale}"

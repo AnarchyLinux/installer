@@ -1,89 +1,49 @@
-#!/usr/bin/env bash
-
-# Source config file and libraries
-source "${ANARCHY_CONFIG_FILE}"
-for library in "${ANARCHY_LIBRARIES_DIRECTORY}"/*.sh; do
-    source "${library}"
-done
+#!/bin/sh
 
 log "Updating mirrorlist"
 
 menu_title="${mirror_op_msg}"
 
-COUNTRY_LIST="$(echo -e "AS All-Https\n AT Austria\n AU  Australia\n BD Bangladesh\n BE Belgium\n BG Bulgaria\n BR Brazil\n BY Belarus\n CA Canada\n CL Chile \n CN China\n CO Colombia\n CZ Czech-Republic\n DE Germany\n DK Denmark\n EE Estonia\n ES Spain\n FI Finland\n FR France\n GB United-Kingdom\n HU Hungary\n IE Ireland\n IL Isreal\n IN India\n IT Italy\n JP Japan\n KR Korea\n KZ Kazakhstan\n LK Sri-Lanka\n LU Luxembourg\n LV Latvia\n MK Macedonia\n NC New-Caledonia\n NL Netherlands\n NO Norway\n NZ New-Zealand\n PL Poland\n PT Portugal\n RO Romania\n RS Serbia\n RU Russia\n SE Sweden\n CH Switzerland\n SG Singapore\n SK Slovakia\n SI Slovenia\n TR Turkey\n TW Taiwan\n UA Ukraine\n US United-States\n UZ Uzbekistan\n VN Viet-Nam\n ZA South-Africa")"
-
 while (true); do
-    edit_mirrors=$(dialog --ok-button "${ok}" --menu "\n${mirror_msg0}\n" 12 60 3 \
+    edit_mirrors="$(dialog --ok-button "${ok}" \
+        --menu "\n${mirror_msg0}\n" 12 60 3 \
         "${update_mirrors_msg}" "->" \
         "${manual_mirrors}" "->" \
-        "${cancel_mirrors}" "->" 3>&1 1>&2 2>&3)
+        "${cancel_mirrors}" "->" 3>&1 1>&2 2>&3)"
 
-    if [[ $? -gt 0 ]] || [[ "${edit_mirrors}" == "${cancel_mirrors}" ]]; then
-        if (dialog --yes-button "${yes}" --no-button "${no}" --yesno "\n${mirror_cancel_msg}" 10 60); then
+    if [ $? -gt 0 ] || [ "${edit_mirrors}" = "${cancel_mirrors}" ]; then
+        if (dialog --yes-button "${yes}" --no-button "${no}" \
+                --yesno "\n${mirror_cancel_msg}" 10 60); then
             log "Didn't update mirrorlist"
-            return 0
+            exit 0
         fi
     fi
 
     case "${edit_mirrors}" in
-        # TODO: Use reflector to update mirrors
         "${update_mirrors_msg}")
-            country_code=$(dialog --ok-button "${ok}" --menu "${mirror_msg1}" 17 60 10 \
-                "${default}" "->" \
-                ${COUNTRY_LIST} 3>&1 1>&2 2>&3)
-
-            if [[ $? -gt 0 ]]; then
-                if (dialog --yes-button "${yes}" --no-button "${no}" --yesno "\n${mirror_cancel_msg}" 10 60); then
-                    break
-                else
-                    continue
-                fi
-            fi
-
-            case "${country_code}" in
-                "${default}") mirror_url="https://www.archlinux.org/mirrorlist/all/" ;;
-                "AS") mirror_url="https://www.archlinux.org/mirrorlist/all/https/" ;;
-                *) mirror_url="https://www.archlinux.org/mirrorlist/?country=${country_code}" ;;
-            esac
-
-            if [[ "${country_code}" == "${default}" ]]; then
-                curl -k -s "${mirror_url}" | sed '10,1000d;s/#//' >/etc/pacman.d/mirrorlist.bak &
-            else
-                curl -k -s "${mirror_url}" >/etc/pacman.d/mirrorlist.bak &
-            fi
-            pid=$! pri=0.1 msg="\n${mirror_load0} \n\n \Z1> \Z2curl ${mirror_url}\Zn" load
-
-            if (grep "Server" /etc/pacman.d/mirrorlist.bak &>/dev/null); then
-                log "Updated mirrorlist for ${country_code}"
-                sed -i 's/#//' /etc/pacman.d/mirrorlist.bak
-                rankmirrors -n 6 /etc/pacman.d/mirrorlist.bak > /etc/pacman.d/mirrorlist &
-                pid=$! pri=0.8 msg="\n${mirror_load1} \n\n \Z1> \Z2rankmirrors -n 6 /etc/pacman.d/mirrorlist\Zn" load
-            else
-                dialog --ok-button "${ok}" --msgbox "\n${connect_err0}" 10 60
-                log "Failed to connect to network"
-                setterm -background black -store ; reset ; echo -e "${connect_err1}" | sed 's/\\Z1//;s/\\Zn//'
-                exit 1
-            fi
-            break
+            log "Updating mirrorlist with reflector"
+            reflector --sort rate --fastest 20 --latest 20 --number 10 \
+                --save /etc/pacman.d/mirrorlist
         ;;
 
         "${manual_mirrors}")
-            log "Chose to manually update mirrors"
-            EDITOR=$(dialog --ok-button "${ok}" --menu "${mirror_editor_msg}" 10 60 3 \
-                "nano"	"${nano_msg}" \
-                "vim"	"${vim_msg}" \
-                "${cancel}" "->" 3>&1 1>&2 2>&3)
-            if [[ $? -gt 0 ]] || [[ "${EDITOR}" == "${cancel}" ]]; then
-                if (dialog --yes-button "${yes}" --no-button "${no}" --yesno "\n${mirror_cancel_msg}" 10 60); then
+            log "Manually updating mirrorlist"
+            EDITOR="$(dialog --ok-button "${ok}" --menu "${mirror_editor_msg}" \
+                10 60 3 \
+                "nano"  "${nano_msg}" \
+                "vim"   "${vim_msg}" \
+                "${cancel}" "->" 3>&1 1>&2 2>&3)"
+
+            if [ $? -gt 0 ] || [ "${EDITOR}" = "${cancel}" ]; then
+                if (dialog --yes-button "${yes}" --no-button "${no}" \
+                        --yesno "\n${mirror_cancel_msg}" 10 60); then
                     break
                 fi
             else
-                ${EDITOR} /etc/pacman.d/mirrorlist
-                log "Updated mirrorlist"
+                "${EDITOR}" /etc/pacman.d/mirrorlist
+                log "Updated mirrorlist with ${EDITOR}"
                 break
             fi
         ;;
     esac
 done
-
-return 0

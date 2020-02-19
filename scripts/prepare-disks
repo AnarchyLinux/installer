@@ -1,38 +1,37 @@
 #!/usr/bin/env bash
 
-# Source config file and libraries
-source "${ANARCHY_CONFIG_FILE}"
-for library in "${ANARCHY_LIBRARIES_DIRECTORY}"/*.sh; do
-    source "${library}"
-done
-
 log "Preparing disks for installation"
+
+# Get variable values from config
+use_uefi="$(get_var 'use_uefi')"
+is_mounted="$(get_var 'is_mounted')"
+sufficient_screen_size="$(get_var 'sufficient_screen_size')"
 
 menu_title="${part_op_msg}"
 
-if (df | grep "${CHROOT_MOUNT_POINT}" &> /dev/null); then
-    umount -R "${CHROOT_MOUNT_POINT}" &> /dev/null &
-    pid=$! pri=0.1 msg="${wait_load} \n\n \Z1> \Z2umount -R ${CHROOT_MOUNT_POINT}\Zn" load
-    swapoff -a &> /dev/null &
+if (df | grep /mnt &> /dev/null); then
+    umount -R /mnt &> /dev/null &
+    pid=$! pri=0.1 msg="${wait_load} \n\n \Z1> \Z2umount -R /mnt\Zn" load
+    swapoff -a > /dev/null &
 fi
 
-# TODO: Fix having to make a new script
-TMP_DIR="$(mktemp -d)"
-TMP_MENU="${TMP_DIR}"/part.sh
+# TODO: Fix this mess
+TMP_MENU="$(mktemp -d)"/part.sh
 
-until "${mounted}"; do
-    PARTITIONING_METHOD=$(dialog --ok-button "${ok}" --cancel-button "${cancel}" --menu "${part_msg}" 16 64 4 \
-    "${method0}" "-" \
-    "${method1}" "-" \
-    "${method2}"  "-" \
-    "${menu_msg}" "-" 3>&1 1>&2 2>&3)
+until "${is_mounted}"; do
+    PARTITIONING_METHOD="$(dialog --ok-button "${ok}" \
+        --cancel-button "${cancel}" --menu "${part_msg}" 16 64 4 \
+        "${method0}" "-" \
+        "${method1}" "-" \
+        "${method2}"  "-" \
+        "${menu_msg}" "-" 3>&1 1>&2 2>&3)"
 
-    if [[ $? -gt 0 ]] || [[ "${PARTITIONING_METHOD}" == "${menu_msg}" ]]; then
-        # TODO: Fix reference to menus.sh
-        main_menu
-    elif [[ "${PARTITIONING_METHOD}" != "${method2}" ]]; then
+    if [ $? -gt 0 ] || [ "${PARTITIONING_METHOD}" = "${menu_msg}" ]; then
+        . main-menu
+        exit 0
+    elif [ "${PARTITIONING_METHOD}" != "${method2}" ]; then
         dev_menu="           Device: | Size: | Type:  |"
-        if [[ "${ok_screen_size}" ]]; then
+        if [ "${sufficient_screen_size}" ]; then
             # TODO: Update the code to not use cat
             cat <<-EOF > "${TMP_MENU}"
 					dialog --colors --backtitle "${backtitle}" --title "${anarchy_title}" --ok-button "${ok}" --cancel-button "${cancel}" --menu "${drive_msg} \n\n ${dev_menu}" 16 60 5 \\
@@ -48,44 +47,50 @@ until "${mounted}"; do
 				3>&1 1>&2 2>&3
 			EOF
 
-        DRIVE="$(bash "${TMP_PARTITIONING_SCRIPT}")"
-        rm "${TMP_PARTITIONING_SCRIPT}"
+        DRIVE="$(bash "${TMP_MENU}")"
 
-        if [[ -n "${DRIVE}" ]]; then
+        if [ -n "${DRIVE}" ]; then
             if (<<<"${DRIVE}" egrep "nvme.*|mmc.*|md.*" &> /dev/null); then
                 PART_PREFIX="p"
             fi
 
-            drive_byte="$(lsblk -nibo NAME,SIZE | grep -w "${DRIVE}" | awk '{print $2}')"
+            drive_byte="$(lsblk -nibo NAME,SIZE | grep -w "${DRIVE}" \
+                | awk '{print $2}')"
             drive_mib="$((drive_byte/1024/1024))"
             drive_gigs="$((drive_mib/1024))"
-            f2fs="$(lsblk -dnro ROTA /dev/${DRIVE})"
-            log "Drive size in MiB: ${drive_mib}"
-            log "F2FS state: ${f2fs}"
-            # TODO: Fix reference
-            fs_select
 
-            if (dialog --yes-button "${yes}" --no-button "${no}" --yesno "\n${swap_msg0}" 10 60); then
+            # Checks if the disk is a rotational device (HDD)
+            is_hdd="$(lsblk -dnro ROTA /dev/"${DRIVE}")"
+
+            set_var 'is_hdd' "${is_hdd}"
+
+            log "Drive size is ${drive_mib} MiB"
+            . select-filesystem
+
+            if (dialog --yes-button "${yes}" --no-button "${no}" \
+                    --yesno "\n${swap_msg0}" 10 60); then
                 while (true); do
-                    SWAP_SIZE="$(dialog --ok-button "${ok}" --cancel-button "${cancel}" --inputbox "\n${swap_msg1}" 11 55 "512M" 3>&1 1>&2 2>&3)"
+                    SWAP_SIZE="$(dialog --ok-button "${ok}" \
+                        --cancel-button "${cancel}" --inputbox "\n${swap_msg1}"\
+                        11 55 "512M" 3>&1 1>&2 2>&3)"
 
-                    if [[ $? -gt 0 ]]; then
-                        swap=false
+                    if [ $? -gt 0 ]; then
+                        set_var 'use_swap' 'false'
                         break
                     else
-                        if [[ "$(grep -o ".$" <<< "${SWAP_SIZE}")" == "M" ]]; then
+                        if [ "$(grep -o ".$" <<< "${SWAP_SIZE}")" = "M" ]; then
                             SWAP_SIZE=$(<<<${SWAP_SIZE} sed 's/M//;s/\..*//')
 
-                            if [[ "${SWAP_SIZE}" -lt "$(echo "${drive_mib}-5120" | bc)" ]]; then
-                                swap=true
+                            if [ "${SWAP_SIZE}" -lt "$(echo "${drive_mib}-5120" | bc)" ]; then
+                                set_var 'use_swap' 'true'
                                 break
                             else
                                 dialog --ok-button "${ok}" --msgbox "\n${swap_err_msg0}" 10 60
                             fi
-                        elif [[ "$(grep -o ".$" <<< "${SWAP_SIZE}")" == "G" ]]; then
-                            SWAP_SIZE=$(echo "$(<<<${SWAP_SIZE} sed 's/G//')*1024" | bc | sed 's/\..*//')
-                            if [[ "${SWAP_SIZE}" -lt "$(echo "${drive_mib}-5120" | bc)" ]]; then
-                                swap=true
+                        elif [ "$(grep -o ".$" <<< "${SWAP_SIZE}")" = "G" ]; then
+                            SWAP_SIZE="$(echo "$(<<<${SWAP_SIZE} sed 's/G//')*1024" | bc | sed 's/\..*//')"
+                            if [ "${SWAP_SIZE}" -lt "$(echo "${drive_mib}-5120" | bc)" ]; then
+                                set_var 'use_swap' 'true'
                                 break
                             else
                                 dialog --ok-button "${ok}" --msgbox "\n${swap_err_msg0}" 10 60
@@ -100,16 +105,18 @@ until "${mounted}"; do
             fi
 
             if (efivar -l &> /dev/null); then
-                if (dialog --yes-button "${yes}" --no-button "${no}" --yesno "\n${efi_msg0}" 10 60); then
-                    gpt=true
-                    uefi=true
+                if (dialog --yes-button "${yes}" --no-button "${no}" \
+                        --yesno "\n${efi_msg0}" 10 60); then
+                    set_var 'use_gpt_partitioning' 'true'
+                    set_var 'use_uefi' 'true'
                     log "Activated UEFI boot"
                 fi
             fi
 
-            if ! "${uefi}" ; then
-                if (dialog --defaultno --yes-button "${yes}" --no-button "${no}" --yesno "\n${gpt_msg}" 10 60); then
-                    gpt=true
+            if ! "${use_uefi}" ; then
+                if (dialog --defaultno --yes-button "${yes}" \
+                        --no-button "${no}" --yesno "\n${gpt_msg}" 10 60); then
+                    set_var 'use_gpt_partitioning' 'true'
                     log "Activated GPT partition scheme"
                 fi
             fi

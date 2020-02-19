@@ -1,14 +1,18 @@
 # Copyright (C) 2017 Dylan Schacht
+# TODO: Check and fix if needed
 
 # Calculate download speed
 cal_rate() {
     case "${connection_rate}" in
         KB/s)
-            down_sec="$(echo "${download_size}*1024/${connection_speed}" | bc)" ;;
+            down_sec="$(echo "${download_size}*1024/${connection_speed}" | bc)"
+            ;;
         MB/s)
-            down_sec="$(echo "${download_size}/${connection_speed}" | bc)" ;;
+            down_sec="$(echo "${download_size}/${connection_speed}" | bc)"
+            ;;
         *)
-            down_sec="1" ;;
+            down_sec="1"
+            ;;
     esac
 
     down="$(echo "${down_sec}/100+${cpu_sleep}" | bc)"

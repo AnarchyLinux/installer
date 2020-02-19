@@ -1,86 +1,87 @@
-#!/usr/bin/env bash
+#!/bin/sh
 # Main Anarchy Linux installer script
 
-# Read initial variables
-export ANARCHY_CONFIG_FILE=/etc/anarchy.d/anarchy.conf
-source "${ANARCHY_CONFIG_FILE}"
-source "${translation_file}"
+set -e
 
-# Source libraries
-for library in "${ANARCHY_LIBRARIES_DIRECTORY}"/*; do
-    source "${library}"
-done
+ANARCHY_INSTALL_PATH="$(pwd)"
+ANARCHY_CONFIG_FILE="${ANARCHY_INSTALL_PATH}"/configs/anarchy.conf
 
-if [[ "$(tput lines)" -gt 25 ]]; then
-    # Run the function 'update_var' from 'variables.sh'
-    update_var 'sufficient_screen_size' 'true'
-fi
+# Source Anarchy's config file
+# shellcheck source=../configs/anarchy.conf
+. "${ANARCHY_CONFIG_FILE}"
+
+# Source the chosen (or default) translation
+# shellcheck source=../translations/
+. "${language_file}"
 
 # Define log file
-LOG_FILE="${ANARCHY_LOG_DIRECTORY}"/"$(date "+%d-%m-%Y")".log
-export LOG_FILE
+ANARCHY_LOG_FILE="${ANARCHY_LOG_PATH}/$(date '+%d-%m-%Y')".log
 
-main() {
-    log "Started installation"
+# Source libraries
+for library in "${ANARCHY_LIBRARIES_PATH}"/*; do
+    # shellcheck source=../libraries/
+    . "${library}"
+done
 
-    # Run all the scripts
-    run set-keyboard-layout
-    run check-connection
-
-    # Show wifi connection menu if user is not already connected to the internet
-    if [[ $? -gt 0 ]]; then
-        run connect-to-wifi
-    fi
-
-    #run test-connection
-    run update-mirrorlist
-    run install-yay
-    run set-locale
-    run set-timezone
-    run prepare-disks
-    run choose-installation-options
-    run set-hostname
-    run set-password
-    #run set-user
-    #run add-software
-    #run install-base
-    #run configure-system -> configure-desktop-additions
-    #run add-user
-    #run reboot-menu
-}
-
-# Check for root privileges
-if [[ ${UID} -ne 0 ]]; then
-    echo "Error: anarchy requires root privileges"
-    echo "       Use: sudo anarchy"
-    exit 1
+# Check if the terminal is big enough to add battery info
+if [ "$(tput lines)" -gt 25 ]; then
+    set_var 'sufficient_screen_size' 'true'
 fi
 
-# Prints the usage info if started wth -h
-usage() {
-    clear
-    echo -e "Usage: ${color_green} anarchy [options]${color_none}"
-    echo -e "${color_green}   -h | --help         ${color_yellow}Display this help message${color_none}"
-    echo -e "${color_green}   -k | --keys         ${color_yellow}Update pacman keys${color_none}"
-    echo -e "${color_green}   -u | --update       ${color_yellow}Update anarchy scripts${color_none}"
-    echo -e ""
+main() {
+    # Check for root privileges
+    if [ "$(id -u)" -ne 0 ]; then
+        echo "Error: anarchy requires root privileges"
+        echo "       Use: sudo anarchy"
+        exit 1
+    fi
+
+    log "Started installation"
+
+    . set-keyboard-layout
+
+    # Show wifi connection menu if user is not already connected to the internet
+    if ! . check-connection; then
+        . connect-to-wifi
+    fi
+
+    . update-mirrorlist
+    #. test-connection # TODO: Remove it, it's not needed anymore
+    . install-yay
+    . set-locale
+    . set-timezone
+    ### OSTOU PRI prepare-disks(7), seti ok_screen_size
+    #. prepare-disks
+    #. choose-installation-options
+    #. set-hostname
+    #. set-password
+    #. set-user
+    #. add-software
+    #. install-base
+    #. configure-system -> configure-desktop-additions
+    #. add-user
+    #. reboot-menu
 }
 
-# Get options
-case "$1" in
-    -k|--keys)
-        run update-pacman-keys
-        exit $?
-    ;;
-    -u|--update)
-        run update-anarchy
-        exit $?
-    ;;
-    *)
-        usage
-        exit 0
-    ;;
-esac
+# Prints the usage info
+usage() {
+    echo "Usage: anarchy [-h][-k][-u]"
+    echo "    -h    Display this message"
+    echo "    -k    Update pacman's keys"
+    echo "    -u    Update Anarchy's scripts"
+    echo ""
+}
 
-# If no parameters were passed, run anarchy
-main
+if [ $# -lt 1 ]; then
+    # If no parameters were passed, start the installation
+    main
+else
+    while getopts ":kuh" opt; do
+        case "${opt}" in
+            k) . update-pacman-keys ;;
+            u) . update-anarchy ;;
+            h) usage ;;
+            *) usage; exit 1 ;;
+        esac
+    done
+fi

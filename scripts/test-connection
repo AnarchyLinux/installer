@@ -1,11 +1,5 @@
 #!/usr/bin/env bash
 
-# Source config file and libraries
-source "${ANARCHY_CONFIG_FILE}"
-for library in "${ANARCHY_LIBRARIES_DIRECTORY}"/*.sh; do
-    source "${library}"
-done
-
 log "Testing connection"
 
 menu_title="${connection_op_msg}"
@@ -13,14 +7,14 @@ menu_title="${connection_op_msg}"
 TMP_DIR="$(mktemp -d)"
 
 (test_mirror=$(</etc/pacman.d/mirrorlist grep "^Server" | awk 'NR==1{print $3}' | sed 's/$.*//')
-test_pkg=$(curl -s https://www.archlinux.org/packages/extra/x86_64/bluez-utils/ | grep "<title>" | awk '{print $4"-"$5}')
+test_pkg="$(curl -s https://www.archlinux.org/packages/extra/x86_64/bluez-utils/ | grep "<title>" | awk '{print $4"-"$5}')"
 test_link="${test_mirror}extra/os/x86_64/${test_pkg}-x86_64.pkg.tar.xz"
 wget -4 --no-check-certificate --append-output="${TMP_DIR}"/wget.log -O /dev/null "${test_link}") &
 pid=$! pri=0.3 msg="\n${connection_load} \n\n \Z1> \Z2wget -O /dev/null test_link/test1Mb.db\Zn" load
 
 sed -i 's/\,/\./' "${TMP_DIR}"/wget.log
-connection_speed=$(tail "${TMP_DIR}"/wget.log | grep -oP '(?<=\().*(?=\))' | awk '{print $1}')
-connection_rate=$(tail "${TMP_DIR}"/wget.log | grep -oP '(?<=\().*(?=\))' | awk '{print $2}')
+connection_speed="$(tail "${TMP_DIR}"/wget.log | grep -oP '(?<=\().*(?=\))' | awk '{print $1}')"
+connection_rate="$(tail "${TMP_DIR}"/wget.log | grep -oP '(?<=\().*(?=\))' | awk '{print $2}')"
 
 if (lscpu | grep "max MHz" &>/dev/null); then
     cpu_mhz=$(lscpu | grep "CPU max MHz" | awk '{print $4}' | sed 's/\..*//')
@@ -52,4 +46,3 @@ log "Connection speed: ${connection_speed} ${connection_rate}"
 log "CPU speed (MHz): ${cpu_mhz}"
 
 rm "${TMP_DIR}"/wget.log &> /dev/null
-return 0

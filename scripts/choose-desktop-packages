@@ -3,7 +3,7 @@
 
 # Source config file and libraries
 source "${ANARCHY_CONFIG_FILE}"
-for library in "${ANARCHY_LIBRARIES_DIRECTORY}"/*.sh; do
+for library in "${ANARCHY_LIBRARIES_PATH}"/*.sh; do
     source "${library}"
 done
 
@@ -392,7 +392,7 @@ while (true); do
             if [[ "${graphics_driver}" == "${gr0}" ]]; then
                 pci_id=$(lspci -nn | grep "VGA" | egrep -o '\[.*\]' | awk '{print $NF}' | sed 's/.*://;s/]//')
 
-                if (<"${ANARCHY_DIRECTORY}"/etc/nvidia390.xx grep "${pci_id}" &>/dev/null); then
+                if (<"${ANARCHY_INSTALL_PATH}"/etc/nvidia390.xx grep "${pci_id}" &>/dev/null); then
                     if (dialog --yes-button "${yes}" --no-button "${no}" --yesno "\n${nvidia_390msg}" 10 60); then
                         if [[ "${kernel}" == "lts" ]]; then
                             GPU=('nvidia-390xx-lts')

@@ -17,7 +17,7 @@ set -o errtrace
 # Check if started as root
 if [[ ${UID} -ne 0 ]]; then
     echo "Error: compile.sh requires root privileges"
-    echo "       Use: sudo -u $USER ./compile.sh"
+    echo "       Use: sudo ./compile.sh"
     exit 1
 fi
 
@@ -349,29 +349,27 @@ function copy_config_files { # prev: build_conf
 
     echo -e "Adding console and locale config files to iso ..." | log
     # Copy over vconsole.conf (sets font at boot), locale.gen (enables locale(s) for font) & uvesafb.conf
-    arch-chroot "${squashfs}" ln -s "${squashfs}"/root/etc/vconsole.conf /etc/
-    arch-chroot "${squashfs}" ln -sf "${squashfs}"/root/etc/locale.gen /etc/
-    arch-chroot "${squashfs}" ln -s "${squashfs}"/root/scripts/anarchy /usr/bin/anarchy
+    arch-chroot "${squashfs}" ln -s /root/etc/vconsole.conf /etc/
+    arch-chroot "${squashfs}" ln -sf /root/etc/locale.gen /etc/
+    arch-chroot "${squashfs}" ln -s /root/scripts/anarchy /usr/bin/anarchy
     arch-chroot "${squashfs}" locale-gen
 
     # Copy over main Anarchy config and installer script, make them executable
     echo -e "Adding anarchy config and installer scripts to iso ..." | log
-    arch-chroot "${squashfs}" ln -s "${squashfs}"/root/etc/anarchy.conf /etc/
-    arch-chroot "${squashfs}" ln -sf "${squashfs}"/root/etc/pacman.conf /etc/
-    arch-chroot "${squashfs}" ln -s "${squashfs}"/root/extra/sysinfo /usr/bin/
-    arch-chroot "${squashfs}" ln -s "${squashfs}"/root/extra/iptest /usr/bin/
-    chmod +x "${squashfs}"/usr/bin/sysinfo "${squashfs}"/usr/bin/iptest
+    arch-chroot "${squashfs}" ln -s /root/etc/anarchy.conf /etc/
+    arch-chroot "${squashfs}" ln -sf /root/etc/pacman.conf /etc/
+    arch-chroot "${squashfs}" ln -s /root/extra/sysinfo /usr/bin/
+    arch-chroot "${squashfs}" ln -s /root/extra/iptest /usr/bin/
+    arch-chroot "${squashfs}" chmod +x /usr/bin/sysinfo /usr/bin/iptest /usr/bin/anarchy /root/scripts/*
 
     # Copy over extra files (dot files, desktop configurations, help file, issue file, hostname file)
     echo -e "Adding dot files and desktop configurations to iso ..." | log
-    arch-chroot "${squashfs}" ln -sf "${squashfs}"/root/extra/shellrc/.zshrc /root/
-    arch-chroot "${squashfs}" ln -s "${squashfs}"/root/extra/.help /root/
-    arch-chroot "${squashfs}" ln -s "${squashfs}"/root/extra/.dialogrc /root/
-    arch-chroot "${squashfs}" ln -sf "${squashfs}"/root/extra/shellrc/.zshrc /etc/zsh/zshrc
-    arch-chroot "${squashfs}" cat /root/extra/.helprc | tee -a "${squashfs}"/root/.zshrc
+    arch-chroot "${squashfs}" ln -sf /root/extra/shellrc/.zshrc /root/
+    arch-chroot "${squashfs}" ln -s /root/extra/.help /root/
+    arch-chroot "${squashfs}" ln -s /root/extra/.dialogrc /root/
+    arch-chroot "${squashfs}" ln -sf /root/extra/shellrc/.zshrc /etc/zsh/zshrc
     arch-chroot "${squashfs}" ln -sf /root/etc/hostname /etc/
     arch-chroot "${squashfs}" ln -s /root/etc/issue_cli /etc/
-    arch-chroot "${squashfs}" ln -s /root/boot/splash.png
 
     echo -e "Done adding files to iso"
     echo -e ""
@@ -380,7 +378,7 @@ function copy_config_files { # prev: build_conf
 function build_system { # prev: build_sys
     echo -e "Installing packages to new system ..." | log
     # Install fonts, fbterm, fetchmirrors etc.
-    pacman --root "${squashfs}" --cachedir "${squashfs}"/var/cache/pacman/pkg --noconfirm -Sy terminus-font acpi zsh-syntax-highlighting pacman-contrib
+    pacman --root "${squashfs}" --cachedir "${squashfs}"/var/cache/pacman/pkg --noconfirm --needed -Sy terminus-font acpi zsh-syntax-highlighting pacman-contrib git reflector
     pacman --root "${squashfs}" --cachedir "${squashfs}"/var/cache/pacman/pkg -Sl | awk '/\[installed\]$/ {print $1 "/" $2 "-" $3}' > "${custom_iso}"/arch/pkglist.x86_64.txt
     pacman --root "${squashfs}" --cachedir "${squashfs}"/var/cache/pacman/pkg --noconfirm -Scc
     rm -f "${squashfs}"/var/cache/pacman/pkg/*

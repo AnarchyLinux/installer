@@ -1,5 +1,5 @@
 # Defines a custom dialog based on system properties
-function dialog {
+dialog() {
     local sufficient_screen_size
     local uses_laptop
 
@@ -14,7 +14,8 @@ function dialog {
             backtitle="${backtitle} $(acpi)"
         fi
         # menu_title is the current menu's title
-        /usr/bin/dialog --colors --backtitle "${backtitle}" --title "${menu_title}" "$@"
+        /usr/bin/dialog --colors --backtitle "${backtitle}" \
+            --title "${menu_title}" "$@"
     else
         /usr/bin/dialog --colors --title "${anarchy_title}" "$@"
     fi

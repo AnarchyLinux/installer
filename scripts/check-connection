@@ -1,10 +1,4 @@
-#!/usr/bin/env bash
-
-# Source config file and libraries
-source "${ANARCHY_CONFIG_FILE}"
-for library in "${ANARCHY_LIBRARIES_DIRECTORY}"/*.sh; do
-    source "${library}"
-done
+#!/bin/sh
 
 log "Checking for a network connection"
 

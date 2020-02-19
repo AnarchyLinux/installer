@@ -1,5 +1,5 @@
-# A bash library used for logging
-function log() {
+# A library used for logging
+log() {
     local message="$1"
-    echo -e "[$(date "+%H:%M:%S")]: ${message}" >> "${LOG_FILE}"
+    echo "[$(date '+%H:%M:%S')]: ${message}" >> "${ANARCHY_LOG_FILE}"
 }

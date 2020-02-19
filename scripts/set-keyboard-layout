@@ -1,10 +1,4 @@
-#!/usr/bin/env bash
-
-# Source config file and libraries
-source "${ANARCHY_CONFIG_FILE}"
-for library in "${ANARCHY_LIBRARIES_DIRECTORY}"/*.sh; do
-    source "${library}"
-done
+#!/bin/sh
 
 log "Started keyboard layout selection"
 
@@ -31,12 +25,12 @@ while (true); do
     "uk"        "United Kingdom" \
     "${other}"  "${other-keymaps}" 3>&1 1>&2 2>&3)"
 
-    if [[ "${keyboard_layout}" = "${other}" ]]; then
+    if [ "${keyboard_layout}" = "${other}" ]; then
         keyboard_layout="$(dialog --ok-button "${ok}" \
             --cancel-button "${cancel}" --menu "${keys_msg}" 19 60 10 \
             "${KEYMAPS_LIST}" 3>&1 1>&2 2>&3)"
 
-        if [[ $? -eq 0 ]]; then
+        if [ $? -eq 0 ]; then
             break
         fi
     else
@@ -44,6 +38,6 @@ while (true); do
     fi
 done
 
-log "Selected keyboard layout: ${keyboard_layout}"
-localectl set-keymap "${keyboard_layout}" &> /dev/null
-return $?
+set_var 'keyboard_layout' "${keyboard_layout}"
+localectl set-keymap "${keyboard_layout}"
+log "Selected keyboard layout: \'${keyboard_layout}\'"

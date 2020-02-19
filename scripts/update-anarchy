@@ -9,7 +9,7 @@
 
 # Source config file and libraries
 source "${ANARCHY_CONFIG_FILE}"
-for library in "${ANARCHY_LIBRARIES_DIRECTORY}"/*.sh; do
+for library in "${ANARCHY_LIBRARIES_PATH}"/*.sh; do
     source "${library}"
 done
 
@@ -60,13 +60,13 @@ echo -e "${color_yellow}Extracting and moving files..."
 tar zxf "${tmp_dir}"/master.tar.gz -C "${tmp_dir}" &> /dev/null || exit 3
 tar zxf "${wallpaper_dir}"/master.tar.gz -C "${wallpaper_dir}" &> /dev/null || exit 3
 cp "${tmp_dir}"/installer-master/anarchy /usr/bin/anarchy || exit 4
-cp "${tmp_dir}"/installer-master/etc/anarchy.d/anarchy.conf "${ANARCHY_DIRECTORY}"/ || exit 4
-cp "${tmp_dir}"/installer-master/libs/* "${ANARCHY_LIBRARIES_DIRECTORY}"/ || exit 4
-cp "${tmp_dir}"/installer-master/scripts/* "${ANARCHY_SCRIPTS_DIRECTORY}"/ || exit 4
-cp "${tmp_dir}"/installer-master/lang/* "${ANARCHY_TRANSLATIONS_DIRECTORY}"/ || exit 4
-cp "${wallpaper_dir}"/brand-master/wallpapers/official/* "${ANARCHY_WALLPAPERS_DIRECTORY}"/ || exit 4
+cp "${tmp_dir}"/installer-master/etc/anarchy.d/anarchy.conf "${ANARCHY_INSTALL_PATH}"/ || exit 4
+cp "${tmp_dir}"/installer-master/libs/* "${ANARCHY_LIBRARIES_PATH}"/ || exit 4
+cp "${tmp_dir}"/installer-master/scripts/* "${ANARCHY_SCRIPTS_PATH}"/ || exit 4
+cp "${tmp_dir}"/installer-master/lang/* "${ANARCHY_TRANSLATIONS_PATH}"/ || exit 4
+cp "${wallpaper_dir}"/brand-master/wallpapers/official/* "${ANARCHY_WALLPAPERS_PATH}"/ || exit 4
 cp -f "${tmp_dir}"/installer-master/extra/sysinfo /installer-master/extra/iptest /usr/bin/ || exit 4
-cp -r "${tmp_dir}"/installer-master/extra/* "${ANARCHY_EXTRA_DIRECTORY}"/ || exit 4
+cp -r "${tmp_dir}"/installer-master/extra/* "${ANARCHY_EXTRA_PATH}"/ || exit 4
 
 log "Successfully updated Anarchy"
 echo -e "${color_green}Anarchy updated successfully${color_none}"

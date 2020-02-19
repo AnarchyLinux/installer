@@ -1,0 +1,58 @@
+#!/bin/sh
+
+# Get variables from config file
+use_vfat="$(get_var 'use_vfat')"
+is_hdd="$(get_var 'is_hdd')"
+enable_btrfs="$(get_var 'enable_btrfs')"
+
+if "${use_vfat}" ; then
+
+    log "Selecting filesystem"
+    filesystem="$(dialog --menu "${vfat_msg}" 11 65 1 \
+        "vfat"  "${fs7}" 3>&1 1>&2 2>&3)"
+
+    if [ $? -gt 0 ]; then
+        . partitioning-menu
+    fi
+
+    set_var 'vfat' 'false'
+else
+    if [ "${is_hdd}" -eq 0 ]; then
+        filesystem="$(dialog --nocancel --menu "${fs_msg}" 17 65 8 \
+            "ext4"      "${fs0}" \
+            "ext3"      "${fs1}" \
+            "ext2"      "${fs2}" \
+            "btrfs"     "${fs3}" \
+            "f2fs"      "${fs6}" \
+            "jfs"       "${fs4}" \
+            "reiserfs"  "${fs5}" \
+            "xfs"       "${fs8}" 3>&1 1>&2 2>&3)"
+    elif "${enable_btrfs}" ; then
+        filesystem="$(dialog --nocancel --menu "${fs_msg}" 16 65 7 \
+            "ext4"      "${fs0}" \
+            "ext3"      "${fs1}" \
+            "ext2"      "${fs2}" \
+            "btrfs"     "${fs3}" \
+            "jfs"       "${fs4}" \
+            "reiserfs"  "${fs5}" \
+            "xfs"       "${fs8}" 3>&1 1>&2 2>&3)"
+    else
+        filesystem="$(dialog --nocancel --menu "${fs_msg}" 15 65 6 \
+            "ext4"      "${fs0}" \
+            "ext3"      "${fs1}" \
+            "ext2"      "${fs2}" \
+            "jfs"       "${fs4}" \
+            "reiserfs"  "${fs5}" \
+            "xfs"       "${fs8}" 3>&1 1>&2 2>&3)"
+
+        set_var 'enable_btrfs' 'true'
+    fi
+fi
+
+if [ "${filesystem}" = "f2fs" ]; then
+    set_var 'enable_f2fs' 'true'
+elif [ "${filesystem}" = "btrfs" ]; then
+    set_var 'enable_btrfs' 'true'
+elif [ "${filesystem}" = "xfs" ]; then
+    set_var 'enable_xfs' 'true'
+fi
