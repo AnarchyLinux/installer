@@ -459,7 +459,7 @@ build_system() {
 
 configure_boot() {
     echo -e "Configuring boot ..." | log
-    arch_iso_label="$(<"${custom_iso}"/loader/entries/archiso-x86_64.conf awk 'NR=6{print $NF}' | sed 's/.*=//')"
+    arch_iso_label="$(<"${custom_iso}"/loader/entries/archiso-x86_64.conf awk 'NR==6{print $NF}' | sed 's/.*=//')"
     arch_iso_hex="$(<<<"${arch_iso_label}" xxd -p)"
     anarchy_iso_hex="$(<<<"${anarchy_iso_label}" xxd -p)"
     cp "${working_dir}"/boot/splash.png "${custom_iso}"/arch/boot/syslinux/
