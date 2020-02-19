@@ -21,7 +21,7 @@ out_dir="${working_dir}"/out # Directory for generated ISOs
 
 # Define colors depending on script arguments
 colors() {
-    if [ "${show_color}" = 1 ]; then
+    if [ "${show_color}" = true ]; then
         color_blank='\e[0m'
         color_green='\e[1;32m'
         color_red='\e[1;31m'
@@ -143,7 +143,7 @@ check_dependencies() {
 
     if [ "${#missing_deps[@]}" -ne 0 ]; then
         echo -e "Missing dependencies: ${missing_deps[*]}" | log
-        if [ "${user_input}" = 1 ]; then
+        if [ "${user_input}" = true ]; then
             echo -e "Install them now? [y/N]: "
             local input
             read -r input
@@ -153,7 +153,7 @@ check_dependencies() {
                     echo -e "Chose to install dependencies" | log
                     for pkg in "${missing_deps[@]}"; do
                         echo -e "Installing ${pkg} ..." | log
-                        if [ "${show_color}" = 1 ]; then
+                        if [ "${show_color}" = true ]; then
                             sudo pacman --noconfirm -Sy "${pkg}"
                         else
                             sudo pacman --noconfirm --color never -Sy "${pkg}"
@@ -170,7 +170,7 @@ check_dependencies() {
         else
             for pkg in "${missing_deps[@]}"; do
                 echo -e "Installing ${pkg} ..." | log
-                if [ "${show_color}" = 1 ]; then
+                if [ "${show_color}" = true ]; then
                     sudo pacman --noconfirm -Sy "${pkg}"
                 else
                     sudo pacman --noconfirm --color never -Sy "${pkg}"
@@ -184,7 +184,7 @@ check_dependencies() {
 }
 
 update_arch_iso() {
-    update=0
+    update=false
 
     # Check for latest Arch Linux iso
     arch_iso_latest="$(curl -s https://www.archlinux.org/download/ | grep "Current Release" | awk '{print $3}' | sed -e 's/<.*//')"
@@ -196,7 +196,7 @@ update_arch_iso() {
     if [ "${iso_date}" != "${local_arch_iso}" ]; then
         if [ -z "${local_arch_iso}" ]; then
             echo -e "No Arch Linux image found under ${working_dir}" | log
-            if [ "${user_input}" = 1 ]; then
+            if [ "${user_input}" = "true" ]; then
                 echo -e "Download it? [y/N]: "
                 local input
                 read -r input
@@ -204,7 +204,7 @@ update_arch_iso() {
                 case "${input}" in
                     y|Y|yes|YES|Yes)
                         echo -e "Chose to download image" | log
-                        update=1
+                        update=true
                         ;;
                     *)
                     echo -e "Chose not to download image" | log
@@ -213,11 +213,11 @@ update_arch_iso() {
                     ;;
                 esac
             else
-                update=1
+                update=true
             fi
         else
             echo -e "Updated Arch Linux image available: ${arch_iso_latest}" | log
-            if [ "${user_input}" = 1 ]; then
+            if [ "${user_input}" = true ]; then
                 echo -e "Download it? [y/N]: "
                 local input
                 read -r input
@@ -226,7 +226,7 @@ update_arch_iso() {
                     y|Y|yes|YES|Yes)
                         echo -e "Chose to update image" | log
                         local_arch_checksum="$(ls "${working_dir}"/sha1sums.txt | tail -n1 | sed 's!.*/!!')"
-                        update=1
+                        update=true
                         ;;
                     *)
                     echo -e "Chose not to update image" | log
@@ -237,7 +237,7 @@ update_arch_iso() {
                 esac
             else
                 local_arch_checksum="$(ls "${working_dir}"/sha1sums.txt | tail -n1 | sed 's!.*/!!')"
-                update=1
+                update=true
             fi
         fi
 
@@ -258,18 +258,18 @@ update_arch_iso() {
 
 check_arch_iso() {
     echo -e "Comparing Arch Linux checksums ..." | log
-    checksum=0
+    checksum=false
     local_arch_checksum="$(ls "${working_dir}"/sha1sums.txt | tail -n1 | sed 's!.*/!!')"
 
     # Check if checksum exists
     if [ -e "${local_arch_checksum}" ]; then
         if [ "$(sha1sum --check --ignore-missing "${local_arch_checksum}")" ]; then
             echo -e "${local_arch_iso}: OK" | log
-            checksum=1
+            checksum=true
         fi
     else
         echo -e "No checksum found!" | log
-        if [ "${user_input}" = 1 ]; then
+        if [ "${user_input}" = true ]; then
             echo -e "Download it? [Y/n]: "
             local input
             read -r input
@@ -284,7 +284,7 @@ check_arch_iso() {
                 local_arch_checksum="$(ls "${working_dir}"/sha1sums.txt | tail -n1 | sed 's!.*/!!')"
                 if [ "$(sha1sum --check --ignore-missing "${local_arch_checksum}")" ]; then
                     echo -e "${local_arch_iso}: OK" | log
-                    checksum=1
+                    checksum=true
                 fi
                 ;;
             esac
@@ -294,14 +294,14 @@ check_arch_iso() {
             local_arch_checksum="$(ls "${working_dir}"/sha1sums.txt | tail -n1 | sed 's!.*/!!')"
             if [ "$(sha1sum --check --ignore-missing "${local_arch_checksum}")" ]; then
                 echo -e "${local_arch_iso}: OK" | log
-                checksum=1
+                checksum=true
             fi
         fi
     fi
 
-    if [ "${checksum}" = 0 ]; then
+    if [ "${checksum}" = false ]; then
         echo -e "Checksum did not match ISO file!" | log
-        if [ "${user_input}" = 1 ]; then
+        if [ "${user_input}" = true ]; then
             echo -e "Continue anyway? [y/N]: "
             local input
             read -r input
@@ -337,7 +337,7 @@ local_repo_builds() {
             wget -qO- "${aur_snapshot_link}/${pkg}.tar.gz" | tar xz -C /tmp
             cd /tmp/"${pkg}" || exit
 
-            if [ "${show_color}" = 1 ]; then
+            if [ "${show_color}" = true ]; then
                 makepkg -sif --noconfirm --nocheck
             else
                 makepkg -sif --noconfirm --nocheck --nocolor
@@ -517,7 +517,7 @@ generate_checksums() {
 uninstall_dependencies() {
     if [ "${#missing_deps[@]}" -ne 0 ]; then
         echo -e "Installed dependencies: ${missing_deps[*]}" | log
-        if [ "${user_input}" = 1 ]; then
+        if [ "${user_input}" = true ]; then
             echo -e "Uninstall these dependencies? [y/N]: "
             local input
             read -r input
@@ -590,8 +590,8 @@ trap command_log DEBUG
 trap cleanup ERR
 
 # Enable color output and user input by default
-show_color=1
-user_input=1
+show_color=true
+user_input=true
 
 while (true); do
     case "$1" in
@@ -600,11 +600,11 @@ while (true); do
             exit 0
         ;;
         -c|--no-color)
-            show_color=0
+            show_color=false
             shift
         ;;
         -i|--no-input)
-            user_input=0
+            user_input=false
             shift
         ;;
         -o|--output-dir)
