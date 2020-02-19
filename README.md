@@ -2,7 +2,7 @@
 <p align="center">
     <img src="https://user-images.githubusercontent.com/10241434/43771874-12ff77d8-9a73-11e8-99af-dc067a07dcd7.png" alt="Anarchy logo">
 </p>
-<h2 align="center">Anarchy Linux</h2>
+<h1 align="center">Anarchy Linux</h1>
 
 <p align="center">
     A simple and intuitive Arch Linux installer, following the KISS principle.
