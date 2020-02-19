@@ -15,7 +15,7 @@
 </p>
 </html>
 
-## About
+# About
 
 Anarchy Linux is an Arch Linux installer (**not a distro!**) providing a
 hassle-free installation and polished user experience.
@@ -28,9 +28,9 @@ a simple and pain free way to install Arch Linux.
 Install when you want it, where you want it, and however you want it.
 That is the Anarchy philosophy.
 
-## Installation
+# Installation
 
-### Verifying the checksum
+## Verifying the checksum
 
 It's recommended that you verify the checksum before using Anarchy.
 
@@ -55,16 +55,16 @@ of the image, not compare it with the generated checksums as well.
 So make sure to open the .sha256sum file in a text editor and compare the
 hashes yourself.
 
-### Flashing to a USB
+## Flashing to a USB
 
-#### Windows
+### Windows
 
 The best tool to flash Anarchy Linux to a USB is
 [Win32DiskImager](https://sourceforge.net/projects/win32diskimager/).
 Download it, choose the Anarchy image (ISO), select the wanted USB and
 press write.
 
-#### **Linux**
+### **Linux**
 
 The fastest method, although not the easiest for most beginners, is to use `dd`.
 
@@ -76,11 +76,11 @@ it was assigned, usually it's 'b'):
 You can also use GUI based software such as
 [Etcher](https://www.balena.io/etcher/).
 
-## Contributing
+# Contributing
 
 We're always looking for new contributors to the project,
 so check out our [contributing guide](CONTRIBUTING.md) for more info.
 
-## License
+# License
 
 The project is licensed under the [GNU GPLv2 license](LICENSE).
