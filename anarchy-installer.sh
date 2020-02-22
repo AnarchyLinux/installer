@@ -34,18 +34,22 @@
 ### Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 ################################################################
 
+ANARCHY_INSTALL_PATH="/root"
+
 init() {
-    if [[ $(basename "$0") = "anarchy" ]]; then
-        anarchy_directory="/usr/share/anarchy" # prev: aa_dir
-        anarchy_config="/etc/anarchy.conf" # prev: aa_conf
-        anarchy_scripts="/usr/lib/anarchy" # prev: aa_lib
-    else
-        anarchy_directory=$(dirname "$(readlink -f "$0")") # Anarchy git repository
-        anarchy_config="${anarchy_directory}"/etc/anarchy.conf
-        anarchy_scripts="${anarchy_directory}"/lib
-    fi
+    anarchy_directory="/usr/share/anarchy"
+    anarchy_config="/etc/anarchy.conf"
+    anarchy_scripts="/usr/lib/anarchy"
 
     trap '' 2
+
+    # Define log file
+    ANARCHY_LOG_FILE="${ANARCHY_LOG_PATH}/$(date '+%d-%m-%Y')".log
+
+    # Source libraries
+    for library in "${ANARCHY_LIBRARIES_PATH}"/*; do
+        . "${library}"
+    done
 
     for script in "${anarchy_scripts}"/*.sh ; do
         [[ -e "${script}" ]] || break
@@ -62,6 +66,7 @@ init() {
 }
 
 main() {
+    log "Starting installation"
     set_keys
     update_mirrors
     check_connection

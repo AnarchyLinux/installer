@@ -399,6 +399,11 @@ copy_config_files() {
     sudo mkdir "${squashfs}"/usr/lib/anarchy
     sudo cp "${working_dir}"/lib/* "${squashfs}"/usr/lib/anarchy/
 
+    # Copy over libraries
+    echo "Adding libraries to iso ..." | log
+    sudo mkdir -p "${squashfs}"/root/libraries
+    sudo cp "${working_dir}"/libraries/* "${squashfs}"/root/libraries/
+
     # Copy over extra files (dot files, desktop configurations, help file, issue file, hostname file)
     echo -e "Adding dot files and desktop configurations to iso ..." | log
     sudo rm "${squashfs}"/root/install.txt
