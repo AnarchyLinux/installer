@@ -16,11 +16,7 @@
 ###############################################################
 
 update_mirrors() {
-
     op_title="$welcome_op_msg"
-    if ! (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$intro_msg" 10 60) then
-        reset ; exit
-    fi
 
     for interface in $(ls /sys/class/net/ | grep -v "lo\|vir"); do
         if [[ $(cat /sys/class/net/$interface/carrier) = 1 ]]; then OnLine=true; fi
