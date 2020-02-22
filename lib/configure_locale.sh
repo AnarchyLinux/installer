@@ -16,7 +16,7 @@
 ###############################################################
 
 set_keys() {
-
+    log "Setting keyboard layout"
     op_title="$key_op_msg"
     while (true)
       do
@@ -46,13 +46,13 @@ set_keys() {
         fi
     done
 
+    log "Set keyboard layout: ${keyboard}"
     localectl set-keymap "$keyboard"
-    echo "$(date -u "+%F %H:%M") : Set keymap to: $keyboard" >> "$log"
-
+    #echo "$(date -u "+%F %H:%M") : Set keymap to: $keyboard" >> "$log"
 }
 
 set_locale() {
-
+    log "Setting locale"
     op_title="$locale_op_msg"
     while (true)
       do
@@ -87,13 +87,12 @@ set_locale() {
         fi
     done
 
-    echo "$(date -u "+%F %H:%M") : Set locale to: $LOCALE" >> "$log"
-
+    log "Set locale to: ${LOCALE}"
+    #echo "$(date -u "+%F %H:%M") : Set locale to: $LOCALE" >> "$log"
 }
 
-
 set_zone() {
-
+    log "Setting timezone"
     op_title="$zone_op_msg"
     while (true)
       do
@@ -119,8 +118,6 @@ set_zone() {
         fi
     done
 
-    echo "$(date -u "+%F %H:%M") : Set timezone to: $ZONE" >> "$log"
-
+    log "Set timezone to: ${ZONE}"
+    #echo "$(date -u "+%F %H:%M") : Set timezone to: $ZONE" >> "$log"
 }
-
-# vim: ai:ts=4:sw=4:et
