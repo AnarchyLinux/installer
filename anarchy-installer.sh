@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
+# Main installation script
 # Copyright (C) 2017 Dylan Schacht
-# Main script for the installation,
-# which calls all other scripts
 
+# Specify installation directory
 ANARCHY_INSTALL_PATH="/root"
 
 init() {
@@ -24,18 +24,23 @@ init() {
     done
 
     for script in "${anarchy_scripts}"/*.sh ; do
-        [[ -e "${script}" ]] || break
-        # shellcheck source=/usr/lib/anarchy/*.sh
-        source "${script}"
+        [ -e "${script}" ] || break
+        . "${script}"
     done
 
     language
-    # shellcheck source=/usr/share/anarchy/lang
-    source "${lang_file}" # /lib/language.sh:43-60
+    . "${lang_file}"
     export reload=true
 }
 
 main() {
+    # Check for root privileges
+    if [ "$(id -u)" -ne 0 ]; then
+        echo "Error: anarchy requires root privileges"
+        echo "       Use: sudo anarchy"
+        exit 1
+    fi
+
     log "Starting installation"
     set_keys
     update_mirrors
@@ -55,8 +60,8 @@ main() {
 
 dialog() {
     # If terminal height is more than 25 lines add a backtitle
-    if "${screen_h}" ; then # /etc/anarchy.conf:62
-        if "${LAPTOP}" ; then # /etc/anarchy.conf:75
+    if "${screen_h}" ; then
+        if "${LAPTOP}" ; then
             # Show battery life next to Anarchy heading
             backtitle="${backtitle} $(acpi)"
         fi
@@ -68,15 +73,7 @@ dialog() {
     fi
 }
 
-if [[ "${UID}" -ne "0" ]]; then
-    echo "Error: anarchy requires root privilege"
-    echo "       Use: sudo anarchy"
-    exit 1
-fi
-
 # Read optional arguments
-opt="$1" # /etc/anarchy.conf:105
+opt="$1"
 init
 main
-
-# vim: ai:ts=4:sw=4:et
