@@ -18,6 +18,7 @@
 update_mirrors() {
     op_title="$welcome_op_msg"
 
+    log "Checking for network interfaces"
     for interface in $(ls /sys/class/net/ | grep -v "lo\|vir"); do
         if [[ $(cat /sys/class/net/$interface/carrier) = 1 ]]; then OnLine=true; fi
     done
@@ -27,7 +28,7 @@ update_mirrors() {
       do
         if [ -n "$wifi_network" ]; then
             if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$wifi_msg0" 10 60) then
-                wifi-menu
+                wifi-menu -o
                 if [ "$?" -gt "0" ]; then
                     dialog --ok-button "$ok" --msgbox "\n$wifi_msg1" 10 60
                     echo "$(date -u "+%F %H:%M") : Failed to connect to wifi: Exit 1" >> "$log"
