@@ -31,10 +31,12 @@ update_mirrors() {
                 wifi-menu -o
                 if [ "$?" -gt "0" ]; then
                     dialog --ok-button "$ok" --msgbox "\n$wifi_msg1" 10 60
-                    echo "$(date -u "+%F %H:%M") : Failed to connect to wifi: Exit 1" >> "$log"
+                    log "Failed to connect to wifi"
+                    #echo "$(date -u "+%F %H:%M") : Failed to connect to wifi: Exit 1" >> "$log"
                     setterm -background black -store ; reset ; echo "$connect_err1" | sed 's/\\Z1//;s/\\Zn//' ; exit 1
                 else
-                    echo "$(date -u "+%F %H:%M") : Connected to: $wifi_network" >> "$log"
+                    log "Connected to network: ${wifi_network}"
+                    #echo "$(date -u "+%F %H:%M") : Connected to: $wifi_network" >> "$log"
                     OnLine=true
                 fi
             else
@@ -42,7 +44,8 @@ update_mirrors() {
             fi
         else
             dialog --ok-button "$ok" --msgbox "\n$connect_err0" 10 60
-            echo "$(date -u "+%F %H:%M") : Failed to connect to network: Exit 1" >> "$log"
+            log "Failed to connect to network"
+            #echo "$(date -u "+%F %H:%M") : Failed to connect to network: Exit 1" >> "$log"
             setterm -background black -store ; reset ; echo -e "$connect_err1" | sed 's/\\Z1//;s/\\Zn//' ;  exit 1
         fi
     done
@@ -56,6 +59,7 @@ update_mirrors() {
             "$cancel_mirrors" "->" 3>&1 1>&2 2>&3)
         if [ "$?" -gt "0" ] || [ "$edit_mirrors" == "$cancel_mirrors" ]; then
             if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$mirror_cancel_msg" 10 60) then
+                log "Not updating mirrorlist"
                 break
             fi
         fi
@@ -67,6 +71,7 @@ update_mirrors() {
                     $countries 3>&1 1>&2 2>&3)
                 if [ "$?" -gt "0" ]; then
                     if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$mirror_cancel_msg" 10 60) then
+                        log "Didn't update mirrorlist"
                         break
                     else
                         continue
@@ -102,8 +107,10 @@ update_mirrors() {
                     echo "$(date -u "+%F %H:%M") : Failed to connect to wifi: Exit 1" >> "$log"
                     setterm -background black -store ; reset ; echo -e "$connect_err1" | sed 's/\\Z1//;s/\\Zn//' ;  exit 1
                 fi
+                log "Updated mirrorlist"
                 break
             ;;
+
             "$manual_mirrors")
                 EDITOR=$(dialog --ok-button "$ok" --menu "$mirror_editor_msg" 10 60 3 \
                     "nano"	"$nano_msg" \
@@ -111,36 +118,45 @@ update_mirrors() {
                     "$cancel" "->" 3>&1 1>&2 2>&3)
                 if [ "$?" -gt "0" ] || [ "$EDITOR" == "$cancel" ]; then
                     if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$mirror_cancel_msg" 10 60) then
+                        log "Didn't update mirrorlist"
                         break
                     fi
                 else
+                    log "Manually updating mirrorlist"
                     $EDITOR /etc/pacman.d/mirrorlist
+                    log "Finished manually updating mirrorlist"
                     break
                 fi
             ;;
         esac
     done
-
 }
 
 check_connection() {
-
     op_title="$connection_op_msg"
+
+    log "Testing connection"
+
     (test_mirror=$(</etc/pacman.d/mirrorlist grep "^Server" | awk 'NR==1{print $3}' | sed 's/$.*//')
     test_pkg=$(curl -s https://www.archlinux.org/packages/extra/x86_64/bluez-utils/ | grep "<title>" | awk '{print $4"-"$5}')
     test_link="${test_mirror}extra/os/x86_64/${test_pkg}-x86_64.pkg.tar.xz"
+
     wget -4 --no-check-certificate --append-output=/tmp/wget.log -O /dev/null "${test_link}") &
     pid=$! pri=0.3 msg="\n$connection_load \n\n \Z1> \Z2wget -O /dev/null test_link/test1Mb.db\Zn" load
 
     sed -i 's/\,/\./' /tmp/wget.log
     connection_speed=$(tail /tmp/wget.log | grep -oP '(?<=\().*(?=\))' | awk '{print $1}')
+    log "Detected connection speed is: ${connection_speed}"
     connection_rate=$(tail /tmp/wget.log | grep -oP '(?<=\().*(?=\))' | awk '{print $2}')
+    log "Detected connection rate is: ${connection_rate}"
 
     if (lscpu | grep "max MHz" &>/dev/null); then
         cpu_mhz=$(lscpu | grep "CPU max MHz" | awk '{print $4}' | sed 's/\..*//')
     else
         cpu_mhz=$(lscpu | grep "CPU MHz" | awk '{print $3}' | sed 's/\..*//')
     fi
+
+    log "Detected CPU clock speed: ${cpu_mhz}"
 
     case "$cpu_mhz" in
         [0-9][0-9][0-9])
@@ -158,10 +174,7 @@ check_connection() {
     esac
 
     export connection_speed connection_rate cpu_sleep
-    echo "$(date -u "+%F %H:%M") : Ranked connection speed: $connection_speed $connection_rate" >> "$log"
-    echo "$(date -u "+%F %H:%M") : Clocked CPU MHz: $cpu_mhz" >> "$log"
+    #echo "$(date -u "+%F %H:%M") : Ranked connection speed: $connection_speed $connection_rate" >> "$log"
+    #echo "$(date -u "+%F %H:%M") : Clocked CPU MHz: $cpu_mhz" >> "$log"
     rm /tmp/wget.log &> /dev/null
-
 }
-
-# vim: ai:ts=4:sw=4:et
