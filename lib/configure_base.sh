@@ -305,21 +305,19 @@ add_software() {
             add_soft=true
             if ! "$skip" ; then
                 software_menu=$(dialog --extra-button --extra-label "$install" --ok-button "$select" --cancel-button "$cancel" --menu "$software_type_msg" 21 63 12 \
-                    "$audio"	   "$audio_msg" \
-                    "$database"	   "$database_msg" \
-                    "$fonts"	   "$fonts_msg" \
-                    "$games"	   "$games_msg" \
-                    "$graphic"	   "$graphic_msg" \
-                    "$internet"	   "$internet_msg" \
-                    "$multimedia"  "$multimedia_msg" \
-                    "$office"	   "$office_msg" \
-                    "$programming" "$program_msg" \
-                    "$terminal"	   "$terminal_msg" \
-                    "$text_editor" "$text_editor_msg" \
-                    "$servers"	   "$servers_msg" \
-                    "$util"		   "$util_msg" \
-                    "$extra_de"    "$extra_de_msg"  \
-                    "$extra_wm"    "$extra_wm_msg"  \
+                    "$audio"	"$audio_msg" \
+                    "$database"	"$database_msg" \
+                    "$fonts"	"$fonts_msg" \
+                    "$games"	"$games_msg" \
+                    "$graphic"	"$graphic_msg" \
+                    "$internet"	"$internet_msg" \
+                    "$multimedia"	"$multimedia_msg" \
+                    "$office"	"$office_msg" \
+                    "$programming"	"$program_msg" \
+                    "$terminal"	"$terminal_msg" \
+                    "$text_editor"	"$text_editor_msg" \
+                    "$servers"	"$servers_msg" \
+                    "$util"		"$util_msg" \
                     "$done_msg"	"$install \Z2============>\Zn" 3>&1 1>&2 2>&3)
                 ex="$?"
 
@@ -443,7 +441,7 @@ add_software() {
                             else
                                 log "Added steam runtime"
                                 software+=" steam-native-runtime ttf-liberation"
-                                cat /etc/pacman.conf | sed -e "/\[multilib\]/,/Include/"'s/^#//' | cat > /etc/pacman.conf.bak
+                                tac /etc/pacman.conf | sed -e '0,/#\[multilib\]/ s/#\[multilib\]/\[multilib\]/;0,/#Include/ s/#Include/Include/' | tac > /etc/pacman.conf.bak
                                 cp /etc/pacman.conf.bak /etc/pacman.conf
 
                                 if (<<<"$GPU" grep "nvidia" &>/dev/null); then
@@ -659,7 +657,6 @@ add_software() {
                 ;;
                 "$util")
                     software=$(dialog --ok-button "$ok" --cancel-button "$cancel" --checklist "$software_msg1" 20 65 10 \
-                        "arch-wiki-cli"	"$sys7" OFF \
                         "bc"			"$sys25" OFF \
                         "bleachbit"		"$sys22" OFF \
                         "conky"			"$sys2" OFF \
@@ -676,6 +673,7 @@ add_software() {
                         "ntfs-3g"		"$sys28" OFF \
                         "pcmanfm"		"$sys21" OFF \
                         "ranger"		"$sys20" OFF \
+                        "screenfetch"		"$sys12" OFF \
                         "scrot"			"$sys13" OFF \
                         "tuxcmd"		"$sys15" OFF \
                         "virtualbox"		"$sys16" OFF \
@@ -687,114 +685,7 @@ add_software() {
                     fi
                     log "Added optional utilities: ${software}"
                 ;;
-                "$extra_wm")
-                    software=$(dialog --ok-button "$ok" --cancel-button "$cancel" --checklist "$software_msg1" 20 65 10 \
-                        "awesome"		    "$de9" OFF \
-                        "bspwm"			    "$de13" OFF \
-                        "enlightenment"		"$de7" OFF \
-                        "fluxbox"			"$de11" OFF \
-                        "i3"	        	"$de10" OFF \
-                        "openbox"		    "$de8" OFF \
-                        "sway"		        "$de21" OFF \
-                        "qtile"			    "$de25" OFF \
-                        "xmonad"            "$de16" OFF 3>&1 1>&2 2>&3)
-                    if [ "$?" -gt "0" ]; then
-                        add_soft=false
-                    fi
 
-                    if (<<<"$software" grep "xmonad") then
-                        if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$extra_msg5" 10 60) then
-                            software+=" xmonad-contrib"
-                        fi
-                    fi
-
-                    if (<<<"$software" grep "enlightenment") then
-                        software+=" terminology"
-                    fi
-
-                    if (<<<"$software" grep "bspwm") then
-                        software+=" sxhkd"
-                    fi
-
-                ;;
-                "$extra_de")
-                    software=$(dialog --ok-button "$ok" --cancel-button "$cancel" --checklist "$software_msg1" 20 65 10 \
-                        "budgie"	    	"$de17" OFF \
-                        "cinnamon"	        "$de5" OFF \
-                        "deepin"	    	"$de14" OFF \
-                        "gnome"			    "$de4" OFF \
-                        "gnome-flashback"   "$de19" OFF \
-                        "KDE plasma"    	"$de6" OFF \
-                        "lxde"		        "$de2" OFF \
-                        "lxqt"			    "$de3" OFF \
-                        "mate"	    		"$de1" OFF \
-                        "xfce4"		    	"$de0" OFF 3>&1 1>&2 2>&3)
-                    if [ "$?" -gt "0" ]; then
-                        add_soft=false
-                    fi
-
-                    if (<<<"$software" grep "xfce4") then
-                        if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$extra_msg0" 10 60) then
-                            software+=" xfce4-goodies"
-                        fi
-                    fi
-
-                    if (<<<"$software" grep "gnome") then
-                        if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$extra_msg1" 10 60) then
-                            software+=" gnome-extra"
-                        fi
-                    fi
-
-                    if (<<<"$software" grep "gnome-flashback") then
-                        if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$extra_msg1" 10 60) then
-                            software+=" gnome-backgrounds gnome-control-center gnome-screensaver gnome-applets sensors-applet"
-                        fi
-                    fi
-
-                    if (<<<"$software" grep "mate") then
-                        if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$extra_msg2" 10 60) then
-                            software+=" mate-extra gtk-engine-murrine"
-                        else
-                            software+=" gtk-engine-murrine"
-                        fi
-                    fi
-
-                    if (<<<"$software" grep "deepin") then
-                        if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$extra_msg4" 10 60) then
-                            software+=" deepin-extra $kernel-headers"
-                        fi
-                    fi
-
-                    if (<<<"$software" grep "cinnamon") then
-                        software+=" cinnamon-translations gnome-terminal file-roller p7zip zip unrar"
-                    fi
-
-                    if (<<<"$software" grep "lxde") then
-                        if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$gtk3_var" 10 60) then
-                            software+="lxde-gtk3 "
-                        fi
-                    fi
-
-                    if (<<<"$software" grep "lxqt") then
-                        software+=" oxygen-icons breeze-icons"
-                    fi
-
-                    if (<<<"$software" grep "budgie") then
-                        software=$(<<<"$software" sed 's/budgie/budgie-desktop arc-icon-theme arc-gtk-theme elementary-icon-theme/')
-                    fi
-
-                    if (<<<"$software" grep "KDE") then
-                        if (dialog --defaultno --yes-button "$yes" --no-button "$no" --yesno "\n$extra_msg3" 10 60) then
-                            software=$(<<<"$software" sed 's/KDE plasma/plasma-desktop konsole dolphin plasma-nm plasma-pa libxshmfence kscreen/')
-                            if "$LAPTOP" ; then
-                                software+=" powerdevil"
-                            fi
-                        else
-                            software=$(<<<"$software" sed 's/KDE plasma/plasma ark aspell-en cdrdao clementine dolphin dolphin-plugins ffmpegthumbs gwenview k3b kate kcalc kdialog kfind kdeconnect kdegraphics-thumbnailers kdenetwork-filesharing kdesu kdelibs4support kipi-plugins khelpcenter konsole kwalletmanager okular spectacle transmission-qt krita kolourpaint korganizer knetattach falkon kdenlive/')
-                        fi
-                        software=$(<<<"$software" sed 's/KDE plasma/plasma-desktop konsole dolphin plasma-nm plasma-pa libxshmfence kscreen/')
-                    fi
-                ;;
                 "$done_msg")
                     if [ -z "$final_software" ]; then
                         if (dialog --yes-button "$yes" --no-button "$no" --defaultno --yesno "\n$software_warn_msg" 10 60) then
