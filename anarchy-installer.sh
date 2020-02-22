@@ -1,38 +1,7 @@
 #!/usr/bin/env bash
+# Copyright (C) 2017 Dylan Schacht
 # Main script for the installation,
 # which calls all other scripts
-
-# Disable warning about variables not being assigned (since they are in other files)
-# shellcheck disable=SC2154
-
-###############################################################
-### Anarchy Linux Install Script
-###
-### Copyright (C) 2017 Dylan Schacht
-###
-### By: Dylan Schacht (deadhead)
-### Email: deadhead3492@gmail.com
-### Webpage: https://anarchylinux.org
-###
-### Any questions, comments, or bug reports may be sent to above
-### email address. Enjoy, and keep on using Arch.
-###
-### License: GPL v2.0
-###
-### This program is free software; you can redistribute it and/or
-### modify it under the terms of the GNU General Public License
-### as published by the Free Software Foundation; either version 2
-### of the License, or (at your option) any later version.
-###
-### This program is distributed in the hope that it will be useful,
-### but WITHOUT ANY WARRANTY; without even the implied warranty of
-### MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-### GNU General Public License for more details.
-###
-### You should have received a copy of the GNU General Public License
-### along with this program; if not, write to the Free Software
-### Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-################################################################
 
 ANARCHY_INSTALL_PATH="/root"
 
@@ -43,8 +12,11 @@ init() {
 
     trap '' 2
 
+    # Source the config file
+    . "${anarchy_config}"
+
     # Define log file
-    ANARCHY_LOG_FILE="${ANARCHY_LOG_PATH}/$(date '+%d-%m-%Y')".log
+    ANARCHY_LOG_FILE="${ANARCHY_LOG_PATH}/anarchy-$(date '+%Y-%m-%d')".log
 
     # Source libraries
     for library in "${ANARCHY_LIBRARIES_PATH}"/*; do
@@ -57,8 +29,6 @@ init() {
         source "${script}"
     done
 
-    # shellcheck source=/etc/anarchy.conf
-    source "${anarchy_config}"
     language
     # shellcheck source=/usr/share/anarchy/lang
     source "${lang_file}" # /lib/language.sh:43-60
