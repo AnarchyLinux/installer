@@ -16,14 +16,17 @@
 ###############################################################
 
 grub_config() {
+    log "Configuring grub"
 
     if "$crypted" ; then
+        log "Enabled encryption"
         sed -i 's!quiet!cryptdevice=/dev/lvm/lvroot:root root=/dev/mapper/root!' "$ARCH"/etc/default/grub
     else
         sed -i 's/quiet//' "$ARCH"/etc/default/grub
     fi
 
     if "$drm" ; then
+        log "Enabled nvidia drm modeset"
         sed -i '/GRUB_CMDLINE_LINUX_DEFAULT=/ s/.$/ nvidia-drm.modeset=1"/;s/" /"/' "$ARCH"/etc/default/grub
     fi
 
@@ -43,9 +46,11 @@ grub_config() {
     arch-chroot "$ARCH" grub-mkconfig -o /boot/grub/grub.cfg &> /dev/null &
     pid=$! pri=0.1 msg="\n$grub_load2 \n\n \Z1> \Z2grub-mkconfig -o /boot/grub/grub.cfg\Zn" load
 
+    log "Finished configuring grub"
 }
 
 syslinux_config() {
+    log "Started syslinux config"
 
     if "$UEFI" ; then
         esp_part_int=$(<<<"$esp_part" grep -o "[0-9]")
@@ -74,12 +79,14 @@ syslinux_config() {
         pid=$! pri=0.1 msg="\n$syslinux_load \n\n \Z1> \Z2syslinux install efi mode...\Zn" load
 
         if "$crypted" ; then
+            log "Enabled encryption"
             sed -i "s|APPEND.*$|APPEND root=/dev/mapper/root cryptdevice=/dev/lvm/lvroot:root rw|" ${ARCH}${esp_mnt}/EFI/syslinux/syslinux.cfg
         else
             sed -i "s|APPEND.*$|APPEND root=/dev/$ROOT|" ${ARCH}${esp_mnt}/EFI/syslinux/syslinux.cfg
         fi
 
         if "$drm" ; then
+            log "Enabled nvidia drm modeset"
             sed -i '/APPEND/ s/$/ nvidia-drm.modeset=1/' ${ARCH}${esp_mnt}/EFI/syslinux/syslinux.cfg
         fi
 
@@ -104,19 +111,23 @@ syslinux_config() {
         fi
 
         if "$crypted" ; then
+            log "Enabled encryption"
             sed -i "s|APPEND.*$|APPEND root=/dev/mapper/root cryptdevice=/dev/lvm/lvroot:root rw|" "$ARCH"/boot/syslinux/syslinux.cfg
         else
             sed -i "s|APPEND.*$|APPEND root=/dev/$ROOT|" "$ARCH"/boot/syslinux/syslinux.cfg
         fi
 
         if "$drm" ; then
+            log "Enabled nvidia drm modeset"
             sed -i '/APPEND/ s/$/ nvidia-drm.modeset=1/' ${ARCH}/boot/syslinux/syslinux.cfg
         fi
     fi
 
+    log "Finished syslinux config"
 }
 
 systemd_config() {
+    log "Configuring systemd-boot"
 
     esp_mnt=$(<<<$esp_mnt sed "s!$ARCH!!")
     (arch-chroot "$ARCH" bootctl --path="$esp_mnt" install
@@ -135,18 +146,22 @@ systemd_config() {
     fi
 
     if "$crypted" ; then
+        log "Enabled encryption"
         echo "options		cryptdevice=/dev/lvm/lvroot:root root=/dev/mapper/root quiet rw" >> ${ARCH}${esp_mnt}/loader/entries/arch.conf
     else
         echo "options		root=PARTUUID=$(blkid -s PARTUUID -o value $(df | grep -m1 "$ARCH" | awk '{print $1}')) rw" >> ${ARCH}${esp_mnt}/loader/entries/arch.conf
     fi
 
     if "$drm" ; then
+        log "Enabled nvidia drm modeset"
         sed -i '/options/ s/$/ nvidia-drm.modeset=1/' ${ARCH}${esp_mnt}/loader/entries/arch.conf
     fi
 
+    log "Finished configuring systemd-boot"
 }
 
 efistub_config() {
+    log "Configuring efistub"
 
     initramfs="initramfs-linux.img"
     if [ "$kernel" == "linux-lts" ]; then
@@ -159,17 +174,18 @@ efistub_config() {
 
     efi_root="root=/dev/$ROOT"
     if "$crypted" ; then
+        log "Enabled encryption"
         efi_root="cryptdevice=/dev/lvm/lvroot:root root=/dev/mapper/root"
     fi
 
     efi_drm=""
     if "$drm" ; then
+        log "Enabled nvidia drm modeset"
         efi_drm="nvidia-drm.modeset=1"
     fi
 
     # -p: boot partition number (is always "1")
     efibootmgr -d /dev/$DRIVE -p 1 -c -L "Arch Linux" -l \vmlinuz-linux -u "$efi_root rw initrd=/$initramfs $drm"
 
+    log "Finished configuring efistub"
 }
-
-# vim: ai:ts=4:sw=4:et
