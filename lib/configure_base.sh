@@ -16,37 +16,44 @@
 ###############################################################
 
 install_options() {
-
     op_title="$install_op_msg"
-        while (true) ; do
-                 install_opt=$(dialog --ok-button "$ok" --cancel-button "$cancel" --menu "$install_opt_msg" 16 80 5 \
-                         "Anarchy-Desktop"       "$install_opt1" \
-                         "Anarchy-Desktop-LTS"   "$install_opt2" \
-                         "Anarchy-Server"        "$install_opt3" \
-                         "Anarchy-Server-LTS"    "$install_opt4" \
-             "Anarchy-Advanced"      "$install_opt0" 3>&1 1>&2 2>&3)
-                 if [ "$?" -gt "0" ]; then
-                          if (dialog --defaultno --yes-button "$yes" --no-button "$no" --yesno "\n$exit_msg" 10 60) then
-                                  main_menu
-                          fi
-                 else
-                          break
-                 fi
-         done
 
-         case "$install_opt" in
-                 Anarchy-Advanced)       prepare_base
-                                         graphics
-                 ;;
-                 *)                      quick_install
-                 ;;
-         esac
+    log "Choosing installation option"
 
+    while (true) ; do
+             install_opt=$(dialog --ok-button "$ok" --cancel-button "$cancel" --menu "$install_opt_msg" 16 80 5 \
+                     "Anarchy-Desktop"       "$install_opt1" \
+                     "Anarchy-Desktop-LTS"   "$install_opt2" \
+                     "Anarchy-Server"        "$install_opt3" \
+                     "Anarchy-Server-LTS"    "$install_opt4" \
+                     "Anarchy-Advanced"      "$install_opt0" 3>&1 1>&2 2>&3)
+
+             if [ "$?" -gt 0 ]; then
+                      if (dialog --defaultno --yes-button "$yes" --no-button "$no" --yesno "\n$exit_msg" 10 60) then
+                              log "Exiting to main menu"
+                              main_menu
+                      fi
+             else
+                      break
+             fi
+     done
+
+     log "Chosen option: ${install_opt}"
+
+     case "$install_opt" in
+             Anarchy-Advanced)       prepare_base
+                                     graphics
+             ;;
+             *)                      quick_install
+             ;;
+     esac
 }
 
 prepare_base() {
-
     op_title="$install_op_msg"
+
+    log "Choosing advanced option"
+
     while (true)
       do
         install_menu=$(dialog --ok-button "$ok" --cancel-button "$cancel" --menu "$install_type_msg" 17 69 8 \
@@ -60,12 +67,15 @@ prepare_base() {
             "Arch-Linux-Zen-Devel"		"$zen_msg1" 3>&1 1>&2 2>&3)
         if [ "$?" -gt "0" ]; then
             if (dialog --defaultno --yes-button "$yes" --no-button "$no" --yesno "\n$exit_msg" 10 60) then
+                log "Exiting to main menu"
                 main_menu
             fi
         else
             break
         fi
     done
+
+    log "Chosen base: ${install_menu}"
 
     case "$install_menu" in
         "Arch-Linux-Base")
@@ -94,6 +104,8 @@ prepare_base() {
         ;;
     esac
 
+    log "Choosing shell"
+
     while (true)
       do
         shell=$(dialog --ok-button "$ok" --cancel-button "$cancel" --menu "$shell_msg" 16 64 6 \
@@ -105,9 +117,11 @@ prepare_base() {
             "zsh"	"$shell4" 3>&1 1>&2 2>&3)
         if [ "$?" -gt "0" ]; then
             if (dialog --defaultno --yes-button "$yes" --no-button "$no" --yesno "\n$exit_msg" 10 60) then
+                log "Exiting to main menu"
                 main_menu
             fi
         else
+            log "Chose shell: ${shell}"
             case "$shell" in
                 bash) sh="/bin/bash" shell="bash-completion"
                 ;;
@@ -142,9 +156,11 @@ prepare_base() {
         fi
     done
 
+    log "Choosing bootloader"
     while (true)
       do
         if "$UEFI" ; then
+            log "UEFI is available"
             bootloader=$(dialog --ok-button "$ok" --cancel-button "$cancel" --menu "$loader_type_msg" 13 64 4 \
                 "grub"			"$loader_msg" \
                 "syslinux"		"$loader_msg1" \
@@ -153,6 +169,7 @@ prepare_base() {
                 "$none" "-" 3>&1 1>&2 2>&3)
             ex="$?"
         else
+            log "UEFI is not available"
             bootloader=$(dialog --ok-button "$ok" --cancel-button "$cancel" --menu "$loader_type_msg" 12 64 3 \
                 "grub"			"$loader_msg" \
                 "syslinux"		"$loader_msg1" \
@@ -162,8 +179,10 @@ prepare_base() {
 
         if [ "$ex" -gt "0" ]; then
             if (dialog --defaultno --yes-button "$yes" --no-button "$no" --yesno "\n$exit_msg" 10 60) then
+                log "Exiting to main menu"
                 main_menu
             fi
+        log "Chosen bootloader: ${bootloader}"
         elif [ "$bootloader" == "systemd-boot" ]; then
             break
         elif [ "$bootloader" == "efistub" ]; then
@@ -200,6 +219,7 @@ prepare_base() {
         fi
     done
 
+    log "Choosing network utilities"
     while (true)
       do
         net_util=$(dialog --ok-button "$ok" --cancel-button "$cancel" --menu "$wifi_util_msg" 13 64 3 \
@@ -209,9 +229,11 @@ prepare_base() {
 
         if [ "$?" -gt "0" ]; then
             if (dialog --defaultno --yes-button "$yes" --no-button "$no" --yesno "\n$exit_msg" 10 60) then
+                log "Exiting to main menu"
                 main_menu
             fi
         else
+            log "Chosen network utility: ${net_util}"
             if [ "$net_util" == "netctl" ] || [ "$net_util" == "networkmanager" ]; then
                 base_install+="$net_util dialog " enable_nm=true
             fi
@@ -221,38 +243,48 @@ prepare_base() {
 
     if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n\n$multilib_msg" 11 60) then
         multilib=true
-        echo "$(date -u "+%F %H:%M") : Include multilib" >> "$log"
+        log "Chose to enable multilib"
+        #echo "$(date -u "+%F %H:%M") : Include multilib" >> "$log"
     fi
 
     if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n\n$dhcp_msg" 11 60) then
         dhcp=true
-        echo "$(date -u "+%F %H:%M") : Enable dhcp" >> "$log"
+        log "Chose to enable dhcp"
+        #echo "$(date -u "+%F %H:%M") : Enable dhcp" >> "$log"
     fi
 
     if "$wifi" ; then
+        log "Wifi is available"
         base_install+="wireless_tools wpa_supplicant "
     else
+        log "Wifi is not available"
         if (dialog --defaultno --yes-button "$yes" --no-button "$no" --yesno "\n$wifi_option_msg" 10 60) then
+            log "Chose to install wireless utilities"
             base_install+="wireless_tools wpa_supplicant "
         fi
     fi
 
     if "$bluetooth" ; then
+        log "Bluetooth is available"
         if (dialog --defaultno --yes-button "$yes" --no-button "$no" --yesno "\n$bluetooth_msg" 10 60) then
+            log "Chose to install bluetooth utilities"
             base_install+="bluez bluez-utils pulseaudio-bluetooth "
             enable_bt=true
         fi
     fi
 
     if (dialog --defaultno --yes-button "$yes" --no-button "$no" --yesno "\n$pppoe_msg" 10 60) then
+        log "Chose to install pppoe utilities"
         base_install+="rp-pppoe "
     fi
 
     if (dialog --defaultno --yes-button "$yes" --no-button "$no" --yesno "\n$os_prober_msg" 10 60) then
+        log "Chose to install OS prober"
         base_install+="os-prober "
     fi
 
     if "$enable_f2fs" ; then
+        log "Added f2fs tools"
         base_install+="f2fs-tools "
     fi
 
@@ -263,8 +295,8 @@ prepare_base() {
 }
 
 add_software() {
-
     op_title="$software_op_msg"
+
     if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$software_msg0" 10 60) then
 
         while (true)
@@ -293,8 +325,10 @@ add_software() {
 
                 if [ "$ex" -eq "1" ]; then
                     if (dialog --yes-button "$yes" --no-button "$no" --defaultno --yesno "\n$software_warn_msg" 10 60) then
+                        log "Finished adding software"
                         break
                     else
+                        log "Didn't add optional software"
                         add_soft=false
                     fi
                 elif [ "$ex" -eq "3" ]; then
@@ -324,6 +358,7 @@ add_software() {
                     if [ "$?" -gt "0" ]; then
                         add_soft=false
                     fi
+                    log "Added optional audio software: ${software}"
                 ;;
                 "$database")
                     software=$(dialog --ok-button "$ok" --cancel-button "$cancel" --checklist "$software_msg1" 20 63 10 \
@@ -338,6 +373,7 @@ add_software() {
                     if [ "$?" -gt "0" ]; then
                         add_soft=false
                     fi
+                    log "Added optional database software: ${software}"
                 ;;
                 "$internet")
                     software=$(dialog --ok-button "$ok" --cancel-button "$cancel" --checklist "$software_msg1" 20 63 10 \
@@ -357,12 +393,15 @@ add_software() {
                     if [ "$?" -gt "0" ]; then
                         add_soft=false
                     fi
+                    log "Added optional internet software: ${software}"
 
                     if (<<<"$software" grep "firefox" &>/dev/null) && [ -n "$bro" ]; then
+                        log "Added firefox language package: firefox-i18n-${bro}"
                         software+=" firefox-i18n-$bro"
                     fi
 
                     if (<<<"$software" grep "thunderbird" &>/dev/null) && [ -n "$bro" ] && [ "$bro" != "lv" ]; then
+                            log "Added thunderbird language package: thunderbird-i18n-${bro}"
                             software+=" thunderbird-i18n-$bro"
                     fi
                 ;;
@@ -373,6 +412,7 @@ add_software() {
                     if [ "$?" -gt "0" ]; then
                         add_soft=false
                     fi
+                    log "Added optional fonts: ${software}"
                 ;;
                 "$games")
                     software=$(dialog --ok-button "$ok" --cancel-button "$cancel" --checklist "$software_msg1" 20 70 10 \
@@ -388,6 +428,7 @@ add_software() {
                     if [ "$?" -gt "0" ]; then
                         add_soft=false
                     fi
+                    log "Added optional games: ${software}"
 
                     if (<<<"$software" grep "steam" &>/dev/null); then
                         while (true)
@@ -400,11 +441,13 @@ add_software() {
                                     break
                                 fi
                             else
+                                log "Added steam runtime"
                                 software+=" steam-native-runtime ttf-liberation"
                                 cat /etc/pacman.conf | sed -e "/\[multilib\]/,/Include/"'s/^#//' | cat > /etc/pacman.conf.bak
                                 cp /etc/pacman.conf.bak /etc/pacman.conf
 
                                 if (<<<"$GPU" grep "nvidia" &>/dev/null); then
+                                    log "Added 32-bit nvidia utils"
                                     software+=" lib32-nvidia-utils"
                                 fi
                                 break
@@ -429,6 +472,7 @@ add_software() {
                     if [ "$?" -gt "0" ]; then
                         add_soft=false
                     fi
+                    log "Added optional graphics software: ${software}"
                 ;;
                 "$multimedia")
                     software=$(dialog --ok-button "$ok" --cancel-button "$cancel" --checklist "$software_msg1" 20 63 10 \
@@ -448,10 +492,14 @@ add_software() {
                     if [ "$?" -gt "0" ]; then
                         add_soft=false
                     fi
+                    log "Added optional multimedia software: ${software}"
+
                     if (<<<"$software" grep "vlc") then
                         software+=" qt5 phonon-qt5-vlc"
                     fi
+
                     if (<<<"$software" grep "multimedia-codecs") then
+                        log "Added multimedia codecs"
                         software=$(<<<"$software" sed 's/multimedia-codecs/gst-plugins-bad gst-plugins-base gst-plugins-good gst-plugins-ugly ffmpegthumbnailer gst-libav/')
                     fi
                 ;;
@@ -471,6 +519,7 @@ add_software() {
                     if [ "$?" -gt "0" ]; then
                         add_soft=false
                     fi
+                    log "Added optional office software: ${software}"
 
                     if (<<<"$software" grep "libreoffice-fresh" &>/dev/null) && [ -n "$lib" ]; then
                         software+=" libreoffice-fresh-$lib"
@@ -500,6 +549,7 @@ add_software() {
                     if [ "$?" -gt "0" ]; then
                         add_soft=false
                     fi
+                    log "Added optional programming packages: ${software}"
                 ;;
                 "$terminal")
                     software=$(dialog --ok-button "$ok" --cancel-button "$cancel" --checklist "$software_msg1" 20 63 10 \
@@ -520,6 +570,7 @@ add_software() {
                     if [ "$?" -gt "0" ]; then
                         add_soft=false
                     fi
+                    log "Added optional terminals: ${software}"
                 ;;
                 "$text_editor")
                     software=$(dialog --ok-button "$ok" --cancel-button "$cancel" --checklist "$software_msg1" 20 63 10 \
@@ -535,6 +586,7 @@ add_software() {
                     if [ "$?" -gt "0" ]; then
                         add_soft=false
                     fi
+                    log "Added optional text editors: ${software}"
                 ;;
                 "$servers")
                     software=$(dialog --ok-button "$ok" --cancel-button "$cancel" --checklist "$software_msg1" 20 63 10 \
@@ -554,6 +606,7 @@ add_software() {
                     if [ "$?" -gt "0" ]; then
                         add_soft=false
                     fi
+                    log "Added optional server software: ${software}"
 
                     if (grep "LAMP" <<<"$software" &>/dev/null); then
                         if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$apache_msg" 10 60) then
@@ -632,6 +685,7 @@ add_software() {
                     if [ "$?" -gt "0" ]; then
                         add_soft=false
                     fi
+                    log "Added optional utilities: ${software}"
                 ;;
                 "$extra_wm")
                     software=$(dialog --ok-button "$ok" --cancel-button "$cancel" --checklist "$software_msg1" 20 65 10 \
@@ -647,20 +701,20 @@ add_software() {
                     if [ "$?" -gt "0" ]; then
                         add_soft=false
                     fi
-                   
+
                     if (<<<"$software" grep "xmonad") then
                         if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$extra_msg5" 10 60) then
                             software+=" xmonad-contrib"
                         fi
                     fi
-                    
+
                     if (<<<"$software" grep "enlightenment") then
                         software+=" terminology"
                     fi
-                    
+
                     if (<<<"$software" grep "bspwm") then
                         software+=" sxhkd"
-                    fi                  
+                    fi
 
                 ;;
                 "$extra_de")
@@ -678,13 +732,13 @@ add_software() {
                     if [ "$?" -gt "0" ]; then
                         add_soft=false
                     fi
-                   
+
                     if (<<<"$software" grep "xfce4") then
                         if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$extra_msg0" 10 60) then
                             software+=" xfce4-goodies"
                         fi
                     fi
-                    
+
                     if (<<<"$software" grep "gnome") then
                         if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$extra_msg1" 10 60) then
                             software+=" gnome-extra"
@@ -704,23 +758,23 @@ add_software() {
                             software+=" gtk-engine-murrine"
                         fi
                     fi
-                    
+
                     if (<<<"$software" grep "deepin") then
                         if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$extra_msg4" 10 60) then
                             software+=" deepin-extra $kernel-headers"
                         fi
                     fi
-                    
+
                     if (<<<"$software" grep "cinnamon") then
                         software+=" cinnamon-translations gnome-terminal file-roller p7zip zip unrar"
                     fi
-                    
+
                     if (<<<"$software" grep "lxde") then
                         if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$gtk3_var" 10 60) then
                             software+="lxde-gtk3 "
                         fi
                     fi
-                    
+
                     if (<<<"$software" grep "lxqt") then
                         software+=" oxygen-icons breeze-icons"
                     fi
@@ -728,7 +782,7 @@ add_software() {
                     if (<<<"$software" grep "budgie") then
                         software=$(<<<"$software" sed 's/budgie/budgie-desktop arc-icon-theme arc-gtk-theme elementary-icon-theme/')
                     fi
-                    
+
                     if (<<<"$software" grep "KDE") then
                         if (dialog --defaultno --yes-button "$yes" --no-button "$no" --yesno "\n$extra_msg3" 10 60) then
                             software=$(<<<"$software" sed 's/KDE plasma/plasma-desktop konsole dolphin plasma-nm plasma-pa libxshmfence kscreen/')
@@ -753,7 +807,8 @@ add_software() {
                         download_list=$(echo "$download" |  sed -e 's/^[ \t]*//')
 
                         if ! "$menu_enter" ; then
-                            echo "$(date -u "+%F %H:%M") : Add software list: $download" >> "$log"
+                            log "Full software list: ${download}"
+                            #echo "$(date -u "+%F %H:%M") : Add software list: $download" >> "$log"
                             base_install+="$download_list "
                             unset final_software
                             break
@@ -775,7 +830,8 @@ add_software() {
                                 arch-chroot "${ARCH}" pacman --noconfirm -Sy archlinux-keyring &>>"${log}" &
                                 arch-chroot "$ARCH" pacman --noconfirm -Sy $(echo "$download") &>>"$log" &
                                 pid=$! pri=$(<<<"$down" sed 's/\..*$//') msg="\n$software_load_var" load_log
-                                echo "$(date -u "+%F %H:%M") : Finished installing software" >> "$log"
+                                log "Finished installing software"
+                                #echo "$(date -u "+%F %H:%M") : Finished installing software" >> "$log"
                                 unset final_software
                                 break
                             else
@@ -817,7 +873,4 @@ add_software() {
             fi
         done
     fi
-
 }
-
-# vim: ai:ts=4:sw=4:et
