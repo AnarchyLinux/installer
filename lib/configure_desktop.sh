@@ -33,6 +33,7 @@ graphics() {
 
         if [ -z "$de" ]; then
             if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$desktop_cancel_msg" 10 60) then
+                log "Didn't choose a DE"
                 return
             fi
         elif [ "$de" == "$customized_de" ]; then
@@ -44,6 +45,7 @@ graphics() {
                 "Anarchy-xfce4"       	"$de15" 3>&1 1>&2 2>&3)
 
             if [ -n "$de" ]; then
+                log "Chose DE: ${de}"
                 break
             fi
         elif [ "$de" == "$more_de" ]; then
@@ -60,6 +62,7 @@ graphics() {
                 "xfce4"         	"$de0" OFF 3>&1 1>&2 2>&3)
 
             if [ -n "$de" ]; then
+                log "Chose DE: ${de}"
                 break
             fi
         elif [ "$de" == "$more_wm" ]; then
@@ -75,8 +78,9 @@ graphics() {
                 "xmonad"                "$de16" OFF 3>&1 1>&2 2>&3)
 
             if [ -n "$de" ]; then
-                                 break
-                         fi
+                log "Chose DE: ${de}"
+                break
+            fi
         else
             break
         fi
@@ -220,6 +224,7 @@ graphics() {
       do
         if "$VM" ; then
             case "$virt" in
+                log "Chose VM: ${virt}"
                 vbox)	dialog --ok-button "$ok" --msgbox "\n$vbox_msg" 10 60
                         GPU="virtualbox-guest-utils "
                         if [ "$kernel" == "linux" ]; then
@@ -251,6 +256,7 @@ graphics() {
                 "xf86-video-vesa"	 "$gr1" \
                 "NVIDIA"             "$gr2 ->" 3>&1 1>&2 2>&3)
             ex="$?"
+            log "Chose GPU driver: ${GPU}"
         else
             GPU=$(dialog --ok-button "$ok" --cancel-button "$cancel" --menu "$graphics_msg" 17 60 5 \
                 "$default"	     "$gr0" \
@@ -260,6 +266,7 @@ graphics() {
                 "xf86-video-nouveau" "$gr8" \
                 "xf86-video-vesa"    "$gr1" 3>&1 1>&2 2>&3)
             ex="$?"
+            log "Chose GPU driver: ${GPU}"
         fi
 
         if [ "$ex" -gt "0" ]; then
@@ -369,6 +376,7 @@ graphics() {
             "lxdm"		"$dm2" \
             "sddm"		"$dm3" 3>&1 1>&2 2>&3)
         if [ "$?" -eq "0" ]; then
+            log "Chose desktop manager: ${DM}"
             if [ "$DM" == "lightdm" ]; then
                 DE+="$DM lightdm-gtk-greeter lightdm-gtk-greeter-settings "
             elif [ "$DM" == "lxdm" ] && "$GTK3"; then
@@ -422,8 +430,6 @@ config_env() {
         ;;
     esac
 
-    echo "$(date -u "+%F %H:%M") : Configured: $config_env" >> "$log"
-
+    log "Configured ${config_env}"
+    #echo "$(date -u "+%F %H:%M") : Configured: $config_env" >> "$log"
 }
-
-# vim: ai:ts=4:sw=4:et
