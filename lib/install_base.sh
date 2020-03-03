@@ -38,7 +38,8 @@ install_base() {
     until "$INSTALLED"
       do
         if (dialog --yes-button "$install" --no-button "$cancel" --yesno "\n$install_var" "$height" 65); then
-            echo "$(date -u "+%F %H:%M") : Begin base install" >> "$log"
+            log "Starting base installation"
+            #echo "$(date -u "+%F %H:%M") : Begin base install" >> "$log"
 
             if [ "$kernel" == "linux" ]; then
                 base_install="$(pacman -Sqg base linux) $base_install"
@@ -53,11 +54,14 @@ install_base() {
 
             if [ $(</tmp/ex_status) -eq "0" ]; then
                 INSTALLED=true
-                echo "$(date -u "+%F %H:%M") : Install Complete" >> "$log"
-                echo "$(date -u "+%F %H:%M") : Generate fstab:\n$(<$ARCH/etc/fstab)" >> "$log"
+                log "Installation complete"
+                log "Generating fstab:\n$(<$ARCH/etc/fstab)"
+                #echo "$(date -u "+%F %H:%M") : Install Complete" >> "$log"
+                #echo "$(date -u "+%F %H:%M") : Generate fstab:\n$(<$ARCH/etc/fstab)" >> "$log"
             else
                 dialog --ok-button "$ok" --msgbox "\n$failed_msg" 10 60
-                echo "$(date -u "+%F %H:%M") : Install failed: please report to developer" >> "$log"
+                log "Installation failed"
+                #echo "$(date -u "+%F %H:%M") : Install failed: please report to developer" >> "$log"
                 reset ; tail "$log" ; exit 1
             fi
 
@@ -68,7 +72,8 @@ install_base() {
                 efistub) efistub_config ;;
             esac
 
-            echo "$(date -u "+%F %H:%M") : Configured bootloader: $bootloader" >> "$log"
+            log "Configured bootloader: ${bootloader}"
+            #echo "$(date -u "+%F %H:%M") : Configured bootloader: $bootloader" >> "$log"
         else
             if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$exit_msg" 10 60) then
                 unset base_install DE
@@ -79,5 +84,3 @@ install_base() {
     done
 
 }
-
-# vim: ai:ts=4:sw=4:et
