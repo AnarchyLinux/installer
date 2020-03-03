@@ -17,7 +17,8 @@
 
 language() {
 
-    echo "$(date -u "+%F %H:%M") : Start anarchy installer" > "${log}"
+    log "Selecting language"
+    #echo "$(date -u "+%F %H:%M") : Start anarchy installer" > "${log}"
     op_title=" -| Language Select |- "
     ILANG=$(dialog --nocancel --menu "\nAnarchy Installer\n\n \Z2*\Zn Select your install language:" 20 60 10 \
         "English" "-" \
@@ -38,6 +39,8 @@ language() {
         "Russian" "Russian" \
         "Spanish" "Español" \
         "Swedish" "Svenska" 3>&1 1>&2 2>&3)
+
+    log "Set installer language to ${ILANG}"
 
     case "$ILANG" in
         "English") export lang_file="${anarchy_directory}"/lang/anarchy-english.conf ;;
