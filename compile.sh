@@ -391,7 +391,7 @@ copy_config_files() {
 
     # Create Anarchy and lang directories, copy over all lang files
     echo -e "Adding language files to iso ..." | log
-    sudo mkdir -p "${squashfs}"/usr/share/anarchy/lang "${squashfs}"/usr/share/anarchy/extra "${squashfs}"/usr/share/anarchy/boot "${squashfs}"/usr/share/anarchy/etc
+    sudo mkdir -p "${squashfs}"/usr/share/anarchy/{lang,extra,boot,etc}
     sudo cp "${working_dir}"/lang/* "${squashfs}"/usr/share/anarchy/lang/
 
     # Create shell function library, copy /lib to squashfs-root
