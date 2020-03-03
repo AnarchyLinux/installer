@@ -58,7 +58,8 @@ set_user() {
                                 dialog --ok-button "$ok" --msgbox "\n$fulluser_err_msg1" 10 60
                             else
                                 set_password
-                                echo "$(date -u "+%F %H:%M") : Added user: $user" >> "$log"
+                                log "Added user ${user}"
+                                #echo "$(date -u "+%F %H:%M") : Added user: $user" >> "$log"
 
                                 if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$sudo_var" 10 60) then
                                     sudo_user=yes
@@ -289,7 +290,8 @@ add_user() {
             (printf "$input\n$input" | arch-chroot "$ARCH" passwd "$user") &> /dev/null &
             pid=$! pri=0.1 msg="$wait_load \n\n \Z1> \Z2passwd $user\Zn" load
             unset input
-            echo "$(date -u "+%F %H:%M") : Password set: $user" >> "$log"
+            log "Set password for ${user}"
+            #echo "$(date -u "+%F %H:%M") : Password set: $user" >> "$log"
 
             if [ "$sudo_user" == "yes" ]; then
             (sed -i '/%wheel ALL=(ALL) ALL/s/^#//' $ARCH/etc/sudoers
@@ -310,7 +312,8 @@ add_user() {
                      (printf "$input\n$input" | arch-chroot "$ARCH" passwd "$(<<<"$i" cut -d: -f1)") &> /dev/null &
                      pid=$! pri=0.1 msg="$wait_load \n\n \Z1> \Z2passwd $(<<<"$i" cut -d: -f1)\Zn" load
                      unset input
-                     echo "$(date -u "+%F %H:%M") : Password set: $(<<<"$i" cut -d: -f1)" >> "$log"
+                     log "Password set: $(<<<"$i" cut -d: -f1)"
+                     #echo "$(date -u "+%F %H:%M") : Password set: $(<<<"$i" cut -d: -f1)" >> "$log"
 
                      if [ "$(<<<"$i" cut -d: -f3)" == "yes" ]; then
                              (sed -i '/%wheel ALL=(ALL) ALL/s/^#//' $ARCH/etc/sudoers
@@ -319,7 +322,4 @@ add_user() {
                      fi
         done <<<$(sort "$tmp_passwd")
     fi
-
  }
-
-# vim: ai:ts=4:sw=4:et
