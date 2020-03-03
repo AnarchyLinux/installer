@@ -33,6 +33,7 @@ prepare_drives() {
         "$menu_msg" "-" 3>&1 1>&2 2>&3)
 
         if [ "$?" -gt "0" ] || [ "$PART" == "$menu_msg" ]; then
+            log "Exiting to main menu"
             main_menu
         elif [ "$PART" != "$method2" ]; then
             dev_menu="           Device: | Size: | Type:  |"
@@ -63,8 +64,10 @@ prepare_drives() {
                 drive_mib=$((drive_byte/1024/1024))
                 drive_gigs=$((drive_mib/1024))
                 f2fs=$(lsblk -dnro ROTA /dev/$DRIVE)
-                echo "$(date -u "+%F %H:%M") : Drive size in MB: $drive_mib" >> "$log"
-                echo "$(date -u "+%F %H:%M") : F2FS state: $f2fs" >> "$log"
+                log "Drive size in MB: ${drive_mib}"
+                log "Supports F2FS (1 = no, 0 = yes): ${f2fs}"
+                #echo "$(date -u "+%F %H:%M") : Drive size in MB: $drive_mib" >> "$log"
+                #echo "$(date -u "+%F %H:%M") : F2FS state: $f2fs" >> "$log"
                 fs_select
 
                 if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$swap_msg0" 10 60) then
@@ -95,21 +98,28 @@ prepare_drives() {
                         fi
                     done
 
-                    echo "$(date -u "+%F %H:%M") : Swapspace size set to: $SWAPSPACE" >> "$log"
+                    if [ "${SWAP}" = "true" ]; then
+                        log "Swap size: ${SWAPSPACE}"
+                    else
+                        log "Didn't use swap"
+                    fi
+                    #echo "$(date -u "+%F %H:%M") : Swapspace size set to: $SWAPSPACE" >> "$log"
                 fi
 
                 if (efivar -l &> /dev/null); then
                     if (dialog --yes-button "$yes" --no-button "$no" --yesno "\n$efi_msg0" 10 60) then
                         GPT=true
                         UEFI=true
-                        echo "$(date -u "+%F %H:%M") : UEFI boot activated" >> "$log"
+                        log "Enabled UEFI boot"
+                        #echo "$(date -u "+%F %H:%M") : UEFI boot activated" >> "$log"
                     fi
                 fi
 
                 if ! "$UEFI" ; then
                     if (dialog --defaultno --yes-button "$yes" --no-button "$no" --yesno "\n$gpt_msg" 10 60) then
                         GPT=true
-                        echo "$(date -u "+%F %H:%M") : GPT partition scheme activated" >> "$log"
+                        log "Used GPT partition scheme"
+                        #echo "$(date -u "+%F %H:%M") : GPT partition scheme activated" >> "$log"
                     fi
                 fi
 
@@ -133,7 +143,8 @@ prepare_drives() {
                     (sgdisk --zap-all /dev/"$DRIVE"
                     wipefs -a /dev/"$DRIVE") &> /dev/null &
                     pid=$! pri=0.1 msg="\n$frmt_load \n\n \Z1> \Z2sgdisk --zap-all /dev/$DRIVE\Zn" load
-                    echo "$(date -u "+%F %H:%M") : Format device: /dev/$DRIVE" >> "$log"
+                    log "Device to be formatted: /dev/${DRIVE}"
+                    #echo "$(date -u "+%F %H:%M") : Format device: /dev/$DRIVE" >> "$log"
                 else
                     unset PART
                 fi
@@ -177,7 +188,8 @@ auto_part() {
                 mkswap /dev/"$SWAP"
                 swapon /dev/"$SWAP") &> /dev/null &
                 pid=$! pri=0.1 msg="\n$swap_load \n\n \Z1> \Z2mkswap /dev/$SWAP\Zn" load
-                echo "$(date -u "+%F %H:%M") : Created and activate swapspace: $SWAP" >> "$log"
+                log "Created and activated swap: ${SWAP}"
+                #echo "$(date -u "+%F %H:%M") : Created and activate swapspace: $SWAP" >> "$log"
             else
                 echo -e "n\n\n\n512M\nef00\nn\n\n\n\n\nw\ny" | gdisk /dev/"$DRIVE" &> /dev/null &
                 pid=$! pri=0.1 msg="\n$load_var0 \n\n \Z1> \Z2gdisk /dev/$DRIVE\Zn" load
@@ -193,7 +205,8 @@ auto_part() {
                 mkswap /dev/"$SWAP"
                 swapon /dev/"$SWAP") &> /dev/null &
                 pid=$! pri=0.1 msg="\n$swap_load \n\n \Z1> \Z2mkswap /dev/$SWAP\Zn" load
-                echo "$(date -u "+%F %H:%M") : Created and activate swapspace: $SWAP" >> "$log"
+                log "Created and activated swap: ${SWAP}"
+                #echo "$(date -u "+%F %H:%M") : Created and activate swapspace: $SWAP" >> "$log"
             else
                 echo -e "o\ny\nn\n1\n\n+212M\n\nn\n2\n\n+1M\nEF02\nn\n3\n\n\n\nw\ny" | gdisk /dev/"$DRIVE" &> /dev/null &
                 pid=$! pri=0.1 msg="\n$load_var0 \n\n \Z1> \Z2gdisk /dev/$DRIVE\Zn" load
@@ -210,7 +223,8 @@ auto_part() {
             mkswap /dev/"$SWAP"
             swapon /dev/"$SWAP") &> /dev/null &
             pid=$! pri=0.1 msg="\n$swap_load \n\n \Z1> \Z2mkswap /dev/$SWAP\Zn" load
-            echo "$(date -u "+%F %H:%M") : Created and activate swapspace: $SWAP" >> "$log"
+            log "Created and activated swap: ${SWAP}"
+            #echo "$(date -u "+%F %H:%M") : Created and activate swapspace: $SWAP" >> "$log"
 
         else
             echo -e "o\nn\np\n1\n\n+212M\nn\np\n2\n\n\nw" | fdisk /dev/"$DRIVE" &> /dev/null &
@@ -220,8 +234,10 @@ auto_part() {
         ROOT="${DRIVE}${PART_PREFIX}2"
     fi
 
-    echo "$(date -u "+%F %H:%M") : Create boot partition: $BOOT" >> "$log"
-    echo "$(date -u "+%F %H:%M") : Create root partition: $ROOT" >> "$log"
+    log "Created boot partition: ${BOOT}"
+    log "Created root partition: ${ROOT}"
+    #echo "$(date -u "+%F %H:%M") : Create boot partition: $BOOT" >> "$log"
+    #echo "$(date -u "+%F %H:%M") : Create root partition: $ROOT" >> "$log"
 
     if "$UEFI" ; then
         (sgdisk --zap-all /dev/"$BOOT"
@@ -230,16 +246,21 @@ auto_part() {
         pid=$! pri=0.1 msg="\n$efi_load1 \n\n \Z1> \Z2mkfs.vfat -F32 /dev/$BOOT\Zn" load
         esp_part="$BOOT"
         esp_mnt=/boot
-        echo "$(date -u "+%F %H:%M") : ESP part set to: $esp_part" >> "$log"
-        echo "$(date -u "+%F %H:%M") : ESP mnt set to: $esp_mnt" >> "$log"
-        echo "$(date -u "+%F %H:%M") : Created boot filesystem: vfat" >> "$log"
+        log "ESP partition set to: ${esp_part}"
+        log "ESP mountpoint set to: ${esp_mnt}"
+        log "Created vfat boot filesystem"
+        #echo "$(date -u "+%F %H:%M") : ESP part set to: $esp_part" >> "$log"
+        #echo "$(date -u "+%F %H:%M") : ESP mnt set to: $esp_mnt" >> "$log"
+        #echo "$(date -u "+%F %H:%M") : Created boot filesystem: vfat" >> "$log"
     else
         (sgdisk --zap-all /dev/"$BOOT"
         wipefs -a /dev/"$BOOT"
         mkfs.ext4 -O \^64bit /dev/"$BOOT") &> /dev/null &
         pid=$! pri=0.1 msg="\n$boot_load \n\n \Z1> \Z2mkfs.ext4 /dev/$BOOT\Zn" load
-        echo "$(date -u "+%F %H:%M") : Boot set to: /boot" >> "$log"
-        echo "$(date -u "+%F %H:%M") : Created boot filesystem: ext4" >> "$log"
+        log "Set boot mountpoint to /boot"
+        log "Created ext4 boot filesystem"
+        #echo "$(date -u "+%F %H:%M") : Boot set to: /boot" >> "$log"
+        #echo "$(date -u "+%F %H:%M") : Created boot filesystem: ext4" >> "$log"
     fi
 
     case "$FS" in
@@ -253,15 +274,18 @@ auto_part() {
         ;;
     esac
     pid=$! pri=0.6 msg="\n$load_var1 \n\n \Z1> \Z2mkfs.$FS /dev/$ROOT\Zn" load
-    echo "$(date -u "+%F %H:%M") : Create root filesystem: $FS" >> "$log"
+    log "Created ${FS} root filesystem"
+    #echo "$(date -u "+%F %H:%M") : Create root filesystem: $FS" >> "$log"
 
     (mount /dev/"$ROOT" "$ARCH"
     echo "$?" > /tmp/ex_status.var
     mkdir $ARCH/boot
     mount /dev/"$BOOT" "$ARCH"/boot) &> /dev/null &
     pid=$! pri=0.1 msg="\n$mnt_load \n\n \Z1> \Z2mount /dev/$ROOT $ARCH\Zn" load
-    echo "$(date -u "+%F %H:%M") : Root filesystem mounted: $ARCH" >> "$log"
-    echo "$(date -u "+%F %H:%M") : Boot filesystem mounted: $ARCH/boot" >> "$log"
+    log "Mounted root filesystem to ${ARCH}"
+    log "Mounted boot filesystem to ${ARCH}/boot"
+    #echo "$(date -u "+%F %H:%M") : Root filesystem mounted: $ARCH" >> "$log"
+    #echo "$(date -u "+%F %H:%M") : Boot filesystem mounted: $ARCH/boot" >> "$log"
 
     if [ "$(</tmp/ex_status.var)" -eq "0" ]; then
         mounted=true
@@ -310,37 +334,46 @@ auto_encrypt() {
         ROOT="${DRIVE}${PART_PREFIX}2"
     fi
 
-    echo "$(date -u "+%F %H:%M") : Create boot partition: $BOOT" >> "$log"
-    echo "$(date -u "+%F %H:%M") : Create root partition: $ROOT" >> "$log"
+    log "Created boot partition: ${BOOT}"
+    log "Created root partition: ${ROOT}"
+    #echo "$(date -u "+%F %H:%M") : Create boot partition: $BOOT" >> "$log"
+    #echo "$(date -u "+%F %H:%M") : Create root partition: $ROOT" >> "$log"
     (sgdisk --zap-all /dev/"$ROOT"
     sgdisk --zap-all /dev/"$BOOT"
     wipefs -a /dev/"$ROOT"
     wipefs -a /dev/"$BOOT") &> /dev/null &
     pid=$! pri=0.1 msg="\n$frmt_load \n\n \Z1> \Z2wipefs -a /dev/$ROOT\Zn" load
-    echo "$(date -u "+%F %H:%M") : Wipe boot partition" >> "$log"
-    echo "$(date -u "+%F %H:%M") : Wipe root partition" >> "$log"
+    log "Wiped boot partition"
+    log "Wiped root partition"
+    #echo "$(date -u "+%F %H:%M") : Wipe boot partition" >> "$log"
+    #echo "$(date -u "+%F %H:%M") : Wipe root partition" >> "$log"
 
     (lvm pvcreate /dev/"$ROOT"
     lvm vgcreate lvm /dev/"$ROOT") &> /dev/null &
     pid=$! pri=0.1 msg="\n$pv_load \n\n \Z1> \Z2lvm pvcreate /dev/$ROOT\Zn" load
-    echo "$(date -u "+%F %H:%M") : Create physical root volume: /dev/$ROOT" >> "$log"
+    log "Created physical root volume: /dev/${ROOT}"
+    #echo "$(date -u "+%F %H:%M") : Create physical root volume: /dev/$ROOT" >> "$log"
 
     if "$SWAP" ; then
         lvm lvcreate -L "${SWAPSPACE}M" -n swap lvm &> /dev/null &
         pid=$! pri=0.1 msg="\n$swap_load \n\n \Z1> \Z2lvm lvcreate -L ${SWAPSPACE}M -n swap lvm\Zn" load
-        echo "$(date -u "+%F %H:%M") : Create logical swapspace" >> "$log"
+        log "Created swap"
+        #echo "$(date -u "+%F %H:%M") : Create logical swapspace" >> "$log"
     fi
 
     (lvm lvcreate -L 500M -n tmp lvm
     lvm lvcreate -l 100%FREE -n lvroot lvm) &> /dev/null &
     pid=$! pri=0.1 msg="\n$lv_load \n\n \Z1> \Z2lvm lvcreate -l 100%FREE -n lvroot lvm\Zn" load
-    echo "$(date -u "+%F %H:%M") : Create logical root volume: lvroot" >> "$log"
-    echo "$(date -u "+%F %H:%M") : Create logical tmp filesystem: tmp" >> "$log"
+    log "Created lvroot logical root volume"
+    log "Created logical tmp filesystem"
+    #echo "$(date -u "+%F %H:%M") : Create logical root volume: lvroot" >> "$log"
+    #echo "$(date -u "+%F %H:%M") : Create logical tmp filesystem: tmp" >> "$log"
 
     (printf "$input" | cryptsetup luksFormat -c aes-xts-plain64 -s 512 /dev/lvm/lvroot -
     printf "$input" | cryptsetup open --type luks /dev/lvm/lvroot root -) &> /dev/null &
     pid=$! pri=0.2 msg="\n$encrypt_load \n\n \Z1> \Z2cryptsetup luksFormat -c aes-xts-plain64 -s 512 /dev/lvm/lvroot\Zn" load
-    echo "$(date -u "+%F %H:%M") : Encrypt logical volume: lvroot" >> "$log"
+    log "Encrypted lvroot logical volume"
+    #echo "$(date -u "+%F %H:%M") : Encrypt logical volume: lvroot" >> "$log"
     unset input input_chk ; input_chk=default
     wipefs -a /dev/mapper/root &> /dev/null
 
@@ -353,18 +386,21 @@ auto_encrypt() {
         ;;
     esac
     pid=$! pri=1 msg="\n$load_var1 \n\n \Z1> \Z2mkfs.$FS /dev/mapper/root\Zn" load
-    echo "$(date -u "+%F %H:%M") : Create root filesystem: $FS" >> "$log"
+    log "Created ${FS} root filesystem"
+    #echo "$(date -u "+%F %H:%M") : Create root filesystem: $FS" >> "$log"
 
     if "$UEFI" ; then
         mkfs.vfat -F32 /dev/"$BOOT" &> /dev/null &
         pid=$! pri=0.2 msg="\n$efi_load1 \n\n \Z1> \Z2mkfs.vfat -F32 /dev/$BOOT\Zn" load
         esp_part="/dev/$BOOT"
         esp_mnt=/boot
-        echo "$(date -u "+%F %H:%M") : Create boot filesystem: vfat" >> "$log"
+        log "Created vfat boot filesystem"
+        #echo "$(date -u "+%F %H:%M") : Create boot filesystem: vfat" >> "$log"
     else
         mkfs.ext4 -O \^64bit /dev/"$BOOT" &> /dev/null &
         pid=$! pri=0.2 msg="\n$boot_load \n\n \Z1> \Z2mkfs.ext4 /dev/$BOOT\Zn" load
-        echo "$(date -u "+%F %H:%M") : Create boot filesystem: ext4" >> "$log"
+        log "Created ext4 boot filesystem"
+        #echo "$(date -u "+%F %H:%M") : Create boot filesystem: ext4" >> "$log"
     fi
 
     (mount /dev/mapper/root "$ARCH"
@@ -372,8 +408,10 @@ auto_encrypt() {
     mkdir $ARCH/boot
     mount /dev/"$BOOT" "$ARCH"/boot) &> /dev/null &
     pid=$! pri=0.1 msg="\n$mnt_load \n\n \Z1> \Z2mount /dev/mapper/root $ARCH\Zn" load
-    echo "$(date -u "+%F %H:%M") : Mount root filesystem: $ARCH" >> "$log"
-    echo "$(date -u "+%F %H:%M") : Mount boot filesystem: $ARCH/boot" >> "$log"
+    log "Mounted root filesystem to ${ARCH}"
+    log "Mounted boot filesystem to ${ARCH}/boot"
+    #echo "$(date -u "+%F %H:%M") : Mount root filesystem: $ARCH" >> "$log"
+    #echo "$(date -u "+%F %H:%M") : Mount boot filesystem: $ARCH/boot" >> "$log"
 
     if [ $(</tmp/ex_status.var) -eq "0" ]; then
         mounted=true
@@ -871,5 +909,3 @@ select_util() {
         part_menu
     fi
 }
-
-# vim: ai:ts=4:sw=4:et
