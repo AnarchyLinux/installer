@@ -1,6 +1,6 @@
 FROM archlinux/base:latest
 
-LABEL maintainer="remisa.yousefvand@gmail.com"
+# LABEL maintainer="<your email>"
 
 COPY ./docker/setup.sh /usr/bin
 RUN chmod +x /usr/bin/setup.sh

@@ -7,6 +7,7 @@
 # * Exit 3: Checksum did not match for Arch ISO (check_arch_iso)
 # * Exit 4: Failed to create iso (create_iso)
 # * Exit 5: Docker is not installed (compile_in_docker)
+# * Exit 6: Failed to build docker image (build_docker_image)
 
 # Exit on error
 set -o errexit
@@ -19,7 +20,7 @@ set -o errtrace
 working_dir="$(pwd)"
 log_dir="${working_dir}"/logs
 out_dir="${working_dir}"/out # Directory for generated ISOs
-docker_repo="remisa/anarchy:latest"
+docker_repo="anarchy:latest" # Local image
 
 # Define colors depending on script arguments
 colors() {
@@ -326,11 +327,31 @@ check_arch_iso() {
     fi
 }
 
+# Build local docker image
+build_docker_image() {
+    cd "${working_dir}"
+    echo -e "\nBuilding docker image..." | log
+    docker build -t "${docker_repo}" .
+    if [ "$?" -eq 0 ]; then
+        echo -e "${color_green}\""${docker_repo}"\" image created successfully.${color_blank}" | log
+    else
+        echo -e "${color_red}Error: Docker image creation failed, exiting.${color_blank}" | log
+        exit 6
+    fi
+}
+
 # Spin up a docker container for compilation
 compile_in_docker() {
     if [ "${docker_compile}" = true ]; then
         # Make sure docker is installed
         if [ $(command -v docker) ]; then
+            # anarchy_docker_images=$(docker images | grep anarchy | awk '{print $1":"$2}' )
+            if [ -z $(docker images -q "${docker_repo}") ]; then
+                echo -e "Local docker image \"${docker_repo}\" does not exist. Creating..." | log
+                build_docker_image
+            else
+                echo -e "Found local docker image \"${docker_repo}\"." | log
+            fi
             echo -e "Compiling inside docker..." | log
             docker run --rm --privileged \
                 --device-cgroup-rule='b 7:* rmw' \
@@ -656,7 +677,7 @@ while (true); do
             configure_boot
             create_iso
             uninstall_dependencies
-            echo -e "${color_green}${anarchy_iso_name} image generated successfully.${color_blank}" | log
+            echo -e "${color_green}${anarchy_iso_name} image generated successfully. Check 'out' directory\n${color_blank}" | log
             exit 0
         ;;
     esac

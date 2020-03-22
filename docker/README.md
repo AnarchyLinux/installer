@@ -10,15 +10,22 @@ Docker image contains `add-aur.sh` and `setup.sh` files.
 To build a new image from `project root` run:
 
 ```bash
-$ docker build -t remisa/anarchy:latest .
+$ docker build -t anarchy:latest .
 ```
 
-# Tagging and publishing image
-
-Tag generated image:
+To remove image:
 
 ```bash
-$ docker tag remisa/anarchy:latest remisa/anarchy:"$(date +%F)"
+$ docker rmi anarchy:latest
+```
+
+# Publishing image (optional)
+
+If you will, you can push created image to docker hub. Anarchy doesn't maintain an official docker image.
+
+```bash
+$ docker tag anarchy:latest <username>/anarchy:latest
+$ docker tag <username>/anarchy:latest <username>/anarchy:"$(date +%F)"
 ```
 
 Publish image:
@@ -26,13 +33,15 @@ Publish image:
 ```bash
 $ docker login
 # Enter username/password
-$ docker push remisa/anarchy:"$(date +%F)"
-$ docker push remisa/anarchy:latest
+$ docker push <username>/anarchy:"$(date +%F)"
+$ docker push <username>/anarchy:latest
 ```
+
+Replace `<username>` with your own `username` on docker hub.
 
 # Compiling ISO
 
-It is recommended to run the `compile.sh` script from `project root` with `-d` flag:
+It is recommended to run the `compile.sh` script from `project root` with `-d` flag. If `anarchy:latest` docker image doesn't exist, it would be created:
 
 ```bash
 $ ./compile.sh -d
@@ -46,7 +55,7 @@ $ docker run --rm --privileged \
     -v "${PWD}":/project \
     -e anarchy_iso_label=ANARCHY10 \
     -e anarchy_iso_release=1.0.10 \
-    remisa/anarchy:latest
+    anarchy:latest
 ```
 
 When compilation is completed you can find Anarchy `ISO` image under `[project root]/out`.
@@ -59,7 +68,7 @@ $ docker run --rm --privileged \
     -v "${PWD}":/project \
     -e anarchy_iso_label=ANARCHY10 \
     -e anarchy_iso_release=1.0.10 \
-    -it remisa/anarchy:latest
+    -it anarchy:latest
 ```
 
 # Testing ISO
