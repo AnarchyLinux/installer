@@ -22,6 +22,7 @@ local_aur_packages=(
     'opensnap'
     'perl-linux-desktopfiles'
     'obmenu-generator'
+    'yay-bin'
     'openbox-themes'
     'arch-wiki-cli'
 )
@@ -62,12 +63,16 @@ local_repo_builds() {
 
     # Begin build loop 
     if [ ! "$(ls /home/builder/ | grep "${local_aur_packages[8]}")" ]; then
+        pacman -R --noconfirm yay
         for pkg in "${local_aur_packages[@]}"; do
             echo -e "Making ${pkg} ..."
             wget -qO- "${aur_snapshot_link}/${pkg}.tar.gz" | tar xz -C /home/builder/
+            # TODO: use "builder" user
             chown -R builder /home/builder/
             cd /home/builder/"${pkg}" || exit
             su builder -c 'makepkg -sif --noconfirm --nocheck'
+            su builder -c "xz -z /home/builder/${pkg}/${pkg}*.pkg.tar"
+
             echo -e "${pkg} made successfully"
         done
     fi

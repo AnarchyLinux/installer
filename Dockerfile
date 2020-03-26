@@ -15,7 +15,7 @@ RUN pacman -Syu --needed --noconfirm arch-install-scripts
 # Add non root user (builder). Needed for AURs compile & install
 RUN bash /usr/bin/add-aur.sh builder
 # Make packages available offline
-RUN bash /usr/bin/setup.sh builder
+RUN bash /usr/bin/setup.sh
 
 # Clean up
 # RUN pacman -Scc --noconfirm

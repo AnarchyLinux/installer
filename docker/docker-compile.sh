@@ -21,6 +21,18 @@ out_dir="${project_dir}"/out # Directory for generated ISO
 # anarchy_iso_release="1.0.10"  # from ENV
 anarchy_iso_name="anarchy-${anarchy_iso_release}-x86_64.iso"
 
+local_aur_packages=(
+    'numix-icon-theme-git'
+    'numix-circle-icon-theme-git'
+    'oh-my-zsh-git'
+    'opensnap'
+    'perl-linux-desktopfiles'
+    'obmenu-generator'
+    'yay-bin'
+    'openbox-themes'
+    'arch-wiki-cli'
+)
+
 init() {
     # Check for existing Arch iso
     if (ls "${project_dir}"/archlinux-*-x86_64.iso &>/dev/null); then
@@ -112,7 +124,7 @@ copy_config_files() {
     mkdir "${custom_iso}"/arch/x86_64/squashfs-root/usr/share/anarchy/pkg
 
     for pkg in $(echo "${local_aur_packages[@]}"); do
-        cp /tmp/"${pkg}"/*.pkg.tar.xz "${squashfs}"/usr/share/anarchy/pkg/
+        cp /home/builder/"${pkg}"/*.pkg.tar.xz "${squashfs}"/usr/share/anarchy/pkg/
     done
 
     cd "${squashfs}"/usr/share/anarchy/pkg || exit
