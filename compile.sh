@@ -7,7 +7,7 @@
 # * Exit 3: Checksum did not match for Arch ISO (check_arch_iso)
 # * Exit 4: Failed to create iso (create_iso)
 # * Exit 5: Docker is not installed (compile_in_docker)
-# * Exit 6: Failed to build docker image (build_docker_image)
+# * Exit 6: Failed to build/remove docker image (build_docker_image)
 
 # Exit on error
 set -o errexit
@@ -350,7 +350,15 @@ compile_in_docker() {
                 echo -e "Local docker image \"${docker_repo}\" does not exist. Creating..." | log
                 build_docker_image
             else
-                echo -e "Found local docker image \"${docker_repo}\"." | log
+                echo -e "Removing old docker image \"${docker_repo}\"." | log
+                docker rmi -f "${docker_repo}"
+                if [ "$?" -eq 0 ]; then
+                    echo -e "${color_green}\""${docker_repo}"\" image removed successfully.${color_blank}" | log
+                    build_docker_image
+                else
+                    echo -e "${color_red}Error: Docker image removal failed, exiting.${color_blank}" | log
+                    exit 6
+                fi
             fi
             echo -e "Compiling inside docker..." | log
             docker run --rm --privileged \
