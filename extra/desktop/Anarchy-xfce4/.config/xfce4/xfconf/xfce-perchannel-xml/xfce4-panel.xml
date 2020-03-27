@@ -25,6 +25,8 @@
         <value type="uint" value="65535"/>
       </property>
       <property name="background-alpha" type="uint" value="0"/>
+      <property name="enter-opacity" type="uint" value="75"/>
+      <property name="leave-opacity" type="uint" value="75"/>      
     </property>
   </property>
   <property name="plugins" type="empty">
