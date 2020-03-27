@@ -8,5 +8,5 @@ _LOG_FILE="/home/${USER}/anarchy-$(date '+%Y-%m-%d').log"
 #	$1 - message to log
 log() {
     local message="$1"
-    echo "[$(date '+%H:%M:%S')]: ${message}" >> "${ANARCHY_LOG_FILE}"
+    echo "[$(date '+%H:%M:%S')]: ${message}" >> "${_LOG_FILE}"
 }
