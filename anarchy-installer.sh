@@ -2,6 +2,9 @@
 # Main installation script
 # Copyright (C) 2017 Dylan Schacht
 
+# Source libraries
+. libraries/liblog.sh
+
 init() {
     anarchy_directory="/usr/share/anarchy"
     anarchy_config="/etc/anarchy.conf"
