@@ -1,0 +1,24 @@
+# Anarchy Linux's EditorConfig specification
+# More info at https://editorconfig.com
+
+# Specify this is the top-most config
+root = true
+
+# Use Unix-style newlines and a newline at the end of every file
+[*]
+end_of_line = lf
+insert_final_newline = true
+charset = utf-8
+trim_trailing_whitespace = true
+
+# Specify settings for all the shell scripts
+[*.sh]
+indent_style = tab
+indent_size = 4
+# max_line_length = 80 # We're not ready for this one yet
+
+# Same but for scripts in lib/ which might not have .sh extensions
+[lib/*]
+indent_style = tab
+indent_size = 4
+# max_line_length = 80 # We're not ready for this one yet

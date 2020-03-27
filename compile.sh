@@ -6,6 +6,8 @@
 # * Exit 2: Missing Arch iso (update_arch_iso)
 # * Exit 3: Checksum did not match for Arch ISO (check_arch_iso)
 # * Exit 4: Failed to create iso (create_iso)
+# * Exit 5: Docker is not installed (compile_in_docker)
+# * Exit 6: Failed to build/remove docker image (build_docker_image)
 
 # Exit on error
 set -o errexit
@@ -18,6 +20,7 @@ set -o errtrace
 working_dir="$(pwd)"
 log_dir="${working_dir}"/logs
 out_dir="${working_dir}"/out # Directory for generated ISOs
+docker_repo="anarchy:latest" # Local image
 
 # Define colors depending on script arguments
 colors() {
@@ -108,9 +111,10 @@ init() {
         'arch-wiki-cli'
     )
 
-    check_dependencies
     update_arch_iso
     check_arch_iso
+    compile_in_docker
+    check_dependencies
     local_repo_builds
 }
 
@@ -319,6 +323,54 @@ check_arch_iso() {
         else
             echo -e "${color_red}Error: Checksum did not match file, exiting!${color_blank}" | log
             exit 3
+        fi
+    fi
+}
+
+# Build local docker image
+build_docker_image() {
+    cd "${working_dir}"
+    echo -e "\nBuilding docker image..." | log
+    docker build -t "${docker_repo}" .
+    if [ "$?" -eq 0 ]; then
+        echo -e "${color_green}\""${docker_repo}"\" image created successfully.${color_blank}" | log
+    else
+        echo -e "${color_red}Error: Docker image creation failed, exiting.${color_blank}" | log
+        exit 6
+    fi
+}
+
+# Spin up a docker container for compilation
+compile_in_docker() {
+    if [ "${docker_compile}" = true ]; then
+        # Make sure docker is installed
+        if [ $(command -v docker) ]; then
+            # anarchy_docker_images=$(docker images | grep anarchy | awk '{print $1":"$2}' )
+            if [ -z $(docker images -q "${docker_repo}") ]; then
+                echo -e "Local docker image \"${docker_repo}\" does not exist. Creating..." | log
+                build_docker_image
+            else
+                echo -e "Removing old docker image \"${docker_repo}\"." | log
+                docker rmi -f "${docker_repo}"
+                if [ "$?" -eq 0 ]; then
+                    echo -e "${color_green}\""${docker_repo}"\" image removed successfully.${color_blank}" | log
+                    build_docker_image
+                else
+                    echo -e "${color_red}Error: Docker image removal failed, exiting.${color_blank}" | log
+                    exit 6
+                fi
+            fi
+            echo -e "Compiling inside docker..." | log
+            docker run --rm --privileged \
+                --device-cgroup-rule='b 7:* rmw' \
+                -v "${PWD}":/project \
+                -e anarchy_iso_label="${anarchy_iso_label}" \
+                -e anarchy_iso_release="${anarchy_iso_release}" \
+                "${docker_repo}"
+            exit 0
+        else
+            echo -e "Docker is not installed\!" | log
+            exit 5
         fi
     fi
 }
@@ -584,6 +636,7 @@ usage() {
     clear
     echo -e "${color_white}Usage: compile.sh [options]${color_blank}"
     echo -e "${color_white}     -c | --no-color)    Disable color output${color_blank}"
+    echo -e "${color_white}     -d | --docker)      Compile inside docker${color_blank}"
     echo -e "${color_white}     -i | --no-input)    Don't ask user for input${color_blank}"
     echo -e "${color_white}     -o | --output-dir)  Specify directory for generated ISOs/checksums${color_blank}"
     echo -e "${color_white}     -l | --log-dir)     Specify directory for logs${color_blank}"
@@ -606,6 +659,10 @@ while (true); do
         ;;
         -c|--no-color)
             show_color=false
+            shift
+        ;;
+        -d|--docker)
+            docker_compile=true
             shift
         ;;
         -i|--no-input)
@@ -633,7 +690,7 @@ while (true); do
             configure_boot
             create_iso
             uninstall_dependencies
-            echo -e "${color_green}${anarchy_iso_name} image generated successfully.${color_blank}" | log
+            echo -e "${color_green}${anarchy_iso_name} image generated successfully. Check 'out' directory\n${color_blank}" | log
             exit 0
         ;;
     esac
