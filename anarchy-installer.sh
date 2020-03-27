@@ -2,26 +2,26 @@
 # Main installation script
 # Copyright (C) 2017 Dylan Schacht
 
-# Source libraries
-. libraries/liblog.sh
-
 init() {
-    anarchy_directory="/usr/share/anarchy"
-    anarchy_config="/etc/anarchy.conf"
-    anarchy_scripts="/usr/lib/anarchy"
+	anarchy_directory="/usr/share/anarchy"
 
+	# Prevents the installer from exiting if Ctrl-C is pressed
+	# 2 - SIGINT (check signal(7))
+	# TODO: Replace this with a proper cleanup script
     trap '' 2
 
     # Source the config file
-    . "${anarchy_config}"
+    . /etc/anarchy.conf
 
-    for script in "${anarchy_scripts}"/*.sh ; do
-        [ -e "${script}" ] || break
-        . "${script}"
+	# Source all the libraries
+    for lib in /usr/lib/anarchy/* ; do
+        . "${lib}"
     done
 
+	# Installer's language setup
     language
     . "${lang_file}"
+    # Sets which translations should be re-read
     export reload=true
 }
 
@@ -51,7 +51,7 @@ main() {
 }
 
 dialog() {
-    # If terminal height is more than 25 lines add a backtitle
+    # If terminal height is more than 25 lines add additional info
     if "${screen_h}" ; then
         if "${LAPTOP}" ; then
             # Show battery life next to Anarchy heading
