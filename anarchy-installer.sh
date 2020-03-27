@@ -2,9 +2,6 @@
 # Main installation script
 # Copyright (C) 2017 Dylan Schacht
 
-# Specify installation directory
-ANARCHY_INSTALL_PATH="/root"
-
 init() {
     anarchy_directory="/usr/share/anarchy"
     anarchy_config="/etc/anarchy.conf"
@@ -14,14 +11,6 @@ init() {
 
     # Source the config file
     . "${anarchy_config}"
-
-    # Define log file
-    ANARCHY_LOG_FILE="${ANARCHY_LOG_PATH}/anarchy-$(date '+%Y-%m-%d')".log
-
-    # Source libraries
-    for library in "${ANARCHY_LIBRARIES_PATH}"/*; do
-        . "${library}"
-    done
 
     for script in "${anarchy_scripts}"/*.sh ; do
         [ -e "${script}" ] || break
