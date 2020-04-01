@@ -72,7 +72,7 @@ prettify() {
 set_version() {
     # Label must be up to 11 chars long (incremental numbers)
     anarchy_iso_label="ANARCHY10"
-    anarchy_iso_release="1.0.10"
+    anarchy_iso_release="1.0.11"
     anarchy_iso_name="anarchy-${anarchy_iso_release}-x86_64.iso"
 }
 
@@ -109,6 +109,9 @@ init() {
         'yay-bin'
         'openbox-themes'
         'arch-wiki-cli'
+        'pygtk'
+        'python2-distutils-extra'
+        'oblogout'
     )
 
     update_arch_iso
