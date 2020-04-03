@@ -100,7 +100,7 @@ graphics() {
                         DE+="budgie-desktop mousepad terminator nautilus gnome-backgrounds gnome-control-center $extras "
             ;;
             "Anarchy-cinnamon")	config_env="$env"
-                        DE+="cinnamon cinnamon-translations gnome-screenhot gnome-terminal file-roller p7zip zip unrar terminator $extras "
+                        DE+="cinnamon cinnamon-translations gnome-screenshot gnome-terminal file-roller p7zip zip unrar terminator $extras "
                         start_term="exec cinnamon-session"
             ;;
             "Anarchy-gnome")	config_env="$env"
