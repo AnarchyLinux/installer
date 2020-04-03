@@ -12,13 +12,9 @@
         ],
         "value": [
             "firefox.desktop",
+            "org.gnome.Terminal.desktop",
             "nemo.desktop",
-            "org.gnome.Packages.desktop",
-            "terminator.desktop",
-            "chromium.desktop",
-            "vlc.desktop",
-            "org.pantheon.noise.desktop",
-            "libreoffice-writer.desktop"
+            "chromium.desktop"
         ]
     },
     "allow-dragging": {
