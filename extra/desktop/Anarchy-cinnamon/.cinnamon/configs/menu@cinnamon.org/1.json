@@ -25,7 +25,7 @@
             "type": "section",
             "title": "Appearance",
             "keys": [
-                "menu-icon-custom",
+                "menu-custom",
                 "menu-icon",
                 "menu-label"
             ]
@@ -47,7 +47,9 @@
                 "show-category-icons",
                 "show-application-icons",
                 "favbox-show",
+                "favbox-min-height",
                 "show-places",
+                "show-recents",
                 "menu-editor-button"
             ]
         },
@@ -66,20 +68,21 @@
         "default": "Super_L::Super_R",
         "value": "Super_L::Super_R"
     },
-    "menu-icon-custom": {
+    "menu-custom": {
         "type": "switch",
         "default": false,
-        "description": "Use a custom icon",
-        "tooltip": "Unchecking this allows the theme to set the icon",
+        "description": "Use a custom icon and label",
+        "tooltip": "Check this to specify a custom icon and label",
         "value": true
     },
     "menu-icon": {
         "type": "iconfilechooser",
-        "default": "/usr/share/cinnamon/theme/menu-symbolic.svg",
+        "default": "cinnamon-symbolic",
         "description": "Icon",
         "tooltip": "Select an icon to show in the panel.",
-        "dependency": "menu-icon-custom",
-        "indent": "true",
+        "default_icon": "cinnamon-symbolic",
+        "dependency": "menu-custom",
+        "indent": true,
         "value": "/usr/share/pixmaps/anarchy-icon.png"
     },
     "menu-label": {
@@ -87,7 +90,21 @@
         "default": "Menu",
         "description": "Text",
         "tooltip": "Enter custom text to show in the panel.",
+        "dependency": "menu-custom",
+        "indent": true,
         "value": "Menu"
+    },
+    "favbox-min-height": {
+        "type": "spinbutton",
+        "default": 300,
+        "min": 50,
+        "max": 1000,
+        "step": 10,
+        "units": "px",
+        "dependency": "favbox-show",
+        "description": "Minimum height of the favorites section",
+        "tooltip": "The minimum size allocated for the favorites section (this has an impact on the overall height of the menu).",
+        "value": 190.0
     },
     "show-category-icons": {
         "type": "switch",
@@ -106,7 +123,7 @@
     "favbox-show": {
         "type": "switch",
         "default": true,
-        "description": "Show favorites and quit options",
+        "description": "Show favorites and session buttons",
         "tooltip": "Choose whether or not to show the left pane of the menu.",
         "value": true
     },
@@ -115,6 +132,13 @@
         "default": true,
         "description": "Show bookmarks and places",
         "tooltip": "Choose whether or not to show bookmarks and places in the menu.",
+        "value": true
+    },
+    "show-recents": {
+        "type": "switch",
+        "default": true,
+        "description": "Show recents",
+        "tooltip": "Choose whether or not to show recents in the menu.",
         "value": true
     },
     "enable-autoscroll": {
@@ -129,7 +153,7 @@
         "default": false,
         "description": "Enable filesystem path entry in search box",
         "tooltip": "Allows path entry in the menu search box.",
-        "value": false
+        "value": true
     },
     "activate-on-hover": {
         "type": "switch",
@@ -155,7 +179,7 @@
         "default": false,
         "description": "Use menu animations",
         "tooltip": "Allow the menu to animate on open and close",
-        "value": false
+        "value": true
     },
     "menu-editor-button": {
         "type": "button",
@@ -163,5 +187,5 @@
         "callback": "_launch_editor",
         "tooltip": "Press this button to customize your menu entries."
     },
-    "__md5__": "2d57389c9dbdb1d8347645414e45eb1f"
+    "__md5__": "cdf1aadcba32c461f6e1b3b7647f8411"
 }
