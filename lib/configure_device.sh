@@ -64,8 +64,14 @@ prepare_drives() {
                 drive_mib=$((drive_byte/1024/1024))
                 drive_gigs=$((drive_mib/1024))
                 f2fs=$(lsblk -dnro ROTA /dev/$DRIVE)
-                log "Drive size in MB: ${drive_mib}"
-                log "Supports F2FS (1 = no, 0 = yes): ${f2fs}"
+                log "Drive size: ${drive_mib} MB"
+
+				if [ "${f2fs}" == 1]; then
+					log "Drive supports F2FS: no"
+				else
+					log "Drive supports F2FS: yes"
+				fi
+
                 #echo "$(date -u "+%F %H:%M") : Drive size in MB: $drive_mib" >> "$log"
                 #echo "$(date -u "+%F %H:%M") : F2FS state: $f2fs" >> "$log"
                 fs_select
