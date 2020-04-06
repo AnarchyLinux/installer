@@ -52,8 +52,6 @@ install_options() {
 prepare_base() {
     op_title="$install_op_msg"
 
-    log "Choosing advanced option"
-
     while (true)
       do
         install_menu=$(dialog --ok-button "$ok" --cancel-button "$cancel" --menu "$install_type_msg" 17 69 8 \
@@ -103,8 +101,6 @@ prepare_base() {
             base_install="base-devel linux-zen linux-zen-headers $base_defaults " kernel="linux-zen"
         ;;
     esac
-
-    log "Choosing shell"
 
     while (true)
       do
@@ -156,7 +152,6 @@ prepare_base() {
         fi
     done
 
-    log "Choosing bootloader"
     while (true)
       do
         if "$UEFI" ; then
@@ -219,7 +214,6 @@ prepare_base() {
         fi
     done
 
-    log "Choosing network utilities"
     while (true)
       do
         net_util=$(dialog --ok-button "$ok" --cancel-button "$cancel" --menu "$wifi_util_msg" 13 64 3 \
@@ -254,10 +248,9 @@ prepare_base() {
     fi
 
     if "$wifi" ; then
-        log "Wifi is available"
+        log "Installing wireless tools"
         base_install+="wireless_tools wpa_supplicant "
     else
-        log "Wifi is not available"
         if (dialog --defaultno --yes-button "$yes" --no-button "$no" --yesno "\n$wifi_option_msg" 10 60) then
             log "Chose to install wireless utilities"
             base_install+="wireless_tools wpa_supplicant "
