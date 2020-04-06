@@ -40,7 +40,7 @@ language() {
         "Spanish" "Español" \
         "Swedish" "Svenska" 3>&1 1>&2 2>&3)
 
-    log "Set installer language to ${ILANG}"
+    log "Set installer language to: ${ILANG}"
 
     case "$ILANG" in
         "English") export lang_file="${anarchy_directory}"/lang/anarchy-english.conf ;;
