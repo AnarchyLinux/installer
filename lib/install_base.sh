@@ -48,8 +48,8 @@ install_base() {
             fi
 
             (pacstrap "$ARCH" --overwrite $(echo "$base_install") ; echo "$?" > /tmp/ex_status) &>> /tmp/pacstrap.log &
-			log "$(cat /tmp/pacstrap.log)"
-			rm /tmp/pacstrap.log
+			echo "${LOG_FILE}" >> /tmp/pacstrap.log
+			cat /tmp/pacstrap.log >> "${LOG_FILE}"
 
 			pid=$! pri=$(echo "$down" | sed 's/\..*$//') msg="\n$install_load_var" load_log
 
