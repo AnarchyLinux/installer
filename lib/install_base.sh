@@ -47,22 +47,25 @@ install_base() {
                 base_install="$(pacman -Sqg base linux | sed 's/^linux$//') $base_install"
             fi
 
-            (pacstrap "$ARCH" --overwrite $(echo "$base_install") ; echo "$?" > /tmp/ex_status) &>> | log &
-            pid=$! pri=$(echo "$down" | sed 's/\..*$//') msg="\n$install_load_var" load_log
+            (pacstrap "$ARCH" --overwrite $(echo "$base_install") ; echo "$?" > /tmp/ex_status) &>> /tmp/pacstrap.log &
+			log "$(cat /tmp/pacstrap.log)"
+			rm /tmp/pacstrap.log
+
+			pid=$! pri=$(echo "$down" | sed 's/\..*$//') msg="\n$install_load_var" load_log
 
             genfstab -U -p "$ARCH" >> "$ARCH"/etc/fstab
 
             if [ $(</tmp/ex_status) -eq "0" ]; then
                 INSTALLED=true
                 log "Installation complete"
-                log "Generating fstab:\n$(<$ARCH/etc/fstab)"
+                log "Generating fstab:\n$(cat $ARCH/etc/fstab)"
                 #echo "$(date -u "+%F %H:%M") : Install Complete" >> "$log"
                 #echo "$(date -u "+%F %H:%M") : Generate fstab:\n$(<$ARCH/etc/fstab)" >> "$log"
             else
                 dialog --ok-button "$ok" --msgbox "\n$failed_msg" 10 60
                 log "Installation failed"
                 #echo "$(date -u "+%F %H:%M") : Install failed: please report to developer" >> "$log"
-                reset ; tail "$log" ; exit 1
+                reset ; tail "${LOG_FILE}" ; exit 1
             fi
 
             case "$bootloader" in
