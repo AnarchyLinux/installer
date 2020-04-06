@@ -155,7 +155,7 @@ prepare_base() {
     while (true)
       do
         if "$UEFI" ; then
-            log "UEFI is available"
+            log "UEFI available: yes"
             bootloader=$(dialog --ok-button "$ok" --cancel-button "$cancel" --menu "$loader_type_msg" 13 64 4 \
                 "grub"			"$loader_msg" \
                 "syslinux"		"$loader_msg1" \
@@ -164,7 +164,7 @@ prepare_base() {
                 "$none" "-" 3>&1 1>&2 2>&3)
             ex="$?"
         else
-            log "UEFI is not available"
+            log "UEFI available: no"
             bootloader=$(dialog --ok-button "$ok" --cancel-button "$cancel" --menu "$loader_type_msg" 12 64 3 \
                 "grub"			"$loader_msg" \
                 "syslinux"		"$loader_msg1" \
