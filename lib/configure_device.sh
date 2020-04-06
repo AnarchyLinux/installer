@@ -124,10 +124,13 @@ prepare_drives() {
                 if ! "$UEFI" ; then
                     if (dialog --defaultno --yes-button "$yes" --no-button "$no" --yesno "\n$gpt_msg" 10 60) then
                         GPT=true
-                        log "Used GPT partition scheme"
+                        log "Use GPT partition scheme: yes"
                         #echo "$(date -u "+%F %H:%M") : GPT partition scheme activated" >> "$log"
                     fi
                 fi
+
+				if [ "${GPT}" == "false" ]; then
+					log "Use GPT partition scheme: no"
 
                 source "$lang_file"
 
