@@ -98,13 +98,15 @@ update_mirrors() {
                 pid=$! pri=0.1 msg="\n$mirror_load0 \n\n \Z1> \Z2curl $mirror_url\Zn" load
 
                 if (grep "Server" /etc/pacman.d/mirrorlist.bak &>/dev/null); then
-                    echo "$(date -u "+%F %H:%M") : Updated Mirrors From: $code" >> "$log"
+                    log "Updated mirrors from ${code} mirrolist"
+					#echo "$(date -u "+%F %H:%M") : Updated Mirrors From: $code" >> "$log"
                     sed -i 's/#//' /etc/pacman.d/mirrorlist.bak
                     rankmirrors -n 6 /etc/pacman.d/mirrorlist.bak > /etc/pacman.d/mirrorlist &
                     pid=$! pri=0.8 msg="\n$mirror_load1 \n\n \Z1> \Z2rankmirrors -n 6 /etc/pacman.d/mirrorlist\Zn" load
                 else
                     dialog --ok-button "$ok" --msgbox "\n$connect_err0" 10 60
-                    echo "$(date -u "+%F %H:%M") : Failed to connect to wifi: Exit 1" >> "$log"
+                    log "Failed to connect to wifi"
+					#echo "$(date -u "+%F %H:%M") : Failed to connect to wifi: Exit 1" >> "$log"
                     setterm -background black -store ; reset ; echo -e "$connect_err1" | sed 's/\\Z1//;s/\\Zn//' ;  exit 1
                 fi
                 log "Updated mirrorlist"
@@ -156,7 +158,7 @@ check_connection() {
         cpu_mhz=$(lscpu | grep "CPU MHz" | awk '{print $3}' | sed 's/\..*//')
     fi
 
-    log "Detected CPU clock speed: ${cpu_mhz}"
+    log "Detected CPU clock speed: ${cpu_mhz} MHz"
 
     case "$cpu_mhz" in
         [0-9][0-9][0-9])
