@@ -1,53 +1,58 @@
-# Contributing code
+# Anarchy's contributing guide
 
-* Follow shell scripting best practices (mostly as described in
+You can help contribute to Anarchy in many ways, including
+
+## Writing code
+
+* Follow shell scripting best practices (e.g. as described in
 [Google's shell style guide](https://google.github.io/styleguide/shell.xml))
-* Try to be POSIX compliant (if that's not possible target bash)
-* Use `${variable}` instead of `$variable`
-* Constants should be `UPPER_CASE`, other variables `lower_case`
+* Try to be POSIX compliant
+* Use `"${variable}"` instead of `$variable`
+* Constants (and global variables) should be in `UPPER_CASE`, other variables
+should be in `lower_case`
 * Use single square brackets (`[ condition ]`) for conditionals
 (e.g. in 'if' statements)
-* Write good comments where needed (e.g. in complicated loops/functions)
-* Use different error codes when exiting (0 for proper exit, 1+ for error exits)
-and explain them at the top of the file
-* Use the `log` function as much as possible (as long as it makes sense)
+* Write clean and readable code
+* Write comments where needed (e.g. explaining functions)
+* Explain what arguments a function takes (if any)
+* Use different error codes when exiting and explain when they occur
+at the top of the file
+* Use the `log` function if necessary
 * Always line wrap at 80 characters
-* Scripts don't need a `.sh` suffix and should have a `-` between words
-* Libraries (`libs` directory) should always have a `.sh` suffix and an
-explanation of what they do
+* Scripts are named `setup-*` (without a `.sh` extension)
+* Libraries (`lib` directory) should always have a `.sh` suffix and NO shebang
 * Neither script nor libraries should be executable (their permissions are
 set during compilation)
+* Use shellscript to error-check your code
+* Test your code before submitting a PR (unless it's a draft)
 
-Check for compliance and errors with [shellcheck](https://www.shellcheck.net/):
-
-`shellcheck -s sh -x <script>`
-
-**Always test your scripts before submitting the PR.**
-
-If you need help remembering commands or want to check out some tips
-visit [devhints.io](https://devhints.io/bash) to do so.
-
-# Translating
+## Translating (updating existing translations)
 
 Anarchy Linux supports a bunch of languages, most of which need maintainers.
 
 * Make sure to use the UTF-8 encoding
-* Don't change the variable names (e.g. intro_msg=)
-* Don't remove any occurrence of (e.g. \n or \n\n - new lines)
-* Don't remove any special characters (e.g. $a, or quotes)
-* Don't edit variables within the text (e.g. /dev/${DRIVE} or ${user})
-* Add yourself to the maintainers list
-(and your email for possible further communication)
+* Don't change the variable names (e.g. `intro_msg=`)
+* Don't remove any occurrence of `\n` or `\n\n` (new lines)
+* Don't remove any special characters (e.g. `$a` or quotes)
+* Don't edit variables within the text (e.g. `/dev/${DRIVE}` or `${user}`)
 * Compare the finished file with english.conf
+* If you intend to maintain the translation, add yourself as a maintainer
+at the top of the file (example below)
+* If there are existing maintainers, add yourself on a new line below theirs
+
+```
+# Maintainer: John Doe <contact at john dot com>
+# Maintainer: Jane Doe <contact at jane dot com>
+```
 
 _Comparing language files to one another makes Anarchy more consistent
 and easier to update in the future._
 
-## Translating new languages
+## Translating Anarchy to new languages
 
 * Ask yourself if you're committed enough to translate the whole file
 (check english.conf for size comparison - ~500 translations)
 * Copy the `english.conf` file and rename it to your language's
-english name (e.g. "portuguese.conf" or "spanish.conf")
+english name (e.g. `portuguese.conf` or `spanish.conf`)
 * Change the LANG variable to your language's UTF-8 locale (e.g. `sl_SI.UTF-8`)
-* Check general rules/recommendations below
+* Read above recommendations
