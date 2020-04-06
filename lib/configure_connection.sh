@@ -98,7 +98,7 @@ update_mirrors() {
                 pid=$! pri=0.1 msg="\n$mirror_load0 \n\n \Z1> \Z2curl $mirror_url\Zn" load
 
                 if (grep "Server" /etc/pacman.d/mirrorlist.bak &>/dev/null); then
-                    log "Updated mirrors from ${code} mirrolist"
+                    log "Updated mirrors from: ${code}"
 					#echo "$(date -u "+%F %H:%M") : Updated Mirrors From: $code" >> "$log"
                     sed -i 's/#//' /etc/pacman.d/mirrorlist.bak
                     rankmirrors -n 6 /etc/pacman.d/mirrorlist.bak > /etc/pacman.d/mirrorlist &
@@ -148,17 +148,13 @@ check_connection() {
 
     sed -i 's/\,/\./' /tmp/wget.log
     connection_speed=$(tail /tmp/wget.log | grep -oP '(?<=\().*(?=\))' | awk '{print $1}')
-    log "Detected connection speed is: ${connection_speed}"
     connection_rate=$(tail /tmp/wget.log | grep -oP '(?<=\().*(?=\))' | awk '{print $2}')
-    log "Detected connection rate is: ${connection_rate}"
 
     if (lscpu | grep "max MHz" &>/dev/null); then
         cpu_mhz=$(lscpu | grep "CPU max MHz" | awk '{print $4}' | sed 's/\..*//')
     else
         cpu_mhz=$(lscpu | grep "CPU MHz" | awk '{print $3}' | sed 's/\..*//')
     fi
-
-    log "Detected CPU clock speed: ${cpu_mhz} MHz"
 
     case "$cpu_mhz" in
         [0-9][0-9][0-9])
@@ -176,6 +172,9 @@ check_connection() {
     esac
 
     export connection_speed connection_rate cpu_sleep
+    log "Detected connection speed is: ${connection_speed}"
+    log "Detected connection rate is: ${connection_rate}"
+    log "Detected CPU clock speed: ${cpu_mhz} MHz"
     #echo "$(date -u "+%F %H:%M") : Ranked connection speed: $connection_speed $connection_rate" >> "$log"
     #echo "$(date -u "+%F %H:%M") : Clocked CPU MHz: $cpu_mhz" >> "$log"
     rm /tmp/wget.log &> /dev/null
