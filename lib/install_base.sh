@@ -47,7 +47,7 @@ install_base() {
                 base_install="$(pacman -Sqg base linux | sed 's/^linux$//') $base_install"
             fi
 
-            (pacstrap "$ARCH" --overwrite $(echo "$base_install") ; echo "$?" > /tmp/ex_status) &>> "$log" &
+            (pacstrap "$ARCH" --overwrite $(echo "$base_install") ; echo "$?" > /tmp/ex_status) &>> | log &
             pid=$! pri=$(echo "$down" | sed 's/\..*$//') msg="\n$install_load_var" load_log
 
             genfstab -U -p "$ARCH" >> "$ARCH"/etc/fstab
