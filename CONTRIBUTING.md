@@ -17,21 +17,22 @@ should be in `lower_case`
 * Explain what arguments a function takes (if any)
 * Use different error codes when exiting and explain when they occur
 at the top of the file
-* If you've created a new file or made big changes (judge this by yourself),
-you can add a copyright disclaimer below the shebang and any other copyright
-notices (e.g. `Copyright (C) Jane Doe <contact@jane.doe>`)
-* Use the `log` function if necessary
+* If you've created a new file or have made a lot of changes
+(judge this by yourself), you can add a copyright disclaimer below the shebang
+line and below any other copyright notices
+(e.g. `Copyright (C) Jane Doe <contact@jane.doe>`)
 * Always line wrap at 80 characters
-* Scripts are named `setup-*` (without a `.sh` extension)
-* Libraries (`lib` directory) should always have a `.sh` suffix and NO shebang
-* Neither script nor libraries should be executable (their permissions are
+* Scripts should be named `setup-<function>` and should not have an extension
+* Libraries should always have a `.sh` extension and should not have a shebang
+* Neither scripts nor libraries should be executable (their permissions are
 set during compilation)
-* Use shellscript to error-check your code
-* Test your code before submitting a PR (unless it's a draft)
+* Use `shellscript` to error-check your code
+* Test your code before submitting a PR (not required if it's a draft)
+* Write long and informative commit messages
 
 ## Translating (updating existing translations)
 
-Anarchy Linux supports a bunch of languages, most of which need maintainers.
+Anarchy supports multiple languages, most of which need maintainers.
 
 * Make sure to use the UTF-8 encoding
 * Don't change the variable names (e.g. `intro_msg=`)
@@ -45,7 +46,7 @@ at the top of the file (example below)
 
 ```
 # Maintainer: John Doe <contact@john.doe>
-# Maintainer: Jane Doe <contact@jane.doe>
+# Current Maintainer: Jane Doe <contact@jane.doe>
 ```
 
 _Comparing language files to one another makes Anarchy more consistent
@@ -57,5 +58,5 @@ and easier to update in the future._
 (check english.conf for size comparison - ~500 translations)
 * Copy the `english.conf` file and rename it to your language's
 english name (e.g. `portuguese.conf` or `spanish.conf`)
-* Change the LANG variable to your language's UTF-8 locale (e.g. `sl_SI.UTF-8`)
-* Read above recommendations
+* Update the LANG variable to your language's UTF-8 locale (e.g. `sl_SI.UTF-8`)
+* Read the previous recommendations for existing Anarchy translations
