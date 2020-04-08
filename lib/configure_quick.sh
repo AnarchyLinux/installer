@@ -155,12 +155,7 @@ quick_desktop() {
     while (true) ; do
         if "${VM}" ; then
             case "${virt}" in
-                vbox)   GPU="virtualbox-guest-utils "
-                        if [ "${kernel}" == "linux" ]; then
-                            GPU+="virtualbox-guest-modules-arch "
-                        else
-                            GPU+="virtualbox-guest-dkms "
-                        fi
+                vbox)   GPU="virtualbox-guest-utils virtualbox-guest-dkms "
                ;;
                vmware)  GPU="xf86-video-vmware xf86-input-vmmouse open-vm-tools net-tools gtkmm mesa mesa-libgl"
                ;;

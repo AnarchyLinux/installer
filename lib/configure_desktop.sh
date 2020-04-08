@@ -221,12 +221,7 @@ graphics() {
         if "$VM" ; then
             case "$virt" in
                 vbox)	dialog --ok-button "$ok" --msgbox "\n$vbox_msg" 10 60
-                        GPU="virtualbox-guest-utils "
-                        if [ "$kernel" == "linux" ]; then
-                            GPU+="virtualbox-guest-modules-arch "
-                        else
-                            GPU+="virtualbox-guest-dkms "
-                        fi
+                        GPU="virtualbox-guest-utils virtualbox-guest-dkms "
                 ;;
                 vmware)	dialog --ok-button "$ok" --msgbox "\n$vmware_msg" 10 60
                         GPU="xf86-video-vmware xf86-input-vmmouse open-vm-tools net-tools gtkmm mesa mesa-libgl"
