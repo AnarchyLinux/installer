@@ -1,4 +1,0 @@
-[submodule "branding"]
-	path = branding
-	url = https://github.com/AnarchyLinux/branding.git
-	branch = master

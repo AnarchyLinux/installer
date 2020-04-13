@@ -71,7 +71,7 @@ prettify() {
 
 set_version() {
     # Label must be up to 11 chars long (incremental numbers)
-    anarchy_iso_label="ANARCHY10"
+    anarchy_iso_label="ANARCHY09"
     anarchy_iso_release="1.0.11"
     anarchy_iso_name="anarchy-${anarchy_iso_release}-x86_64.iso"
 }
@@ -467,12 +467,6 @@ copy_config_files() {
     sudo cp -r "${working_dir}"/boot/splash.png "${working_dir}"/boot/loader/ "${squashfs}"/usr/share/anarchy/boot/
     sudo cp "${working_dir}"/etc/nvidia340.xx "${squashfs}"/usr/share/anarchy/etc/
 
-    if [ -d branding ]; then
-        sudo cp "${working_dir}"/branding/wallpapers/* "${squashfs}"/usr/share/anarchy/extra/wallpapers/
-    else
-        echo "Missing branding directory, skipping ..."
-    fi
-
     # Copy over built packages and create repository
     echo -e "Adding built AUR packages to iso ..." | log
     sudo mkdir "${custom_iso}"/arch/x86_64/squashfs-root/usr/share/anarchy/pkg
@@ -693,5 +687,3 @@ while (true); do
         ;;
     esac
 done
-
-# vim: ai:ts=4:sw=4:et

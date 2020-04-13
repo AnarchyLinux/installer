@@ -2,18 +2,18 @@
 <!DOCTYPE wallpapers SYSTEM "gnome-wp-list.dtd">
 <wallpapers>
 	<wallpaper deleted="false">
-		
-		<name>Anarchy</name>
-		<filename>/usr/share/backgrounds/anarchy/Anarchy.jpeg</filename>
+
+		<name>City</name>
+		<filename>/usr/share/backgrounds/anarchy/city.jpeg</filename>
 		<options>stretched</options>
     <pcolor>#ffffff</pcolor>
     <scolor>#000000</scolor>
 	</wallpaper>
 
 	<wallpaper deleted="false">
-		
-		<name>Anarchy Tunnel</name>
-		<filename>/usr/share/backgrounds/anarchy/Anarchy-Tunnel.jpeg</filename>
+
+		<name>Tunnel</name>
+		<filename>/usr/share/backgrounds/anarchy/tunnel.jpeg</filename>
 		<options>stretched</options>
     <pcolor>#ffffff</pcolor>
     <scolor>#000000</scolor>
@@ -21,17 +21,8 @@
 
     <wallpaper deleted="false">
 
-         <name>Anarchy Login</name>
-         <filename>/usr/share/backgrounds/anarchy/Anarchy-Login.jpeg</filename>
-         <options>stretched</options>
-     <pcolor>#ffffff</pcolor>
-     <scolor>#000000</scolor>
-    </wallpaper>
-
-    <wallpaper deleted="false">
- 
-         <name>Anarchy Carbon Mesh</name>
-         <filename>/usr/share/backgrounds/anarchy/Anarchy-Carbon_Mesh.png</filename>
+         <name>Login</name>
+         <filename>/usr/share/backgrounds/anarchy/city.jpeg</filename>
          <options>stretched</options>
      <pcolor>#ffffff</pcolor>
      <scolor>#000000</scolor>
@@ -39,8 +30,17 @@
 
     <wallpaper deleted="false">
 
-         <name>Anarchy Aurora</name>
-         <filename>/usr/share/backgrounds/anarchy/Anarchy-Aurora.jpeg</filename>
+         <name>Carbon Mesh</name>
+         <filename>/usr/share/backgrounds/anarchy/carbon-mesh.jpeg</filename>
+         <options>stretched</options>
+     <pcolor>#ffffff</pcolor>
+     <scolor>#000000</scolor>
+    </wallpaper>
+
+    <wallpaper deleted="false">
+
+         <name>Aurora</name>
+         <filename>/usr/share/backgrounds/anarchy/aurora.jpeg</filename>
          <options>stretched</options>
      <pcolor>#ffffff</pcolor>
      <scolor>#000000</scolor>
@@ -48,123 +48,78 @@
 
      <wallpaper deleted="false">
 
-         <name>Anarchy Splatter</name>
-         <filename>/usr/share/backgrounds/anarchy/Anarchy-Splatter.jpeg</filename>
+         <name>Splatter</name>
+         <filename>/usr/share/backgrounds/anarchy/slatter.jpeg</filename>
          <options>stretched</options>
      <pcolor>#ffffff</pcolor>
      <scolor>#000000</scolor>
     </wallpaper>
 
 	<wallpaper deleted="false">
-		
-		<name>Anarchy Fire</name>
-		<filename>/usr/share/backgrounds/anarchy/Anarchy-Fire.jpeg</filename>
+
+		<name>Fire</name>
+		<filename>/usr/share/backgrounds/anarchy/fire.jpeg</filename>
 		<options>stretched</options>
     <pcolor>#ffffff</pcolor>
     <scolor>#000000</scolor>
 	</wallpaper>
 
 	<wallpaper deleted="false">
-		
-		<name>Audi</name>
-		<filename>/usr/share/backgrounds/anarchy/Audi.jpeg</filename>
-		<options>stretched</options>
-    <pcolor>#ffffff</pcolor>
-    <scolor>#000000</scolor>
-	</wallpaper>
 
-	<wallpaper deleted="false">
-		
 		<name>Tiger</name>
-		<filename>/usr/share/backgrounds/anarchy/Tiger.jpeg</filename>
+		<filename>/usr/share/backgrounds/anarchy/tiger.jpeg</filename>
 		<options>stretched</options>
     <pcolor>#ffffff</pcolor>
     <scolor>#000000</scolor>
 	</wallpaper>
 
 	<wallpaper deleted="false">
-		
+
 		<name>Lake</name>
-		<filename>/usr/share/backgrounds/anarchy/Lake.jpeg</filename>
+		<filename>/usr/share/backgrounds/anarchy/lake.jpeg</filename>
 		<options>stretched</options>
     <pcolor>#ffffff</pcolor>
     <scolor>#000000</scolor>
 	</wallpaper>
 
 	<wallpaper deleted="false">
-		
-		<name>Girl</name>
-		<filename>/usr/share/backgrounds/anarchy/Girl.jpeg</filename>
-		<options>stretched</options>
-    <pcolor>#ffffff</pcolor>
-    <scolor>#000000</scolor>
-	</wallpaper>
 
-	<wallpaper deleted="false">
-		
-		<name>Faction</name>
-		<filename>/usr/share/backgrounds/anarchy/Faction.jpeg</filename>
+		<name>Western</name>
+		<filename>/usr/share/backgrounds/anarchy/western.jpeg</filename>
 		<options>zoom</options>
     <pcolor>#ffffff</pcolor>
     <scolor>#000000</scolor>
 	</wallpaper>
 
 	<wallpaper deleted="false">
-		
+
 		<name>Earth</name>
-		<filename>/usr/share/backgrounds/anarchy/Earth.jpeg</filename>
+		<filename>/usr/share/backgrounds/anarchy/earth.jpeg</filename>
 		<options>stretched</options>
     <pcolor>#ffffff</pcolor>
     <scolor>#000000</scolor>
 	</wallpaper>
 
 	<wallpaper deleted="false">
-		
-		<name>Earth Full</name>
-		<filename>/usr/share/backgrounds/anarchy/Earth-Full.jpeg</filename>
-		<options>stretched</options>
-    <pcolor>#ffffff</pcolor>
-    <scolor>#000000</scolor>
-	</wallpaper>
 
-	<wallpaper deleted="false">
-		
-		<name>City Lights</name>
-		<filename>/usr/share/backgrounds/anarchy/City-Lights.jpeg</filename>
-		<options>stretched</options>
-    <pcolor>#ffffff</pcolor>
-    <scolor>#000000</scolor>
-	</wallpaper>
-
-	<wallpaper deleted="false">
-		
-		<name>City</name>
-		<filename>/usr/share/backgrounds/anarchy/City.jpeg</filename>
-		<options>stretched</options>
-    <pcolor>#ffffff</pcolor>
-    <scolor>#000000</scolor>
-	</wallpaper>
-
-	<wallpaper deleted="false">
-		
 		<name>City Dark</name>
-		<filename>/usr/share/backgrounds/anarchy/City-Dark.jpeg</filename>
+		<filename>/usr/share/backgrounds/anarchy/city-dark.jpeg</filename>
 		<options>stretched</options>
     <pcolor>#ffffff</pcolor>
     <scolor>#000000</scolor>
 	</wallpaper>
-    
+
     <wallpaper deleted="false">
-		
+
 		<name>Stars</name>
-		<filename>/usr/share/backgrounds/anarchy/Stars.jpeg</filename>
+		<filename>/usr/share/backgrounds/anarchy/stars.jpeg</filename>
 		<options>stretched</options>
     <pcolor>#ffffff</pcolor>
     <scolor>#000000</scolor>
 	</wallpaper>
 
 	<wallpaper deleted="false">
-		
+
 		<name>Waterfalls</name>
 		<name xml:lang="be">Вадаспады</name>
 		<name xml:lang="bg">Водопади</name>
@@ -211,7 +166,7 @@
     <scolor>#000000</scolor>
 	</wallpaper>
 		<wallpaper deleted="false">
-		
+
 		<name>Bokeh Tails</name>
 		<name xml:lang="an">Espigas</name>
 		<name xml:lang="ar">ذيول الخوخ</name>
@@ -280,7 +235,7 @@
     <scolor>#000000</scolor>
 	</wallpaper>
 	<wallpaper deleted="false">
-		
+
 		<name>Dandelion</name>
 		<name xml:lang="an">Dandelion</name>
 		<name xml:lang="ar">الهندباء</name>
@@ -356,7 +311,7 @@
     <scolor>#000000</scolor>
 	</wallpaper>
 		<wallpaper deleted="false">
-		
+
 		<name>Dark Ivy</name>
 		<name xml:lang="an">Plevida d'agüerro</name>
 		<name xml:lang="ar">اللبلاب الداكنة</name>
@@ -426,7 +381,7 @@
     <scolor>#000000</scolor>
 	</wallpaper>
 	<wallpaper deleted="false">
-		
+
 		<name>Pink Fabric</name>
 		<name xml:lang="an">Tela rosa</name>
 		<name xml:lang="ar">النسيج الوردي</name>
@@ -502,7 +457,7 @@
     <scolor>#000000</scolor>
 	</wallpaper>
 		<wallpaper deleted="false">
-		
+
 		<name>Flower Bed</name>
 		<name xml:lang="an">Cama de flors</name>
 		<name xml:lang="ar">سرير أزهار</name>
@@ -572,7 +527,7 @@
     <scolor>#000000</scolor>
 	</wallpaper>
 	<wallpaper deleted="false">
-		
+
 		<name>Icescape</name>
 		<name xml:lang="be">Палярны краявід</name>
 		<name xml:lang="bg">Северна панорама</name>
@@ -619,7 +574,7 @@
     <scolor>#000000</scolor>
 	</wallpaper>
 	<wallpaper deleted="false">
-		
+
 		<name>Adwaita</name>
 		<name xml:lang="an">Adwaita</name>
 		<name xml:lang="ar">أداويتا</name>
@@ -688,7 +643,7 @@
     <scolor>#000000</scolor>
 	</wallpaper>
 	<wallpaper deleted="false">
-		
+
 		<name>Lock Screen</name>
 		<name xml:lang="an">Pantalla blocada</name>
 		<name xml:lang="ar">شاشة قفل</name>
@@ -758,7 +713,7 @@
     <scolor>#000000</scolor>
 	</wallpaper>
 		<wallpaper deleted="false">
-		
+
 		<name>Mirror</name>
 		<name xml:lang="an">Espiello</name>
 		<name xml:lang="ar">مرآة</name>
@@ -835,7 +790,7 @@
     <scolor>#000000</scolor>
 	</wallpaper>
 	<wallpaper deleted="false">
-		
+
 		<name>Road</name>
 		<name xml:lang="an">Carretera</name>
 		<name xml:lang="ar">طريق</name>
@@ -912,7 +867,7 @@
     <scolor>#000000</scolor>
 	</wallpaper>
 	<wallpaper deleted="false">
-		
+
 		<name>Sandstone</name>
 		<name xml:lang="an">Piedra roya</name>
 		<name xml:lang="ar">حجر رملي</name>
@@ -987,7 +942,7 @@
     <scolor>#000000</scolor>
 	</wallpaper>
 	<wallpaper deleted="false">
-		
+
 		<name>Signpost of the Shadows</name>
 		<name xml:lang="an">Uembra de poste</name>
 		<name xml:lang="ar">إشارة الظلال</name>
@@ -1056,7 +1011,7 @@
     <scolor>#000000</scolor>
 	</wallpaper>
 	<wallpaper deleted="false">
-		
+
 		<name>Stones</name>
 		<name xml:lang="an">Piedras</name>
 		<name xml:lang="ar">أحجار</name>
@@ -1127,7 +1082,7 @@
     <scolor>#000000</scolor>
 	</wallpaper>
 	<wallpaper deleted="false">
-		
+
 		<name>Terraform Green</name>
 		<name xml:lang="af">Terravorming groen</name>
 		<name xml:lang="an">Tierra verda</name>
@@ -1208,7 +1163,7 @@
     <scolor>#000000</scolor>
 	</wallpaper>
 	<wallpaper deleted="false">
-		
+
 		<name>Waves</name>
 		<name xml:lang="an">Onda</name>
 		<name xml:lang="ar">أمواج</name>
@@ -1299,7 +1254,7 @@
     <scolor>#000000</scolor>
 	</wallpaper>
 		<wallpaper deleted="false">
-		
+
 		<name>Godafoss Iceland</name>
 		<name xml:lang="ar">الشلال الآيسلندي</name>
 		<name xml:lang="be">Гудафос, Ісландыя</name>
