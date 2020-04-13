@@ -454,15 +454,14 @@ copy_config_files() {
     sudo mkdir "${squashfs}"/usr/lib/anarchy
     sudo cp "${working_dir}"/lib/* "${squashfs}"/usr/lib/anarchy/
 
-    # Copy over extra files (dot files, desktop configurations, help file, issue file, hostname file)
+    # Copy over extra files (dot files, desktop configurations, issue file, hostname file)
     echo -e "Adding dot files and desktop configurations to iso ..." | log
     sudo rm "${squashfs}"/root/install.txt
     sudo cp "${working_dir}"/extra/shellrc/.zshrc "${squashfs}"/root/
-    sudo cp "${working_dir}"/extra/.help "${working_dir}"/extra/.dialogrc "${squashfs}"/root/
+    sudo cp "${working_dir}"/extra/.dialogrc "${squashfs}"/root/
     sudo cp "${working_dir}"/extra/shellrc/.zshrc "${squashfs}"/etc/zsh/zshrc
     sudo cp -r "${working_dir}"/extra/shellrc/. "${squashfs}"/usr/share/anarchy/extra/
     sudo cp -r "${working_dir}"/extra/desktop "${working_dir}"/extra/fonts "${working_dir}"/extra/anarchy-icon.png "${squashfs}"/usr/share/anarchy/extra/
-    cat "${working_dir}"/extra/.helprc | sudo tee -a "${squashfs}"/root/.zshrc >/dev/null
     sudo cp "${working_dir}"/etc/hostname "${working_dir}"/etc/issue_cli "${squashfs}"/etc/
     sudo cp -r "${working_dir}"/boot/splash.png "${working_dir}"/boot/loader/ "${squashfs}"/usr/share/anarchy/boot/
     sudo cp "${working_dir}"/etc/nvidia340.xx "${squashfs}"/usr/share/anarchy/etc/
