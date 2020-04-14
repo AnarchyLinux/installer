@@ -465,6 +465,8 @@ copy_config_files() {
     sudo cp "${working_dir}"/etc/hostname "${working_dir}"/etc/issue_cli "${squashfs}"/etc/
     sudo cp -r "${working_dir}"/boot/splash.png "${working_dir}"/boot/loader/ "${squashfs}"/usr/share/anarchy/boot/
     sudo cp "${working_dir}"/etc/nvidia340.xx "${squashfs}"/usr/share/anarchy/etc/
+	sudo cp -r "${working_dir}"/extra/wallpapers "${squashfs}"/usr/share/anarchy/extra/
+
 
     # Copy over built packages and create repository
     echo -e "Adding built AUR packages to iso ..." | log
