@@ -106,3 +106,4 @@ on our website.
 * Remove MongoDB from optional software list
 * Add timeout to syslinux config
 * Remove `arch-wiki-cli` from package list
+

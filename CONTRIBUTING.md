@@ -60,3 +60,4 @@ and easier to update in the future._
 english name (e.g. `portuguese.conf` or `spanish.conf`)
 * Update the LANG variable to your language's UTF-8 locale (e.g. `sl_SI.UTF-8`)
 * Read the previous recommendations for existing Anarchy translations
+
