@@ -1,3 +1,8 @@
+# We've moved to a new git provider: https://git.sr.ht/~anarchy/installer
+# This repository is now archived and won't be recieving any new commits from the project's current maintainers.
+
+# All new issues should be submitted to: https://todo.sr.ht/~anarchy/installer and those submitted here will be ignored.
+
 ![Anarchy logo](extra/banner.svg)
 
 # About
