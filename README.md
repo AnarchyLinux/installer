@@ -1,8 +1,11 @@
-# We've moved to [Gitlab](https://gitlab.com/anarchyinstaller/installer)
-
 ![Anarchy logo](extra/banner.svg)
 
-# About
+
+# We've moved to [Gitlab (anarchyinstaller/installer)](https://gitlab.com/anarchyinstaller/installer).
+
+## You can also find some extra info on our website [anarchyinstaller.org](https://anarchyinstaller.org).
+
+### About
 
 Anarchy Linux is an Arch Linux installer (**not a distro!**) providing a
 hassle-free installation and polished user experience.
@@ -15,21 +18,21 @@ users a simple and pain free way to install Arch Linux.
 Install when you want it, where you want it, and however you want it.
 That is the Anarchy philosophy.
 
-# Installation
+### Installation
 
 Check out the [installation instructions](doc/installation.md).
 
-# Reporting issues
+### Reporting issues
 
 Please read the [bug reporting guide](doc/reporting-issues.md)
 before reporting issues and remember to provide as much info as possible.
 
-# Contributing
+### Contributing
 
 We're always looking for new contributors to the project,
 so check out our [contributing guide](CONTRIBUTING.md) for more info.
 
-# License
+### License
 
 The project is licensed under the [GNU GPLv2 license](LICENSE).
 
