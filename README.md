@@ -3,7 +3,7 @@
 
 # We've moved to [Gitlab (anarchyinstaller/installer)](https://gitlab.com/anarchyinstaller/installer).
 
-## You can also find some extra info on our website [anarchyinstaller.org](https://anarchyinstaller.org).
+## You can also find some extra info on our website [anarchyinstaller.gitlab.io](https://anarchyinstaller.gitlab.io/).
 
 ### About
 
