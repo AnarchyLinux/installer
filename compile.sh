@@ -196,7 +196,7 @@ update_arch_iso() {
     # Check for latest Arch Linux iso
     arch_iso_latest="$(curl -s https://www.archlinux.org/download/ | grep "Current Release" | awk '{print $3}' | sed -e 's/<.*//')"
     arch_iso_link="https://mirrors.kernel.org/archlinux/iso/${arch_iso_latest}/archlinux-${arch_iso_latest}-x86_64.iso"
-    arch_checksum_link="https://mirrors.edge.kernel.org/archlinux/iso/${arch_iso_latest}/sha1sums.txt"
+    arch_checksum_link="https://mirrors.edge.kernel.org/archlinux/iso/${arch_iso_latest}/sha256sums.txt"
 
     echo -e "Checking for updated Arch Linux image ..." | log
     iso_date="$(<<<"${arch_iso_link}" sed 's!.*/!!')"
@@ -232,18 +232,18 @@ update_arch_iso() {
                 case "${input}" in
                     y|Y|yes|YES|Yes)
                         echo -e "Chose to update image" | log
-                        local_arch_checksum="$(ls "${working_dir}"/sha1sums.txt | tail -n1 | sed 's!.*/!!')"
+                        local_arch_checksum="$(ls "${working_dir}"/sha256sums.txt | tail -n1 | sed 's!.*/!!')"
                         update=true
                         ;;
                     *)
                     echo -e "Chose not to update image" | log
                     echo -e "Using old image: ${local_arch_iso}" | log
-                    local_arch_checksum="$(ls "${working_dir}"/sha1sums.txt | tail -n1 | sed 's!.*/!!')"
+                    local_arch_checksum="$(ls "${working_dir}"/sha256sums.txt | tail -n1 | sed 's!.*/!!')"
                     sleep 1
                     ;;
                 esac
             else
-                local_arch_checksum="$(ls "${working_dir}"/sha1sums.txt | tail -n1 | sed 's!.*/!!')"
+                local_arch_checksum="$(ls "${working_dir}"/sha256sums.txt | tail -n1 | sed 's!.*/!!')"
                 update=true
             fi
         fi
@@ -254,7 +254,7 @@ update_arch_iso() {
             echo -e "Downloading Arch Linux image and checksum ..." | log
             echo -e "(Don't resize the window or it will mess up the progress bar)"
             wget -c -q --show-progress "${arch_checksum_link}"
-            local_arch_checksum="$(ls "${working_dir}"/sha1sums.txt | tail -n1 | sed 's!.*/!!')"
+            local_arch_checksum="$(ls "${working_dir}"/sha256sums.txt | tail -n1 | sed 's!.*/!!')"
             wget -c -q --show-progress "${arch_iso_link}"
             local_arch_iso="$(ls "${working_dir}"/archlinux-*-x86_64.iso | tail -n1 | sed 's!.*/!!')"
         fi
@@ -266,11 +266,11 @@ update_arch_iso() {
 check_arch_iso() {
     echo -e "Comparing Arch Linux checksums ..." | log
     checksum=false
-    local_arch_checksum="$(ls "${working_dir}"/sha1sums.txt | tail -n1 | sed 's!.*/!!')"
+    local_arch_checksum="$(ls "${working_dir}"/sha256sums.txt | tail -n1 | sed 's!.*/!!')"
 
     # Check if checksum exists
     if [ -e "${local_arch_checksum}" ]; then
-        if [ "$(sha1sum --check --ignore-missing "${local_arch_checksum}")" ]; then
+        if [ "$(sha256sum --check --ignore-missing "${local_arch_checksum}")" ]; then
             echo -e "${local_arch_iso}: OK" | log
             checksum=true
         fi
@@ -288,8 +288,8 @@ check_arch_iso() {
                 *)
                 echo -e "Chose to download checksum" | log
                 wget -c -q --show-progress "${arch_checksum_link}"
-                local_arch_checksum="$(ls "${working_dir}"/sha1sums.txt | tail -n1 | sed 's!.*/!!')"
-                if [ "$(sha1sum --check --ignore-missing "${local_arch_checksum}")" ]; then
+                local_arch_checksum="$(ls "${working_dir}"/sha256sums.txt | tail -n1 | sed 's!.*/!!')"
+                if [ "$(sha256sum --check --ignore-missing "${local_arch_checksum}")" ]; then
                     echo -e "${local_arch_iso}: OK" | log
                     checksum=true
                 fi
@@ -298,8 +298,8 @@ check_arch_iso() {
         else
             # Automatically download and compare checksum
             wget -c -q --show-progress "${arch_checksum_link}"
-            local_arch_checksum="$(ls "${working_dir}"/sha1sums.txt | tail -n1 | sed 's!.*/!!')"
-            if [ "$(sha1sum --check --ignore-missing "${local_arch_checksum}")" ]; then
+            local_arch_checksum="$(ls "${working_dir}"/sha256sums.txt | tail -n1 | sed 's!.*/!!')"
+            if [ "$(sha256sum --check --ignore-missing "${local_arch_checksum}")" ]; then
                 echo -e "${local_arch_iso}: OK" | log
                 checksum=true
             fi
@@ -456,7 +456,7 @@ copy_config_files() {
 
     # Copy over extra files (dot files, desktop configurations, issue file, hostname file)
     echo -e "Adding dot files and desktop configurations to iso ..." | log
-    sudo rm "${squashfs}"/root/install.txt
+    #sudo rm "${squashfs}"/root/install.txt
     sudo cp "${working_dir}"/extra/shellrc/.zshrc "${squashfs}"/root/
     sudo cp "${working_dir}"/extra/.dialogrc "${squashfs}"/root/
     sudo cp "${working_dir}"/extra/shellrc/.zshrc "${squashfs}"/etc/zsh/zshrc
